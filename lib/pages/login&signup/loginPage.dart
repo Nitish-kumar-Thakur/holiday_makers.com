@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:holdidaymakers/pages/homePage.dart';
 import 'package:holdidaymakers/pages/introPage.dart';
 import 'package:holdidaymakers/pages/login&signup/signupPage.dart';
+import 'package:holdidaymakers/pages/mainPage.dart';
 import 'package:holdidaymakers/widgets/appEditField.dart';
 import 'package:holdidaymakers/widgets/appLargetext.dart';
 import 'package:holdidaymakers/widgets/appText.dart';
@@ -33,7 +34,7 @@ class _LoginPageState extends State<LoginPage> {
   void navigateToHomePage() {
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => const HomePage()),
+      MaterialPageRoute(builder: (context) => const Mainpage()),
     );
   }
 

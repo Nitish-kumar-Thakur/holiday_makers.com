@@ -48,17 +48,6 @@ class _HomePageState extends State<HomePage> {
     'img/winter1.png',
     'img/winter2.png',
   ];
-
-  int currentPage = 0; // Track current page index
-  int _selectedIndex = 0; // Track selected bottom nav item index
-
-  // Function to switch between pages based on the selected index
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
-
   void navigateToSeeAll() {
     Navigator.push(
       context,
@@ -128,12 +117,11 @@ class _HomePageState extends State<HomePage> {
                     ))),
               ],
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [Customizesearch()],
-            ),
+            // Row(
+            //   mainAxisAlignment: MainAxisAlignment.center,
+            //   children: [Customizesearch()],
+            // ),
             Maincarousel(imgList: offers),
-            SizedBox(height: 20),
             Container(
               margin: EdgeInsetsDirectional.only(start: 30),
               child: Column(
@@ -256,7 +244,7 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
       // Bottom Navigation Bar
-      bottomNavigationBar: BottomNavigationBarPage(index: _selectedIndex, onTapped: _onItemTapped),
+      // bottomNavigationBar: BottomNavigationBarPage(index: _selectedIndex, onTapped: _onItemTapped),
     );
   }
 }

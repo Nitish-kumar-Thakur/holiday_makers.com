@@ -38,6 +38,8 @@ dependencies:
   smooth_page_indicator: ^1.2.0+3
   carousel_slider: ^5.0.0
   flutter_native_splash: ^2.4.3
+  dropdown_search: ^6.0.1
+  intl: ^0.20.1
 
 dev_dependencies:
   flutter_test:
@@ -62,6 +64,12 @@ flutter:
   uses-material-design: true
   assets:
     - img/
+#    - assets/fonts/Geometr415BlkBT.ttf
+#
+#  fonts:
+#    - family: Geometr415BlkBT
+#      fonts:
+#        - asset: assets/fonts/Geometr415BlkBT.ttf
 
   # To add assets to your application, add an assets section, like this:
   # assets:

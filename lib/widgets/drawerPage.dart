@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:holdidaymakers/pages/FullyIndependentTraveler/independentTravelerPage.dart';
 import 'package:holdidaymakers/widgets/appLargetext.dart';
 import 'package:holdidaymakers/widgets/appText.dart';
 
@@ -126,118 +127,146 @@ class Drawerpage extends StatelessWidget {
                 height: 20,
               ),
               Container(
-        height: 120,
-        // width: 285,
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: Colors.grey.shade300, width: 1)),
-        child: Padding(
-          padding: EdgeInsets.only(left: 15),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              AppLargeText(
-                text: "Deals",
-                size: 20,
-              ),
+                  height: 120,
+                  // width: 285,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      border:
+                          Border.all(color: Colors.grey.shade300, width: 1)),
+                  child: Padding(
+                    padding: EdgeInsets.only(left: 15),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        AppLargeText(
+                          text: "Deals",
+                          size: 20,
+                        ),
+                        SizedBox(
+                          height: 3,
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => Independenttravelerpage()));
+                          },
+                          child: ChildContainer(
+                            image: "img/traveler.png",
+                            text: "Fully Independent Traveler",
+                          ),
+                        ),
+                        SizedBox(
+                          height: 3,
+                        ),
+                        ChildContainer(
+                            image: "img/traveler.png",
+                            text: 'Fixed Departures'),
+                        SizedBox(
+                          height: 3,
+                        ),
+                        ChildContainer(image: "img/cruise.png", text: "Cruise"),
+                      ],
+                    ),
+                  )),
               SizedBox(
-                height: 3,
-              ),
-              ChildContainer(image: "img/traveler.png", text: "Fully Independent Traveler",),
-              SizedBox(
-                height: 3,
-              ),
-              ChildContainer(image: "img/traveler.png", text: 'Fixed Departures'),
-              SizedBox(
-                height: 3,
-              ),
-              ChildContainer(image: "img/cruise.png", text: "Cruise"),
-            ],
-          ),
-        )),
-        SizedBox(
                 height: 20,
               ),
-        Container(
-        height: 100,
-        // width: 285,
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: Colors.grey.shade300, width: 1)),
-        child: Padding(
-          padding: EdgeInsets.only(left: 15),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              AppLargeText(
-                text: "My Trip",
-                size: 20,
-              ),
+              Container(
+                  height: 100,
+                  // width: 285,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      border:
+                          Border.all(color: Colors.grey.shade300, width: 1)),
+                  child: Padding(
+                    padding: EdgeInsets.only(left: 15),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        AppLargeText(
+                          text: "My Trip",
+                          size: 20,
+                        ),
+                        SizedBox(
+                          height: 3,
+                        ),
+                        ChildContainer(
+                          image: "img/booking.png",
+                          text: "My Booking",
+                        ),
+                        SizedBox(
+                          height: 3,
+                        ),
+                        ChildContainer(image: "img/Wallet.png", text: 'Wallet'),
+                      ],
+                    ),
+                  )),
               SizedBox(
-                height: 3,
-              ),
-              ChildContainer(image: "img/booking.png", text: "My Booking",),
-              SizedBox(
-                height: 3,
-              ),
-              ChildContainer(image: "img/Wallet.png", text: 'Wallet'),
-            ],
-          ),
-        )),
-        SizedBox(
                 height: 20,
               ),
-        Container(
-        height: 120,
-        // width: 285,
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: Colors.grey.shade300, width: 1)),
-        child: Padding(
-          padding: EdgeInsets.only(left: 15),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              AppLargeText(
-                text: "About",
-                size: 20,
-              ),
-              SizedBox(
-                height: 3,
-              ),
-              ChildContainer(image: "img/article.png", text: "Article & Blogs",),
-              SizedBox(
-                height: 3,
-              ),
-              ChildContainer(image: "img/helpCenter.png", text: 'Help Center'),
-              SizedBox(
-                height: 3,
-              ),
-              ChildContainer(image: "img/signOut.png", text: "Sign Out"),
-            ],
-          ),
-        ))
+              Container(
+                  height: 120,
+                  // width: 285,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      border:
+                          Border.all(color: Colors.grey.shade300, width: 1)),
+                  child: Padding(
+                    padding: EdgeInsets.only(left: 15),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        AppLargeText(
+                          text: "About",
+                          size: 20,
+                        ),
+                        SizedBox(
+                          height: 3,
+                        ),
+                        ChildContainer(
+                          image: "img/article.png",
+                          text: "Article & Blogs",
+                        ),
+                        SizedBox(
+                          height: 3,
+                        ),
+                        ChildContainer(
+                            image: "img/helpCenter.png", text: 'Help Center'),
+                        SizedBox(
+                          height: 3,
+                        ),
+                        ChildContainer(
+                            image: "img/signOut.png", text: "Sign Out"),
+                      ],
+                    ),
+                  ))
             ],
           ),
         ));
   }
 }
+
 class ChildContainer extends StatelessWidget {
   final String image;
   final String text;
-  const ChildContainer({
-    super.key,
-    required this.image,
-    required this.text
-  });
+  const ChildContainer({super.key, required this.image, required this.text});
 
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Container(height: 20, width: 20,
-        decoration: BoxDecoration(image: DecorationImage(image: AssetImage(image,),)),)
-        ,
+        Container(
+          height: 20,
+          width: 20,
+          decoration: BoxDecoration(
+              image: DecorationImage(
+            image: AssetImage(
+              image,
+            ),
+          )),
+        ),
         SizedBox(
           width: 5,
         ),

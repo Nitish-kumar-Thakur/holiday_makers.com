@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:holdidaymakers/pages/introPage.dart';
-import 'package:holdidaymakers/widgets/appLargetext.dart';
 import 'package:holdidaymakers/widgets/appText.dart';
 import 'package:holdidaymakers/widgets/responciveButton.dart';
 // import 'package:shared_preferences/shared_preferences.dart';
@@ -16,21 +15,24 @@ class _OnboardPageState extends State<OnboardPage> {
   List<Map<String, String>> onboardingData = [
     {
       "image": "img/onboard1.png",
-      "title": "Life is short and the world is wide",
+      "title1": "Life is short and the world is ",
+      "title2":"wide",
       "description":
           "At Friends tours and travel, we customize reliable and trustworthy educational tours to destinations all over the world",
       "button": "Get Started"
     },
     {
       "image": "img/onboard2.png",
-      "title": "It’s a big world out there, go explore",
+      "title1": "It’s a big world out there, go ",
+      "title2":"explore",
       "description":
           "To get the best of your adventure you just need to leave and go where you like. We are waiting for you",
       "button": "Next"
     },
     {
       "image": "img/onboard3.png",
-      "title": "People don’t take trips, trips take people",
+      "title1": "People don’t take trips, trips take ",
+      "title2":"people",
       "description":
           "To get the best of your adventure you just need to leave and go where you like. We are waiting for you",
       "button": "Next"
@@ -83,14 +85,22 @@ class _OnboardPageState extends State<OnboardPage> {
                     padding: const EdgeInsets.all(30.0),
                     child: Column(
                       children: [
-                        Container(
+                        SizedBox(
                           width: 280,
-                          child: Column(
+                          child: Column( 
                             children: [
-                              AppLargeText(
-                                text: onboardingData[index]["title"]!,
-                                size: 24,
-                              ),
+                              RichText(textAlign: TextAlign.center,
+                                text: TextSpan(
+                                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold,color: Colors.black,),
+                                children: [
+                                  TextSpan(text:onboardingData[index]["title1"]!),
+                                  TextSpan( 
+                                    children: []),
+                                  TextSpan(text: onboardingData[index]["title2"]!, style: TextStyle(color: Color(0xFFFF7029),
+                                )),
+                                ]
+                              )),
+                              
                               SizedBox(height: 10),
                               AppText(
                                 text: onboardingData[index]["description"]!,

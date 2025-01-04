@@ -1,6 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:holdidaymakers/learn.dart';
+import 'package:holdidaymakers/pages/FullyIndependentTraveler/travelerHotels.dart';
+import 'package:holdidaymakers/pages/learn.dart';
 import 'package:holdidaymakers/pages/homePage.dart';
+import 'package:holdidaymakers/pages/FullyIndependentTraveler/independentTravelerPage.dart';
+import 'package:holdidaymakers/pages/mainPage.dart';
 import 'package:holdidaymakers/pages/onboardPage.dart';
+import 'package:holdidaymakers/pages/searchBarpage.dart';
+import 'package:holdidaymakers/widgets/travelDate.dart';
+import 'package:holdidaymakers/widgets/travelerDrawer.dart';
 // import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> main() async {
@@ -25,7 +33,7 @@ class MyApp extends StatelessWidget {
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
           useMaterial3: true,
         ),
-        home: const OnboardPage(), // Use `const` for better performance.
+        home: Travelerhotels(), // Use `const` for better performance.
         );
   }
 }
