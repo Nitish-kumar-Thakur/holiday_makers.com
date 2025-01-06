@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:holdidaymakers/learn.dart';
+import 'package:holdidaymakers/pages/FullyIndependentTraveler/flightPage.dart';
+import 'package:holdidaymakers/pages/FullyIndependentTraveler/hotels.dart';
+import 'package:holdidaymakers/pages/FullyIndependentTraveler/offersDiscount.dart';
 import 'package:holdidaymakers/pages/FullyIndependentTraveler/travelerHotels.dart';
 import 'package:holdidaymakers/pages/learn.dart';
 import 'package:holdidaymakers/pages/homePage.dart';
@@ -33,7 +36,7 @@ class MyApp extends StatelessWidget {
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
           useMaterial3: true,
         ),
-        home: Travelerhotels(), // Use `const` for better performance.
+        home: FlightPage(), // Use `const` for better performance.
         );
   }
 }
