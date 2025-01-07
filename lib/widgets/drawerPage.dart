@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:holdidaymakers/pages/FullyIndependentTraveler/independentTravelerPage.dart';
+import 'package:holdidaymakers/pages/mainPage.dart';
 import 'package:holdidaymakers/widgets/appLargetext.dart';
 import 'package:holdidaymakers/widgets/appText.dart';
 
@@ -150,7 +151,7 @@ class Drawerpage extends StatelessWidget {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => Independenttravelerpage()));
+                                    builder: (context) => Mainpage()));
                           },
                           child: ChildContainer(
                             image: "img/traveler.png",

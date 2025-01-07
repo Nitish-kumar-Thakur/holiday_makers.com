@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:holdidaymakers/pages/FullyIndependentTraveler/flightPage.dart';
 import 'package:holdidaymakers/widgets/appLargetext.dart';
 import 'package:holdidaymakers/widgets/appText.dart';
 
@@ -62,7 +63,7 @@ class OfferCard extends StatelessWidget {
                   top: Radius.circular(10),
                 ),
                 image: const DecorationImage(
-                  image: AssetImage('img/traveller1.png'),
+                  image: AssetImage('img/offer1.png'),
                   fit: BoxFit.cover,
                 ),
               ),
@@ -117,7 +118,10 @@ class OfferCard extends StatelessWidget {
                   // Book Now Button
                   ElevatedButton(
                     onPressed: () {
-                      // Add booking functionality here
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => FlightPage()));// Add booking functionality here
                     },
                     style: ElevatedButton.styleFrom(
                       minimumSize: const Size(90, 40),

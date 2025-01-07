@@ -55,8 +55,7 @@ class _SearchPageState extends State<SearchPage> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
-            Navigator.pushReplacement(context,
-      MaterialPageRoute(builder: (context) => const Mainpage()),);
+            Navigator.pop(context);
             setState(() {
               isSearching = false;
               searchController.clear();

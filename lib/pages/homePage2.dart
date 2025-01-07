@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:holdidaymakers/pages/FullyIndependentTraveler/trip_details_page.dart';
 import 'package:holdidaymakers/pages/homePage.dart';
 import 'package:holdidaymakers/pages/searchBarpage.dart';
 import 'package:holdidaymakers/widgets/appLargetext.dart';
@@ -65,8 +66,8 @@ class _Homepage2State extends State<Homepage2> {
       key: _scaffoldKey,
       backgroundColor: Colors.white,
       drawer: Drawerpage(),
-      bottomNavigationBar: BottomNavigationBarPage(
-          index: _selectedIndex, onTapped: _onItemTapped),
+      // bottomNavigationBar: BottomNavigationBarPage(
+      //     index: _selectedIndex, onTapped: _onItemTapped),
       body: isSearching
           ? pages[_selectedIndex]
           : SingleChildScrollView(
@@ -139,19 +140,7 @@ class _Homepage2State extends State<Homepage2> {
                               color: Colors.black,
                               size: 16,
                             ),
-                            Row(
-                              children: [
-                                AppText(
-                                  text: 'See All',
-                                  color: Color(0xFF0775BD),
-                                  size: 15,
-                                ),
-                                Image.asset('img/seeAll.png'),
-                                SizedBox(
-                                  width: 5,
-                                )
-                              ],
-                            )
+                            
                           ],
                         ),
                         Container(
@@ -172,7 +161,10 @@ class _Homepage2State extends State<Homepage2> {
                       physics:
                           NeverScrollableScrollPhysics(), // Prevents nested scroll conflicts
                       children: picture.map((pic) {
-                        return Container(
+                        return GestureDetector(
+                          onTap: () {
+                           Navigator.push(context, MaterialPageRoute(builder: (context) => TripDetailsPage()));
+                          },child: Container(
                             margin: EdgeInsets.all(5),
                             decoration: BoxDecoration(
                                 // color: colors[0],
@@ -209,7 +201,8 @@ class _Homepage2State extends State<Homepage2> {
                                   ],
                                 ),
                               ],
-                            ));
+                            )),
+                        );
                       }).toList(),
                     ),
                   )

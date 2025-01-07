@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:holdidaymakers/widgets/appText.dart';
+import 'package:holdidaymakers/pages/FullyIndependentTraveler/payment_method.dart';
 
 class FlightPage extends StatefulWidget {
   const FlightPage({super.key});
@@ -10,96 +10,135 @@ class FlightPage extends StatefulWidget {
 
 class _FlightSelectionPageState extends State<FlightPage> {
   DateTime selectedDate = DateTime.now();
+  static const int maxDays = 7;
 
-  Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: selectedDate,
-      firstDate: DateTime(2020),
-      lastDate: DateTime(2100),
-    );
-    if (picked != null && picked != selectedDate) {
-      setState(() {
-        selectedDate = picked;
-      });
-    }
+  List<Flight> getFilteredFlights() {
+    return flights.where((flight) => isSameDate(flight.flightDate, selectedDate)).toList();
+  }
+
+  bool isSameDate(DateTime date1, DateTime date2) {
+    return date1.year == date2.year && date1.month == date2.month && date1.day == date2.day;
   }
 
   @override
   Widget build(BuildContext context) {
+    DateTime today = DateTime.now();
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          icon: const Icon(Icons.arrow_back),
+        ),
         title: const Text(
           "Select Your Flight",
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              // Add filter logic here
+            },
             icon: const Icon(Icons.filter_list),
-          )
+          ),
         ],
       ),
       body: Column(
         children: [
           // Date Selection Section
-          Container(
-            height: 70,
-            decoration: BoxDecoration(color: Colors.transparent),
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: 7,
-              itemBuilder: (context, index) {
-                DateTime date = DateTime.now().add(Duration(days: index));
-                return GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      selectedDate = date;
-                    });
-                  },
-                  child: Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 8),
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 10, horizontal: 16),
-                    decoration: BoxDecoration(
-                      color: date == selectedDate
-                          ? Colors.redAccent
-                          : Colors.grey[300],
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          "${date.day} ${_getMonthName(date.month)}",
-                          style: TextStyle(
-                            color: date == selectedDate
-                                ? Colors.white
-                                : Colors.black,
-                            fontWeight: FontWeight.bold,
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16), // Added padding
+            child: Container(
+              height: 60,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                color: Colors.white,
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      physics: const BouncingScrollPhysics(),
+                      itemCount: maxDays,
+                      itemBuilder: (context, index) {
+                        DateTime date = today.add(Duration(days: index));
+                        bool isToday = isSameDate(date, today);
+                        return GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              selectedDate = date;
+                            });
+                          },
+                          child: Container(
+                            margin: const EdgeInsets.symmetric(horizontal: 8),
+                            padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
+                            
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  isToday
+                                      ? "Today"
+                                      : "${date.day} ${_getMonthName(date.month)}",
+                                  style: TextStyle(
+                                    color: isSameDate(date, selectedDate)
+                                        ? Colors.blueAccent
+                                        : Colors.grey,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                                Text(
+                                  "\$${1000 + (index * 20)}",
+                                  style: TextStyle(
+                                    color: isSameDate(date, selectedDate)
+                                        ? Colors.blueAccent
+                                        : Colors.grey,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                        Text(
-                          "\$${1000 + (index * 20)}",
-                          style: TextStyle(
-                            color: date == selectedDate
-                                ? Colors.white
-                                : Colors.black,
-                          ),
-                        ),
-                      ],
+                        );
+                      },
                     ),
                   ),
-                );
-              },
+                  Container(
+                    height: 50,
+                    width: 50,
+                    decoration: const BoxDecoration(
+                      color: Colors.orangeAccent,
+                      borderRadius: BorderRadius.only(
+                        topRight: Radius.circular(5),
+                        bottomRight: Radius.circular(5),
+                      ),
+                    ),
+                    child: const Icon(
+                      Icons.calendar_month,
+                      size: 24,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
           Expanded(
             child: ListView.builder(
               padding: const EdgeInsets.all(16),
-              itemCount: flights.length,
+              itemCount: getFilteredFlights().length,
               itemBuilder: (context, index) {
-                return FlightCard(flight: flights[index]);
+                return GestureDetector(
+                  onTap: (){
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => PaymentMethod()));
+                  },child: FlightCard(flight: getFilteredFlights()[index]),
+                );
               },
             ),
           ),
@@ -125,6 +164,30 @@ class _FlightSelectionPageState extends State<FlightPage> {
     ];
     return months[month - 1];
   }
+}
+
+class Flight {
+  final String airline;
+  final String from;
+  final String to;
+  final String departureTime;
+  final String arrivalTime;
+  final String duration;
+  final String stops;
+  final int price;
+  final DateTime flightDate;
+
+  Flight({
+    required this.airline,
+    required this.from,
+    required this.to,
+    required this.departureTime,
+    required this.arrivalTime,
+    required this.duration,
+    required this.stops,
+    required this.price,
+    required this.flightDate,
+  });
 }
 
 class FlightCard extends StatefulWidget {
@@ -277,28 +340,6 @@ class _FlightCardState extends State<FlightCard> {
 }
 
 
-class Flight {
-  final String airline;
-  final String from;
-  final String to;
-  final String departureTime;
-  final String arrivalTime;
-  final String duration;
-  final String stops;
-  final int price;
-
-  Flight({
-    required this.airline,
-    required this.from,
-    required this.to,
-    required this.departureTime,
-    required this.arrivalTime,
-    required this.duration,
-    required this.stops,
-    required this.price,
-  });
-}
-
 final flights = [
   Flight(
     airline: "Turkish Airlines",
@@ -309,6 +350,7 @@ final flights = [
     duration: "17h 15mins",
     stops: "1 Stop",
     price: 1070,
+    flightDate: DateTime.now().add(const Duration(days: 1)),
   ),
   Flight(
     airline: "Ethiopian Airlines",
@@ -319,6 +361,7 @@ final flights = [
     duration: "17h 15mins",
     stops: "1 Stop",
     price: 1140,
+    flightDate: DateTime.now().add(const Duration(days: 2)),
   ),
   Flight(
     airline: "Etihad Airways",
@@ -329,6 +372,7 @@ final flights = [
     duration: "17h 15mins",
     stops: "1 Stop",
     price: 1210,
+    flightDate: DateTime.now().add(const Duration(days: 3)),
   ),
   Flight(
     airline: "Emirates",
@@ -339,5 +383,6 @@ final flights = [
     duration: "12h 30mins",
     stops: "Non Stop",
     price: 1430,
+    flightDate: DateTime.now(),
   ),
 ];
