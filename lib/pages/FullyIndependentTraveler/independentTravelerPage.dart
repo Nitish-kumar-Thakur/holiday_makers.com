@@ -24,6 +24,14 @@ class _IndependenttravelerpageState extends State<Independenttravelerpage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(backgroundColor: Colors.white,
+        leading: IconButton(
+                  icon: Icon(Icons.arrow_back, color: Colors.black),
+                  onPressed: () {
+                    Navigator.pop(context); // Navigates back
+                  },
+                ),),
       key: _scaffoldKey,
       drawer: Drawerpage(),
       body: SafeArea(
@@ -33,13 +41,6 @@ class _IndependenttravelerpageState extends State<Independenttravelerpage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Back Button
-                IconButton(
-                  icon: Icon(Icons.arrow_back, color: Colors.black),
-                  onPressed: () {
-                    Navigator.pop(context); // Navigates back
-                  },
-                ),
                 // Page Title
                 AppLargeText(
                   text: 'Fully Independent Traveler',
@@ -70,21 +71,21 @@ class _IndependenttravelerpageState extends State<Independenttravelerpage> {
                       children: [
                         Icon(
                           Icons.calendar_month,
-                          size: 26,
+                          size: 24,
                         ),
                         Column(
                           children: [
                             AppLargeText(
                               text: 'TRAVEL DATE',
                               color: Colors.black,
-                              size: 17,
+                              size: 14,
                             ),
                             Calendarwidget()
                           ],
                         ),
                         Container(
                           height: 25,
-                          width: 90,
+                          width: 80,
                           decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(20),
@@ -132,18 +133,4 @@ class _IndependenttravelerpageState extends State<Independenttravelerpage> {
       ),
     );
   }
-
-  void _openBottomDrawer(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true, // Allows flexible height
-      backgroundColor: Colors.white,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-      ),
-      builder: (context) {
-        return Travelerdrawer(); // Reuse your Travelerdrawer as the bottom drawer content
-      },
-    );
   }
-}

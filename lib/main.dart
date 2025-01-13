@@ -1,19 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:holdidaymakers/learn.dart';
-import 'package:holdidaymakers/pages/FullyIndependentTraveler/flightPage.dart';
-import 'package:holdidaymakers/pages/FullyIndependentTraveler/hotels.dart';
-import 'package:holdidaymakers/pages/FullyIndependentTraveler/offersDiscount.dart';
-import 'package:holdidaymakers/pages/FullyIndependentTraveler/payment_method.dart';
-import 'package:holdidaymakers/pages/FullyIndependentTraveler/travelerHotels.dart';
-import 'package:holdidaymakers/pages/learn.dart';
-import 'package:holdidaymakers/pages/homePage.dart';
-import 'package:holdidaymakers/pages/FullyIndependentTraveler/independentTravelerPage.dart';
-import 'package:holdidaymakers/pages/mainPage.dart';
-import 'package:holdidaymakers/pages/onboardPage.dart';
-import 'package:holdidaymakers/pages/searchBarpage.dart';
-import 'package:holdidaymakers/widgets/travelDate.dart';
-import 'package:holdidaymakers/widgets/travelerDrawer.dart';
-// import 'package:shared_preferences/shared_preferences.dart';
+import 'package:holdidaymakers/pages/login&signup/loginPage.dart';
+import 'package:holdidaymakers/splashScreen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -37,7 +24,7 @@ class MyApp extends StatelessWidget {
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
           useMaterial3: true,
         ),
-        home: Mainpage(), // Use `const` for better performance.
+        home: LoginPage(), // Use `const` for better performance.
         );
   }
 }

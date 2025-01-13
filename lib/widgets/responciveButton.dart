@@ -12,8 +12,8 @@ class responciveButton extends StatelessWidget {
       {super.key,
       this.isResponcive,
       required this.text,
-      this.border = 50,
-      this.color = const Color(0xFFFF0000),
+      this.border = 20,
+      this.color = Colors.red,
       this.textColor = Colors.white,
       this.buttonShadow = 0.4,
       });
@@ -23,7 +23,7 @@ class responciveButton extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
           color: color,
-          borderRadius: BorderRadius.circular(border),
+          borderRadius: BorderRadius.circular(8),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(buttonShadow), // Shadow color

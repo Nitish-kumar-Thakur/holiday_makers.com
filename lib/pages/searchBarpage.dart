@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:holdidaymakers/pages/mainPage.dart';
+import 'package:holdidaymakers/pages/FullyIndependentTraveler/mainPage.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -49,21 +49,6 @@ class _SearchPageState extends State<SearchPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0.5,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () {
-            Navigator.pop(context);
-            setState(() {
-              isSearching = false;
-              searchController.clear();
-              filteredPlaces = List.from(places);
-            });
-          },
-        ),
-      ),
       body: SafeArea(
         child: Column(
           children: [

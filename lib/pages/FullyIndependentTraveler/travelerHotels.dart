@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:holdidaymakers/pages/FullyIndependentTraveler/offersDiscount.dart';
 import 'package:holdidaymakers/widgets/appLargetext.dart';
 import 'package:holdidaymakers/widgets/appText.dart';
-import 'package:holdidaymakers/widgets/responciveButton.dart';
 
 class Travelerhotels extends StatefulWidget {
   const Travelerhotels({super.key});
@@ -13,9 +11,10 @@ class Travelerhotels extends StatefulWidget {
 
 class _TravelerhotelsState extends State<Travelerhotels> {
   Widget buildInclusionCard(String imagePath, String label) {
+    final screenWidth = MediaQuery.of(context).size.width;
     return Container(
-      width: 71,
-      height: 61,
+      width: screenWidth * 0.18,
+      height: screenWidth * 0.16,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(10),
@@ -24,7 +23,7 @@ class _TravelerhotelsState extends State<Travelerhotels> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            height: 40,
+            height: screenWidth * 0.1,
             decoration: BoxDecoration(
               image: DecorationImage(
                 image: AssetImage(imagePath),
@@ -34,7 +33,7 @@ class _TravelerhotelsState extends State<Travelerhotels> {
           const SizedBox(height: 4),
           AppText(
             text: label,
-            size: 12,
+            size: screenWidth * 0.03,
             color: Colors.black,
           ),
         ],
@@ -44,12 +43,16 @@ class _TravelerhotelsState extends State<Travelerhotels> {
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
+      backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Column(
           children: [
             Container(
-              height: 200,
+              height: screenHeight * 0.3,
               width: double.infinity,
               decoration: BoxDecoration(
                 image: DecorationImage(
@@ -58,7 +61,7 @@ class _TravelerhotelsState extends State<Travelerhotels> {
                 ),
               ),
               child: Padding(
-                padding: const EdgeInsets.only(top: 30),
+                padding: EdgeInsets.only(top: screenHeight * 0.05),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -73,7 +76,7 @@ class _TravelerhotelsState extends State<Travelerhotels> {
                       },
                     ),
                     Padding(
-                      padding: const EdgeInsets.all(20),
+                      padding: EdgeInsets.all(screenWidth * 0.05),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -91,7 +94,7 @@ class _TravelerhotelsState extends State<Travelerhotels> {
                               AppText(
                                 text: 'Baku, Azerbaijan',
                                 color: Colors.white,
-                                size: 20,
+                                size: screenWidth * 0.045,
                               )
                             ],
                           )
@@ -102,20 +105,20 @@ class _TravelerhotelsState extends State<Travelerhotels> {
                 ),
               ),
             ),
-            const SizedBox(height: 20),
+            // SizedBox(height: screenHeight * 0.02),
             Container(
               width: double.infinity,
               decoration: BoxDecoration(color: Colors.grey.shade200),
               child: Padding(
-                padding: const EdgeInsets.all(10),
+                padding: EdgeInsets.all(screenWidth * 0.03),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     AppLargeText(
                       text: 'INCLUSION',
-                      size: 25,
+                      size: screenWidth * 0.06,
                     ),
-                    const SizedBox(height: 10),
+                    SizedBox(height: screenHeight * 0.01),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -125,129 +128,15 @@ class _TravelerhotelsState extends State<Travelerhotels> {
                         buildInclusionCard('img/insurance.png', 'Insurance'),
                       ],
                     ),
-                    const SizedBox(height: 20),
+                    SizedBox(height: screenHeight * 0.02),
                     SizedBox(
-                      height: 450,
+                      height: screenHeight * 0.6,
                       child: ListView.builder(
                         itemCount: 3,
                         itemBuilder: (_, index) {
-                          return Container(
-                            margin: const EdgeInsets.only(bottom: 15),
-                            height: 450,
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(30),
-                              color: Colors.white
-                            ),
-                            child: Column(
-                              children: [
-                                Container(
-                                  height: 200,
-                                  decoration: BoxDecoration(
-                                    borderRadius: const BorderRadius.only(
-                                      topLeft: Radius.circular(30),
-                                      topRight: Radius.circular(30),
-                                    ),
-                                    image: DecorationImage(
-                                      image: AssetImage('img/hotel1.png'),
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(
-                                  height: 30,
-                                  child: Row(
-                                    children: [
-                                      AppLargeText(
-                                        text: 'Grand Inn Baku',
-                                        size: 25,
-                                      )
-                                    ],
-                                  ),
-                                ),
-                                SizedBox(
-                                  height: 40,
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      AppText(text: 'Baku, Azerbaijan'),
-                                      IconButton(
-                                        onPressed: null,
-                                        icon: AppText(
-                                          text: 'READ MORE',
-                                          color: Colors.red,
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                ),
-                                Container(
-                                  width: double.infinity,
-                                  height: 1,
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey.shade300,
-                                  ),
-                                ),
-                                const SizedBox(height: 10),
-                                Container(
-                                  width: double.infinity,
-                                  height: 55,
-                                  decoration: BoxDecoration(
-                                    border: Border.all(
-                                      color: Colors.blueGrey,
-                                      width: 1,
-                                    ),
-                                    borderRadius: BorderRadius.circular(5)
-                                  ),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      RichText(
-                                        text: TextSpan(
-                                          style: const TextStyle(
-                                            fontSize: 20,
-                                            color: Colors.black,
-                                          ),
-                                          children: [
-                                            const TextSpan(
-                                              text: 'AED 2,377',
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                            TextSpan(
-                                              text: '/Price Per Person',
-                                              style: TextStyle(
-                                                color: Colors.grey.shade600,
-                                                fontSize: 15,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      AppText(
-                                        text: 'Total Price ₹1,43,584',
-                                        size: 15,
-                                      )
-                                    ],
-                                  ),
-                                ),
-                                const SizedBox(height: 15),
-                                IconButton(
-                                  onPressed: () {
-                                    // Navigator.push(
-                                    //   context,
-                                    //   MaterialPageRoute(
-                                    //     builder: (context) => Offersdiscount(),
-                                    //   ),
-                                    // );
-                                  },
-                                  icon: responciveButton(text: 'SELECT'),
-                                ),
-                              ],
-                            ),
+                          return Padding(
+                            padding: EdgeInsets.only(bottom: screenHeight * 0.09),
+                            child: HotelCard(),
                           );
                         },
                       ),
@@ -258,6 +147,195 @@ class _TravelerhotelsState extends State<Travelerhotels> {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class HotelCard extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      elevation: 8,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
+            child: Image.asset(
+              'img/hotel1.png',
+              fit: BoxFit.cover,
+              width: screenWidth,
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.all(screenWidth * 0.04),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Hotel Deluxe',
+                          style: TextStyle(
+                            fontSize: screenWidth * 0.035,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(height: 4),
+                        Text(
+                          'Tirana',
+                          style: TextStyle(
+                            color: Colors.grey[600],
+                            fontSize: screenWidth * 0.035,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      children: List.generate(5, (index) {
+                        return Icon(
+                          Icons.star,
+                          color: Colors.amber,
+                          size: screenWidth * 0.035,
+                        );
+                      }),
+                    ),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '• Room Type: Standard',
+                          style: TextStyle(fontSize: screenWidth * 0.03, height: 1.5),
+                        ),
+                        Text(
+                          '• Room Occupancy: Double or Twin',
+                          style: TextStyle(fontSize: screenWidth * 0.03, height: 1.5),
+                        ),
+                        Text(
+                          '• Meals Plan: Breakfast',
+                          style: TextStyle(fontSize: screenWidth * 0.03, height: 1.5),
+                        ),
+                      ],
+                    ),
+                    Align(
+                      alignment: Alignment.topLeft,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'AED 2,377',
+                            style: TextStyle(
+                              fontSize: screenWidth * 0.035,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                          ),
+                          Text(
+                            'Price Per Person',
+                            style: TextStyle(
+                              fontSize: screenWidth * 0.03,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+                SizedBox(height: screenWidth * 0.03),
+                Row(
+                  children: [
+                    Container(
+                      width: screenWidth * 0.25,
+                      height: screenWidth * 0.12,
+                      decoration: BoxDecoration(
+                        border: Border.all(width: 1, color: Colors.grey),
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(3),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'CHECK IN',
+                              style: TextStyle(
+                                  color: Colors.grey[600], fontSize: screenWidth * 0.03),
+                            ),
+                            Text(
+                              '14:00 PM',
+                              style: TextStyle(
+                                  fontSize: screenWidth * 0.035, fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: screenWidth * 0.03),
+                    Container(
+                      width: screenWidth * 0.25,
+                      height: screenWidth * 0.12,
+                      decoration: BoxDecoration(
+                        border: Border.all(width: 1, color: Colors.grey),
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(3),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'CHECK OUT',
+                              style: TextStyle(
+                                  color: Colors.grey[600], fontSize: screenWidth * 0.03),
+                            ),
+                            Text(
+                              '05:30 PM',
+                              style: TextStyle(
+                                  fontSize: screenWidth * 0.035, fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+                SizedBox(height: screenWidth * 0.03),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () {},
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    child: Text(
+                      'SELECT',
+                      style: TextStyle(color: Colors.white, fontSize: screenWidth * 0.04),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

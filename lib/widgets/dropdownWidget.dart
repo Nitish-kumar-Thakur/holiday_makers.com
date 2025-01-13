@@ -62,14 +62,14 @@ class _DropdownwidgetState extends State<Dropdownwidget> {
                           borderRadius: BorderRadius.circular(
                               20), // Circular border radius
                           borderSide: BorderSide(
-                              color: Colors.grey,
+                              color: Colors.white,
                               width: 1) // Remove border line
                           ),
                       enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(
                               20), // Circular border radius
                           borderSide: BorderSide(
-                              color: Colors.grey,
+                              color: Colors.white,
                               width: 1) // Remove border line
                           ),
                       focusedBorder: OutlineInputBorder(

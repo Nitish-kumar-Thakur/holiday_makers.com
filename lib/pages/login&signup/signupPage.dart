@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:holdidaymakers/pages/FullyIndependentTraveler/mainPage.dart';
 import 'package:holdidaymakers/pages/introPage.dart';
 import 'package:holdidaymakers/pages/login&signup/loginPage.dart';
-import 'package:holdidaymakers/widgets/appEditField.dart';
 import 'package:holdidaymakers/widgets/appLargetext.dart';
 import 'package:holdidaymakers/widgets/appText.dart';
 import 'package:holdidaymakers/widgets/loginButton.dart';
-import 'package:holdidaymakers/widgets/passwordField.dart';
 import 'package:holdidaymakers/widgets/responciveButton.dart';
 
 class Signuppage extends StatefulWidget {
@@ -16,143 +15,182 @@ class Signuppage extends StatefulWidget {
 }
 
 class _SignuppageState extends State<Signuppage> {
-  final TextEditingController firstNameController = TextEditingController();
-  final TextEditingController lastNameController = TextEditingController();
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
+  bool _obscureText = true; // To toggle password visibility
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final _firstNameController = TextEditingController();
+  final _lastNameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  String _errorMessage = ''; // To show errors if any
 
-  final FocusNode firstNameFocusNode = FocusNode();
-  final FocusNode lastNameFocusNode = FocusNode();
-  final FocusNode emailFocusNode = FocusNode();
-  final FocusNode passwordFocusNode = FocusNode();
+  void _validateAndSignUp() {
+    final email = _emailController.text.trim();
+    final password = _passwordController.text;
 
-  @override
-  void dispose() {
-    firstNameController.dispose();
-    lastNameController.dispose();
-    emailController.dispose();
-    passwordController.dispose();
-    firstNameFocusNode.dispose();
-    lastNameFocusNode.dispose();
-    emailFocusNode.dispose();
-    passwordFocusNode.dispose();
-    super.dispose();
+    setState(() {
+      _errorMessage = '';
+    });
+
+    if (email.isEmpty || password.isEmpty) {
+      setState(() => _errorMessage = 'Both fields are required');
+      return;
+    }
+
+    final emailRegex = RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$');
+    if (!emailRegex.hasMatch(email)) {
+      setState(() => _errorMessage = 'Invalid email format');
+      return;
+    }
+
+    if (password.length < 6) {
+      setState(() => _errorMessage = 'Password must be at least 6 characters');
+      return;
+    }
+
+    // Proceed with sign up (for now, we'll just print and go to MainPage)
+    print("User signed up: $email");
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const Mainpage()),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
+    final double paddingValue = screenSize.width * 0.06;
+    final double textScaleFactor = screenSize.width < 600 ? 1.0 : 1.2;
 
     return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const IntroPage())),
+        ),
+      ),
       resizeToAvoidBottomInset: true,
-      backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Container(
-          margin: const EdgeInsets.only(top: 30, left: 25, right: 25, bottom: 25),
+          margin: EdgeInsets.all(paddingValue),
           height: screenSize.height,
           width: screenSize.width,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const IntroPage()),
-                  );
-                },
-                child: const BackButton(),
-              ),
-              const SizedBox(height: 23),
-              AppLargeText(text: 'Sign up'),
-              const SizedBox(height: 23),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  LoginButton(
-                    text: 'Google',
-                    color: Colors.white,
-                    textColor: Colors.black,
-                    image: 'img/googleIcon.png',
-                  ),
-                  LoginButton(
-                    text: 'Facebook',
-                    image: 'img/facebookIcon.png',
-                    padding: 15,
-                  ),
-                ],
-              ),
-              const SizedBox(height: 23),
-              const Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  AppText(text: 'Or Sign up using', color: Colors.black),
-                ],
-              ),
-              const SizedBox(height: 23),
-              AppEditField(
-                labeltext: 'First Name',
-                controller: firstNameController,
-                focusNode: firstNameFocusNode,
-              ),
-              const SizedBox(height: 23),
-              AppEditField(
-                labeltext: 'Last Name',
-                controller: lastNameController,
-                focusNode: lastNameFocusNode,
-              ),
-              const SizedBox(height: 23),
-              AppEditField(
-                labeltext: 'Email',
-                controller: emailController,
-                focusNode: emailFocusNode,
-                validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your email';
-                    }
-                    if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
-                      return 'Please enter a valid email';
-                    }
-                    return null;
-                  },
-              ),
-              const SizedBox(height: 23),
-              PasswordField(
-                controller: passwordController,
-                focusNode: passwordFocusNode,
-                validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your password';
-                    }
-                    if (value.length < 6) {
-                      return 'Password must be at least 6 characters long';
-                    }
-                    return null;
-                  },
-              ),
-              const SizedBox(height: 23),
-              responciveButton(text: 'Sign up'),
-              const SizedBox(height: 120),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const AppText(text: 'Already have an account? ', color: Colors.black),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const LoginPage()),
-                      );
-                    },
-                    child: const AppText(
-                      text: 'Log in',
-                      color: Color(0xFF1D9AD7),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                AppLargeText(
+                  text: 'Sign up',
+                ),
+                SizedBox(height: screenSize.height * 0.03),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    LoginButton(
+                      text: 'Google',
+                      color: Colors.white,
+                      textColor: Colors.black,
+                      image: 'img/googleIcon.png',
+                    ),
+                    LoginButton(
+                      text: 'Facebook',
+                      image: 'img/facebookIcon.png',
+                      padding: 15,
+                    ),
+                  ],
+                ),
+                SizedBox(height: screenSize.height * 0.03),
+                const Center(child: AppText(text: 'Or Sign up using', color: Colors.black)),
+                SizedBox(height: screenSize.height * 0.02),
+                if (_errorMessage.isNotEmpty)
+                  Align(
+                    alignment: Alignment.center,
+                    child: Text(
+                      _errorMessage,
+                      style: const TextStyle(color: Colors.red, fontSize: 14),
                     ),
                   ),
-                ],
-              ),
-            ],
+                SizedBox(height: screenSize.height * 0.02),
+                _buildInputField(controller: _firstNameController, hintText: 'First Name'),
+                SizedBox(height: screenSize.height * 0.02),
+                _buildInputField(controller: _lastNameController, hintText: 'Last Name'),
+                SizedBox(height: screenSize.height * 0.02),
+                _buildInputField(controller: _emailController, hintText: 'Email'),
+                SizedBox(height: screenSize.height * 0.02),
+                _buildInputField(
+                  controller: _passwordController,
+                  hintText: 'Password',
+                  obscureText: _obscureText,
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _obscureText ? Icons.visibility_off : Icons.visibility,
+                      color: _obscureText ? Colors.black54 : const Color(0xFF3498DB),
+                      size: 24,
+                    ),
+                    onPressed: () => setState(() => _obscureText = !_obscureText),
+                  ),
+                ),
+                SizedBox(height: screenSize.height * 0.03),
+                GestureDetector(
+                  onTap: _validateAndSignUp,
+                  child: responciveButton(text: 'Sign up'),
+                ),
+                SizedBox(height: screenSize.height * 0.07),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const AppText(text: 'Already have an account? ', color: Colors.black),
+                    GestureDetector(
+                      onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const LoginPage())),
+                      child: const AppText(
+                        text: 'Log in',
+                        color: Color(0xFF1D9AD7),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInputField({
+    required TextEditingController controller,
+    required String hintText,
+    bool obscureText = false,
+    Widget? suffixIcon,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(50),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.4),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(50),
+        child: TextField(
+          controller: controller,
+          obscureText: obscureText,
+          decoration: InputDecoration(
+            hintText: hintText,
+            border: InputBorder.none,
+            filled: true,
+            fillColor: Colors.white,
+            suffixIcon: suffixIcon,
+            contentPadding: const EdgeInsets.symmetric(
+              vertical: 16,
+              horizontal: 20,
+            ),
           ),
         ),
       ),

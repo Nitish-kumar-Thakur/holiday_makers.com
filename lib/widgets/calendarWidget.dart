@@ -33,7 +33,7 @@ class _CalendarwidgetState extends State<Calendarwidget> {
           child: Text(
             '$formattedDate', // Display the formatted date
             style: const TextStyle(
-              fontSize: 14,
+              fontSize: 11,
               fontWeight: FontWeight.bold, 
             ),
           ),
