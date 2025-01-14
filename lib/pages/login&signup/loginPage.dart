@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:holdidaymakers/pages/introPage.dart';
 import 'package:holdidaymakers/pages/login&signup/signupPage.dart';
 import 'package:holdidaymakers/pages/FullyIndependentTraveler/mainPage.dart';
+import 'package:holdidaymakers/utils/api_handler.dart';
+import 'package:holdidaymakers/utils/shared_preferences_handler.dart';
 import 'package:holdidaymakers/widgets/appLargetext.dart';
 import 'package:holdidaymakers/widgets/appText.dart';
 import 'package:holdidaymakers/widgets/loginButton.dart';
 import 'package:holdidaymakers/widgets/responciveButton.dart';
-import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -25,9 +25,8 @@ class _LoginPageState extends State<LoginPage> {
   String _errorMessage = '';
   bool _isLoading = false;
 
-  void _completeLogin() async {
-    var prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('isLoggedIn', true);
+  void _completeLogin(Map<String, dynamic> responseData) async {
+    await SharedPreferencesHandler.saveLoginData(responseData);
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (context) => const Mainpage()),
@@ -51,25 +50,12 @@ class _LoginPageState extends State<LoginPage> {
       return;
     }
 
-    final url = Uri.parse('https://b2cuat.tikipopi.com/index.php/holiday_api/login');
     try {
-      final response = await http.post(
-        url,
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'email': email, 'password': password}),
-      );
-
-      if (response.statusCode == 200) {
-        final responseData = jsonDecode(response.body);
-
-        if (responseData['status'] == true) {
-          _completeLogin();
-          print(responseData["token"].toString());
-        } else {
-          setState(() => _errorMessage = responseData['message'] ?? 'Login failed');
-        }
+      final responseData = await APIHandler.login(email, password);
+      if (responseData['status'] == true) {
+        _completeLogin(responseData);
       } else {
-        setState(() => _errorMessage = 'Error: ${response.statusCode}');
+        setState(() => _errorMessage = responseData['message'] ?? 'Login failed');
       }
     } catch (e) {
       setState(() => _errorMessage = 'An error occurred. Please try again.');
@@ -123,7 +109,9 @@ class _LoginPageState extends State<LoginPage> {
                   ],
                 ),
                 SizedBox(height: screenSize.height * 0.03),
-                const Center(child: AppText(text: 'Or log in using', color: Colors.black)),
+                const Center(
+                  child: AppText(text: 'Or log in using', color: Colors.black),
+                ),
                 SizedBox(height: screenSize.height * 0.02),
                 if (_errorMessage.isNotEmpty)
                   Align(
@@ -146,10 +134,13 @@ class _LoginPageState extends State<LoginPage> {
                   suffixIcon: IconButton(
                     icon: Icon(
                       _obscureText ? Icons.visibility_off : Icons.visibility,
-                      color: _obscureText ? Colors.black54 : const Color(0xFF3498DB),
+                      color: _obscureText
+                          ? Colors.black54
+                          : const Color(0xFF3498DB),
                       size: 24,
                     ),
-                    onPressed: () => setState(() => _obscureText = !_obscureText),
+                    onPressed: () =>
+                        setState(() => _obscureText = !_obscureText),
                   ),
                 ),
                 SizedBox(height: screenSize.height * 0.03),
@@ -170,7 +161,10 @@ class _LoginPageState extends State<LoginPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const AppText(text: 'Don’t have an account yet? ', color: Colors.black),
+                    const AppText(
+                      text: 'Don’t have an account yet? ',
+                      color: Colors.black,
+                    ),
                     GestureDetector(
                       onTap: () => Navigator.push(
                         context,
@@ -219,7 +213,8 @@ class _LoginPageState extends State<LoginPage> {
             filled: true,
             fillColor: Colors.white,
             suffixIcon: suffixIcon,
-            contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+            contentPadding:
+                const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
           ),
         ),
       ),

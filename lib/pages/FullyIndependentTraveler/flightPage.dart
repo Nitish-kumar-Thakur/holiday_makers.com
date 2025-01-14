@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:holdidaymakers/pages/FullyIndependentTraveler/offersDiscount.dart';
 import 'package:holdidaymakers/pages/FullyIndependentTraveler/payment_method.dart';
 
 class FlightPage extends StatefulWidget {
@@ -136,7 +137,7 @@ class _FlightSelectionPageState extends State<FlightPage> {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => PaymentMethod()));
+                            builder: (context) => Offersdiscount()));
                   },child: FlightCard(flight: getFilteredFlights()[index]),
                 );
               },

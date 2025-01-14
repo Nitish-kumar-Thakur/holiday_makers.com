@@ -47,7 +47,7 @@ class _CurisesHomeState extends State<CurisesHome> {
     }
   }
 
-  final List<String> offers = ['img/image1.png', 'img/image1.png', 'img/image1.png', 'img/image1.png'];
+ List<Map<String, dynamic>> offers = [];
 
   // List of dynamic sections
   final List<Map<String, dynamic>> sections = [
@@ -183,7 +183,7 @@ class _CurisesHomeState extends State<CurisesHome> {
             ),
 
             // Main Carousel
-            Maincarousel(imgList: offers),
+            Maincarousel(banner_list: offers),
 
             // Dynamic Sections using ListView.builder
             ListView.builder(

@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class Maincarousel extends StatefulWidget {
-  final List imgList;
+  final List<Map<String, dynamic>> banner_list;
 
-  const Maincarousel({super.key, required this.imgList});
+  const Maincarousel({super.key, required this.banner_list});
 
   @override
   _MaincarouselState createState() => _MaincarouselState();
@@ -19,14 +19,14 @@ class _MaincarouselState extends State<Maincarousel> {
     return Column(
       children: [
         CarouselSlider.builder(
-          itemCount: widget.imgList.length,
+          itemCount: widget.banner_list.length,
           itemBuilder: (context, index, realIndex) {
             return Container(
               margin: const EdgeInsets.all(10),
               decoration: BoxDecoration(
                 image: DecorationImage(
-                  image: AssetImage(widget.imgList[index]),
-                  fit: BoxFit.cover,
+                  image: NetworkImage(widget.banner_list[index]['mobile_img']),
+                  fit: BoxFit.fill,
                 ),
               ),
             );
@@ -51,7 +51,7 @@ class _MaincarouselState extends State<Maincarousel> {
           children: [
             AnimatedSmoothIndicator(
               activeIndex: currentPage,
-              count: widget.imgList.length,
+              count: widget.banner_list.length,
               effect: WormEffect(
                 dotHeight: 10,
                 dotWidth: 10,

@@ -1,17 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:holdidaymakers/pages/Cruise/CurisesHome.dart';
-import 'package:holdidaymakers/pages/Cruise/curisesMain.dart';
 import 'package:holdidaymakers/pages/FixedDeparturesPages/departuresHome.dart';
-import 'package:holdidaymakers/pages/FixedDeparturesPages/departuresMain.dart';
 import 'package:holdidaymakers/pages/FullyIndependentTraveler/mainPage.dart';
 import 'package:holdidaymakers/widgets/ChangePassword.dart';
 import 'package:holdidaymakers/widgets/ManageAccount.dart';
 import 'package:holdidaymakers/widgets/appLargetext.dart';
 import 'package:holdidaymakers/widgets/appText.dart';
 import 'package:holdidaymakers/widgets/profile_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class Drawerpage extends StatelessWidget {
+class Drawerpage extends StatefulWidget {
   Drawerpage({super.key});
+
+  @override
+  State<Drawerpage> createState() => _DrawerpageState();
+}
+
+class _DrawerpageState extends State<Drawerpage> {
+  String profileImg = "";
+  String firstName = "";
   List<Map<String, String>> data = [
     {
       "title": "Deals",
@@ -40,6 +47,22 @@ class Drawerpage extends StatelessWidget {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    _loadProfileDetails();
+  }
+
+  Future<void> _loadProfileDetails() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      profileImg = prefs.getString("profileImg") ?? "";
+      firstName = prefs.getString("first_name") ?? "";
+      firstName = firstName.isNotEmpty ? firstName[0].toUpperCase() + firstName.substring(1) : firstName;
+
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Drawer(
       child: Container(
@@ -53,63 +76,63 @@ class Drawerpage extends StatelessWidget {
             end: Alignment.bottomRight,
           ),
           boxShadow: [
-      BoxShadow(
-        color: Colors.black.withOpacity(0.2), // Inner shadow color
-        offset: Offset(0, 4), // x = 0, y = 4
-        blurRadius: 4, // Blur = 4
-        spreadRadius: 0, // Spread = 0
-      ),
-    ],
+            BoxShadow(
+              color: Colors.black.withOpacity(0.2), // Inner shadow color
+              offset: Offset(0, 4), // x = 0, y = 4
+              blurRadius: 4, // Blur = 4
+              spreadRadius: 0, // Spread = 0
+            ),
+          ],
         ),
         child: Padding(
           padding: EdgeInsets.only(top: 40, left: 0, right: 15),
           child: Column(
             children: [
               Container(
-  height: 80,
-  decoration: BoxDecoration(
-    gradient: LinearGradient(
-      colors: [
-        Color(0xFF308BDC), // Hex color #308BDC
-        Color(0xFF0B70B4), // Hex color #0B70B4
-      ],
-      begin: Alignment.topLeft,
-      end: Alignment.bottomRight,
-    ),
-    borderRadius: BorderRadius.only(
-      topRight: Radius.circular(20),
-      bottomRight: Radius.circular(20),
-    ),
-    boxShadow: [
-      BoxShadow(
-        color: Colors.black.withOpacity(0.2), // Inner shadow color
-        offset: Offset(0, 4), // x = 0, y = 4
-        blurRadius: 4, // Blur = 4
-        spreadRadius: 0, // Spread = 0
-      ),
-    ],
-  ),
-  child: Padding(
-    padding: EdgeInsets.only(left: 15),
-    child: Row(
-      children: [
-        CircleAvatar(
-          backgroundImage: NetworkImage(
-              'https://via.placeholder.com/150'), // Placeholder image
-        ),
-        SizedBox(
-          width: 5,
-        ),
-        AppLargeText(
-          text: 'Emul',
-          color: Colors.white,
-          size: 24,
-        )
-      ],
-    ),
-  ),
-),
-
+                height: 80,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Color(0xFF308BDC), // Hex color #308BDC
+                      Color(0xFF0B70B4), // Hex color #0B70B4
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.only(
+                    topRight: Radius.circular(20),
+                    bottomRight: Radius.circular(20),
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color:
+                          Colors.black.withOpacity(0.2), // Inner shadow color
+                      offset: Offset(0, 4), // x = 0, y = 4
+                      blurRadius: 4, // Blur = 4
+                      spreadRadius: 0, // Spread = 0
+                    ),
+                  ],
+                ),
+                child: Padding(
+                  padding: EdgeInsets.only(left: 15),
+                  child: Row(
+                    children: [
+                      CircleAvatar(
+                        backgroundImage: NetworkImage(
+                            profileImg), // Placeholder image
+                      ),
+                      SizedBox(
+                        width: 10,
+                      ),
+                      AppLargeText(
+                        text: firstName,
+                        color: Colors.white,
+                        size: 24,
+                      )
+                    ],
+                  ),
+                ),
+              ),
               SizedBox(
                 height: 20,
               ),
@@ -118,57 +141,69 @@ class Drawerpage extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    IconButton(onPressed: (){Navigator.push(
+                    IconButton(
+                      onPressed: () {
+                        Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => ProfilePage()));},
-                    icon: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SmalCircle(
-                          image: 'img/Profile.png',
-                        ),
-                        AppLargeText(
-                          text: 'My Profile',
-                          size: 10,
-                          color: Colors.white,
-                        )
-                      ],
-                    ),),
-                    IconButton(onPressed: (){Navigator.push(
+                                builder: (context) => ProfilePage()));
+                      },
+                      icon: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SmalCircle(
+                            image: 'img/Profile.png',
+                          ),
+                          AppLargeText(
+                            text: 'My Profile',
+                            size: 10,
+                            color: Colors.white,
+                          )
+                        ],
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => ManageAccount()));},
-                    icon: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SmalCircle(
-                          image: 'img/manageAccount.png',
-                        ),
-                        AppLargeText(
-                          text: 'Manage Account',
-                          size: 10,
-                          color: Colors.white,
-                        )
-                      ],
-                    ),),
-                    IconButton(onPressed: (){Navigator.push(
+                                builder: (context) => ManageAccount()));
+                      },
+                      icon: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SmalCircle(
+                            image: 'img/manageAccount.png',
+                          ),
+                          AppLargeText(
+                            text: 'Manage Account',
+                            size: 10,
+                            color: Colors.white,
+                          )
+                        ],
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => ChangePasswordScreen()));},
-                    icon: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SmalCircle(
-                          image: 'img/changePassword.png',
-                        ),
-                        AppLargeText(
-                          text: 'Change Password',
-                          size: 10,
-                          color: Colors.white,
-                        )
-                      ],
-                    ),),
+                                builder: (context) => ChangePasswordScreen()));
+                      },
+                      icon: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SmalCircle(
+                            image: 'img/changePassword.png',
+                          ),
+                          AppLargeText(
+                            text: 'Change Password',
+                            size: 10,
+                            color: Colors.white,
+                          )
+                        ],
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -291,8 +326,7 @@ class Drawerpage extends StatelessWidget {
                     SizedBox(
                       height: 3,
                     ),
-                    ChildContainer(
-                        image: "img/signOut.png", text: "Sign Out"),
+                    ChildContainer(image: "img/signOut.png", text: "Sign Out"),
                   ],
                 ),
               )

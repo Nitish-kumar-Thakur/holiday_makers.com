@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -8,134 +11,194 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  bool _isEditing = false; // Track if fields are editable
+  String profileImg = '';
+  String firstname = "";
+  String lastname = "";
+  String email = "";
+  String mobileNum = "";
+  String address = "";
+  String countryCode = "";
+  String fullName = "";
+  String phone = '';
+
+  bool _isEditing = false;
+  File? _profileImage;
+  final ImagePicker _picker = ImagePicker();
+  final _addressController = TextEditingController();
+
+  Future<void> _pickImage() async {
+    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() {
+        _profileImage = File(pickedFile.path);
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _ProfileDetails();
+  }
+
+  Future<void> _ProfileDetails() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      profileImg = prefs.getString("profileImg") ?? "";
+      firstname = prefs.getString("first_name") ?? "";
+      lastname = prefs.getString("last_name") ?? "";
+      email = prefs.getString("email_org") ?? "";
+      address = prefs.getString("address") ?? "";
+      countryCode = prefs.getString("country_code") ?? "";
+      mobileNum = prefs.getString("phone") ?? "";
+      fullName = "$firstname $lastname";
+      phone = "$countryCode $mobileNum";
+      _addressController.text = address;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: Colors.white,
-      body: SafeArea(child: 
-      Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Title Container
-          Container(
-            width: screenWidth,
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  "My Profile",
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                ),
-                GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      _isEditing = !_isEditing; // Toggle editing state
-                    });
-                  },
-                  child: Row(
-                    children: [
-                      Text(
-                        _isEditing ? 'Save' : 'Edit Profile',
-                        style: TextStyle(color: Colors.red, fontSize: 16),
-                      ),
-                      SizedBox(width: 4),
-                      Icon(
-                        _isEditing ? Icons.check : Icons.edit,
-                        color: Colors.red,
-                        size: 18,
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: ListView(
+      body: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Title Container
+            Container(
+              width: screenWidth,
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // Profile Picture
-                  Center(
-                    child: Stack(
-                      alignment: Alignment.bottomRight,
+                  Text(
+                    "My Profile",
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _isEditing = !_isEditing;
+                      });
+                    },
+                    child: Row(
                       children: [
-                        CircleAvatar(
-                          radius: 70,
-                          backgroundImage: NetworkImage(
-                            'https://via.placeholder.com/150',
-                          ),
+                        Text(
+                          _isEditing ? 'Save' : 'Edit Profile',
+                          style: TextStyle(color: Colors.red, fontSize: 16),
                         ),
-                        if (_isEditing)
-                          CircleAvatar(
-                            radius: 15,
-                            backgroundColor: Colors.red,
-                            child: Icon(
-                              Icons.camera_alt,
-                              size: 16,
-                              color: Colors.white,
-                            ),
-                          ),
+                        SizedBox(width: 4),
+                        Icon(
+                          _isEditing ? Icons.check : Icons.edit,
+                          color: Colors.red,
+                          size: 18,
+                        ),
                       ],
                     ),
-                  ),
-                  SizedBox(height: 20),
-
-                  // Name TextField
-                  ProfileField(
-                    label: "Name",
-                    hintText: "Melissa Peters",
-                    isPassword: false,
-                    isEditable: _isEditing,
-                  ),
-
-                  // Email TextField
-                  ProfileField(
-                    label: "Email",
-                    hintText: "melpeters@gmail.com",
-                    isPassword: false,
-                    isEditable: _isEditing,
-                  ),
-
-                  // Mobile Number TextField
-                  ProfileField(
-                    label: "Mobile Number",
-                    hintText: "+91 3456789878",
-                    isPassword: false,
-                    isEditable: _isEditing,
-                  ),
-
-                  // Address Dropdown
-                  ProfileDropdownField(
-                    label: "Address",
-                    hintText: "test",
-                    isEditable: _isEditing,
-                  ),
-
-                  // Password TextField
-                  ProfileField(
-                    label: "Password",
-                    hintText: "**********",
-                    isPassword: true,
-                    isEditable: _isEditing,
                   ),
                 ],
               ),
             ),
-          ),
-        ],
-      ),)
+
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: ListView(
+                  children: [
+                    // Profile Picture
+                    Center(
+                      child: Stack(
+                        alignment: Alignment.bottomRight,
+                        children: [
+                          CircleAvatar(
+                            radius: 70,
+                            backgroundImage: _profileImage != null
+                                ? FileImage(_profileImage!)
+                                : NetworkImage(profileImg) as ImageProvider,
+                          ),
+                          if (_isEditing)
+                            GestureDetector(
+                              onTap: _pickImage,
+                              child: CircleAvatar(
+                                radius: 15,
+                                backgroundColor: Colors.red,
+                                child: Icon(
+                                  Icons.camera_alt,
+                                  size: 16,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: 20),
+
+                    // Name TextField
+                    ProfileField(
+                      label: "Name",
+                      hintText: fullName,
+                      isPassword: false,
+                      isEditable: _isEditing,
+                    ),
+
+                    // Email TextField
+                    ProfileField(
+                      label: "Email",
+                      hintText: email,
+                      isPassword: false,
+                      isEditable: _isEditing,
+                    ),
+
+                    // Mobile Number TextField
+                    ProfileField(
+                      label: "Mobile Number",
+                      hintText: phone,
+                      isPassword: false,
+                      isEditable: _isEditing,
+                    ),
+
+                    // Address Text Field
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(height: 16),
+                        Text(
+                          "Address",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        SizedBox(height: 8),
+                        TextField(
+                          controller: _addressController,
+                          enabled: _isEditing,
+                          decoration: InputDecoration(
+                            hintText: "Enter address",
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide(color: Colors.grey),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
 
-// TextField Widget for Standard and Password Fields
-class ProfileField extends StatefulWidget {
+// Reusable TextField Widget for Profile Fields
+class ProfileField extends StatelessWidget {
   final String label;
   final String hintText;
   final bool isPassword;
@@ -145,80 +208,6 @@ class ProfileField extends StatefulWidget {
     required this.label,
     required this.hintText,
     required this.isPassword,
-    required this.isEditable,
-  });
-
-  @override
-  _ProfileFieldState createState() => _ProfileFieldState();
-}
-
-class _ProfileFieldState extends State<ProfileField> {
-  bool _isPasswordVisible = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SizedBox(height: 16),
-        Text(
-          widget.label,
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-        ),
-        SizedBox(height: 8),
-        TextField(
-          enabled: widget.isEditable, // Enable or disable editing
-          obscureText: widget.isPassword && !_isPasswordVisible,
-          decoration: InputDecoration(
-            hintText: widget.hintText,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(
-                color: Colors.grey,
-              ),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(
-                color: Colors.grey,
-              ),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(
-                color: Colors.blue,
-              ),
-            ),
-            suffixIcon: widget.isPassword
-                ? IconButton(
-              icon: Icon(
-                _isPasswordVisible
-                    ? Icons.visibility
-                    : Icons.visibility_off,
-              ),
-              onPressed: () {
-                setState(() {
-                  _isPasswordVisible = !_isPasswordVisible;
-                });
-              },
-            )
-                : null,
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-// Dropdown Widget for Address Field
-class ProfileDropdownField extends StatelessWidget {
-  final String label;
-  final String hintText;
-  final bool isEditable;
-
-  const ProfileDropdownField({
-    required this.label,
-    required this.hintText,
     required this.isEditable,
   });
 
@@ -233,28 +222,15 @@ class ProfileDropdownField extends StatelessWidget {
           style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
         ),
         SizedBox(height: 8),
-        Container(
-          padding: EdgeInsets.symmetric(horizontal: 12),
-          decoration: BoxDecoration(
-            border: Border.all(color: Colors.grey),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: DropdownButton<String>(
-            isExpanded: true,
-            underline: SizedBox(),
-            value: hintText,
-            onChanged: isEditable
-                ? (String? newValue) {
-              // Handle dropdown change
-            }
-                : null,
-            items: <String>['test', 'option1', 'option2']
-                .map<DropdownMenuItem<String>>((String value) {
-              return DropdownMenuItem<String>(
-                value: value,
-                child: Text(value),
-              );
-            }).toList(),
+        TextField(
+          enabled: isEditable,
+          obscureText: isPassword,
+          decoration: InputDecoration(
+            hintText: hintText,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(color: Colors.grey),
+            ),
           ),
         ),
       ],

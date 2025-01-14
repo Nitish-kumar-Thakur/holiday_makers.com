@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:holdidaymakers/pages/FullyIndependentTraveler/flightPage.dart';
 import 'package:holdidaymakers/widgets/appLargetext.dart';
 import 'package:holdidaymakers/widgets/appText.dart';
 
@@ -135,8 +136,18 @@ class _TravelerhotelsState extends State<Travelerhotels> {
                         itemCount: 3,
                         itemBuilder: (_, index) {
                           return Padding(
-                            padding: EdgeInsets.only(bottom: screenHeight * 0.09),
-                            child: HotelCard(),
+                            padding:
+                                EdgeInsets.only(bottom: screenHeight * 0.09),
+                            child: IconButton(
+                                onPressed: () {
+                                  // Navigator.push(
+                                  //   context,
+                                  //   MaterialPageRoute(
+                                  //       builder: (context) =>
+                                  //           const FlightPage()),
+                                  // );
+                                },
+                                icon: HotelCard()),
                           );
                         },
                       ),
@@ -219,15 +230,18 @@ class HotelCard extends StatelessWidget {
                       children: [
                         Text(
                           '• Room Type: Standard',
-                          style: TextStyle(fontSize: screenWidth * 0.03, height: 1.5),
+                          style: TextStyle(
+                              fontSize: screenWidth * 0.03, height: 1.5),
                         ),
                         Text(
                           '• Room Occupancy: Double or Twin',
-                          style: TextStyle(fontSize: screenWidth * 0.03, height: 1.5),
+                          style: TextStyle(
+                              fontSize: screenWidth * 0.03, height: 1.5),
                         ),
                         Text(
                           '• Meals Plan: Breakfast',
-                          style: TextStyle(fontSize: screenWidth * 0.03, height: 1.5),
+                          style: TextStyle(
+                              fontSize: screenWidth * 0.03, height: 1.5),
                         ),
                       ],
                     ),
@@ -275,12 +289,14 @@ class HotelCard extends StatelessWidget {
                             Text(
                               'CHECK IN',
                               style: TextStyle(
-                                  color: Colors.grey[600], fontSize: screenWidth * 0.03),
+                                  color: Colors.grey[600],
+                                  fontSize: screenWidth * 0.03),
                             ),
                             Text(
                               '14:00 PM',
                               style: TextStyle(
-                                  fontSize: screenWidth * 0.035, fontWeight: FontWeight.bold),
+                                  fontSize: screenWidth * 0.035,
+                                  fontWeight: FontWeight.bold),
                             ),
                           ],
                         ),
@@ -302,12 +318,14 @@ class HotelCard extends StatelessWidget {
                             Text(
                               'CHECK OUT',
                               style: TextStyle(
-                                  color: Colors.grey[600], fontSize: screenWidth * 0.03),
+                                  color: Colors.grey[600],
+                                  fontSize: screenWidth * 0.03),
                             ),
                             Text(
                               '05:30 PM',
                               style: TextStyle(
-                                  fontSize: screenWidth * 0.035, fontWeight: FontWeight.bold),
+                                  fontSize: screenWidth * 0.035,
+                                  fontWeight: FontWeight.bold),
                             ),
                           ],
                         ),
@@ -328,7 +346,8 @@ class HotelCard extends StatelessWidget {
                     ),
                     child: Text(
                       'SELECT',
-                      style: TextStyle(color: Colors.white, fontSize: screenWidth * 0.04),
+                      style: TextStyle(
+                          color: Colors.white, fontSize: screenWidth * 0.04),
                     ),
                   ),
                 ),

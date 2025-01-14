@@ -24,13 +24,7 @@ class _CurisespackageState extends State<Curisespackage> {
     {'image': 'img/picture7.png'},
     {'image': 'img/picture8.png'},
   ];
-  final List<String> offers = [
-    'img/image1.png',
-    'img/image1.png',
-    'img/image1.png',
-    'img/image1.png',
-    'img/image1.png',
-  ];
+  List<Map<String, dynamic>> offers = [];
 
   @override
   Widget build(BuildContext context) {
@@ -100,7 +94,7 @@ class _CurisespackageState extends State<Curisespackage> {
                 ),
               ],
             ),
-            Maincarousel(imgList: offers),
+            Maincarousel(banner_list: offers),
             Container(
               margin: EdgeInsets.only(left: 15),
               child: Column(
