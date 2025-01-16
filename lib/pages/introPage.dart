@@ -4,6 +4,7 @@ import 'package:holdidaymakers/pages/login&signup/signupPage.dart';
 import 'package:holdidaymakers/widgets/appLargetext.dart';
 import 'package:holdidaymakers/widgets/appText.dart';
 import 'package:holdidaymakers/widgets/responciveButton.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'dart:async';
 
 class IntroPage extends StatefulWidget {
@@ -13,13 +14,10 @@ class IntroPage extends StatefulWidget {
   State<IntroPage> createState() => _IntroPageState();
 }
 
-class _IntroPageState extends State<IntroPage>
-    with SingleTickerProviderStateMixin {
-  int currentPage = 0; // Track current page index
+class _IntroPageState extends State<IntroPage> {
+  int currentPage = 0;
   late PageController _pageController;
-  late AnimationController _controller;
-  late Animation<double> _animation;
-  late Timer _timer; // Timer to change pages automatically
+  late Timer _timer;
 
   @override
   void initState() {
@@ -30,22 +28,16 @@ class _IntroPageState extends State<IntroPage>
         currentPage = _pageController.page!.round();
       });
     });
-    _controller = AnimationController(
-      duration: Duration(milliseconds: 500),
-      vsync: this,
-    )..repeat(reverse: true); // Repeats the animation back and forth
-    _animation = Tween(begin: 0.0, end: 10.0).animate(CurvedAnimation(
-        parent: _controller, curve: Curves.easeInOut)); // Vertical jump effect
 
-    // Timer for automatic page change
+    // Auto-slide pages every 3 seconds
     _timer = Timer.periodic(Duration(seconds: 3), (timer) {
-      if (currentPage < 2) {
+      if (_pageController.page == 2) {
+        _pageController.jumpToPage(0); // Reset to first page
+      } else {
         _pageController.nextPage(
           duration: Duration(milliseconds: 500),
           curve: Curves.easeInOut,
         );
-      } else {
-        _pageController.jumpToPage(0); // Reset to first page after last
       }
     });
   }
@@ -70,17 +62,14 @@ class _IntroPageState extends State<IntroPage>
                   // Image Container
                   Container(
                     width: double.infinity,
-                    height: screenHeight *
-                        0.45, // Dynamic height based on screen size
+                    height: screenHeight * 0.45,
                     child: Center(
                       child: Image.asset(
                         'img/traveller1.png',
-                        fit: BoxFit
-                            .contain, // Ensures the image scales without distortion
+                        fit: BoxFit.contain,
                       ),
                     ),
                   ),
-                  // Title & Description (optional, can be added if required)
                 ],
               );
             },
@@ -88,57 +77,36 @@ class _IntroPageState extends State<IntroPage>
 
           // Fixed Button at the bottom
           Positioned(
-            bottom: screenHeight * 0.05, // Dynamic bottom positioning
+            bottom: screenHeight * 0.05,
             left: 0,
             right: 0,
             child: Column(
               children: [
-                // Jumping dots indicator for page navigation
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: List.generate(
-                    3,
-                    (indexDots) {
-                      return AnimatedBuilder(
-                        animation: _controller,
-                        builder: (context, child) {
-                          return AnimatedContainer(
-                            duration: Duration(milliseconds: 300),
-                            curve: Curves.easeInOut,
-                            margin: EdgeInsets.only(right: 5),
-                            width:
-                                screenWidth * 0.025, // Relative width for dots
-                            height: screenHeight *
-                                0.015, // Relative height for dots
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              color: currentPage == indexDots
-                                  ? Color(0xFF00CEC9)
-                                  : Color(0xFFDFE6E9),
-                            ),
-                            transform: Matrix4.translationValues(
-                                0,
-                                _animation.value,
-                                0), // Vertical jumping movement
-                          );
-                        },
-                      );
-                    },
+                // Smooth Page Indicator
+                SmoothPageIndicator(
+                  controller: _pageController,
+                  count: 3,
+                  effect: WormEffect(
+                    dotHeight: 13,
+                    dotWidth: 13,
+                    spacing: 8,
+                    activeDotColor: Color(0xFF00CEC9),
+                    dotColor: Color(0xFF00CEC9).withOpacity(0.5),
+                    type: WormType.thin
+                    
                   ),
                 ),
-                SizedBox(height: screenHeight * 0.02), // Dynamic spacing
-                Container(
-                  padding: EdgeInsets.symmetric(
-                      horizontal: screenWidth * 0.1), // Responsive padding
+                SizedBox(height: screenHeight * 0.02),
+
+                // Title & Description
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.1),
                   child: Column(
                     children: [
                       AppLargeText(text: 'Plan Your Trip'),
+                      SizedBox(height: screenHeight * 0.04),
                       SizedBox(
-                        height: screenHeight * 0.04,
-                      ), // Dynamic spacing
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width *
-                            0.6, // 60% of screen width for responsiveness
+                        width: screenWidth * 0.6,
                         child: AppText(
                           text: 'Custom and fast planning with a low price',
                           color: Colors.black,
@@ -147,38 +115,30 @@ class _IntroPageState extends State<IntroPage>
                     ],
                   ),
                 ),
-                SizedBox(
-                    height:
-                        screenHeight * 0.1), // Dynamic spacing between sections
+                SizedBox(height: screenHeight * 0.1),
+
+                // Login Button
                 GestureDetector(
-                  onTap: () => {
+                  onTap: () {
                     Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => LoginPage()))
+                        MaterialPageRoute(builder: (context) => LoginPage()));
                   },
-                  child: Column(
-                    children: [
-                      responciveButton(
-                        text: 'Log in',
-                      ),
-                    ],
-                  ),
+                  child: responciveButton(text: 'Log in'),
                 ),
-                SizedBox(height: screenHeight * 0.025), // Dynamic spacing
+                SizedBox(height: screenHeight * 0.025),
+
+                // Create Account Button
                 GestureDetector(
                   onTap: () {
                     Navigator.push(context,
                         MaterialPageRoute(builder: (context) => Signuppage()));
                   },
-                  child: Column(
-                    children: [
-                      responciveButton(
-                        text: 'Create account',
-                        color: Colors.white,
-                        textColor: Colors.black54,
-                      ),
-                    ],
+                  child: responciveButton(
+                    text: 'Create account',
+                    color: Colors.white,
+                    textColor: Colors.black54,
                   ),
-                )
+                ),
               ],
             ),
           ),
@@ -189,8 +149,8 @@ class _IntroPageState extends State<IntroPage>
 
   @override
   void dispose() {
-    _controller.dispose();
-    _timer.cancel(); // Cancel the timer to avoid memory leaks
+    _pageController.dispose();
+    _timer.cancel();
     super.dispose();
   }
 }

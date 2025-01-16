@@ -4,14 +4,14 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:holdidaymakers/pages/FullyIndependentTraveler/mainPage.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key}) : super(key: key);
+class LoginPage1 extends StatefulWidget {
+  const LoginPage1({Key? key}) : super(key: key);
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<LoginPage1> createState() => _LoginPage1State();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _LoginPage1State extends State<LoginPage1> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _obscureText = true;

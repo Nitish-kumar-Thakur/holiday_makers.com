@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:holdidaymakers/pages/Cruise/cruisePackagedetails.dart';
 import 'package:holdidaymakers/utils/api_handler.dart';
-import 'package:holdidaymakers/widgets/appLargetext.dart';
 import 'package:holdidaymakers/widgets/appText.dart';
 import 'package:holdidaymakers/widgets/drawerPage.dart';
 import 'package:holdidaymakers/widgets/mainCarousel.dart';

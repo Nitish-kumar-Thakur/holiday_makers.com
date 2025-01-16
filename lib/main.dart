@@ -1,11 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:holdidaymakers/pages/FullyIndependentTraveler/homePage.dart';
-import 'package:holdidaymakers/pages/FullyIndependentTraveler/mainPage.dart';
-import 'package:holdidaymakers/pages/login&signup/signupPage.dart';
-import 'package:holdidaymakers/splashScreen.dart';
-import 'package:holdidaymakers/widgets/Blogs.dart';
-import 'package:holdidaymakers/widgets/MyBookings.dart';
-import 'package:holdidaymakers/widgets/ReadMore.dart';
+import 'package:holdidaymakers/splashscreen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

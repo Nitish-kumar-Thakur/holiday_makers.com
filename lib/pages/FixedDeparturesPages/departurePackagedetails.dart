@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:holdidaymakers/pages/FixedDeparturesPages/departureDeals.dart';
-import 'package:holdidaymakers/pages/FullyIndependentTraveler/independentTravelerPage.dart';
 
 class DeparturePackageDetails extends StatelessWidget {
   const DeparturePackageDetails({super.key});

@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:holdidaymakers/pages/introPage.dart';
 import 'package:holdidaymakers/pages/login&signup/signupPage.dart';
@@ -151,12 +150,13 @@ class _LoginPageState extends State<LoginPage> {
                   ],
                 ),
                 SizedBox(height: screenSize.height * 0.03),
-                GestureDetector(
+                Align(alignment: Alignment.center,
+                child: GestureDetector(
                   onTap: _isLoading ? null : _validateAndLogin,
                   child: _isLoading
                       ? const Center(child: CircularProgressIndicator())
                       : responciveButton(text: 'Login'),
-                ),
+                ),),
                 SizedBox(height: screenSize.height * 0.20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,

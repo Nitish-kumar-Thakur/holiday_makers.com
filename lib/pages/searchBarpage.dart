@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:holdidaymakers/pages/FullyIndependentTraveler/mainPage.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});

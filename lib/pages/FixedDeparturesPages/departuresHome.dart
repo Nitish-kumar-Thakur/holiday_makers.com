@@ -8,7 +8,6 @@ import 'package:holdidaymakers/widgets/drawerPage.dart';
 import 'package:holdidaymakers/widgets/dropdownWidget.dart';
 import 'package:holdidaymakers/widgets/mainCarousel.dart';
 import 'package:holdidaymakers/widgets/subCarousel.dart';
-import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart'; // For date formatting
 
 class DeparturesHome extends StatefulWidget {
@@ -63,29 +62,29 @@ class _DeparturesHomeState extends State<DeparturesHome> {
   }
   
   // Function to select date with customizations
-  Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime.now(),
-      lastDate: DateTime(2030),
-      builder: (BuildContext context, Widget? child) {
-        return Theme(
-          data: ThemeData.light().copyWith(
-            primaryColor: Colors.blue, // Customizing the primary color
-             // Customizing the accent color
-            buttonTheme: ButtonThemeData(textTheme: ButtonTextTheme.primary),
-          ),
-          child: child!,
-        );
-      },
-    );
-    if (picked != null && picked != selectedDate) {
-      setState(() {
-        selectedDate = picked;
-      });
-    }
-  }
+  // Future<void> _selectDate(BuildContext context) async {
+  //   final DateTime? picked = await showDatePicker(
+  //     context: context,
+  //     initialDate: DateTime.now(),
+  //     firstDate: DateTime.now(),
+  //     lastDate: DateTime(2030),
+  //     builder: (BuildContext context, Widget? child) {
+  //       return Theme(
+  //         data: ThemeData.light().copyWith(
+  //           primaryColor: Colors.blue, // Customizing the primary color
+  //            // Customizing the accent color
+  //           buttonTheme: ButtonThemeData(textTheme: ButtonTextTheme.primary),
+  //         ),
+  //         child: child!,
+  //       );
+  //     },
+  //   );
+  //   if (picked != null && picked != selectedDate) {
+  //     setState(() {
+  //       selectedDate = picked;
+  //     });
+  //   }
+  // }
 
   
   // List of dynamic sections

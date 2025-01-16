@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:holdidaymakers/pages/Cruise/CurisesHome.dart';
 import 'package:holdidaymakers/pages/FixedDeparturesPages/departuresHome.dart';
 import 'package:holdidaymakers/pages/FullyIndependentTraveler/mainPage.dart';
+import 'package:holdidaymakers/pages/introPage.dart';
+import 'package:holdidaymakers/utils/shared_preferences_handler.dart';
 import 'package:holdidaymakers/widgets/ChangePassword.dart';
 import 'package:holdidaymakers/widgets/ManageAccount.dart';
 import 'package:holdidaymakers/widgets/appLargetext.dart';
@@ -55,8 +57,9 @@ class _DrawerpageState extends State<Drawerpage> {
             TextButton(
               onPressed: () {
                 // Perform sign-out logic here
-                Navigator.of(context).pop(); // Close the dialog
-                Navigator.of(context).pushReplacementNamed('/login'); // Redirect to login screen or relevant page
+                Navigator.of(context).pop();
+                SharedPreferencesHandler.signOut(); // Close the dialog
+                Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => IntroPage())); // Redirect to login screen or relevant page
               },
               child: Text("Yes"),
             ),

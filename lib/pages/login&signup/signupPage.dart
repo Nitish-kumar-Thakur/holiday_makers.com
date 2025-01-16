@@ -95,7 +95,6 @@ class _SignuppageState extends State<Signuppage> {
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
     final double paddingValue = screenSize.width * 0.06;
-    final double textScaleFactor = screenSize.width < 600 ? 1.0 : 1.2;
 
     return Scaffold(
       appBar: AppBar(
@@ -179,12 +178,13 @@ class _SignuppageState extends State<Signuppage> {
                   ),
                 ),
                 SizedBox(height: screenSize.height * 0.03),
-                GestureDetector(
+                Align(alignment: Alignment.center,
+                child: GestureDetector(
                   onTap: _isLoading ? null : _validateAndSignUp,
                   child: _isLoading
                       ? const Center(child: CircularProgressIndicator())
                       : responciveButton(text: 'signup'),
-                ),
+                ),),
                 SizedBox(height: screenSize.height * 0.07),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,

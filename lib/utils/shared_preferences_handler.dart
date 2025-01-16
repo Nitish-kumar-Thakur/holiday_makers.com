@@ -15,6 +15,22 @@ class SharedPreferencesHandler {
     await prefs.setString("profileImg", data["data"]["image"].toString());
   }
 
+  static Future<void> signOut() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    // Remove only login-related keys (Keep `isOnboardingComplete`)
+    await prefs.remove("isLoggedIn");
+    await prefs.remove("user_id");
+    await prefs.remove("token");
+    await prefs.remove("first_name");
+    await prefs.remove("last_name");
+    await prefs.remove("email_org");
+    await prefs.remove("address");
+    await prefs.remove("country_code");
+    await prefs.remove("phone");
+    await prefs.remove("profileImg");
+  }
+  
   static Future<Map<String, String>> loadProfileDetails() async {
     final prefs = await SharedPreferences.getInstance();
     return {

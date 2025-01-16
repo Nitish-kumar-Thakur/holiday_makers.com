@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:holdidaymakers/pages/FullyIndependentTraveler/offersDiscount.dart';
-import 'package:holdidaymakers/pages/FullyIndependentTraveler/payment_method.dart';
 
 class FlightPage extends StatefulWidget {
   const FlightPage({super.key});
