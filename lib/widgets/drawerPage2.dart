@@ -1,12 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:holdidaymakers/pages/Cruise/curisesMain.dart';
-import 'package:holdidaymakers/pages/FixedDeparturesPages/departuresMain.dart';
+import 'package:holdidaymakers/pages/Cruise/CurisesHome.dart';
+import 'package:holdidaymakers/pages/FixedDeparturesPages/departuresHome.dart';
 import 'package:holdidaymakers/pages/FullyIndependentTraveler/mainPage.dart';
+import 'package:holdidaymakers/widgets/ChangePassword.dart';
+import 'package:holdidaymakers/widgets/ManageAccount.dart';
 import 'package:holdidaymakers/widgets/appLargetext.dart';
 import 'package:holdidaymakers/widgets/appText.dart';
+import 'package:holdidaymakers/widgets/profile_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class Drawerpage2 extends StatelessWidget {
+class Drawerpage2 extends StatefulWidget {
   Drawerpage2({super.key});
+
+  @override
+  State<Drawerpage2> createState() => _Drawerpage2State();
+}
+
+class _Drawerpage2State extends State<Drawerpage2> {
+  String profileImg = "";
+  String firstName = "";
   List<Map<String, String>> data = [
     {
       "title": "Deals",
@@ -35,14 +47,30 @@ class Drawerpage2 extends StatelessWidget {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    _loadProfileDetails();
+  }
+
+  Future<void> _loadProfileDetails() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      profileImg = prefs.getString("profileImg") ?? "";
+      firstName = prefs.getString("first_name") ?? "";
+      firstName = firstName.isNotEmpty ? firstName[0].toUpperCase() + firstName.substring(1) : firstName;
+
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Drawer(
       child: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              Color(0xFF2E8BC0), // Blue Gray
-              Color(0xFF145DA0), // Deep Blue
+              Color(0xFF0B77BF), // Hex color #0B77BF
+              Color(0xFF0A64A0), // Hex color #0A64A0
             ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
@@ -65,8 +93,8 @@ class Drawerpage2 extends StatelessWidget {
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
-                      Color(0xFF308BDC), // Slightly lighter blue
-                      Color(0xFF0B70B4), // Deep Blue
+                      Color(0xFF308BDC), // Hex color #308BDC
+                      Color(0xFF0B70B4), // Hex color #0B70B4
                     ],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
@@ -77,7 +105,8 @@ class Drawerpage2 extends StatelessWidget {
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.2), // Inner shadow color
+                      color:
+                          Colors.black.withOpacity(0.2), // Inner shadow color
                       offset: Offset(0, 4), // x = 0, y = 4
                       blurRadius: 4, // Blur = 4
                       spreadRadius: 0, // Spread = 0
@@ -90,13 +119,13 @@ class Drawerpage2 extends StatelessWidget {
                     children: [
                       CircleAvatar(
                         backgroundImage: NetworkImage(
-                            'https://via.placeholder.com/150'), // Placeholder image
+                            profileImg), // Placeholder image
                       ),
                       SizedBox(
-                        width: 5,
+                        width: 10,
                       ),
                       AppLargeText(
-                        text: 'Emul',
+                        text: firstName,
                         color: Colors.white,
                         size: 24,
                       )
@@ -112,45 +141,69 @@ class Drawerpage2 extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SmalCircle(
-                          image: 'img/Profile.png',
-                        ),
-                        AppLargeText(
-                          text: 'My Profile',
-                          size: 10,
-                          color: Color(0xFFFF8C00), // Accent Orange
-                        )
-                      ],
+                    IconButton(
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ProfilePage()));
+                      },
+                      icon: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SmalCircle(
+                            image: 'img/Profile.png',
+                          ),
+                          AppLargeText(
+                            text: 'My Profile',
+                            size: 10,
+                            color: Colors.white,
+                          )
+                        ],
+                      ),
                     ),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SmalCircle(
-                          image: 'img/manageAccount.png',
-                        ),
-                        AppLargeText(
-                          text: 'Manage Account',
-                          size: 10,
-                          color: Color(0xFFFF8C00), // Accent Orange
-                        )
-                      ],
+                    IconButton(
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ManageAccount()));
+                      },
+                      icon: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SmalCircle(
+                            image: 'img/manageAccount.png',
+                          ),
+                          AppLargeText(
+                            text: 'Manage Account',
+                            size: 10,
+                            color: Colors.white,
+                          )
+                        ],
+                      ),
                     ),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SmalCircle(
-                          image: 'img/changePassword.png',
-                        ),
-                        AppLargeText(
-                          text: 'Change Password',
-                          size: 10,
-                          color: Color(0xFFFF8C00), // Accent Orange
-                        )
-                      ],
-                    )
+                    IconButton(
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ChangePasswordScreen()));
+                      },
+                      icon: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SmalCircle(
+                            image: 'img/changePassword.png',
+                          ),
+                          AppLargeText(
+                            text: 'Change Password',
+                            size: 10,
+                            color: Colors.white,
+                          )
+                        ],
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -193,7 +246,7 @@ class Drawerpage2 extends StatelessWidget {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => DeparturesMain()));
+                                builder: (context) => DeparturesHome()));
                       },
                       child: ChildContainer(
                           image: "img/traveler.png", text: 'Fixed Departures'),
@@ -206,7 +259,7 @@ class Drawerpage2 extends StatelessWidget {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => CurisesMain()));
+                                builder: (context) => CurisesHome()));
                       },
                       child: ChildContainer(
                           image: "img/cruise.png", text: "Cruise"),
@@ -273,8 +326,7 @@ class Drawerpage2 extends StatelessWidget {
                     SizedBox(
                       height: 3,
                     ),
-                    ChildContainer(
-                        image: "img/signOut.png", text: "Sign Out"),
+                    ChildContainer(image: "img/signOut.png", text: "Sign Out"),
                   ],
                 ),
               )

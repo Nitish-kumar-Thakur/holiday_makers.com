@@ -19,32 +19,6 @@ class Drawerpage extends StatefulWidget {
 class _DrawerpageState extends State<Drawerpage> {
   String profileImg = "";
   String firstName = "";
-  List<Map<String, String>> data = [
-    {
-      "title": "Deals",
-      "img1": "img/traveler.png",
-      "img2": "img/cruise.png",
-      "text1": "Fully Independent Traveler",
-      "text2": "Fixed Departures",
-      "text3": "Cruise",
-    },
-    {
-      "title": "My Trip",
-      "img1": "img/booking.png",
-      "img2": "img/Wallet.png",
-      "text1": "My Booking",
-      "text2": "Wallet",
-    },
-    {
-      "title": "About",
-      "img1": "img/article.png",
-      "img2": "img/helpCenter.png",
-      "img3": "img/signOut.png",
-      "text1": "Article & Blogs",
-      "text2": "Help Center",
-      "text3": "Sign Out",
-    }
-  ];
 
   @override
   void initState() {
@@ -58,8 +32,38 @@ class _DrawerpageState extends State<Drawerpage> {
       profileImg = prefs.getString("profileImg") ?? "";
       firstName = prefs.getString("first_name") ?? "";
       firstName = firstName.isNotEmpty ? firstName[0].toUpperCase() + firstName.substring(1) : firstName;
-
     });
+  }
+
+  void _showSignOutDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(
+            "Sign Out",
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          content: Text("Are you sure you want to sign out?"),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: Text("Cancel"),
+            ),
+            TextButton(
+              onPressed: () {
+                // Perform sign-out logic here
+                Navigator.of(context).pop(); // Close the dialog
+                Navigator.of(context).pushReplacementNamed('/login'); // Redirect to login screen or relevant page
+              },
+              child: Text("Yes"),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -77,10 +81,10 @@ class _DrawerpageState extends State<Drawerpage> {
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.2), // Inner shadow color
-              offset: Offset(0, 4), // x = 0, y = 4
-              blurRadius: 4, // Blur = 4
-              spreadRadius: 0, // Spread = 0
+              color: Colors.black.withOpacity(0.2),
+              offset: Offset(0, 4),
+              blurRadius: 4,
+              spreadRadius: 0,
             ),
           ],
         ),
@@ -93,8 +97,8 @@ class _DrawerpageState extends State<Drawerpage> {
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
-                      Color(0xFF308BDC), // Hex color #308BDC
-                      Color(0xFF0B70B4), // Hex color #0B70B4
+                      Color(0xFF308BDC),
+                      Color(0xFF0B70B4),
                     ],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
@@ -105,11 +109,10 @@ class _DrawerpageState extends State<Drawerpage> {
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color:
-                          Colors.black.withOpacity(0.2), // Inner shadow color
-                      offset: Offset(0, 4), // x = 0, y = 4
-                      blurRadius: 4, // Blur = 4
-                      spreadRadius: 0, // Spread = 0
+                      color: Colors.black.withOpacity(0.2),
+                      offset: Offset(0, 4),
+                      blurRadius: 4,
+                      spreadRadius: 0,
                     ),
                   ],
                 ),
@@ -118,24 +121,19 @@ class _DrawerpageState extends State<Drawerpage> {
                   child: Row(
                     children: [
                       CircleAvatar(
-                        backgroundImage: NetworkImage(
-                            profileImg), // Placeholder image
+                        backgroundImage: NetworkImage(profileImg),
                       ),
-                      SizedBox(
-                        width: 10,
-                      ),
+                      SizedBox(width: 10),
                       AppLargeText(
                         text: firstName,
                         color: Colors.white,
                         size: 24,
-                      )
+                      ),
                     ],
                   ),
                 ),
               ),
-              SizedBox(
-                height: 20,
-              ),
+              SizedBox(height: 20),
               Padding(
                 padding: EdgeInsets.only(left: 15),
                 child: Row(
@@ -144,192 +142,148 @@ class _DrawerpageState extends State<Drawerpage> {
                     IconButton(
                       onPressed: () {
                         Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => ProfilePage()));
+                          context,
+                          MaterialPageRoute(builder: (context) => ProfilePage()),
+                        );
                       },
                       icon: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          SmalCircle(
-                            image: 'img/Profile.png',
-                          ),
+                          SmalCircle(image: 'img/Profile.png'),
                           AppLargeText(
                             text: 'My Profile',
                             size: 10,
                             color: Colors.white,
-                          )
+                          ),
                         ],
                       ),
                     ),
                     IconButton(
                       onPressed: () {
                         Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => ManageAccount()));
+                          context,
+                          MaterialPageRoute(builder: (context) => ManageAccount()),
+                        );
                       },
                       icon: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          SmalCircle(
-                            image: 'img/manageAccount.png',
-                          ),
+                          SmalCircle(image: 'img/manageAccount.png'),
                           AppLargeText(
                             text: 'Manage Account',
                             size: 10,
                             color: Colors.white,
-                          )
+                          ),
                         ],
                       ),
                     ),
                     IconButton(
                       onPressed: () {
                         Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => ChangePasswordScreen()));
+                          context,
+                          MaterialPageRoute(builder: (context) => ChangePasswordScreen()),
+                        );
                       },
                       icon: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          SmalCircle(
-                            image: 'img/changePassword.png',
-                          ),
+                          SmalCircle(image: 'img/changePassword.png'),
                           AppLargeText(
                             text: 'Change Password',
                             size: 10,
                             color: Colors.white,
-                          )
+                          ),
                         ],
                       ),
                     ),
                   ],
                 ),
               ),
-              SizedBox(
-                height: 20,
-              ),
-              Divider(
-                color: Colors.white,
-              ),
-              Padding(
-                padding: EdgeInsets.only(left: 15),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    AppLargeText(
-                      text: "Deals",
-                      size: 24,
-                      color: Colors.white,
-                    ),
-                    SizedBox(
-                      height: 3,
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => Mainpage()));
-                      },
-                      child: ChildContainer(
-                        image: "img/traveler.png",
-                        text: "Fully Independent Traveler",
-                      ),
-                    ),
-                    SizedBox(
-                      height: 3,
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => DeparturesHome()));
-                      },
-                      child: ChildContainer(
-                          image: "img/traveler.png", text: 'Fixed Departures'),
-                    ),
-                    SizedBox(
-                      height: 3,
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => CurisesHome()));
-                      },
-                      child: ChildContainer(
-                          image: "img/cruise.png", text: "Cruise"),
-                    )
-                  ],
-                ),
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              Divider(
-                color: Colors.white,
-              ),
-              Padding(
-                padding: EdgeInsets.only(left: 15),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    AppLargeText(
-                      text: "My Trip",
-                      size: 24,
-                      color: Colors.white,
-                    ),
-                    SizedBox(
-                      height: 3,
-                    ),
-                    ChildContainer(
-                      image: "img/booking.png",
-                      text: "My Booking",
-                    ),
-                    SizedBox(
-                      height: 3,
-                    ),
-                    ChildContainer(image: "img/Wallet.png", text: 'Wallet'),
-                  ],
-                ),
-              ),
-              SizedBox(
-                height: 20,
-              ),
+              SizedBox(height: 20),
               Divider(color: Colors.white),
               Padding(
                 padding: EdgeInsets.only(left: 15),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    AppLargeText(
-                      text: "About",
-                      size: 24,
-                      color: Colors.white,
+                    AppLargeText(text: "Deals", size: 24, color: Colors.white),
+                    SizedBox(height: 3),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => Mainpage()),
+                        );
+                      },
+                      child: ChildContainer(image: "img/traveler.png", text: "Fully Independent Traveler"),
                     ),
-                    SizedBox(
-                      height: 3,
+                    SizedBox(height: 3),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => DeparturesHome()),
+                        );
+                      },
+                      child: ChildContainer(image: "img/traveler.png", text: 'Fixed Departures'),
                     ),
-                    ChildContainer(
-                      image: "img/article.png",
-                      text: "Article & Blogs",
+                    SizedBox(height: 3),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => CurisesHome()),
+                        );
+                      },
+                      child: ChildContainer(image: "img/cruise.png", text: "Cruise"),
                     ),
-                    SizedBox(
-                      height: 3,
-                    ),
-                    ChildContainer(
-                        image: "img/helpCenter.png", text: 'Help Center'),
-                    SizedBox(
-                      height: 3,
-                    ),
-                    ChildContainer(image: "img/signOut.png", text: "Sign Out"),
                   ],
                 ),
-              )
+              ),
+              SizedBox(height: 20),
+              Divider(color: Colors.white),
+              Padding(
+                padding: EdgeInsets.only(left: 15),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    AppLargeText(text: "My Trip", size: 24, color: Colors.white),
+                    SizedBox(height: 3),
+                    ChildContainer(image: "img/booking.png", text: "My Booking"),
+                    SizedBox(height: 3),
+                    ChildContainer(image: "img/Wallet.png", text: 'Wallet'),
+                  ],
+                ),
+              ),
+              SizedBox(height: 20),
+              Divider(color: Colors.white),
+              Padding(
+                padding: EdgeInsets.only(left: 15),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    AppLargeText(text: "About", size: 24, color: Colors.white),
+                    SizedBox(height: 3),
+                    ChildContainer(image: "img/article.png", text: "Blogs"),
+                    SizedBox(height: 3),
+                    ChildContainer(image: "img/article.png",text: "Testimonials"),
+                    SizedBox(height: 3),
+                    ChildContainer(image: "img/article.png", text: "Company Profile"),
+                    SizedBox(height: 3),
+                    ChildContainer(image: "img/article.png", text: "Terms & Conditions"),
+                    SizedBox(height: 3),
+                    ChildContainer(image: "img/article.png", text: "FAQ"),
+                    SizedBox(height: 3),
+                    ChildContainer(image: "img/article.png",text: "Contact Us"),
+                    SizedBox( height: 3),
+                    ChildContainer(image: "img/helpCenter.png", text: "Help Center"),
+                    SizedBox(height: 3),
+                    ChildContainer(image: "img/signOut.png", text: "Sign Out",
+                      onTap: () => _showSignOutDialog(context)
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
         ),
@@ -341,37 +295,36 @@ class _DrawerpageState extends State<Drawerpage> {
 class ChildContainer extends StatelessWidget {
   final String image;
   final String text;
-  const ChildContainer({super.key, required this.image, required this.text});
+  final VoidCallback? onTap;
+
+  const ChildContainer({super.key, required this.image, required this.text, this.onTap});
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Container(
-          height: 20,
-          width: 20,
-          decoration: BoxDecoration(
+    return GestureDetector(
+      onTap: onTap,
+      child: Row(
+        children: [
+          Container(
+            height: 20,
+            width: 20,
+            decoration: BoxDecoration(
               image: DecorationImage(
-            image: AssetImage(
-              image,
+                image: AssetImage(image),
+              ),
             ),
-          )),
-        ),
-        SizedBox(
-          width: 5,
-        ),
-        AppText(
-          text: text,
-          color: Colors.white,
-          size: 14,
-        )
-      ],
+          ),
+          SizedBox(width: 5),
+          AppText(text: text, color: Colors.white, size: 14),
+        ],
+      ),
     );
   }
 }
 
 class SmalCircle extends StatelessWidget {
   final String image;
+
   const SmalCircle({super.key, required this.image});
 
   @override

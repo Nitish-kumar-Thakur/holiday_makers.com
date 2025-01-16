@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:holdidaymakers/pages/FullyIndependentTraveler/trip_details_page.dart';
+import 'package:holdidaymakers/utils/api_handler.dart';
 import 'package:holdidaymakers/widgets/appLargetext.dart';
 import 'package:holdidaymakers/widgets/appText.dart';
 import 'package:holdidaymakers/widgets/drawerPage.dart';
 import 'package:holdidaymakers/widgets/mainCarousel.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Homepage2 extends StatefulWidget {
   const Homepage2({super.key});
@@ -24,7 +26,45 @@ class _Homepage2State extends State<Homepage2> {
     {'image': 'img/picture7.png'},
     {'image': 'img/picture8.png'},
   ];
-  List<Map<String, dynamic>> offers = [];
+    String profileImg = '';
+  bool isLoading = true; // Loading flag
+  List<Map<String, dynamic>> banner_list = [];
+
+    @override
+  void initState() {
+    super.initState();
+    _loadProfileDetails();
+    _fetchHomePageData(); // Fetch data on initialization
+  }
+
+  Future<void> _loadProfileDetails() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      profileImg = prefs.getString("profileImg") ?? "";
+    });
+  }
+
+  Future<void> _fetchHomePageData() async {
+    try {
+      final data = await APIHandler.HomePageData();
+
+      setState(() {
+        banner_list = List<Map<String, dynamic>>.from(
+          data['data']['banner_list'].map((item) => {
+                'img': item['img'],
+                'mobile_img': item['mobile_img'],
+                'link': item['link'],
+              }),
+        );
+        isLoading = false; // Data fetched, set loading to false
+      });
+    } catch (e) {
+      setState(() {
+        isLoading = false; // If error occurs, also stop loading
+      });
+      print('Error: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +73,11 @@ class _Homepage2State extends State<Homepage2> {
       key: _scaffoldKey,
       backgroundColor: Colors.white,
       drawer: Drawerpage(),
-      body: SingleChildScrollView(
+      body: isLoading
+          ? Center(
+              child: CircularProgressIndicator(color: Colors.red,), // Show loader until data is fetched
+            )
+          : SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -72,15 +116,17 @@ class _Homepage2State extends State<Homepage2> {
                   onTap: () {
                     _scaffoldKey.currentState?.openDrawer();
                   },
-                  child: Container(
-                    width: 40,
-                    height: 40,
-                    margin: EdgeInsets.only(top: 15, left: 30, bottom: 15),
-                    decoration: BoxDecoration(
-                      color: Colors.black,
-                      shape: BoxShape.circle,
-                    ),
-                  ),
+                  child: Padding(
+                          padding: const EdgeInsets.only(left: 20),
+                          child: CircleAvatar(
+                            backgroundImage: profileImg.isNotEmpty
+                                ? NetworkImage(profileImg)
+                                : const AssetImage('img/placeholder.png')
+                                    as ImageProvider,
+                            minRadius: 22,
+                            maxRadius: 22,
+                          ),
+                        ),
                 ),
                 Container(
                   height: 40,
@@ -94,7 +140,7 @@ class _Homepage2State extends State<Homepage2> {
                 ),
               ],
             ),
-            Maincarousel(banner_list: offers),
+            Maincarousel(banner_list: banner_list),
             Container(
               margin: EdgeInsets.only(left: 15),
               child: Column(

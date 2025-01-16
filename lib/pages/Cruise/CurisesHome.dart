@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:holdidaymakers/pages/Cruise/CurisesPackage.dart';
 import 'package:holdidaymakers/pages/Cruise/cruisePackagedetails.dart';
-import 'package:holdidaymakers/pages/FixedDeparturesPages/departuresPackages.dart';
+import 'package:holdidaymakers/utils/api_handler.dart';
 import 'package:holdidaymakers/widgets/appLargetext.dart';
 import 'package:holdidaymakers/widgets/appText.dart';
 import 'package:holdidaymakers/widgets/drawerPage.dart';
 import 'package:holdidaymakers/widgets/dropdownWidget.dart';
 import 'package:holdidaymakers/widgets/mainCarousel.dart';
 import 'package:holdidaymakers/widgets/subCarousel.dart';
-import 'package:intl/intl.dart'; // For date formatting
+import 'package:shared_preferences/shared_preferences.dart'; // For date formatting
 
 class CurisesHome extends StatefulWidget {
   const CurisesHome({super.key});
@@ -47,7 +47,44 @@ class _CurisesHomeState extends State<CurisesHome> {
     }
   }
 
- List<Map<String, dynamic>> offers = [];
+ List<Map<String, dynamic>> banner_list = [];
+     @override
+  void initState() {
+    super.initState();
+    _loadProfileDetails();
+    _fetchHomePageData(); // Fetch data on initialization
+  }
+    String profileImg = '';
+  bool isLoading = true; 
+
+  Future<void> _loadProfileDetails() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      profileImg = prefs.getString("profileImg") ?? "";
+    });
+  }
+
+  Future<void> _fetchHomePageData() async {
+    try {
+      final data = await APIHandler.HomePageData();
+
+      setState(() {
+        banner_list = List<Map<String, dynamic>>.from(
+          data['data']['banner_list'].map((item) => {
+                'img': item['img'],
+                'mobile_img': item['mobile_img'],
+                'link': item['link'],
+              }),
+        );
+        isLoading = false; // Data fetched, set loading to false
+      });
+    } catch (e) {
+      setState(() {
+        isLoading = false; // If error occurs, also stop loading
+      });
+      print('Error: $e');
+    }
+  }
 
   // List of dynamic sections
   final List<Map<String, dynamic>> sections = [
@@ -76,7 +113,11 @@ class _CurisesHomeState extends State<CurisesHome> {
       resizeToAvoidBottomInset: true,
       backgroundColor: Colors.white,
       drawer: Drawerpage(),
-      body: SingleChildScrollView(
+      body:  isLoading
+          ? Center(
+              child: CircularProgressIndicator(color: Colors.red,), // Show loader until data is fetched
+            )
+          :SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -115,15 +156,17 @@ class _CurisesHomeState extends State<CurisesHome> {
                   onTap: () {
                     _scaffoldKey.currentState?.openDrawer();
                   },
-                  child: Container(
-                    width: 40,
-                    height: 40,
-                    margin: const EdgeInsets.only(top: 15, left: 30, bottom: 15),
-                    decoration: const BoxDecoration(
-                      color: Colors.black,
-                      shape: BoxShape.circle,
-                    ),
-                  ),
+                  child: Padding(
+                          padding: const EdgeInsets.only(left: 20),
+                          child: CircleAvatar(
+                            backgroundImage: profileImg.isNotEmpty
+                                ? NetworkImage(profileImg)
+                                : const AssetImage('img/placeholder.png')
+                                    as ImageProvider,
+                            minRadius: 22,
+                            maxRadius: 22,
+                          ),
+                        ),
                 ),
                 Container(
                   height: 40,
@@ -146,44 +189,14 @@ class _CurisesHomeState extends State<CurisesHome> {
                   SizedBox(height: 10),
                   Dropdownwidget(text: 'Select Country'),
                   SizedBox(height: 10),
-                  AppLargeText(text: 'SELECT DATE', size: 16),
-                  GestureDetector(
-                    onTap: () => _selectDate(context),
-                    child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
-                        color: Colors.grey[200],
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            children: [
-                              Icon(Icons.calendar_today_outlined, color: Colors.black54),
-                              SizedBox(width: 8),
-                              Text(
-                                selectedDate != null
-                                    ? DateFormat('dd MMM yyyy').format(selectedDate!)
-                                    : '',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ],
-                          ),
-                          Icon(Icons.arrow_drop_down, color: Colors.black54),
-                        ],
-                      ),
-                    ),
-                  ),
+                  Dropdownwidget(text: 'Select Month'),
+                  
                 ],
               ),
             ),
 
             // Main Carousel
-            Maincarousel(banner_list: offers),
+            Maincarousel(banner_list: banner_list),
 
             // Dynamic Sections using ListView.builder
             ListView.builder(

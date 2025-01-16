@@ -7,7 +7,7 @@ import 'package:holdidaymakers/widgets/drawerPage.dart';
 import 'package:holdidaymakers/widgets/mainCarousel.dart';
 import 'package:holdidaymakers/widgets/subCarousel.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+ 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -37,7 +37,7 @@ class _HomePageState extends State<HomePage> {
     {
       'title': 'Eid',
       'list': ['img/winter1.png', 'img/winter2.png', 'img/winter2.png'],
-    },
+    }, 
   ];
 
   @override

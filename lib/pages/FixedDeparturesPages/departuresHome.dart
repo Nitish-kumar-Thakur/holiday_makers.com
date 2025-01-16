@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:holdidaymakers/pages/FixedDeparturesPages/departurePackagedetails.dart';
 import 'package:holdidaymakers/pages/FixedDeparturesPages/departuresPackages.dart';
+import 'package:holdidaymakers/utils/api_handler.dart';
 import 'package:holdidaymakers/widgets/appLargetext.dart';
 import 'package:holdidaymakers/widgets/appText.dart';
 import 'package:holdidaymakers/widgets/drawerPage.dart';
 import 'package:holdidaymakers/widgets/dropdownWidget.dart';
 import 'package:holdidaymakers/widgets/mainCarousel.dart';
 import 'package:holdidaymakers/widgets/subCarousel.dart';
-import 'package:intl/intl.dart'; // For date formatting
+import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart'; // For date formatting
 
 class DeparturesHome extends StatefulWidget {
   const DeparturesHome({super.key});
@@ -17,9 +19,48 @@ class DeparturesHome extends StatefulWidget {
 }
 
 class _DeparturesHomeState extends State<DeparturesHome> {
+    final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+    String profileImg = '';
+  bool isLoading = true; // Loading flag
+  List<Map<String, dynamic>> banner_list = [];
   DateTime? selectedDate; // For storing the selected date
   int selectedOption = 0; 
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+    @override
+  void initState() {
+    super.initState();
+    _loadProfileDetails();
+    _fetchHomePageData(); // Fetch data on initialization
+  }
+
+  Future<void> _loadProfileDetails() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      profileImg = prefs.getString("profileImg") ?? "";
+    });
+  }
+
+  Future<void> _fetchHomePageData() async {
+    try {
+      final data = await APIHandler.HomePageData();
+
+      setState(() {
+        banner_list = List<Map<String, dynamic>>.from(
+          data['data']['banner_list'].map((item) => {
+                'img': item['img'],
+                'mobile_img': item['mobile_img'],
+                'link': item['link'],
+              }),
+        );
+        isLoading = false; // Data fetched, set loading to false
+      });
+    } catch (e) {
+      setState(() {
+        isLoading = false; // If error occurs, also stop loading
+      });
+      print('Error: $e');
+    }
+  }
   
   // Function to select date with customizations
   Future<void> _selectDate(BuildContext context) async {
@@ -46,7 +87,6 @@ class _DeparturesHomeState extends State<DeparturesHome> {
     }
   }
 
-  List<Map<String, dynamic>> offers = [];
   
   // List of dynamic sections
   final List<Map<String, dynamic>> sections = [
@@ -75,7 +115,11 @@ class _DeparturesHomeState extends State<DeparturesHome> {
       resizeToAvoidBottomInset: true,
       backgroundColor: Colors.white,
       drawer: Drawerpage(),
-      body: SingleChildScrollView(
+      body:  isLoading
+          ? Center(
+              child: CircularProgressIndicator(color: Colors.red,), // Show loader until data is fetched
+            )
+          :SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -114,15 +158,17 @@ class _DeparturesHomeState extends State<DeparturesHome> {
                   onTap: () {
                     _scaffoldKey.currentState?.openDrawer();
                   },
-                  child: Container(
-                    width: 40,
-                    height: 40,
-                    margin: const EdgeInsets.only(top: 15, left: 30, bottom: 15),
-                    decoration: const BoxDecoration(
-                      color: Colors.black,
-                      shape: BoxShape.circle,
-                    ),
-                  ),
+                  child: Padding(
+                          padding: const EdgeInsets.only(left: 20),
+                          child: CircleAvatar(
+                            backgroundImage: profileImg.isNotEmpty
+                                ? NetworkImage(profileImg)
+                                : const AssetImage('img/placeholder.png')
+                                    as ImageProvider,
+                            minRadius: 22,
+                            maxRadius: 22,
+                          ),
+                        ),
                 ),
                 Container(
                   height: 40,
@@ -145,44 +191,44 @@ class _DeparturesHomeState extends State<DeparturesHome> {
                   SizedBox(height: 10),
                   Dropdownwidget(text: 'Select Country'),
                   SizedBox(height: 10),
-                  AppLargeText(text: 'SELECT DATE', size: 16),
-                  GestureDetector(
-                    onTap: () => _selectDate(context),
-                    child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
-                        color: Colors.grey[200],
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            children: [
-                              Icon(Icons.calendar_today_outlined, color: Colors.black54),
-                              SizedBox(width: 8),
-                              Text(
-                                selectedDate != null
-                                    ? DateFormat('dd MMM yyyy').format(selectedDate!)
-                                    : '',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ],
-                          ),
-                          Icon(Icons.arrow_drop_down, color: Colors.black54),
-                        ],
-                      ),
-                    ),
-                  ),
+                  Dropdownwidget(text: 'Select Month'),
+                  // GestureDetector(
+                  //   onTap: () => _selectDate(context),
+                  //   child: Container(
+                  //     padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  //     decoration: BoxDecoration(
+                  //       borderRadius: BorderRadius.circular(8),
+                  //       color: Colors.grey[200],
+                  //     ),
+                  //     child: Row(
+                  //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  //       children: [
+                  //         Row(
+                  //           children: [
+                  //             Icon(Icons.calendar_today_outlined, color: Colors.black54),
+                  //             SizedBox(width: 8),
+                  //             Text(
+                  //               selectedDate != null
+                  //                   ? DateFormat('dd MMM yyyy').format(selectedDate!)
+                  //                   : '',
+                  //               style: TextStyle(
+                  //                 fontSize: 16,
+                  //                 fontWeight: FontWeight.w500,
+                  //               ),
+                  //             ),
+                  //           ],
+                  //         ),
+                  //         Icon(Icons.arrow_drop_down, color: Colors.black54),
+                  //       ],
+                  //     ),
+                  //   ),
+                  // ),
                 ],
               ),
             ),
 
             // Main Carousel
-            Maincarousel(banner_list: offers),
+            Maincarousel(banner_list: banner_list),
 
             // Dynamic Sections using ListView.builder
             ListView.builder(
