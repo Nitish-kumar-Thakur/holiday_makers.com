@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
           colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 6, 3, 3)),
           useMaterial3: true,
         ),
-        home: const Splashscreen(), // Use `const` for better performance.
+        home: const HomePage(), // Use `const` for better performance.
         );
   }
 }

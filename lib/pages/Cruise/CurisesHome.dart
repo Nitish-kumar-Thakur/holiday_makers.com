@@ -191,9 +191,9 @@ class _CurisesHomeState extends State<CurisesHome> {
                 children: [
                   AppLargeText(text: 'Curises', color: Colors.black, size: 20),
                   SizedBox(height: 10),
-                  Dropdownwidget(selectedValue: "selectedValue", items: [], hintText: "Select Country", onChanged: (value) => {},),
+                  // Dropdownwidget(selectedValue: "selectedValue", items: [], hintText: "Select Country", onChanged: (value) => {},),
                   SizedBox(height: 10),
-                  Dropdownwidget(selectedValue: "selectedValue", items: [], hintText: "Select Month", onChanged: (value) => {},),
+                  // Dropdownwidget(selectedValue: "selectedValue", items: [], hintText: "Select Month", onChanged: (value) => {},),
                   
                 ],
               ),
