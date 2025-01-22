@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:holdidaymakers/pages/FullyIndependentTraveler/homePage.dart';
+import 'package:holdidaymakers/pages/FullyIndependentTraveler/independentTravelerPage.dart';
 import 'package:holdidaymakers/splashscreen.dart';
 
 Future<void> main() async {
@@ -20,7 +21,7 @@ class MyApp extends StatelessWidget {
           colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 6, 3, 3)),
           useMaterial3: true,
         ),
-        home: const HomePage(), // Use `const` for better performance.
+        home: const Splashscreen(), // Use `const` for better performance.
         );
   }
 }

@@ -135,15 +135,17 @@ class _IndependenttravelerpageState extends State<Independenttravelerpage> {
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.all(5),
+                    padding: const EdgeInsets.all(10),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Icon(
+                        Row(children: [
+                          Icon(
                           Icons.calendar_month,
                           size: 24,
                         ),
+                        SizedBox(width: 10,),
                         Column(
                           children: [
                             AppLargeText(
@@ -160,9 +162,11 @@ class _IndependenttravelerpageState extends State<Independenttravelerpage> {
                             ),
                           ],
                         ),
+                        ],),
                         Container(
-                          height: 25,
-                          width: 80,
+                          
+                          height: 30,
+                          width: 100,
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(20),
@@ -170,11 +174,11 @@ class _IndependenttravelerpageState extends State<Independenttravelerpage> {
                           ),
                           child: DropdownButton<String>(
                             value: dropdownValue,
-                            items: ['1 night', '2 night', '3 night', '4 night']
+                            items: ['1', '2', '3', '4']
                                 .map((String item) {
                               return DropdownMenuItem<String>(
-                                value: item,
-                                child: Center(child: Text(item)),
+                                value: "$item night",
+                                child: Center(child: Text("$item night")),
                               );
                             }).toList(),
                             onChanged: (String? newValue) {
@@ -188,13 +192,13 @@ class _IndependenttravelerpageState extends State<Independenttravelerpage> {
                             borderRadius: BorderRadius.circular(20),
                           ),
                         ),
-                        Calendarwidget(
-                          onDateSelected: (selectedDate) {
-                            setState(() {
-                              returnDate = selectedDate.toString();
-                            });
-                          },
-                        ),
+                        // Calendarwidget(
+                        //   onDateSelected: (selectedDate) {
+                        //     setState(() {
+                        //       returnDate = selectedDate.toString();
+                        //     });
+                        //   },
+                        // ),
                       ],
                     ),
                   ),
