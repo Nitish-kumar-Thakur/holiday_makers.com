@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:holdidaymakers/pages/Cruise/CurisesPackage.dart';
+import 'package:holdidaymakers/widgets/responcive_card.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:holdidaymakers/pages/FullyIndependentTraveler/trip_details_page.dart';
 import 'package:holdidaymakers/utils/api_handler.dart';
 import 'package:holdidaymakers/widgets/appText.dart';
@@ -7,7 +10,9 @@ import 'package:holdidaymakers/widgets/mainCarousel.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Homepage2 extends StatefulWidget {
-  const Homepage2({super.key});
+  final List<Map<String, dynamic>> packageList; // ✅ Accept package list
+
+  const Homepage2({Key? key, required this.packageList}) : super(key: key);
 
   @override
   State<Homepage2> createState() => _Homepage2State();
@@ -15,25 +20,15 @@ class Homepage2 extends StatefulWidget {
 
 class _Homepage2State extends State<Homepage2> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  final List<Map<String, String>> picture = [
-    {'image': 'img/picture1.png'},
-    {'image': 'img/picture2.png'},
-    {'image': 'img/picture3.png'},
-    {'image': 'img/picture4.png'},
-    {'image': 'img/picture5.png'},
-    {'image': 'img/picture6.png'},
-    {'image': 'img/picture7.png'},
-    {'image': 'img/picture8.png'},
-  ];
-    String profileImg = '';
-  bool isLoading = true; // Loading flag
+  String profileImg = '';
+  bool isLoading = true; 
   List<Map<String, dynamic>> banner_list = [];
 
-    @override
+  @override
   void initState() {
     super.initState();
     _loadProfileDetails();
-    _fetchHomePageData(); // Fetch data on initialization
+    _fetchHomePageData();
   }
 
   Future<void> _loadProfileDetails() async {
@@ -46,20 +41,13 @@ class _Homepage2State extends State<Homepage2> {
   Future<void> _fetchHomePageData() async {
     try {
       final data = await APIHandler.HomePageData();
-
       setState(() {
-        banner_list = List<Map<String, dynamic>>.from(
-          data['data']['banner_list'].map((item) => {
-                'img': item['img'],
-                'mobile_img': item['mobile_img'],
-                'link': item['link'],
-              }),
-        );
-        isLoading = false; // Data fetched, set loading to false
+        banner_list = List<Map<String, dynamic>>.from(data['data']['banner_list']);
+        isLoading = false;
       });
     } catch (e) {
       setState(() {
-        isLoading = false; // If error occurs, also stop loading
+        isLoading = false;
       });
       print('Error: $e');
     }
@@ -73,189 +61,129 @@ class _Homepage2State extends State<Homepage2> {
       backgroundColor: Colors.white,
       drawer: Drawerpage(),
       body: isLoading
-          ? Center(
-              child: CircularProgressIndicator(color: Colors.red,), // Show loader until data is fetched
-            )
+          ? _buildShimmerEffect()
           : SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header Section
-            Container(
-              width: double.infinity,
-              height: 120,
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage('img/homeBg.png'),
-                  fit: BoxFit.cover,
-                ),
-              ),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    height: 45,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: Colors.white70,
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(100),
-                        topRight: Radius.circular(100),
-                      ),
-                    ),
-                  )
+                  _buildHeader(),
+                  _buildProfileSection(),
+                  Maincarousel(banner_list: banner_list),
+                  _buildPackageSection(screenWidth),
                 ],
               ),
             ),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    _scaffoldKey.currentState?.openDrawer();
-                  },
-                  child: Padding(
-                          padding: const EdgeInsets.only(left: 20),
-                          child: CircleAvatar(
-                            backgroundImage: profileImg.isNotEmpty
-                                ? NetworkImage(profileImg)
-                                : const AssetImage('img/placeholder.png')
-                                    as ImageProvider,
-                            minRadius: 22,
-                            maxRadius: 22,
-                          ),
-                        ),
-                ),
-                Container(
-                  height: 40,
-                  width: 200,
-                  margin: EdgeInsets.all(15),
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: AssetImage('img/brandLogo.png'),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            Maincarousel(banner_list: banner_list),
-            Container(
-              margin: EdgeInsets.only(left: 15),
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      AppText(
-                        text: 'Packages',
-                        color: Colors.black,
-                        size: 16,
-                      ),
-                    ],
-                  ),
-                  Container(
-                    width: double.infinity,
-                    height: 1,
-                    color: Colors.grey,
-                  )
-                ],
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 15),
-              child: GridView.count(
-                crossAxisCount: 2,
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                children: picture.map((pic) {
-                  return GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => TripDetailsPage(),
-                        ),
-                      );
-                    },
-                    child: ResponsiveCard(
-                      image: pic['image']!,
-                      title: 'North East India Tour Packages',
-                      subtitle: 'HOLIDAY • 6D 5N',
-                      price: '700 onwards',
-                      screenWidth: screenWidth,
-                    ),
-                  );
-                }).toList(),
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
-}
 
-class ResponsiveCard extends StatelessWidget {
-  final String image;
-  final String title;
-  final String subtitle;
-  final String price;
-  final double screenWidth;
-
-  const ResponsiveCard({
-    Key? key,
-    required this.image,
-    required this.title,
-    required this.subtitle,
-    required this.price,
-    required this.screenWidth
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      color: Colors.white,
+  Widget _buildHeader() {
+    return Container(
+      width: double.infinity,
+      height: 120,
+      decoration: BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage('img/homeBg.png'),
+          fit: BoxFit.cover,
+        ),
+      ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.end,
         children: [
           Container(
-            height: 120,
+            height: 45,
             width: double.infinity,
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
-              image: DecorationImage(
-                image: AssetImage(image),
-                fit: BoxFit.fill,
+              color: Colors.white70,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(100),
+                topRight: Radius.circular(100),
               ),
             ),
-          ),
-          SizedBox(height: 4),
-          Padding(
-            padding: EdgeInsets.only(left: screenWidth * 0.01),
-            child: Text(
-              subtitle,
-              style: TextStyle(
-                color: Color(0xFF0775BD),
-                fontSize: screenWidth * 0.020,
-              ),
-            ),
-          ),
-          Padding(
-              padding: EdgeInsets.only(left: screenWidth * 0.01),
-              child: Text(
-                title,
-                style: TextStyle(fontSize: screenWidth * 0.022, fontWeight: FontWeight.bold),
-              )),
-          Padding(
-            padding: EdgeInsets.only(left: screenWidth * 0.01),
-            child: Text(
-              price,
-              style: TextStyle(fontSize:screenWidth * 0.020,),
-            ),
-          ),
+          )
         ],
       ),
     );
   }
+
+  Widget _buildProfileSection() {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        GestureDetector(
+          onTap: () => _scaffoldKey.currentState?.openDrawer(),
+          child: Padding(
+            padding: const EdgeInsets.only(left: 20),
+            child: CircleAvatar(
+              backgroundImage: profileImg.isNotEmpty
+                  ? NetworkImage(profileImg)
+                  : const AssetImage('img/placeholder.png') as ImageProvider,
+              minRadius: 22,
+              maxRadius: 22,
+            ),
+          ),
+        ),
+        Container(
+          height: 40,
+          width: 200,
+          margin: EdgeInsets.all(15),
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage('img/brandLogo.png'),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPackageSection(double screenWidth) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 15),
+      child: GridView.count(
+        crossAxisCount: 2,
+        shrinkWrap: true,
+        physics: NeverScrollableScrollPhysics(),
+        children: widget.packageList.map((package) {
+          return GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => TripDetailsPage()),
+              );
+            },
+            child: ResponsiveCard(
+              image: package['image'] ?? 'img/placeholder.png',
+              title: package['name'] ?? 'Package Name',
+              subtitle: package['country'] ?? 'Location',
+              price: "${package['currency']} ${package['price'] ?? 'N/A'}",
+              screenWidth: screenWidth,
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  Widget _buildShimmerEffect() {
+    return ListView.builder(
+      itemCount: 5,
+      itemBuilder: (context, index) {
+        return Shimmer.fromColors(
+          baseColor: Colors.grey[300]!,
+          highlightColor: Colors.grey[100]!,
+          child: Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: Container(
+              height: 120,
+              color: Colors.white,
+            ),
+          ),
+        );
+      },
+    );
+  }
 }
+
+
+

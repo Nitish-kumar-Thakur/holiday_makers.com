@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:holdidaymakers/pages/FullyIndependentTraveler/flightPage.dart';
 import 'package:holdidaymakers/widgets/appLargetext.dart';
 import 'package:holdidaymakers/widgets/appText.dart';
 
@@ -137,16 +138,7 @@ class _TravelerhotelsState extends State<Travelerhotels> {
                           return Padding(
                             padding:
                                 EdgeInsets.only(bottom: screenHeight * 0.09),
-                            child: IconButton(
-                                onPressed: () {
-                                  // Navigator.push(
-                                  //   context,
-                                  //   MaterialPageRoute(
-                                  //       builder: (context) =>
-                                  //           const FlightPage()),
-                                  // );
-                                },
-                                icon: HotelCard()),
+                            child: HotelCard()
                           );
                         },
                       ),
@@ -336,7 +328,12 @@ class HotelCard extends StatelessWidget {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () { Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const FlightPage()),
+                                  );},
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.red,
                       shape: RoundedRectangleBorder(

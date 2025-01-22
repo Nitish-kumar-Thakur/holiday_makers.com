@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart'; // Import the intl package for date formatting
 
 class Calendarwidget extends StatefulWidget {
+  final ValueChanged<DateTime> onDateSelected;
+
+  const Calendarwidget({Key? key, required this.onDateSelected}) : super(key: key);
   @override
   _CalendarwidgetState createState() => _CalendarwidgetState();
 }
@@ -13,13 +16,14 @@ class _CalendarwidgetState extends State<Calendarwidget> {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: _selectedDate,
-      firstDate: DateTime(2000),
+      firstDate: DateTime.now(),
       lastDate: DateTime(2100),
     );
     if (picked != null && picked != _selectedDate) {
       setState(() {
         _selectedDate = picked;
       });
+      widget.onDateSelected(picked);
     }
   }
 
@@ -33,7 +37,7 @@ class _CalendarwidgetState extends State<Calendarwidget> {
           child: Text(
             '$formattedDate', // Display the formatted date
             style: const TextStyle(
-              fontSize: 11,
+              fontSize: 12,
               fontWeight: FontWeight.bold, 
             ),
           ),

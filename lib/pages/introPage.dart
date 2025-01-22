@@ -120,7 +120,7 @@ class _IntroPageState extends State<IntroPage> {
                 // Login Button
                 GestureDetector(
                   onTap: () {
-                    Navigator.push(context,
+                    Navigator.pushReplacement(context,
                         MaterialPageRoute(builder: (context) => LoginPage()));
                   },
                   child: responciveButton(text: 'Log in'),
@@ -130,7 +130,7 @@ class _IntroPageState extends State<IntroPage> {
                 // Create Account Button
                 GestureDetector(
                   onTap: () {
-                    Navigator.push(context,
+                    Navigator.pushReplacement(context,
                         MaterialPageRoute(builder: (context) => Signuppage()));
                   },
                   child: responciveButton(

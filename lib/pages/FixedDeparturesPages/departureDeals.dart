@@ -171,7 +171,7 @@ class _DepartureDealsState extends State<DepartureDeals> {
                 ),
               ),
               SizedBox(height: 10),
-              Travelerdrawer(),
+              // Travelerdrawer(),
               SizedBox(height: 30),
               Align(alignment: Alignment.center, 
               child: IconButton(onPressed: (){

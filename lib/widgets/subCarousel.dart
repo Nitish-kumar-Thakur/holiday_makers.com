@@ -18,8 +18,8 @@ class Subcarousel extends StatelessWidget {
         decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
                     image: DecorationImage(
-                        image: AssetImage(
-                          lists[index],
+                        image: NetworkImage(
+                          lists[index]["image"],
                         ),
                         fit: BoxFit.cover)),
       ),

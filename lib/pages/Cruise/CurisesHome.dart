@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:holdidaymakers/learn.dart';
 import 'package:holdidaymakers/pages/Cruise/CurisesPackage.dart';
 import 'package:holdidaymakers/pages/Cruise/cruisePackagedetails.dart';
 import 'package:holdidaymakers/utils/api_handler.dart';
@@ -21,6 +22,9 @@ class _CurisesHomeState extends State<CurisesHome> {
   DateTime? selectedDate; // For storing the selected date
   int selectedOption = 0; 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+   final TextEditingController countryController = TextEditingController();
+  final TextEditingController monthController = TextEditingController();
+ 
   
   // Function to select date with customizations
   // Future<void> _selectDate(BuildContext context) async {
@@ -187,9 +191,9 @@ class _CurisesHomeState extends State<CurisesHome> {
                 children: [
                   AppLargeText(text: 'Curises', color: Colors.black, size: 20),
                   SizedBox(height: 10),
-                  Dropdownwidget(text: 'Select Country'),
+                  // Dropdownwidget(text: 'Select Country', controller: countryController,),
                   SizedBox(height: 10),
-                  Dropdownwidget(text: 'Select Month'),
+                  // Dropdownwidget(text: 'Select Month', controller: monthController,),
                   
                 ],
               ),
@@ -240,7 +244,7 @@ class _CurisesHomeState extends State<CurisesHome> {
                       padding: const EdgeInsets.only(left: 15),
                       child: IconButton(onPressed: (){
                       Navigator.push(context, MaterialPageRoute(builder: (context) => const CruisePackageDetails()));
-                    }, icon: Subcarousel(lists: section['list'])),
+                    }, icon: Subcarousel2(lists: section['list'])),
                     ),
                     const SizedBox(height: 20),
                   ],

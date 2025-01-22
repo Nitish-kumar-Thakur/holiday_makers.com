@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:holdidaymakers/pages/introPage.dart';
 import 'package:holdidaymakers/pages/login&signup/signupPage.dart';
@@ -22,6 +24,7 @@ class _LoginPageState extends State<LoginPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   String _errorMessage = '';
+  String _forgetPassword = '';
   bool _isLoading = false;
 
   void _completeLogin(Map<String, dynamic> responseData) async {
@@ -43,6 +46,7 @@ class _LoginPageState extends State<LoginPage> {
 
     if (email.isEmpty || password.isEmpty) {
       setState(() {
+        
         _errorMessage = 'Both fields are required';
         _isLoading = false;
       });
@@ -54,12 +58,38 @@ class _LoginPageState extends State<LoginPage> {
       if (responseData['status'] == true) {
         _completeLogin(responseData);
       } else {
-        setState(() => _errorMessage = responseData['message'] ?? 'Login failed');
+        setState(
+            () => _errorMessage = responseData['message'] ?? 'Login failed');
       }
     } catch (e) {
       setState(() => _errorMessage = 'An error occurred. Please try again.');
     } finally {
       setState(() => _isLoading = false);
+    }
+  }
+
+  Future _validateAndForgetPassword() async {
+    final email = _emailController.text.trim();
+    if (email.isEmpty) {
+      setState(() => _errorMessage = 'Please enter your email');
+      return;
+    }
+
+    try {
+      final response = await APIHandler.forgotPassword(email);
+      if (response['status'] == true) {
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //   SnackBar(content: Text('Password reset link sent to your email')),
+        // );
+        setState(() => _forgetPassword =
+            response['message'] ?? "Password reset link sent to your email");
+        return;
+      } else {
+        setState(() =>
+            _errorMessage = response['message'] ?? 'Failed to send reset link');
+      }
+    } catch (e) {
+      setState(() => _errorMessage = 'An error occurred. Please try again.');
     }
   }
 
@@ -145,18 +175,35 @@ class _LoginPageState extends State<LoginPage> {
                 SizedBox(height: screenSize.height * 0.03),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
-                  children: const [
-                    AppText(text: 'Forgot your password?', color: Colors.black),
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        _validateAndForgetPassword(); // Properly call the method
+                      },
+                      child: const AppText(
+                        text: 'Forgot your password?',
+                        color: Colors.black,
+                      ),
+                    ),
                   ],
                 ),
                 SizedBox(height: screenSize.height * 0.03),
-                Align(alignment: Alignment.center,
-                child: GestureDetector(
-                  onTap: _isLoading ? null : _validateAndLogin,
-                  child: _isLoading
-                      ? const Center(child: CircularProgressIndicator())
-                      : responciveButton(text: 'Login'),
-                ),),
+                if (_forgetPassword.isNotEmpty)
+                  Center(
+                    child: Text(
+                      _forgetPassword,
+                      style: const TextStyle(color: Colors.blue, fontSize: 14),
+                    ),
+                  ),
+                Align(
+                  alignment: Alignment.center,
+                  child: GestureDetector(
+                    onTap: _isLoading ? null : _validateAndLogin,
+                    child: _isLoading
+                        ? const Center(child: CircularProgressIndicator())
+                        : responciveButton(text: 'Login'),
+                  ),
+                ),
                 SizedBox(height: screenSize.height * 0.20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -168,7 +215,8 @@ class _LoginPageState extends State<LoginPage> {
                     GestureDetector(
                       onTap: () => Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const Signuppage()),
+                        MaterialPageRoute(
+                            builder: (context) => const Signuppage()),
                       ),
                       child: const AppText(
                         text: 'Sign up',

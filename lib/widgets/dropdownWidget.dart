@@ -1,93 +1,77 @@
-import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
+import 'package:dropdown_search/dropdown_search.dart';
 
-class Dropdownwidget extends StatefulWidget {
-  final String text;
-  const Dropdownwidget({super.key, required this.text});
+class Dropdownwidget extends StatelessWidget {
+  final String? selectedValue;
+  final List<Map<String, String>> items;
+  final String hintText;
+  final ValueChanged<String?> onChanged;
+  
 
-  @override
-  State<Dropdownwidget> createState() => _DropdownwidgetState();
-}
-
-class _DropdownwidgetState extends State<Dropdownwidget> {
-  final dropDownKey = GlobalKey<DropdownSearchState>();
-  List<String> issuingAuthorities = [
-    "Authority 1",
-    "Authority 2",
-    "Authority 3",
-    "Authority 4",
-    "Authority 1",
-    "Authority 2",
-    "Authority 3",
-    "Authority 4",
-    "Authority 1",
-    "Authority 2",
-    "Authority 3",
-    "Authority 4",
-  ];
+  const Dropdownwidget({
+    Key? key,
+    required this.selectedValue,
+    required this.items,
+    required this.hintText,
+    required this.onChanged,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    // List<String> cityNames = items.map((city) => city["name"] ?? "").toList();
     return Row(
       children: [
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Label Text
               Padding(
                 padding: const EdgeInsets.only(left: 8.0, bottom: 4.0),
                 child: Text(
-                  widget.text,
+                  hintText,
                   style: TextStyle(
                     color: Colors.black,
                     fontSize: 16,
-                    fontWeight: FontWeight.bold, // You can adjust this
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
-              // DropdownSearch widget
               DropdownSearch<String>(
-                  key: dropDownKey,
-                  selectedItem: "All",
-                  items: (filter, infiniteScrollProps) => issuingAuthorities,
-                  decoratorProps: DropDownDecoratorProps(
-                    decoration: InputDecoration(
-                      prefixIcon: Icon(
-                        Icons.location_on,
-                        size: 30,
-                      ),
-                      contentPadding: EdgeInsets.symmetric(horizontal: 16),
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(
-                              20), // Circular border radius
-                          borderSide: BorderSide(
-                              color: Colors.white,
-                              width: 1) // Remove border line
-                          ),
-                      enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(
-                              20), // Circular border radius
-                          borderSide: BorderSide(
-                              color: Colors.white,
-                              width: 1) // Remove border line
-                          ),
-                      focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(
-                              20), // Circular border radius
-                          borderSide: BorderSide(
-                              color: Colors.grey,
-                              width: 1) // Remove border line
-                          ),
-                      fillColor: Colors
-                          .grey.shade200, // Background color of the input box
-                      filled: true, // Enable the fill color
+                popupProps: PopupProps.menu(),
+                items: (filter, infiniteScrollProps) =>
+                    items.map((item) => item["name"] ?? "").toList(),
+                selectedItem: selectedValue != null
+                    ? items.firstWhere(
+                        (item) => item["id"] == selectedValue)["name"]
+                    : null,
+                decoratorProps: DropDownDecoratorProps(
+                  decoration: InputDecoration(
+                    hintText: "Select",
+                    prefixIcon: Icon(Icons.location_on, size: 30),
+                    contentPadding: EdgeInsets.symmetric(horizontal: 16),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20),
+                      borderSide: BorderSide(color: Colors.white, width: 1),
                     ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20),
+                      borderSide: BorderSide(color: Colors.white, width: 1),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20),
+                      borderSide: BorderSide(color: Colors.grey, width: 1),
+                    ),
+                    fillColor: Colors.grey.shade200,
+                    filled: true,
                   ),
-                  popupProps: PopupProps.menu(
-                    showSearchBox: false,
-                    // No search box
-                  )),
+                ),
+                onChanged: (String? newValue) {
+                  String? selectedId = items.firstWhere(
+                      (item) => item["name"] == newValue,
+                      orElse: () => {"id": ""})["id"];
+                  onChanged(selectedId);
+                },
+              )
             ],
           ),
         ),

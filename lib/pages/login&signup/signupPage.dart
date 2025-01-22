@@ -3,6 +3,7 @@ import 'package:holdidaymakers/pages/FullyIndependentTraveler/mainPage.dart';
 import 'package:holdidaymakers/pages/introPage.dart';
 import 'package:holdidaymakers/pages/login&signup/loginPage.dart';
 import 'package:holdidaymakers/utils/api_handler.dart';
+import 'package:holdidaymakers/utils/shared_preferences_handler.dart';
 import 'package:holdidaymakers/widgets/appLargetext.dart';
 import 'package:holdidaymakers/widgets/appText.dart';
 import 'package:holdidaymakers/widgets/loginButton.dart';
@@ -25,7 +26,7 @@ class _SignuppageState extends State<Signuppage> {
   final _passwordController = TextEditingController();
   final _phoneController = TextEditingController();
   String _errorMessage = '';
-  String _countryCode = "+91";
+  final String _countryCode = "+91";
   bool _isLoading = false; // Default country code
 
   void _validateAndSignUp() async {
@@ -35,6 +36,13 @@ class _SignuppageState extends State<Signuppage> {
     final password = _passwordController.text.trim();
     final phone = _phoneController.text.trim();
 
+  void _completeLogin(Map<String, dynamic> responseData) async {
+    await SharedPreferencesHandler.saveLoginData(responseData);
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const LoginPage()),
+    );
+  }
     setState(() {
       _errorMessage = '';
       _isLoading = true;
@@ -73,10 +81,20 @@ class _SignuppageState extends State<Signuppage> {
       );
 
       if (result['status'] == true) {
+      // final responseData = await APIHandler.login(email, password);
+      // if (responseData['status'] == true) {
+      //   _completeLogin(responseData);
+      // } else {
+      //   Navigator.pushReplacement(
+      //     context,
+      //     MaterialPageRoute(builder: (context) => const Mainpage()),
+      //   );
+      // }
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => const Mainpage()),
         );
+        
       } else {
         setState(() {
           _errorMessage = result['message'] ?? 'Registration failed';
@@ -178,13 +196,15 @@ class _SignuppageState extends State<Signuppage> {
                   ),
                 ),
                 SizedBox(height: screenSize.height * 0.03),
-                Align(alignment: Alignment.center,
-                child: GestureDetector(
-                  onTap: _isLoading ? null : _validateAndSignUp,
-                  child: _isLoading
-                      ? const Center(child: CircularProgressIndicator())
-                      : responciveButton(text: 'signup'),
-                ),),
+                Align(
+                  alignment: Alignment.center,
+                  child: GestureDetector(
+                    onTap: _isLoading ? null : _validateAndSignUp,
+                    child: _isLoading
+                        ? const Center(child: CircularProgressIndicator())
+                        : responciveButton(text: 'signup'),
+                  ),
+                ),
                 SizedBox(height: screenSize.height * 0.07),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,

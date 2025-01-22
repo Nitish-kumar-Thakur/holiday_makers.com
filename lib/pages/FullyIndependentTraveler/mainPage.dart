@@ -13,12 +13,21 @@ class Mainpage extends StatefulWidget {
 }
 
 class _MainpageState extends State<Mainpage> {
-  List pages = [HomePage(), SearchPage(), Notifications(), ProfilePage()];
-  int currentPage = 0; // Track current page index
-  int _selectedIndex = 0; // Track selected bottom nav item index
+  List<Widget> pages = [
+    HomePage(),
+    SearchPage(),
+    Notifications(),
+    ProfilePage(),
+  ];
 
-  // Function to switch between pages based on the selected index
+  int _selectedIndex = 0; // Track current selected index
+  List<int> _historyStack = []; // Stack to track navigation history
+
+  // Function to switch between pages
   void _onItemTapped(int index) {
+    if (_selectedIndex != index) {
+      _historyStack.add(_selectedIndex); // ✅ Store the current page before switching
+    }
     setState(() {
       _selectedIndex = index;
     });
@@ -26,10 +35,23 @@ class _MainpageState extends State<Mainpage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      bottomNavigationBar: BottomNavigationBarPage(
-          index: _selectedIndex, onTapped: _onItemTapped),
-      body: pages[_selectedIndex],
+    return WillPopScope(
+      onWillPop: () async {
+        if (_historyStack.isNotEmpty) {
+          setState(() {
+            _selectedIndex = _historyStack.removeLast(); // Go back to the last visited page
+          });
+          return false; // Prevent app from closing
+        }
+        return true; // Allow app exit if no history left
+      },
+      child: Scaffold(
+        bottomNavigationBar: BottomNavigationBarPage(
+          index: _selectedIndex,
+          onTapped: _onItemTapped,
+        ),
+        body: pages[_selectedIndex],
+      ),
     );
   }
 }

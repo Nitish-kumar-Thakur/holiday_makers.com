@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:holdidaymakers/pages/FullyIndependentTraveler/flightPage.dart';
+import 'package:holdidaymakers/pages/FullyIndependentTraveler/payment_method.dart';
 import 'package:holdidaymakers/widgets/appLargetext.dart';
 import 'package:holdidaymakers/widgets/appText.dart';
 
@@ -121,7 +122,7 @@ class OfferCard extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => FlightPage()));// Add booking functionality here
+                            builder: (context) => PaymentMethod()));// Add booking functionality here
                     },
                     style: ElevatedButton.styleFrom(
                       minimumSize: const Size(90, 40),

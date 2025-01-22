@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:holdidaymakers/learn.dart';
 import 'package:holdidaymakers/pages/FixedDeparturesPages/departurePackagedetails.dart';
 import 'package:holdidaymakers/pages/FixedDeparturesPages/departuresPackages.dart';
 import 'package:holdidaymakers/utils/api_handler.dart';
@@ -24,6 +25,8 @@ class _DeparturesHomeState extends State<DeparturesHome> {
   List<Map<String, dynamic>> banner_list = [];
   DateTime? selectedDate; // For storing the selected date
   int selectedOption = 0; 
+    final TextEditingController countryController = TextEditingController();
+  final TextEditingController monthController = TextEditingController();
 
     @override
   void initState() {
@@ -188,9 +191,9 @@ class _DeparturesHomeState extends State<DeparturesHome> {
                 children: [
                   AppLargeText(text: 'Fixed Departure Deals', color: Colors.black, size: 20),
                   SizedBox(height: 10),
-                  Dropdownwidget(text: 'Select Country'),
+                  // Dropdownwidget(text: 'Select Country', controller: countryController,),
                   SizedBox(height: 10),
-                  Dropdownwidget(text: 'Select Month'),
+                  // Dropdownwidget(text: 'Select Month', controller: monthController,),
                   // GestureDetector(
                   //   onTap: () => _selectDate(context),
                   //   child: Container(
@@ -271,7 +274,7 @@ class _DeparturesHomeState extends State<DeparturesHome> {
                       padding: const EdgeInsets.only(left: 15),
                       child: IconButton(onPressed: (){
                       Navigator.push(context, MaterialPageRoute(builder: (context) => const DeparturePackageDetails()));
-                    }, icon: Subcarousel(lists: section['list'])),
+                    }, icon: Subcarousel2(lists: section['list'])),
                     ),
                     const SizedBox(height: 20),
                   ],

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:holdidaymakers/help_center_page.dart';
 import 'package:holdidaymakers/pages/Cruise/CurisesHome.dart';
 import 'package:holdidaymakers/pages/FixedDeparturesPages/departuresHome.dart';
 import 'package:holdidaymakers/pages/FullyIndependentTraveler/mainPage.dart';
 import 'package:holdidaymakers/pages/introPage.dart';
+import 'package:holdidaymakers/terms_and_conditions_page.dart';
+import 'package:holdidaymakers/testimonials_page.dart';
 import 'package:holdidaymakers/utils/shared_preferences_handler.dart';
 import 'package:holdidaymakers/widgets/ChangePassword.dart';
 import 'package:holdidaymakers/widgets/ManageAccount.dart';
@@ -267,19 +270,31 @@ class _DrawerpageState extends State<Drawerpage> {
                   children: [
                     AppLargeText(text: "About", size: 24, color: Colors.white),
                     SizedBox(height: 3),
-                    ChildContainer(image: "img/article.png", text: "Blogs"),
+                    ChildContainer(image: "img/article.png", text: "Blogs",
+                    onTap: (){}),
                     SizedBox(height: 3),
-                    ChildContainer(image: "img/article.png",text: "Testimonials"),
+                    ChildContainer(image: "img/article.png",text: "Testimonials", onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => TestimonialsPage()),
+                        );
+                    },),
                     SizedBox(height: 3),
                     ChildContainer(image: "img/article.png", text: "Company Profile"),
                     SizedBox(height: 3),
-                    ChildContainer(image: "img/article.png", text: "Terms & Conditions"),
-                    SizedBox(height: 3),
-                    ChildContainer(image: "img/article.png", text: "FAQ"),
-                    SizedBox(height: 3),
-                    ChildContainer(image: "img/article.png",text: "Contact Us"),
+                    ChildContainer(image: "img/article.png", text: "Terms & Conditions", onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => TermsAndConditionsPage()),
+                        );
+                    },),
                     SizedBox( height: 3),
-                    ChildContainer(image: "img/helpCenter.png", text: "Help Center"),
+                    ChildContainer(image: "img/helpCenter.png", text: "Help Center", onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => HelpCenterPage()),
+                        );
+                    },),
                     SizedBox(height: 3),
                     ChildContainer(image: "img/signOut.png", text: "Sign Out",
                       onTap: () => _showSignOutDialog(context)
