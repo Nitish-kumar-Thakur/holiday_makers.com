@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:holdidaymakers/help_center_page.dart';
 import 'package:holdidaymakers/pages/Cruise/CurisesHome.dart';
+import 'package:holdidaymakers/pages/Cruise/CurisesHome1.dart';
 import 'package:holdidaymakers/pages/FixedDeparturesPages/departuresHome.dart';
+import 'package:holdidaymakers/pages/FixedDeparturesPages/departuresHome1.dart';
 import 'package:holdidaymakers/pages/FullyIndependentTraveler/mainPage.dart';
 import 'package:holdidaymakers/pages/introPage.dart';
 import 'package:holdidaymakers/terms_and_conditions_page.dart';

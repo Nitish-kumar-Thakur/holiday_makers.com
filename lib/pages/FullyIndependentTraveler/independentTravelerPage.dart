@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:holdidaymakers/utils/api_handler.dart';
 import 'package:holdidaymakers/widgets/appLargetext.dart';
@@ -6,27 +7,30 @@ import 'package:holdidaymakers/widgets/drawerPage.dart';
 import 'package:holdidaymakers/widgets/dropdownWidget.dart';
 import 'package:holdidaymakers/widgets/responciveButton.dart';
 import 'package:holdidaymakers/widgets/travelerDrawer.dart';
+import 'package:holdidaymakers/pages/FullyIndependentTraveler/travelerhotels.dart';
+import 'package:intl/intl.dart';
 
-class Independenttravelerpage extends StatefulWidget {
-  const Independenttravelerpage({super.key});
+class IndependentTravelerPage extends StatefulWidget {
+  
+  const IndependentTravelerPage({super.key,});
 
   @override
-  State<Independenttravelerpage> createState() =>
-      _IndependenttravelerpageState();
+  State<IndependentTravelerPage> createState() =>
+      _IndependentTravelerPageState();
 }
 
-class _IndependenttravelerpageState extends State<Independenttravelerpage> {
+class _IndependentTravelerPageState extends State<IndependentTravelerPage> {
   String? selectedCity;
   String? selectedDestination;
   String? fromDate;
-  String? returnDate;
   String? stayingDay;
   String? selectedRoom;
   String? selectedAdult;
-  String? selectedchild;
+  String? selectedChild;
 
   List<Map<String, String>> cities = [];
   List<Map<String, String>> destinations = [];
+  String? errorMessage;
 
   String dropdownValue = '1 night';
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -34,10 +38,9 @@ class _IndependenttravelerpageState extends State<Independenttravelerpage> {
   @override
   void initState() {
     super.initState();
-    fetchCities(); // Fetch the source cities when the page is initialized
+    fetchCities();
   }
 
-  // Fetch source cities from the API
   Future<void> fetchCities() async {
     try {
       List<Map<String, String>> fetchedCities =
@@ -50,22 +53,62 @@ class _IndependenttravelerpageState extends State<Independenttravelerpage> {
     }
   }
 
-  // Fetch destination cities based on the selected source city
   Future<void> fetchDestinations(String sourceId) async {
     try {
       List<Map<String, String>> fetchedDestinations =
           await APIHandler.fetchDestinationList(sourceId);
       setState(() {
-        destinations = fetchedDestinations; // Update the destinations list
+        destinations = fetchedDestinations;
       });
     } catch (error) {
       print('Error fetching destinations: $error');
     }
   }
 
-  @override
-  void dispose() {
-    super.dispose();
+  Future<void> searchHotels() async {
+    if (selectedCity == null ||
+        selectedDestination == null ||
+        fromDate == null ||
+        stayingDay == null ||
+        selectedRoom == null ||
+        selectedAdult == null ||
+        selectedChild == null) {
+      setState(() {
+        errorMessage = "Please fill all the required fields";
+      });
+      return;
+    }
+
+    try {
+      var response = await APIHandler.fitSearch(
+        sourceId: selectedCity!,
+        destinationId: selectedDestination!,
+        travelDate: fromDate!,
+        noOfNights: stayingDay!.split(' ')[0],
+        rooms: selectedRoom!,
+        adults: selectedAdult!,
+        children: selectedChild!,
+      );
+
+      if (response["message"] == "success") {
+        // print(response);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => Travelerhotels(responceData: response),
+          ),
+        );
+        
+      } else {
+        setState(() {
+          errorMessage = response["message"];
+        });
+      }
+    } catch (error) {
+      setState(() {
+        errorMessage = "Error fetching hotels: $error";
+      });
+    }
   }
 
   @override
@@ -77,7 +120,7 @@ class _IndependenttravelerpageState extends State<Independenttravelerpage> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
-            Navigator.pop(context); // Navigate back to the previous screen
+            Navigator.pop(context);
           },
         ),
       ),
@@ -91,17 +134,14 @@ class _IndependenttravelerpageState extends State<Independenttravelerpage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 AppLargeText(
-                  text: 'Fully Independent Traveler',
-                  size: 24,
-                  color: Colors.black,
-                ),
+                    text: 'Fully Independent Traveler',
+                    size: 24,
+                    color: Colors.black),
                 const SizedBox(height: 20),
-                // Source Dropdown with onChanged callback
                 Dropdownwidget(
                   selectedValue: selectedCity,
                   items: cities,
                   hintText: "Select City",
-                  // controller: sourceController,
                   onChanged: (String? newValue) {
                     setState(() {
                       selectedCity = newValue;
@@ -113,12 +153,10 @@ class _IndependenttravelerpageState extends State<Independenttravelerpage> {
                   },
                 ),
                 const SizedBox(height: 20),
-                // Destination Dropdown
                 Dropdownwidget(
                   selectedValue: selectedDestination,
                   items: destinations,
                   hintText: "Select Destination",
-                  // controller: destinationController,
                   onChanged: (String? newValue) {
                     setState(() {
                       selectedDestination = newValue;
@@ -126,7 +164,6 @@ class _IndependenttravelerpageState extends State<Independenttravelerpage> {
                   },
                 ),
                 const SizedBox(height: 20),
-                // Travel date section
                 Container(
                   height: 58,
                   width: double.infinity,
@@ -140,31 +177,35 @@ class _IndependenttravelerpageState extends State<Independenttravelerpage> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Row(children: [
-                          Icon(
-                          Icons.calendar_month,
-                          size: 24,
-                        ),
-                        SizedBox(width: 10,),
-                        Column(
+                        Row(
                           children: [
-                            AppLargeText(
-                              text: 'TRAVEL DATE',
-                              color: Colors.black,
-                              size: 14,
+                            Icon(
+                              Icons.calendar_month,
+                              size: 24,
                             ),
-                            Calendarwidget(
-                              onDateSelected: (DateTime? newValue) {
-                                setState(() {
-                                  fromDate = newValue.toString();
-                                });
-                              },
+                            SizedBox(
+                              width: 10,
+                            ),
+                            Column(
+                              children: [
+                                AppLargeText(
+                                  text: 'TRAVEL DATE',
+                                  color: Colors.black,
+                                  size: 14,
+                                ),
+                                Calendarwidget(
+                                  onDateSelected: (DateTime? newValue) {
+                                    setState(() {
+                                      fromDate = DateFormat('dd-MM-yyyy')
+                                          .format(newValue!);
+                                    });
+                                  },
+                                ),
+                              ],
                             ),
                           ],
                         ),
-                        ],),
                         Container(
-                          
                           height: 30,
                           width: 100,
                           decoration: BoxDecoration(
@@ -174,8 +215,7 @@ class _IndependenttravelerpageState extends State<Independenttravelerpage> {
                           ),
                           child: DropdownButton<String>(
                             value: dropdownValue,
-                            items: ['1', '2', '3', '4']
-                                .map((String item) {
+                            items: ['1', '2', '3', '4'].map((String item) {
                               return DropdownMenuItem<String>(
                                 value: "$item night",
                                 child: Center(child: Text("$item night")),
@@ -209,29 +249,25 @@ class _IndependenttravelerpageState extends State<Independenttravelerpage> {
                     setState(() {
                       selectedRoom = selection[0]['rooms'];
                       selectedAdult = selection[1]['adults'];
-                      selectedchild = selection[2]['children'];
+                      selectedChild = selection[2]['children'];
                     });
                   },
                 ),
                 const SizedBox(height: 30),
                 GestureDetector(
-                  onTap: () {
-                    // Navigator.push(
-                    //   context,
-                    //   MaterialPageRoute(builder: (context) => Travelerhotels()),
-                    // );
-                     print("Selected City: $selectedCity");
-    print("Selected Destination: $selectedDestination");
-    print("From Date: $fromDate");
-    print("Return Date: $returnDate");
-    print("Staying Days: $stayingDay");
-    print("Selected Rooms: $selectedRoom");
-    print("Selected Adults: $selectedAdult");
-    print("Selected Children: $selectedchild");
-
-                  },
-                  child: Align(alignment: Alignment.center,child: responciveButton(text: 'SEARCH'),),
+                  onTap: searchHotels,
+                  child: Align(
+                      alignment: Alignment.center,
+                      child: responciveButton(text: 'SEARCH')),
                 ),
+                const SizedBox(height: 20),
+                if (errorMessage != null)
+                  Center(
+                    child: Text(
+                      errorMessage!,
+                      style: TextStyle(color: Colors.red, fontSize: 16),
+                    ),
+                  ),
               ],
             ),
           ),

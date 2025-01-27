@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:holdidaymakers/pages/FixedDeparturesPages/departuresHome.dart';
+import 'package:holdidaymakers/pages/FixedDeparturesPages/departuresHome1.dart';
 import 'package:holdidaymakers/pages/searchBarpage.dart';
 import 'package:holdidaymakers/widgets/bottomNavigationBar.dart';
 import 'package:holdidaymakers/widgets/notifications.dart';

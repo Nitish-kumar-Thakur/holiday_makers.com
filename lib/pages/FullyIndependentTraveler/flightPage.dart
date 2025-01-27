@@ -2,7 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:holdidaymakers/pages/FullyIndependentTraveler/offersDiscount.dart';
 
 class FlightPage extends StatefulWidget {
-  const FlightPage({super.key});
+  final Map<String, dynamic> responceData;
+  final Map<String, dynamic> selectedHotel;
+  const FlightPage({super.key,
+  required this.responceData,
+  required this.selectedHotel});
 
   @override
   State<FlightPage> createState() => _FlightSelectionPageState();

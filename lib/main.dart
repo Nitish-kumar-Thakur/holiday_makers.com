@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:holdidaymakers/pages/FullyIndependentTraveler/homePage.dart';
-import 'package:holdidaymakers/pages/FullyIndependentTraveler/independentTravelerPage.dart';
 import 'package:holdidaymakers/splashscreen.dart';
 
 Future<void> main() async {

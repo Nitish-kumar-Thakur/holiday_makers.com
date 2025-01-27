@@ -16,6 +16,9 @@ class APIHandler {
       "https://b2cuat.tikipopi.com/index.php/holiday_api/source_list";
   static const String destUrl =
       "https://b2cuat.tikipopi.com/index.php/holiday_api/destination_list";
+  static const String fitSearchUrl =
+      "https://b2cuat.tikipopi.com/index.php/holiday_api/fit_package_search";
+
   static Future<Map<String, dynamic>> login(
       String email, String password) async {
     final url = Uri.parse('$loginUrl/login');
@@ -135,14 +138,19 @@ class APIHandler {
       throw Exception('Error fetching source list: $error');
     }
   }
- /// Fetch Categories
 
+  /// Fetch Categories
 
   static Future<List<Map<String, String>>> fetchDestinationList(
       String sourceId) async {
     try {
-      final response = await http.post(Uri.parse(destUrl),headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'source_id': sourceId,}),);
+      final response = await http.post(
+        Uri.parse(destUrl),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'source_id': sourceId,
+        }),
+      );
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -166,4 +174,151 @@ class APIHandler {
       throw Exception('Error fetching source list: $error');
     }
   }
+
+  static Future<Map<String, dynamic>> fitSearch({
+    required String sourceId,
+    required String destinationId,
+    required String travelDate,
+    required String noOfNights,
+    required String rooms,
+    required String adults,
+    required String children,
+  }) async {
+    final url = Uri.parse(fitSearchUrl);
+    final body = jsonEncode({
+      "source_id": sourceId,
+      "destination_id": destinationId,
+      "travel_date": travelDate,
+      "no_of_nights": noOfNights,
+      "rooms": rooms,
+      "adult": adults,
+      "child": children,
+    });
+
+    final response = await http.post(
+      url,
+      headers: {"Content-Type": "application/json"},
+      body: body,
+    );
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception('Error: ${response.statusCode}');
+    }
+  }
+  
+  static Future<Map<String, List<Map<String, String>>>> fetchCruiseCountryMonthList(
+      String sourceId) async {
+    try {
+      final response = await http.post(
+        Uri.parse(
+            "https://b2cuat.tikipopi.com/index.php/holiday_api/get_cruise_country_month_list"),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'source_id': sourceId}),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+
+        if (data['status'] == true) {
+          // Extracting country_list
+          final countryList = (data['data']['country_list'] as List<dynamic>)
+              .map<Map<String, String>>((item) => {
+            'id': item['country_id'] ?? '',
+            'name': item['country_name'] ?? '',
+          })
+              .toList();
+
+          // Extracting month_list
+          final monthList = (data['data']['month_list'] as List<dynamic>)
+              .map<Map<String, String>>((month) => {
+            'id': month.toString(),
+            'name': month.toString(),
+          })
+              .toList();
+
+          return {
+            'countryList': countryList,
+            'monthList': monthList,
+          };
+        } else {
+          throw Exception('API returned status: false');
+        }
+      } else {
+        throw Exception(
+            'Failed to fetch data. Status code: ${response.statusCode}, Response: ${response.body}');
+      }
+    } catch (error) {
+      throw Exception('Error fetching cruise country and month list: $error');
+    }
+  }
+
+  static Future<Map<String, List<Map<String, String>>>> fetchFDCountryMonthList(
+      String sourceId) async {
+    try {
+      final response = await http.post(
+        Uri.parse('https://b2cuat.tikipopi.com/index.php/holiday_api/get_package_country_month_list'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'source_id': sourceId}),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+
+        if (data['status'] == true) {
+          // Extracting country_list
+          final countryList = (data['data']['country_list'] as List<dynamic>)
+              .map<Map<String, String>>((item) => {
+            'id': item['country_id'] ?? '',
+            'name': item['country_name'] ?? '',
+          })
+              .toList();
+
+          // Extracting month_list
+          final monthList = (data['data']['month_list'] as List<dynamic>)
+              .map<Map<String, String>>((month) => {
+            'id': month.toString(),
+            'name': month.toString(),
+          })
+              .toList();
+
+          return {
+            'countryList': countryList,
+            'monthList': monthList,
+          };
+        } else {
+          throw Exception('API returned status: false');
+        }
+      } else {
+        throw Exception(
+            'Failed to fetch data. Status code: ${response.statusCode}, Response: ${response.body}');
+      }
+    } catch (error) {
+      throw Exception(
+          'Error fetching fixed departures country and month list: $error');
+    }
+  }
+
+  static Future<Map<String, dynamic>> getNewPackagesData(String package, String country, String month) async {
+    try {
+      final response = await http.post(Uri.parse('https://b2cuat.tikipopi.com/index.php/holiday_api/get_package_list'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+    "type":package,
+    "country_id": country??'',//RU
+    "month":month??'' //Dec-2025
+}),
+    );
+      if (response.statusCode == 200) {
+        return json.decode(response.body);
+      } else {
+        throw Exception("Failed to load homepage data");
+      }
+    } catch (e) {
+      print("API Error: $e");
+      throw Exception("Error fetching data");
+    }
+  }
+
 }

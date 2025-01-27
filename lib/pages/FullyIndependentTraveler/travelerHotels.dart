@@ -2,15 +2,30 @@ import 'package:flutter/material.dart';
 import 'package:holdidaymakers/pages/FullyIndependentTraveler/flightPage.dart';
 import 'package:holdidaymakers/widgets/appLargetext.dart';
 import 'package:holdidaymakers/widgets/appText.dart';
+import 'package:shimmer/shimmer.dart';
 
 class Travelerhotels extends StatefulWidget {
-  const Travelerhotels({super.key});
+  final Map<String, dynamic> responceData;
+  const Travelerhotels({super.key, required this.responceData});
 
   @override
   State<Travelerhotels> createState() => _TravelerhotelsState();
 }
 
 class _TravelerhotelsState extends State<Travelerhotels> {
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    // Simulate a network delay to fetch hotel data
+    Future.delayed(Duration(seconds: 2), () {
+      setState(() {
+        isLoading = false;
+      });
+    });
+  }
+
   Widget buildInclusionCard(String imagePath, String label) {
     final screenWidth = MediaQuery.of(context).size.width;
     return Container(
@@ -46,6 +61,8 @@ class _TravelerhotelsState extends State<Travelerhotels> {
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
+    final hotelList = List<Map<String, dynamic>>.from(
+        widget.responceData['data']['hotel_list']);
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -132,16 +149,21 @@ class _TravelerhotelsState extends State<Travelerhotels> {
                     SizedBox(height: screenHeight * 0.02),
                     SizedBox(
                       height: screenHeight * 0.6,
-                      child: ListView.builder(
-                        itemCount: 3,
-                        itemBuilder: (_, index) {
-                          return Padding(
-                            padding:
-                                EdgeInsets.only(bottom: screenHeight * 0.09),
-                            child: HotelCard()
-                          );
-                        },
-                      ),
+                      child: isLoading
+                          ? _buildShimmerGrid(screenWidth)
+                          : ListView.builder(
+                              itemCount: hotelList.length,
+                              itemBuilder: (_, index) {
+                                return Padding(
+                                  padding: EdgeInsets.only(
+                                      bottom: screenHeight * 0.09),
+                                  child: HotelCard(
+                                    hotel: hotelList[index],
+                                    responceData: widget.responceData,
+                                  ),
+                                );
+                              },
+                            ),
                     )
                   ],
                 ),
@@ -152,12 +174,90 @@ class _TravelerhotelsState extends State<Travelerhotels> {
       ),
     );
   }
+
+  // Shimmer effect for hotel grid while loading
+  Widget _buildShimmerGrid(double screenWidth) {
+    return Shimmer.fromColors(
+      baseColor: Colors.grey.shade300,
+      highlightColor: Colors.grey.shade100,
+      child: GridView.builder(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        itemCount: 6, // Display shimmer for 6 items
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          childAspectRatio: 0.75,
+          crossAxisSpacing: 10,
+          mainAxisSpacing: 10,
+        ),
+        itemBuilder: (_, __) {
+          return Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  height: screenWidth * 0.25,
+                  color: Colors.grey,
+                ),
+                const SizedBox(height: 8),
+                Container(
+                  width: screenWidth * 0.5,
+                  height: 15,
+                  color: Colors.grey,
+                ),
+                const SizedBox(height: 5),
+                Container(
+                  width: screenWidth * 0.4,
+                  height: 12,
+                  color: Colors.grey,
+                ),
+                const SizedBox(height: 5),
+                Container(
+                  width: screenWidth * 0.3,
+                  height: 15,
+                  color: Colors.grey,
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
 }
 
-class HotelCard extends StatelessWidget {
+class HotelCard extends StatefulWidget {
+  final Map<String, dynamic> hotel;
+  final Map<String, dynamic> responceData;
+
+  const HotelCard({super.key, required this.hotel, required this.responceData});
+     
+  @override
+  State<HotelCard> createState() => _HotelCardState();
+}
+
+class _HotelCardState extends State<HotelCard> {
+  _selectButton(){
+    print(widget.hotel);
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => FlightPage(selectedHotel: widget.hotel, responceData: widget.responceData),
+          ),
+        );
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
+    final String roomType = widget.hotel["room_category_name"];
+    final String mealType = widget.hotel["meal_type_name"];
+    final String price = widget.hotel["price_per_person"].toString();
+    final int star = int.parse(widget.hotel["rating"]);
 
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
@@ -168,8 +268,8 @@ class HotelCard extends StatelessWidget {
         children: [
           ClipRRect(
             borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
-            child: Image.asset(
-              'img/hotel1.png',
+            child: Image.network(
+              widget.hotel["hotel_image"],
               fit: BoxFit.cover,
               width: screenWidth,
             ),
@@ -186,7 +286,7 @@ class HotelCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Hotel Deluxe',
+                          widget.hotel["hotel_name"],
                           style: TextStyle(
                             fontSize: screenWidth * 0.035,
                             fontWeight: FontWeight.bold,
@@ -194,7 +294,7 @@ class HotelCard extends StatelessWidget {
                         ),
                         SizedBox(height: 4),
                         Text(
-                          'Tirana',
+                          widget.hotel["destination"],
                           style: TextStyle(
                             color: Colors.grey[600],
                             fontSize: screenWidth * 0.035,
@@ -203,7 +303,7 @@ class HotelCard extends StatelessWidget {
                       ],
                     ),
                     Row(
-                      children: List.generate(5, (index) {
+                      children: List.generate(star, (index) {
                         return Icon(
                           Icons.star,
                           color: Colors.amber,
@@ -220,7 +320,7 @@ class HotelCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          '• Room Type: Standard',
+                          '• Room Type: $roomType',
                           style: TextStyle(
                               fontSize: screenWidth * 0.03, height: 1.5),
                         ),
@@ -230,7 +330,7 @@ class HotelCard extends StatelessWidget {
                               fontSize: screenWidth * 0.03, height: 1.5),
                         ),
                         Text(
-                          '• Meals Plan: Breakfast',
+                          '• Meals Plan: $mealType',
                           style: TextStyle(
                               fontSize: screenWidth * 0.03, height: 1.5),
                         ),
@@ -243,7 +343,7 @@ class HotelCard extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'AED 2,377',
+                            'AED $price',
                             style: TextStyle(
                               fontSize: screenWidth * 0.035,
                               fontWeight: FontWeight.bold,
@@ -284,7 +384,7 @@ class HotelCard extends StatelessWidget {
                                   fontSize: screenWidth * 0.03),
                             ),
                             Text(
-                              '14:00 PM',
+                              widget.hotel["checkin_time"],
                               style: TextStyle(
                                   fontSize: screenWidth * 0.035,
                                   fontWeight: FontWeight.bold),
@@ -313,7 +413,7 @@ class HotelCard extends StatelessWidget {
                                   fontSize: screenWidth * 0.03),
                             ),
                             Text(
-                              '05:30 PM',
+                              widget.hotel["checkout_time"],
                               style: TextStyle(
                                   fontSize: screenWidth * 0.035,
                                   fontWeight: FontWeight.bold),
@@ -328,12 +428,7 @@ class HotelCard extends StatelessWidget {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () { Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            const FlightPage()),
-                                  );},
+                    onPressed: _selectButton,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.red,
                       shape: RoundedRectangleBorder(

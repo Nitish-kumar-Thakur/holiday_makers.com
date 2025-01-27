@@ -24,6 +24,7 @@ class _CalendarwidgetState extends State<Calendarwidget> {
         _selectedDate = picked;
       });
       widget.onDateSelected(picked);
+      
     }
   }
 

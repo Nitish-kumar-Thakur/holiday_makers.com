@@ -19,32 +19,7 @@ class Drawerpage2 extends StatefulWidget {
 class _Drawerpage2State extends State<Drawerpage2> {
   String profileImg = "";
   String firstName = "";
-  List<Map<String, String>> data = [
-    {
-      "title": "Deals",
-      "img1": "img/traveler.png",
-      "img2": "img/cruise.png",
-      "text1": "Fully Independent Traveler",
-      "text2": "Fixed Departures",
-      "text3": "Cruise",
-    },
-    {
-      "title": "My Trip",
-      "img1": "img/booking.png",
-      "img2": "img/Wallet.png",
-      "text1": "My Booking",
-      "text2": "Wallet",
-    },
-    {
-      "title": "About",
-      "img1": "img/article.png",
-      "img2": "img/helpCenter.png",
-      "img3": "img/signOut.png",
-      "text1": "Article & Blogs",
-      "text2": "Help Center",
-      "text3": "Sign Out",
-    }
-  ];
+  
 
   @override
   void initState() {

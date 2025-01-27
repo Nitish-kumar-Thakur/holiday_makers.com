@@ -116,7 +116,7 @@ class TripDetailsPage extends StatelessWidget {
                             borderRadius: BorderRadius.circular(8),
                           ),
                         ),
-                        onPressed: () {Navigator.push(context, MaterialPageRoute(builder: (context) => Independenttravelerpage()));},
+                        onPressed: () {Navigator.push(context, MaterialPageRoute(builder: (context) => IndependentTravelerPage()));},
                         child: Text(
                           "Book A Trip",
                           style: TextStyle(fontSize: 22, color: Colors.white),

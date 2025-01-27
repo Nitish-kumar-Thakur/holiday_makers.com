@@ -31,7 +31,7 @@ class Dropdownwidget extends StatelessWidget {
                   hintText,
                   style: TextStyle(
                     color: Colors.black,
-                    fontSize: 16,
+                    fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
