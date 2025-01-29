@@ -15,7 +15,10 @@ class DepartureDeals extends StatefulWidget {
 
 class _DepartureDealsState extends State<DepartureDeals> {
   DateTime? selectedDate; // For storing the selected date
-  int selectedOption = 0; // To track the selected cruise option
+  int selectedOption = 0;
+  String? selectedRoom;
+  String? selectedAdult;
+  String? selectedChild; // To track the selected cruise option
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -88,38 +91,38 @@ class _DepartureDealsState extends State<DepartureDeals> {
               ),
               SizedBox(height: 20),
               // Select Date Section
-              GestureDetector(
-                onTap: () => _selectDate(context),
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                    color: Colors.grey[200],
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        children: [
-                          Icon(Icons.calendar_today_outlined,
-                              color: Colors.black54),
-                          SizedBox(width: 8),
-                          Text(
-                            selectedDate != null
-                                ? DateFormat('dd MMM yyyy').format(selectedDate!)
-                                : 'SELECT DATE',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ],
-                      ),
-                      Icon(Icons.arrow_drop_down, color: Colors.black54),
-                    ],
-                  ),
-                ),
-              ),
+              // GestureDetector(
+              //   onTap: () => _selectDate(context),
+              //   child: Container(
+              //     padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              //     decoration: BoxDecoration(
+              //       borderRadius: BorderRadius.circular(8),
+              //       color: Colors.grey[200],
+              //     ),
+              //     child: Row(
+              //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //       children: [
+              //         Row(
+              //           children: [
+              //             Icon(Icons.calendar_today_outlined,
+              //                 color: Colors.black54),
+              //             SizedBox(width: 8),
+              //             Text(
+              //               selectedDate != null
+              //                   ? DateFormat('dd MMM yyyy').format(selectedDate!)
+              //                   : 'SELECT DATE',
+              //               style: TextStyle(
+              //                 fontSize: 16,
+              //                 fontWeight: FontWeight.w500,
+              //               ),
+              //             ),
+              //           ],
+              //         ),
+              //         Icon(Icons.arrow_drop_down, color: Colors.black54),
+              //       ],
+              //     ),
+              //   ),
+              // ),
               SizedBox(height: 16),
               // Cruise Options Section
               CruiseOption(
@@ -163,7 +166,7 @@ class _DepartureDealsState extends State<DepartureDeals> {
               ),
               SizedBox(height: 24),
               Text(
-                'Fixed Departures',
+                'SELECT TRAVELLERS',
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
@@ -171,7 +174,13 @@ class _DepartureDealsState extends State<DepartureDeals> {
                 ),
               ),
               SizedBox(height: 10),
-              // Travelerdrawer(),
+              Travelerdrawer(onSelectionChanged: (List<Map<String, dynamic>> selection) {
+                    setState(() {
+                      selectedRoom = selection[0]['rooms'];
+                      selectedAdult = selection[1]['adults'];
+                      selectedChild = selection[2]['children'];
+                    });
+                  },),
               SizedBox(height: 30),
               Align(alignment: Alignment.center, 
               child: IconButton(onPressed: (){
@@ -266,13 +275,16 @@ class CruiseOption extends StatelessWidget {
                     fontSize: 14,
                   ),
                 ),
-                Text(
+                Container( decoration: BoxDecoration(color: Colors.white,
+                borderRadius: BorderRadius.circular(50), border: Border.all(width: 1, color: Colors.grey)),
+                  child: Center(child: Padding(padding: EdgeInsets.all(5),
+                  child: Text( 
                   duration,
                   style: TextStyle(
                     color: Colors.grey[600],
                     fontSize: 14,
                   ),
-                ),
+                ),),),),
                 Text(
                   checkOut,
                   style: TextStyle(

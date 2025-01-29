@@ -6,7 +6,7 @@ import 'package:holdidaymakers/widgets/drawerPage.dart';
 import 'package:holdidaymakers/widgets/mainCarousel.dart';
 import 'package:holdidaymakers/widgets/subCarousel.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:shimmer/shimmer.dart'; // ✅ Import Shimmer
+import 'package:shimmer/shimmer.dart'; 
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -40,6 +40,7 @@ class _HomePageState extends State<HomePage> {
   Future<void> _fetchHomePageData() async {
     try {
       final data = await APIHandler.HomePageData();
+      
       setState(() {
         bannerList = List<Map<String, dynamic>>.from(
           data['data']['banner_list'].map((item) => {
@@ -61,19 +62,21 @@ class _HomePageState extends State<HomePage> {
       List<Map<String, dynamic>> fetchedSections = (data['data'] as List)
           .map((category) => {
                 'title': category['category_name'],
-                'list': List<Map<String, dynamic>>.from(category['package_list']
-                    .map((package) => {
+                'list': List<Map<String, dynamic>>.from(
+                    category['package_list'].map((package) => {
                           'image': package['package_homepage_image'],
                           'name': package['package_name'],
                           'price': package['discounted_price'],
                           'currency': package['currency'],
                           'country': package['country_name'],
+                          "id": package["package_type"]
                         })),
               })
           .toList();
 
       setState(() {
         sections = fetchedSections;
+        
         isLoading = false;
       });
     } catch (e) {
@@ -84,12 +87,13 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-void navigateToSeeAll(List<Map<String, dynamic>> packageList) {
-  Navigator.push(
-    context,
-    MaterialPageRoute(builder: (context) => Homepage2(packageList: packageList)),
-  );
-}
+  void navigateToSeeAll(List<Map<String, dynamic>> packageList) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => Homepage2(packageList: packageList)),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -101,7 +105,7 @@ void navigateToSeeAll(List<Map<String, dynamic>> packageList) {
     );
   }
 
-  // ✅ Loading Skeleton UI
+  //  Loading Skeleton UI
   Widget _buildLoadingSkeleton() {
     return SingleChildScrollView(
       child: Column(
@@ -113,19 +117,23 @@ void navigateToSeeAll(List<Map<String, dynamic>> packageList) {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _shimmerContainer(width: 50, height: 50, shape: BoxShape.circle), // Profile Placeholder
+                _shimmerContainer(
+                    width: 50,
+                    height: 50,
+                    shape: BoxShape.circle), // Profile Placeholder
                 _shimmerContainer(width: 150, height: 40), // Logo Placeholder
               ],
             ),
           ),
           _shimmerContainer(height: 200), // Carousel Placeholder
-          for (var i = 0; i < 3; i++) _buildSectionSkeleton(), // Sample Sections
+          for (var i = 0; i < 3; i++)
+            _buildSectionSkeleton(), // Sample Sections
         ],
       ),
     );
   }
 
-  // ✅ Shimmer Container (for placeholders)
+  //  Shimmer Container (for placeholders)
   Widget _shimmerContainer(
       {double width = double.infinity,
       double height = 20,
@@ -139,13 +147,14 @@ void navigateToSeeAll(List<Map<String, dynamic>> packageList) {
         decoration: BoxDecoration(
           color: Colors.white,
           shape: shape,
-          borderRadius: shape == BoxShape.circle ? null : BorderRadius.circular(8),
+          borderRadius:
+              shape == BoxShape.circle ? null : BorderRadius.circular(8),
         ),
       ),
     );
   }
 
-  // ✅ Section Skeleton
+  //  Section Skeleton
   Widget _buildSectionSkeleton() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
@@ -160,7 +169,7 @@ void navigateToSeeAll(List<Map<String, dynamic>> packageList) {
     );
   }
 
-  // ✅ Actual Content UI
+  //  Actual Content UI
   Widget _buildContent() {
     return SingleChildScrollView(
       child: Column(
@@ -175,7 +184,7 @@ void navigateToSeeAll(List<Map<String, dynamic>> packageList) {
     );
   }
 
-  // ✅ Header Section
+  //  Header Section
   Widget _buildHeader() {
     return Container(
       width: double.infinity,
@@ -202,7 +211,7 @@ void navigateToSeeAll(List<Map<String, dynamic>> packageList) {
     );
   }
 
-  // ✅ Profile Avatar and Brand Logo
+  //  Profile Avatar and Brand Logo
   Widget _buildProfileSection() {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -232,7 +241,7 @@ void navigateToSeeAll(List<Map<String, dynamic>> packageList) {
     );
   }
 
-  // ✅ Dynamic Sections
+  //  Dynamic Sections
   Widget _buildDynamicSections() {
     return ListView.builder(
       physics: const NeverScrollableScrollPhysics(),
@@ -247,14 +256,18 @@ void navigateToSeeAll(List<Map<String, dynamic>> packageList) {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  AppText(text: section['title'], color: Colors.black, size: 16),
+                  AppText(
+                      text: section['title'], color: Colors.black, size: 16),
                   GestureDetector(
                     onTap: () => navigateToSeeAll(section['list']),
                     child: Padding(
                       padding: const EdgeInsets.only(right: 5),
                       child: Row(
                         children: [
-                          AppText(text: 'See All', color: const Color(0xFF0775BD), size: 15),
+                          AppText(
+                              text: 'See All',
+                              color: const Color(0xFF0775BD),
+                              size: 15),
                           const SizedBox(width: 1),
                           Image.asset('img/seeAll.png', height: 16),
                         ],
@@ -267,7 +280,26 @@ void navigateToSeeAll(List<Map<String, dynamic>> packageList) {
             const Padding(
                 padding: EdgeInsets.only(left: 15),
                 child: Divider(color: Colors.grey)),
-            Subcarousel(lists: section['list']),
+            GestureDetector(
+              // onTap: () {
+              //   print(section["list"]["package_type"]);
+              //   if (section["list"]["package_type"] == "cruise") {
+              //     Navigator.push(
+              //       context,
+              //       MaterialPageRoute(builder: (context) => CruiseDealsPage()),
+              //     );
+              //   } else {
+              //     Navigator.push(
+              //       context,
+              //       MaterialPageRoute(builder: (context) => DepartureDeals()),
+              //     );
+              //   }
+              // },
+              child: Subcarousel(
+                lists: section['list'],
+                title: section['title'],
+              ),
+            ),
             const SizedBox(height: 20),
           ],
         );

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:holdidaymakers/pages/FullyIndependentTraveler/flightPage.dart';
+import 'package:holdidaymakers/pages/FullyIndependentTraveler/flightPage1.dart';
 import 'package:holdidaymakers/pages/FullyIndependentTraveler/payment_method.dart';
 import 'package:holdidaymakers/widgets/appLargetext.dart';
 import 'package:holdidaymakers/widgets/appText.dart';

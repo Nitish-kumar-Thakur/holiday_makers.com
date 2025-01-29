@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:holdidaymakers/pages/Cruise/CurisesPackage.dart';
+import 'package:holdidaymakers/pages/Cruise/cruise_deals_page.dart';
+import 'package:holdidaymakers/pages/FixedDeparturesPages/departureDeals.dart';
 import 'package:holdidaymakers/widgets/responcive_card.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:holdidaymakers/pages/FullyIndependentTraveler/trip_details_page.dart';
 import 'package:holdidaymakers/utils/api_handler.dart';
-import 'package:holdidaymakers/widgets/appText.dart';
 import 'package:holdidaymakers/widgets/drawerPage.dart';
 import 'package:holdidaymakers/widgets/mainCarousel.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -147,11 +146,19 @@ class _Homepage2State extends State<Homepage2> {
         children: widget.packageList.map((package) {
           return GestureDetector(
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => TripDetailsPage()),
-              );
-            },
+                print(package["id"].toString());
+                if (package["id"] == "cruise") {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => CruiseDealsPage()),
+                  );
+                } else if (package["id"] == "FD") {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => DepartureDeals()),
+                  );
+                }
+              },
             child: ResponsiveCard(
               image: package['image'] ?? 'img/placeholder.png',
               title: package['name'] ?? 'Package Name',

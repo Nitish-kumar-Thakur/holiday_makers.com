@@ -64,10 +64,13 @@ class _CurisesHomeState extends State<CurisesHome> {
     }
   }
 
-  Future<void> _fetchCruisePackages(String country, String month) async {
-    try {
-      final data = await APIHandler.getNewPackagesData("cruise", country, month);
-      setState(() {
+Future<void> _fetchCruisePackages(String country, String month) async {
+  print(country);
+  print(month);
+  try {
+    final data = await APIHandler.getNewPackagesData("cruise", country, month);
+    setState(() {
+      if (data['status'] == true) {
         cruisePackages = (data['data']['package_list'] as List)
             .map<Map<String, dynamic>>((package) => {
                   'image': package['package_homepage_image'],
@@ -77,15 +80,20 @@ class _CurisesHomeState extends State<CurisesHome> {
                   'country': package['country_name'],
                 })
             .toList();
-        isLoading = false;
-      });
-    } catch (error) {
-      debugPrint('Error fetching cruise packages: $error');
-      setState(() {
-        isLoading = false;
-      });
-    }
+      } else {
+        cruisePackages = []; // Empty list if no packages are found
+      }
+      isLoading = false;
+    });
+  } catch (error) {
+    debugPrint('Error fetching cruise packages: $error');
+    setState(() {
+      isLoading = false;
+      cruisePackages = []; // Empty list in case of error
+    });
   }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -326,7 +334,8 @@ class _CurisesHomeState extends State<CurisesHome> {
             onChanged: (value) {
               setState(() {
                 selectedCountry = value;
-                _fetchCruisePackages(selectedCountry ?? '', selectedMonth ?? '');
+                _fetchCruisePackages(
+                    selectedCountry ?? '', selectedMonth ?? '');
               });
             },
           ),
@@ -338,7 +347,8 @@ class _CurisesHomeState extends State<CurisesHome> {
             onChanged: (value) {
               setState(() {
                 selectedMonth = value;
-                _fetchCruisePackages(selectedCountry ?? '', selectedMonth ?? '');
+                _fetchCruisePackages(
+                    selectedCountry ?? '', selectedMonth ?? '');
               });
             },
           ),
@@ -359,37 +369,47 @@ class _CurisesHomeState extends State<CurisesHome> {
 
   // Normal Package Grid
   Widget _buildPackageGrid(double screenWidth) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 15),
-      child: GridView.builder(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        itemCount: cruisePackages.length,
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          childAspectRatio: 0.75,
-          crossAxisSpacing: 10,
-          mainAxisSpacing: 10,
-        ),
-        itemBuilder: (context, index) {
-          final package = cruisePackages[index];
-          return GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => TripDetailsPage()),
+  return Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 15),
+    child: cruisePackages.isEmpty
+        ? Center(
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Text(
+                'No Compatible Packages Available',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+            ),
+          )
+        : GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: cruisePackages.length,
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              childAspectRatio: 0.75,
+              crossAxisSpacing: 10,
+              mainAxisSpacing: 10,
+            ),
+            itemBuilder: (context, index) {
+              final package = cruisePackages[index];
+              return GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => TripDetailsPage()),
+                  );
+                },
+                child: ResponsiveCard(
+                  image: package['image'] ?? 'img/placeholder.png',
+                  title: package['name'] ?? 'Package Name',
+                  subtitle: package['country'] ?? 'Location',
+                  price: "${package['currency']} ${package['price'] ?? 'N/A'}",
+                  screenWidth: screenWidth,
+                ),
               );
             },
-            child: ResponsiveCard(
-              image: package['image'] ?? 'img/placeholder.png',
-              title: package['name'] ?? 'Package Name',
-              subtitle: package['country'] ?? 'Location',
-              price: "${package['currency']} ${package['price'] ?? 'N/A'}",
-              screenWidth: screenWidth,
-            ),
-          );
-        },
-      ),
-    );
-  }
+          ),
+  );
+}
 }

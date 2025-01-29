@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:holdidaymakers/learn.dart';
+import 'package:holdidaymakers/widgets/learn.dart';
 import 'package:holdidaymakers/pages/Cruise/CurisesPackage.dart';
 import 'package:holdidaymakers/pages/Cruise/cruisePackagedetails.dart';
 import 'package:holdidaymakers/utils/api_handler.dart';

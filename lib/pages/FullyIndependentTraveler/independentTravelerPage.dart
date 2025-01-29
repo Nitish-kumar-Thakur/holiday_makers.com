@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:holdidaymakers/utils/api_handler.dart';
 import 'package:holdidaymakers/widgets/appLargetext.dart';
+import 'package:holdidaymakers/widgets/appText.dart';
 import 'package:holdidaymakers/widgets/calendarWidget.dart';
 import 'package:holdidaymakers/widgets/drawerPage.dart';
 import 'package:holdidaymakers/widgets/dropdownWidget.dart';
@@ -11,8 +12,9 @@ import 'package:holdidaymakers/pages/FullyIndependentTraveler/travelerhotels.dar
 import 'package:intl/intl.dart';
 
 class IndependentTravelerPage extends StatefulWidget {
-  
-  const IndependentTravelerPage({super.key,});
+  const IndependentTravelerPage({
+    super.key,
+  });
 
   @override
   State<IndependentTravelerPage> createState() =>
@@ -24,9 +26,9 @@ class _IndependentTravelerPageState extends State<IndependentTravelerPage> {
   String? selectedDestination;
   String? fromDate;
   String? stayingDay;
-  String? selectedRoom;
-  String? selectedAdult;
-  String? selectedChild;
+  String selectedRoom = "1";
+  String selectedAdult = "1";
+  String selectedChild = "0";
 
   List<Map<String, String>> cities = [];
   List<Map<String, String>> destinations = [];
@@ -98,7 +100,6 @@ class _IndependentTravelerPageState extends State<IndependentTravelerPage> {
             builder: (context) => Travelerhotels(responceData: response),
           ),
         );
-        
       } else {
         setState(() {
           errorMessage = response["message"];
@@ -115,15 +116,15 @@ class _IndependentTravelerPageState extends State<IndependentTravelerPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-      ),
+      // appBar: AppBar(
+      //   backgroundColor: Colors.white,
+      //   leading: IconButton(
+      //     icon: Icon(Icons.arrow_back, color: Colors.black),
+      //     onPressed: () {
+      //       Navigator.pop(context);
+      //     },
+      //   ),
+      // ),
       key: _scaffoldKey,
       drawer: Drawerpage(),
       body: SafeArea(
@@ -163,7 +164,7 @@ class _IndependentTravelerPageState extends State<IndependentTravelerPage> {
                     });
                   },
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 25),
                 Container(
                   height: 58,
                   width: double.infinity,
@@ -184,7 +185,7 @@ class _IndependentTravelerPageState extends State<IndependentTravelerPage> {
                               size: 24,
                             ),
                             SizedBox(
-                              width: 10,
+                              width: 20,
                             ),
                             Column(
                               children: [
@@ -214,7 +215,12 @@ class _IndependentTravelerPageState extends State<IndependentTravelerPage> {
                             border: Border.all(width: 1, color: Colors.grey),
                           ),
                           child: DropdownButton<String>(
-                            value: dropdownValue,
+                            value: stayingDay, // Allow null values
+                            hint: Center(
+                                child: AppText(
+                              text: "Select",
+                              color: Colors.black,
+                            )), // Default hint text
                             items: ['1', '2', '3', '4'].map((String item) {
                               return DropdownMenuItem<String>(
                                 value: "$item night",
@@ -223,8 +229,7 @@ class _IndependentTravelerPageState extends State<IndependentTravelerPage> {
                             }).toList(),
                             onChanged: (String? newValue) {
                               setState(() {
-                                dropdownValue = newValue!;
-                                stayingDay = newValue;
+                                stayingDay = newValue; // Assign value directly
                               });
                             },
                             icon: SizedBox.shrink(),
@@ -232,6 +237,7 @@ class _IndependentTravelerPageState extends State<IndependentTravelerPage> {
                             borderRadius: BorderRadius.circular(20),
                           ),
                         ),
+
                         // Calendarwidget(
                         //   onDateSelected: (selectedDate) {
                         //     setState(() {
@@ -243,13 +249,13 @@ class _IndependentTravelerPageState extends State<IndependentTravelerPage> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 25),
                 Travelerdrawer(
                   onSelectionChanged: (List<Map<String, dynamic>> selection) {
                     setState(() {
-                      selectedRoom = selection[0]['rooms'];
-                      selectedAdult = selection[1]['adults'];
-                      selectedChild = selection[2]['children'];
+                      selectedRoom = selection[0]['rooms'] ?? "1";
+                      selectedAdult = selection[1]['adults'] ?? "1";
+                      selectedChild = selection[2]['children'] ?? "0";
                     });
                   },
                 ),

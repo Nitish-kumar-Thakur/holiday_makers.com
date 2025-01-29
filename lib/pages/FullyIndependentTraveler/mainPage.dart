@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:holdidaymakers/pages/Cruise/CurisesHome.dart';
+import 'package:holdidaymakers/pages/FixedDeparturesPages/departuresHome.dart';
 import 'package:holdidaymakers/pages/FullyIndependentTraveler/homePage.dart';
+import 'package:holdidaymakers/pages/FullyIndependentTraveler/independentTravelerPage.dart';
 import 'package:holdidaymakers/pages/searchBarpage.dart';
 import 'package:holdidaymakers/widgets/bottomNavigationBar.dart';
 import 'package:holdidaymakers/widgets/notifications.dart';
@@ -15,9 +18,10 @@ class Mainpage extends StatefulWidget {
 class _MainpageState extends State<Mainpage> {
   List<Widget> pages = [
     HomePage(),
-    SearchPage(),
-    Notifications(),
-    ProfilePage(),
+    IndependentTravelerPage(),
+    CurisesHome(),
+    DeparturesHome(),
+    ProfilePage()
   ];
 
   int _selectedIndex = 0; // Track current selected index

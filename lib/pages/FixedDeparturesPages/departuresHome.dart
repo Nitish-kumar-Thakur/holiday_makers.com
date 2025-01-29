@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:holdidaymakers/pages/Cruise/cruise_deals_page.dart';
 import 'package:holdidaymakers/pages/FixedDeparturesPages/departureDeals.dart';
 import 'package:holdidaymakers/pages/FixedDeparturesPages/departuresPackages.dart';
 import 'package:holdidaymakers/utils/api_handler.dart';
@@ -65,10 +66,11 @@ class _DeparturesHomeState extends State<DeparturesHome> {
     }
   }
 
-  Future<void> _fetchFDPackages(String country, String month) async {
-    try {
-      final data = await APIHandler.getNewPackagesData("", country, month);
-      setState(() {
+Future<void> _fetchFDPackages(String country, String month) async {
+  try {
+    final data = await APIHandler.getNewPackagesData("", country, month);
+    setState(() {
+      if (data['status'] == true) {
         fdPackages = (data['data']['package_list'] as List)
             .map<Map<String, dynamic>>((package) => {
                   'image': package['package_homepage_image'],
@@ -76,17 +78,23 @@ class _DeparturesHomeState extends State<DeparturesHome> {
                   'price': package['discounted_price'],
                   'currency': package['currency'],
                   'country': package['country_name'],
+                  "id": package["package_type"]
                 })
             .toList();
-        isLoading = false;
-      });
-    } catch (error) {
-      debugPrint('Error fetching cruise packages: $error');
-      setState(() {
-        isLoading = false;
-      });
-    }
+      } else {
+        fdPackages = []; // No packages found
+      }
+      isLoading = false;
+    });
+  } catch (error) {
+    debugPrint('Error fetching fixed departure packages: $error');
+    setState(() {
+      isLoading = false;
+      fdPackages = []; // No packages found in case of error
+    });
   }
+}
+
 
   void navigateToSeeAll() {
     Navigator.push(context,
@@ -218,32 +226,32 @@ class _DeparturesHomeState extends State<DeparturesHome> {
 
   // Shimmer for Package Grid
   Widget _buildPackageGridShimmer(double screenWidth) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 15),
-      child: GridView.builder(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        itemCount: 6, // Set number of shimmer items
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          childAspectRatio: 0.75,
-          crossAxisSpacing: 10,
-          mainAxisSpacing: 10,
-        ),
-        itemBuilder: (context, index) {
-          return Shimmer.fromColors(
-            baseColor: Colors.grey[300]!,
-            highlightColor: Colors.grey[100]!,
-            child: Container(
-              width: screenWidth / 2 - 20,
-              height: 250,
-              color: Colors.white,
-            ),
-          );
-        },
+  return Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 15),
+    child: GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: 6, // Set number of shimmer items
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        childAspectRatio: 0.75,
+        crossAxisSpacing: 10,
+        mainAxisSpacing: 10,
       ),
-    );
-  }
+      itemBuilder: (context, index) {
+        return Shimmer.fromColors(
+          baseColor: Colors.grey[300]!,
+          highlightColor: Colors.grey[100]!,
+          child: Container(
+            width: screenWidth / 2 - 20,
+            height: 250,
+            color: Colors.white,
+          ),
+        );
+      },
+    ),
+  );
+}
 
   // Normal Header
   Widget _buildHeader() {
@@ -350,38 +358,56 @@ class _DeparturesHomeState extends State<DeparturesHome> {
   }
 
   // Normal Package Grid
-  Widget _buildPackageGrid(double screenWidth) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 15),
-      child: GridView.builder(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        itemCount: fdPackages.length,
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          childAspectRatio: 0.75,
-          crossAxisSpacing: 10,
-          mainAxisSpacing: 10,
-        ),
-        itemBuilder: (context, index) {
-          final package = fdPackages[index];
-          return GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => DepartureDeals()),
+ Widget _buildPackageGrid(double screenWidth) {
+  return Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 15),
+    child: fdPackages.isEmpty
+        ? Center(
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Text(
+                "No Compatible Packages Available",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+            ),
+          )
+        : GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: fdPackages.length,
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              childAspectRatio: 0.75,
+              crossAxisSpacing: 10,
+              mainAxisSpacing: 10,
+            ),
+            itemBuilder: (context, index) {
+              final package = fdPackages[index];
+              return GestureDetector(
+                onTap: () {
+                print(package["id"].toString());
+                if (package["id"] == "cruise") {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => CruiseDealsPage()),
+                  );
+                } else if (package["id"] == "") {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => DepartureDeals()),
+                  );
+                }
+              },
+                child: ResponsiveCard(
+                  image: package['image'] ?? 'img/placeholder.png',
+                  title: package['name'] ?? 'Package Name',
+                  subtitle: package['country'] ?? 'Location',
+                  price: "${package['currency']} ${package['price'] ?? 'N/A'}",
+                  screenWidth: screenWidth,
+                ),
               );
             },
-            child: ResponsiveCard(
-              image: package['image'] ?? 'img/placeholder.png',
-              title: package['name'] ?? 'Package Name',
-              subtitle: package['country'] ?? 'Location',
-              price: "${package['currency']} ${package['price'] ?? 'N/A'}",
-              screenWidth: screenWidth,
-            ),
-          );
-        },
-      ),
-    );
-  }
+          ),
+  );
+}
 }

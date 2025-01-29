@@ -21,28 +21,29 @@ class BottomNavigationBarPage extends StatelessWidget {
       currentIndex: index,
       onTap: onTapped,
       type: BottomNavigationBarType.fixed,
-      showSelectedLabels: false, // ❌ Hide labels
-      showUnselectedLabels: false, // ❌ Hide labels
+      showSelectedLabels: true, // ❌ Hide labels
+      showUnselectedLabels: true, // ❌ Hide labels
       iconSize: iconSize.clamp(20, 40), // Keep icons within a reasonable range
       elevation: 5, // Slight elevation for better UI
       items: [
-        _buildNavItem(FontAwesomeIcons.house, 0, iconSize),
-        _buildNavItem(FontAwesomeIcons.magnifyingGlass, 1, iconSize),
-        _buildNavItem(FontAwesomeIcons.bell, 2, iconSize),
-        _buildNavItem(FontAwesomeIcons.user, 3, iconSize),
+        _buildNavItem(FontAwesomeIcons.house, 0, iconSize, "Home"),
+        _buildNavItem(FontAwesomeIcons.personWalkingLuggage, 1, iconSize,"FIT"),
+        _buildNavItem(FontAwesomeIcons.sailboat, 2, iconSize, "Cruise"),
+        _buildNavItem(FontAwesomeIcons.personHiking, 3, iconSize,"FD"),
+        _buildNavItem(FontAwesomeIcons.user, 4, iconSize, "Account"),
       ],
     );
   }
 
   BottomNavigationBarItem _buildNavItem(
-      IconData icon, int itemIndex, double iconSize) {
+      IconData icon, int itemIndex, double iconSize, String label) {
     return BottomNavigationBarItem(
       icon: Icon(
         icon,
         size: iconSize,
         color: index == itemIndex ? Colors.blue : Colors.black54,
       ),
-      label: "", // ✅ Empty label to avoid errors
+      label: label, // ✅ Empty label to avoid errors
     );
   }
 }

@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:holdidaymakers/help_center_page.dart';
+import 'package:holdidaymakers/widgets/help_center_page.dart';
 import 'package:holdidaymakers/pages/Cruise/CurisesHome.dart';
 import 'package:holdidaymakers/pages/Cruise/CurisesHome1.dart';
 import 'package:holdidaymakers/pages/FixedDeparturesPages/departuresHome.dart';
 import 'package:holdidaymakers/pages/FixedDeparturesPages/departuresHome1.dart';
 import 'package:holdidaymakers/pages/FullyIndependentTraveler/mainPage.dart';
 import 'package:holdidaymakers/pages/introPage.dart';
-import 'package:holdidaymakers/terms_and_conditions_page.dart';
-import 'package:holdidaymakers/testimonials_page.dart';
+import 'package:holdidaymakers/widgets/terms_and_conditions_page.dart';
+import 'package:holdidaymakers/widgets/terms_and_conditions_page1.dart';
+import 'package:holdidaymakers/widgets/testimonials_page.dart';
 import 'package:holdidaymakers/utils/shared_preferences_handler.dart';
 import 'package:holdidaymakers/widgets/ChangePassword.dart';
 import 'package:holdidaymakers/widgets/ManageAccount.dart';
@@ -208,47 +209,47 @@ class _DrawerpageState extends State<Drawerpage> {
                 ),
               ),
               SizedBox(height: 20),
-              Divider(color: Colors.white),
-              Padding(
-                padding: EdgeInsets.only(left: 15),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    AppLargeText(text: "Deals", size: 24, color: Colors.white),
-                    SizedBox(height: 3),
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => Mainpage()),
-                        );
-                      },
-                      child: ChildContainer(image: "img/traveler.png", text: "Fully Independent Traveler"),
-                    ),
-                    SizedBox(height: 3),
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => DeparturesHome()),
-                        );
-                      },
-                      child: ChildContainer(image: "img/traveler.png", text: 'Fixed Departures'),
-                    ),
-                    SizedBox(height: 3),
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => CurisesHome()),
-                        );
-                      },
-                      child: ChildContainer(image: "img/cruise.png", text: "Cruise"),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(height: 20),
+              // Divider(color: Colors.white),
+              // Padding(
+              //   padding: EdgeInsets.only(left: 15),
+              //   child: Column(
+              //     crossAxisAlignment: CrossAxisAlignment.start,
+              //     children: [
+              //       AppLargeText(text: "Deals", size: 24, color: Colors.white),
+              //       SizedBox(height: 3),
+              //       GestureDetector(
+              //         onTap: () {
+              //           Navigator.push(
+              //             context,
+              //             MaterialPageRoute(builder: (context) => Mainpage()),
+              //           );
+              //         },
+              //         child: ChildContainer(image: "img/traveler.png", text: "Fully Independent Traveler"),
+              //       ),
+              //       SizedBox(height: 3),
+              //       GestureDetector(
+              //         onTap: () {
+              //           Navigator.push(
+              //             context,
+              //             MaterialPageRoute(builder: (context) => DeparturesHome()),
+              //           );
+              //         },
+              //         child: ChildContainer(image: "img/traveler.png", text: 'Fixed Departures'),
+              //       ),
+              //       SizedBox(height: 3),
+              //       GestureDetector(
+              //         onTap: () {
+              //           Navigator.push(
+              //             context,
+              //             MaterialPageRoute(builder: (context) => CurisesHome()),
+              //           );
+              //         },
+              //         child: ChildContainer(image: "img/cruise.png", text: "Cruise"),
+              //       ),
+              //     ],
+              //   ),
+              // ),
+              // SizedBox(height: 20),
               Divider(color: Colors.white),
               Padding(
                 padding: EdgeInsets.only(left: 15),

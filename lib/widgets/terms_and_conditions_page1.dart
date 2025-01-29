@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class TermsAndConditionsPage extends StatelessWidget {
-  const TermsAndConditionsPage({super.key});
+class TermsAndConditionsPage1 extends StatelessWidget {
+  const TermsAndConditionsPage1({super.key});
   @override
   Widget build(BuildContext context) {
     return Scaffold(

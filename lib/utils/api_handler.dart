@@ -207,9 +207,9 @@ class APIHandler {
       throw Exception('Error: ${response.statusCode}');
     }
   }
-  
-  static Future<Map<String, List<Map<String, String>>>> fetchCruiseCountryMonthList(
-      String sourceId) async {
+
+  static Future<Map<String, List<Map<String, String>>>>
+      fetchCruiseCountryMonthList(String sourceId) async {
     try {
       final response = await http.post(
         Uri.parse(
@@ -225,17 +225,17 @@ class APIHandler {
           // Extracting country_list
           final countryList = (data['data']['country_list'] as List<dynamic>)
               .map<Map<String, String>>((item) => {
-            'id': item['country_id'] ?? '',
-            'name': item['country_name'] ?? '',
-          })
+                    'id': item['country_id'] ?? '',
+                    'name': item['country_name'] ?? '',
+                  })
               .toList();
 
           // Extracting month_list
           final monthList = (data['data']['month_list'] as List<dynamic>)
               .map<Map<String, String>>((month) => {
-            'id': month.toString(),
-            'name': month.toString(),
-          })
+                    'id': month.toString(),
+                    'name': month.toString(),
+                  })
               .toList();
 
           return {
@@ -258,7 +258,8 @@ class APIHandler {
       String sourceId) async {
     try {
       final response = await http.post(
-        Uri.parse('https://b2cuat.tikipopi.com/index.php/holiday_api/get_package_country_month_list'),
+        Uri.parse(
+            'https://b2cuat.tikipopi.com/index.php/holiday_api/get_package_country_month_list'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'source_id': sourceId}),
       );
@@ -270,17 +271,17 @@ class APIHandler {
           // Extracting country_list
           final countryList = (data['data']['country_list'] as List<dynamic>)
               .map<Map<String, String>>((item) => {
-            'id': item['country_id'] ?? '',
-            'name': item['country_name'] ?? '',
-          })
+                    'id': item['country_id'] ?? '',
+                    'name': item['country_name'] ?? '',
+                  })
               .toList();
 
           // Extracting month_list
           final monthList = (data['data']['month_list'] as List<dynamic>)
               .map<Map<String, String>>((month) => {
-            'id': month.toString(),
-            'name': month.toString(),
-          })
+                    'id': month.toString(),
+                    'name': month.toString(),
+                  })
               .toList();
 
           return {
@@ -300,24 +301,47 @@ class APIHandler {
     }
   }
 
-  static Future<Map<String, dynamic>> getNewPackagesData(String package, String country, String month) async {
+  static Future<Map<String, dynamic>> getNewPackagesData(
+      String package, String country, String month) async {
     try {
-      final response = await http.post(Uri.parse('https://b2cuat.tikipopi.com/index.php/holiday_api/get_package_list'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
-    "type":package,
-    "country_id": country??'',//RU
-    "month":month??'' //Dec-2025
-}),
-    );
-      if (response.statusCode == 200) {
-        return json.decode(response.body);
+      final Uri url = Uri.parse('https://b2cuat.tikipopi.com/index.php/holiday_api/get_package_list');
+
+      final Map<String, dynamic> requestBody = {
+        "type": package,
+        "country_id": country,//country
+        "month": month //month
+      };
+
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(requestBody),
+      );
+
+      
+
+      if (response.statusCode != 200) {
+        throw Exception("Server error: ${response.statusCode}");
+      }
+
+      final Map<String, dynamic> data = jsonDecode(response.body);
+
+      if (data["status"] == true && data.containsKey("data")) {
+        return data;
       } else {
-        throw Exception("Failed to load homepage data");
+        return {
+          "status": false,
+          "message": "No packages found",
+          "data": {"package_list": []}
+        };
       }
     } catch (e) {
-      print("API Error: $e");
-      throw Exception("Error fetching data");
+      
+      return {
+        "status": false,
+        "message": "Error fetching data",
+        "data": {"package_list": []}
+      };
     }
   }
 
