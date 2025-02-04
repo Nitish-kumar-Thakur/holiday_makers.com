@@ -78,7 +78,8 @@ Future<void> _fetchFDPackages(String country, String month) async {
                   'price': package['discounted_price'],
                   'currency': package['currency'],
                   'country': package['country_name'],
-                  "id": package["package_type"]
+                  "id": package["package_type"],
+                  "packageId": package["package_id"]
                 })
             .toList();
       } else {
@@ -352,6 +353,16 @@ Future<void> _fetchFDPackages(String country, String month) async {
               });
             },
           ),
+          const SizedBox(height: 30),
+          AppLargeText(
+            text: 'Packages',
+            color: Colors.black,
+            size: 18,
+          ),
+          const Divider(
+            color: Colors.black38,
+            thickness: 1,
+          ),
         ],
       ),
     );
@@ -377,7 +388,7 @@ Future<void> _fetchFDPackages(String country, String month) async {
             itemCount: fdPackages.length,
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
-              childAspectRatio: 0.75,
+              // childAspectRatio: 0.75,
               crossAxisSpacing: 10,
               mainAxisSpacing: 10,
             ),
@@ -389,12 +400,12 @@ Future<void> _fetchFDPackages(String country, String month) async {
                 if (package["id"] == "cruise") {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => CruiseDealsPage()),
+                    MaterialPageRoute(builder: (context) => CruiseDealsPage(packageid: package["packageId"])),
                   );
                 } else if (package["id"] == "") {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => DepartureDeals()),
+                    MaterialPageRoute(builder: (context) => DepartureDeals(packageId: package["packageId"])),
                   );
                 }
               },

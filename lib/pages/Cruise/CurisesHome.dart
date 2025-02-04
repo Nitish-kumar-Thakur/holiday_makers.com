@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:holdidaymakers/pages/Cruise/cruise_deals_page.dart';
 import 'package:holdidaymakers/pages/FullyIndependentTraveler/trip_details_page.dart';
 import 'package:holdidaymakers/utils/api_handler.dart';
 import 'package:holdidaymakers/widgets/appLargetext.dart';
@@ -78,6 +79,7 @@ Future<void> _fetchCruisePackages(String country, String month) async {
                   'price': package['discounted_price'],
                   'currency': package['currency'],
                   'country': package['country_name'],
+                  "packageid": package["package_id"]
                 })
             .toList();
       } else {
@@ -387,7 +389,7 @@ Future<void> _fetchCruisePackages(String country, String month) async {
             itemCount: cruisePackages.length,
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
-              childAspectRatio: 0.75,
+              // childAspectRatio: 0.75,
               crossAxisSpacing: 10,
               mainAxisSpacing: 10,
             ),
@@ -397,7 +399,7 @@ Future<void> _fetchCruisePackages(String country, String month) async {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => TripDetailsPage()),
+                    MaterialPageRoute(builder: (context) => CruiseDealsPage(packageid: package["packageid"])),
                   );
                 },
                 child: ResponsiveCard(

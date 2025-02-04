@@ -118,10 +118,10 @@ class CruisePackageDetails extends StatelessWidget {
                           ),
                         ),
                         onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => CruiseDealsPage()));
+                          // Navigator.push(
+                          //     context,
+                          //     MaterialPageRoute(
+                          //         builder: (context) => CruiseDealsPage()));
                         },
                         child: Text(
                           "Book A Trip",

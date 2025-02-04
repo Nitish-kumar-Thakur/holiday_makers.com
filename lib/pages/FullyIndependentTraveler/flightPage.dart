@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:holdidaymakers/pages/FullyIndependentTraveler/offersDiscount.dart';
+import 'package:holdidaymakers/pages/FullyIndependentTraveler/booking_summary_fit.dart';
 
 class FlightPage extends StatefulWidget {
   final Map<String, dynamic> responceData;
   final Map<String, dynamic> selectedHotel;
+  final List<Map<String, dynamic>> roomArray;
   const FlightPage(
-      {super.key, required this.responceData, required this.selectedHotel});
+      {super.key, required this.responceData, required this.selectedHotel, required this.roomArray});
 
   @override
   State<FlightPage> createState() => _FlightPageState();
@@ -143,12 +144,12 @@ class _FlightPageState extends State<FlightPage> {
               itemBuilder: (context, index) {
                 return GestureDetector(
                   onTap: () {
-                    print(widget.responceData);
+                    // print(widget.responceData);
                     // print(widget.selectedHotel);
-                    // Navigator.push(
-                    //     context,
-                    //     MaterialPageRoute(
-                    //         builder: (context) => Offersdiscount()));
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => BookingSummaryFIT(responceData: widget.responceData, selectedHotel: widget.selectedHotel, roomArray: widget.roomArray,)));
                   },
                   child: FlightCard(onboardFlight: widget.responceData["data"]["flight"]["onward"], returnFlight: widget.responceData["data"]["flight"]["return"],),
                 );

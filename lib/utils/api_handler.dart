@@ -183,6 +183,7 @@ class APIHandler {
     required String rooms,
     required String adults,
     required String children,
+    required List<String> childrenAge
   }) async {
     final url = Uri.parse(fitSearchUrl);
     final body = jsonEncode({
@@ -193,6 +194,7 @@ class APIHandler {
       "rooms": rooms,
       "adult": adults,
       "child": children,
+      "childAge_0": childrenAge
     });
 
     final response = await http.post(
@@ -341,6 +343,92 @@ class APIHandler {
         "status": false,
         "message": "Error fetching data",
         "data": {"package_list": []}
+      };
+    }
+  }
+
+    static Future<Map<String, dynamic>> fitBookingSummary(Map<String, dynamic> bookingApiData) async {
+    final url = Uri.parse("https://b2cuat.tikipopi.com/index.php/holiday_api/fit_booking_summary");
+    final body = jsonEncode(bookingApiData);
+
+    final response = await http.post(
+      url,
+      headers: {"Content-Type": "application/json"},
+      body: body,
+    );
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception('Error: ${response.statusCode}');
+    }
+  }
+
+  static Future<Map<String, dynamic>> getDepartureDeal(String packageId) async {
+    final Uri url = Uri.parse('https://b2cuat.tikipopi.com/index.php/holiday_api/fd_package_details');
+
+    final Map<String, dynamic> requestBody = {
+      "package_id": packageId,
+    };
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(requestBody),
+      );
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = jsonDecode(response.body);
+        if (data["status"] == true) {
+          return data["data"]; // Return full package details
+        } else {
+          return {
+            "status": false,
+            "message": "No package details found",
+            "data": {}
+          };
+        }
+      } else {
+        throw Exception("Server error: ${response.statusCode}");
+      }
+    } catch (e) {
+      return {
+        "status": false,
+        "message": "Error fetching package details",
+        "data": {}
+      };
+    }
+  }
+  static Future<Map<String, dynamic>> getCruiseDeal(String packageId) async {
+    final Uri url = Uri.parse('https://b2cuat.tikipopi.com/index.php/holiday_api/cruise_details');
+
+    final Map<String, dynamic> requestBody = {
+      "package_id": packageId,
+    };
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(requestBody),
+      );
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = jsonDecode(response.body);
+        if (data["status"] == true) {
+          return data["data"]; // Return full package details
+        } else {
+          return {
+            "status": false,
+            "message": "No package details found",
+            "data": {}
+          };
+        }
+      } else {
+        throw Exception("Server error: ${response.statusCode}");
+      }
+    } catch (e) {
+      return {
+        "status": false,
+        "message": "Error fetching package details",
+        "data": {}
       };
     }
   }

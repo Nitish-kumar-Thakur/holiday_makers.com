@@ -9,7 +9,7 @@ import 'package:holdidaymakers/widgets/mainCarousel.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Homepage2 extends StatefulWidget {
-  final List<Map<String, dynamic>> packageList; // ✅ Accept package list
+  final List<Map<String, dynamic>> packageList;
 
   const Homepage2({Key? key, required this.packageList}) : super(key: key);
 
@@ -20,7 +20,7 @@ class Homepage2 extends StatefulWidget {
 class _Homepage2State extends State<Homepage2> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   String profileImg = '';
-  bool isLoading = true; 
+  bool isLoading = true;
   List<Map<String, dynamic>> banner_list = [];
 
   @override
@@ -41,7 +41,8 @@ class _Homepage2State extends State<Homepage2> {
     try {
       final data = await APIHandler.HomePageData();
       setState(() {
-        banner_list = List<Map<String, dynamic>>.from(data['data']['banner_list']);
+        banner_list =
+            List<Map<String, dynamic>>.from(data['data']['banner_list']);
         isLoading = false;
       });
     } catch (e) {
@@ -60,7 +61,7 @@ class _Homepage2State extends State<Homepage2> {
       backgroundColor: Colors.white,
       drawer: Drawerpage(),
       body: isLoading
-          ? _buildShimmerEffect()
+          ? _buildLoadingSkeleton(screenWidth)
           : SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -68,6 +69,7 @@ class _Homepage2State extends State<Homepage2> {
                   _buildHeader(),
                   _buildProfileSection(),
                   Maincarousel(banner_list: banner_list),
+                  
                   _buildPackageSection(screenWidth),
                 ],
               ),
@@ -139,58 +141,160 @@ class _Homepage2State extends State<Homepage2> {
   Widget _buildPackageSection(double screenWidth) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 15),
-      child: GridView.count(
-        crossAxisCount: 2,
-        shrinkWrap: true,
-        physics: NeverScrollableScrollPhysics(),
-        children: widget.packageList.map((package) {
-          return GestureDetector(
-            onTap: () {
+      child: GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: widget.packageList.length,
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              // childAspectRatio: 0.75,
+              crossAxisSpacing: 10,
+              mainAxisSpacing: 10,
+            ),
+            itemBuilder: (context, index) {
+              final package = widget.packageList[index];
+              return GestureDetector(
+                onTap: () {
                 print(package["id"].toString());
                 if (package["id"] == "cruise") {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => CruiseDealsPage()),
+                    MaterialPageRoute(builder: (context) => CruiseDealsPage(packageid: package["packageId"])),
                   );
-                } else if (package["id"] == "FD") {
+                } else if (package["id"] == "") {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => DepartureDeals()),
                   );
                 }
               },
-            child: ResponsiveCard(
-              image: package['image'] ?? 'img/placeholder.png',
-              title: package['name'] ?? 'Package Name',
-              subtitle: package['country'] ?? 'Location',
-              price: "${package['currency']} ${package['price'] ?? 'N/A'}",
-              screenWidth: screenWidth,
+                child: ResponsiveCard(
+                  image: package['image'] ?? 'img/placeholder.png',
+                  title: package['name'] ?? 'Package Name',
+                  subtitle: package['country'] ?? 'Location',
+                  price: "${package['currency']} ${package['price'] ?? 'N/A'}",
+                  screenWidth: screenWidth,
+                ),
+              );
+            },
+          ),
+    );
+  }
+
+  Widget _buildLoadingSkeleton(final double screenWidth) {
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _shimmerContainer(height: 120), // Header Placeholder
+          Padding(
+            padding: const EdgeInsets.all(15),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _shimmerContainer(
+                    width: 50,
+                    height: 50,
+                    shape: BoxShape.circle), // Profile Placeholder
+                _shimmerContainer(width: 150, height: 40), // Logo Placeholder
+              ],
             ),
-          );
-        }).toList(),
+          ),
+          _shimmerContainer(height: 200), // Carousel Placeholder
+          for (var i = 0; i < 3; i++)
+            _buildShimmerSection(screenWidth), // Sample Sections
+        ],
       ),
     );
   }
 
-  Widget _buildShimmerEffect() {
-    return ListView.builder(
-      itemCount: 5,
-      itemBuilder: (context, index) {
-        return Shimmer.fromColors(
-          baseColor: Colors.grey[300]!,
-          highlightColor: Colors.grey[100]!,
-          child: Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: Container(
-              height: 120,
+  Widget _shimmerContainer(
+      {double width = double.infinity,
+      double height = 20,
+      BoxShape shape = BoxShape.rectangle}) {
+    return Shimmer.fromColors(
+      baseColor: Colors.grey[300]!,
+      highlightColor: Colors.grey[100]!,
+      child: Container(
+        width: width,
+        height: height,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          shape: shape,
+          borderRadius:
+              shape == BoxShape.circle ? null : BorderRadius.circular(8),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildShimmerSection(double screenWidth) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 15),
+      child: GridView.builder(
+        itemCount: 4, // Number of skeleton items to display
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          crossAxisSpacing: 10,
+          mainAxisSpacing: 10,
+          childAspectRatio: 0.8, // Adjust based on your card aspect ratio
+        ),
+        shrinkWrap: true,
+        physics: NeverScrollableScrollPhysics(),
+        itemBuilder: (context, index) {
+          return Shimmer.fromColors(
+            baseColor: Colors.grey[300]!,
+            highlightColor: Colors.grey[100]!,
+            child: Card(
               color: Colors.white,
+              child: Shimmer.fromColors(
+                baseColor: Colors.grey[300]!,
+                highlightColor: Colors.grey[100]!,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      height: 120,
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        color: Colors.white,
+                      ),
+                    ),
+                    SizedBox(height: 4),
+                    Padding(
+                      padding: EdgeInsets.only(left: screenWidth * 0.01),
+                      child: Container(
+                        height: 16,
+                        width: screenWidth * 0.5,
+                        color: Colors.white,
+                      ),
+                    ),
+                    SizedBox(height: 4),
+                    Padding(
+                      padding: EdgeInsets.only(left: screenWidth * 0.01),
+                      child: Container(
+                        height: 16,
+                        width: screenWidth * 0.3,
+                        color: Colors.white,
+                      ),
+                    ),
+                    SizedBox(height: 4),
+                    Padding(
+                      padding: EdgeInsets.only(left: screenWidth * 0.01),
+                      child: Container(
+                        height: 16,
+                        width: screenWidth * 0.2,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 }
-
-
-

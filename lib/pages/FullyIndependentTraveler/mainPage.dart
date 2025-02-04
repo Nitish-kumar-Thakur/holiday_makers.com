@@ -3,9 +3,7 @@ import 'package:holdidaymakers/pages/Cruise/CurisesHome.dart';
 import 'package:holdidaymakers/pages/FixedDeparturesPages/departuresHome.dart';
 import 'package:holdidaymakers/pages/FullyIndependentTraveler/homePage.dart';
 import 'package:holdidaymakers/pages/FullyIndependentTraveler/independentTravelerPage.dart';
-import 'package:holdidaymakers/pages/searchBarpage.dart';
 import 'package:holdidaymakers/widgets/bottomNavigationBar.dart';
-import 'package:holdidaymakers/widgets/notifications.dart';
 import 'package:holdidaymakers/widgets/profile_page.dart';
 
 class Mainpage extends StatefulWidget {
@@ -16,21 +14,20 @@ class Mainpage extends StatefulWidget {
 }
 
 class _MainpageState extends State<Mainpage> {
-  List<Widget> pages = [
+  int _selectedIndex = 0;
+  final List<int> _historyStack = [];
+
+  final List<Widget> _pages = [
     HomePage(),
     IndependentTravelerPage(),
     CurisesHome(),
     DeparturesHome(),
-    ProfilePage()
+    ProfilePage(),
   ];
 
-  int _selectedIndex = 0; // Track current selected index
-  List<int> _historyStack = []; // Stack to track navigation history
-
-  // Function to switch between pages
   void _onItemTapped(int index) {
     if (_selectedIndex != index) {
-      _historyStack.add(_selectedIndex); // ✅ Store the current page before switching
+      _historyStack.add(_selectedIndex);
     }
     setState(() {
       _selectedIndex = index;
@@ -43,18 +40,21 @@ class _MainpageState extends State<Mainpage> {
       onWillPop: () async {
         if (_historyStack.isNotEmpty) {
           setState(() {
-            _selectedIndex = _historyStack.removeLast(); // Go back to the last visited page
+            _selectedIndex = _historyStack.removeLast();
           });
           return false; // Prevent app from closing
         }
-        return true; // Allow app exit if no history left
+        return true; // Allow app exit
       },
       child: Scaffold(
         bottomNavigationBar: BottomNavigationBarPage(
           index: _selectedIndex,
           onTapped: _onItemTapped,
         ),
-        body: pages[_selectedIndex],
+        body: IndexedStack(
+          index: _selectedIndex,
+          children: _pages,
+        ),
       ),
     );
   }

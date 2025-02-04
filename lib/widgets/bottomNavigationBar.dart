@@ -23,6 +23,10 @@ class BottomNavigationBarPage extends StatelessWidget {
       type: BottomNavigationBarType.fixed,
       showSelectedLabels: true, // ❌ Hide labels
       showUnselectedLabels: true, // ❌ Hide labels
+      selectedItemColor: Colors.blue, // Color for selected label & icon
+      unselectedItemColor: Colors.black54, // Color for unselected label & icon
+      selectedLabelStyle: const TextStyle(fontSize: 12, color: Colors.blue), // Fixed size & color
+      unselectedLabelStyle: const TextStyle(fontSize: 12, color: Colors.black54), // Fixed size & color// Fixed label size
       iconSize: iconSize.clamp(20, 40), // Keep icons within a reasonable range
       elevation: 5, // Slight elevation for better UI
       items: [
@@ -43,7 +47,7 @@ class BottomNavigationBarPage extends StatelessWidget {
         size: iconSize,
         color: index == itemIndex ? Colors.blue : Colors.black54,
       ),
-      label: label, // ✅ Empty label to avoid errors
+      label:  label, backgroundColor: index == itemIndex ? Colors.blue : Colors.black54, // ✅ Empty label to avoid errors
     );
   }
 }

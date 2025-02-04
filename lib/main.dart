@@ -1,12 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:holdidaymakers/pages/Cruise/booking_summary.dart';
-import 'package:holdidaymakers/pages/FixedDeparturesPages/departureDeals.dart';
-import 'package:holdidaymakers/pages/FullyIndependentTraveler/flightPage.dart';
-import 'package:holdidaymakers/pages/FullyIndependentTraveler/homePage.dart';
-import 'package:holdidaymakers/pages/FullyIndependentTraveler/independentTravelerPage.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:holdidaymakers/pages/FullyIndependentTraveler/mainPage.dart';
 import 'package:holdidaymakers/splashscreen.dart';
-import 'package:holdidaymakers/web_admin.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,9 +19,11 @@ class MyApp extends StatelessWidget {
         title: 'Holiday Makers',
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 6, 3, 3)),
+          textTheme: GoogleFonts.poppinsTextTheme(Theme.of(context).textTheme)
+        ,
           useMaterial3: true,
         ),
-        home:  Mainpage(), // Use `const` for better performance.
+        home: const Splashscreen(), // Use `const` for better performance.
         );
   }
 }

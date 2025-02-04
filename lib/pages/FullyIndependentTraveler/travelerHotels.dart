@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:holdidaymakers/pages/FullyIndependentTraveler/flightPage.dart';
 import 'package:holdidaymakers/widgets/appLargetext.dart';
 import 'package:holdidaymakers/widgets/appText.dart';
@@ -6,7 +7,8 @@ import 'package:shimmer/shimmer.dart';
 
 class Travelerhotels extends StatefulWidget {
   final Map<String, dynamic> responceData;
-  const Travelerhotels({super.key, required this.responceData});
+  final List<Map<String, dynamic>> roomArray;
+  const Travelerhotels({super.key, required this.responceData , required this.roomArray});
 
   @override
   State<Travelerhotels> createState() => _TravelerhotelsState();
@@ -26,11 +28,11 @@ class _TravelerhotelsState extends State<Travelerhotels> {
     });
   }
 
-  Widget buildInclusionCard(String imagePath, String label) {
+  Widget buildInclusionCard(IconData icon, String label) {
     final screenWidth = MediaQuery.of(context).size.width;
     return Container(
-      width: screenWidth * 0.18,
-      height: screenWidth * 0.16,
+      width: screenWidth * 0.17,
+      height: screenWidth * 0.15,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(10),
@@ -38,18 +40,11 @@ class _TravelerhotelsState extends State<Travelerhotels> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Container(
-            height: screenWidth * 0.1,
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage(imagePath),
-              ),
-            ),
-          ),
+          Icon(icon),
           const SizedBox(height: 4),
           AppText(
             text: label,
-            size: screenWidth * 0.03,
+            size: screenWidth * 0.02,
             color: Colors.black,
           ),
         ],
@@ -93,32 +88,7 @@ class _TravelerhotelsState extends State<Travelerhotels> {
                         Navigator.pop(context);
                       },
                     ),
-                    Padding(
-                      padding: EdgeInsets.all(screenWidth * 0.05),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          AppLargeText(
-                            text: 'Grand Inn Baku',
-                            color: Colors.white,
-                          ),
-                          Row(
-                            children: [
-                              const Icon(
-                                Icons.location_on,
-                                color: Colors.white,
-                                size: 30,
-                              ),
-                              AppText(
-                                text: 'Baku, Azerbaijan',
-                                color: Colors.white,
-                                size: screenWidth * 0.045,
-                              )
-                            ],
-                          )
-                        ],
-                      ),
-                    )
+                    
                   ],
                 ),
               ),
@@ -140,10 +110,11 @@ class _TravelerhotelsState extends State<Travelerhotels> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        buildInclusionCard('img/flight.png', 'Flights'),
-                        buildInclusionCard('img/hotels.png', 'Hotels'),
-                        buildInclusionCard('img/transfers.png', 'Transfers'),
-                        buildInclusionCard('img/insurance.png', 'Insurance'),
+                        buildInclusionCard(FontAwesomeIcons.plane, 'Flights'),
+                        buildInclusionCard(FontAwesomeIcons.hotel, 'Hotels'),
+                        buildInclusionCard(FontAwesomeIcons.car, 'Transfers'),
+                        buildInclusionCard(FontAwesomeIcons.userShield, 'Insurance'),
+                        buildInclusionCard(FontAwesomeIcons.user, 'Tour Guide'),
                       ],
                     ),
                     SizedBox(height: screenHeight * 0.02),
@@ -160,6 +131,7 @@ class _TravelerhotelsState extends State<Travelerhotels> {
                                   child: HotelCard(
                                     hotel: hotelList[index],
                                     responceData: widget.responceData,
+                                    roomArray: widget.roomArray,
                                   ),
                                 );
                               },
@@ -180,51 +152,62 @@ class _TravelerhotelsState extends State<Travelerhotels> {
     return Shimmer.fromColors(
       baseColor: Colors.grey.shade300,
       highlightColor: Colors.grey.shade100,
-      child: GridView.builder(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        itemCount: 6, // Display shimmer for 6 items
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          childAspectRatio: 0.75,
-          crossAxisSpacing: 10,
-          mainAxisSpacing: 10,
+      child: Card(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+        elevation: 8,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Container(
+              height: screenWidth * 0.4,
+              decoration: BoxDecoration(
+                color: Colors.grey,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.all(screenWidth * 0.04),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(height: 15, width: screenWidth * 0.5, color: Colors.grey),
+                  SizedBox(height: 8),
+                  Container(height: 12, width: screenWidth * 0.3, color: Colors.grey),
+                  SizedBox(height: 8),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(height: 12, width: screenWidth * 0.4, color: Colors.grey),
+                      Container(height: 12, width: screenWidth * 0.2, color: Colors.grey),
+                    ],
+                  ),
+                  SizedBox(height: 8),
+                  Row(
+                    children: List.generate(5, (index) => Icon(
+                          Icons.star,
+                          color: Colors.grey,
+                          size: screenWidth * 0.04,
+                        )),
+                  ),
+                  SizedBox(height: 12),
+                  Container(height: 15, width: screenWidth * 0.25, color: Colors.grey),
+                  SizedBox(height: 5),
+                  Container(height: 12, width: screenWidth * 0.2, color: Colors.grey),
+                  SizedBox(height: 20),
+                  Container(
+                    width: double.infinity,
+                    height: screenWidth * 0.12,
+                    decoration: BoxDecoration(
+                      color: Colors.grey,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
-        itemBuilder: (_, __) {
-          return Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  height: screenWidth * 0.25,
-                  color: Colors.grey,
-                ),
-                const SizedBox(height: 8),
-                Container(
-                  width: screenWidth * 0.5,
-                  height: 15,
-                  color: Colors.grey,
-                ),
-                const SizedBox(height: 5),
-                Container(
-                  width: screenWidth * 0.4,
-                  height: 12,
-                  color: Colors.grey,
-                ),
-                const SizedBox(height: 5),
-                Container(
-                  width: screenWidth * 0.3,
-                  height: 15,
-                  color: Colors.grey,
-                ),
-              ],
-            ),
-          );
-        },
       ),
     );
   }
@@ -233,22 +216,24 @@ class _TravelerhotelsState extends State<Travelerhotels> {
 class HotelCard extends StatefulWidget {
   final Map<String, dynamic> hotel;
   final Map<String, dynamic> responceData;
+  final List<Map<String, dynamic>> roomArray;
 
-  const HotelCard({super.key, required this.hotel, required this.responceData});
-     
+  const HotelCard({super.key, required this.hotel, required this.responceData, required this.roomArray});
+
   @override
   State<HotelCard> createState() => _HotelCardState();
 }
 
 class _HotelCardState extends State<HotelCard> {
-  _selectButton(){
-    print(widget.hotel);
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => FlightPage(selectedHotel: widget.hotel, responceData: widget.responceData),
-          ),
-        );
+  _selectButton() {
+    // print(widget.hotel);
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => FlightPage(
+            selectedHotel: widget.hotel, responceData: widget.responceData, roomArray: widget.roomArray,),
+      ),
+    );
   }
 
   @override
@@ -258,6 +243,7 @@ class _HotelCardState extends State<HotelCard> {
     final String mealType = widget.hotel["meal_type_name"];
     final String price = widget.hotel["price_per_person"].toString();
     final int star = int.parse(widget.hotel["rating"]);
+    
 
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),

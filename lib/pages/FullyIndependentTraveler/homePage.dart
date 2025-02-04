@@ -49,6 +49,7 @@ class _HomePageState extends State<HomePage> {
                 'link': item['link'],
               }),
         );
+        isLoading = false;
       });
     } catch (e) {
       print('Error fetching homepage data: $e');
@@ -66,10 +67,15 @@ class _HomePageState extends State<HomePage> {
                     category['package_list'].map((package) => {
                           'image': package['package_homepage_image'],
                           'name': package['package_name'],
-                          'price': package['discounted_price'],
+                          'price': package['discounted_price'] ?? package['starting_price'],
+                          'tempPrice': package['starting_price'] ?? package['discounted_price'],
                           'currency': package['currency'],
                           'country': package['country_name'],
-                          "id": package["package_type"]
+                          "id": package["package_type"],
+                          "packageId": package["package_id"],
+                          "dep_date": package["dep_date"]
+                          
+
                         })),
               })
           .toList();
@@ -77,7 +83,7 @@ class _HomePageState extends State<HomePage> {
       setState(() {
         sections = fetchedSections;
         
-        isLoading = false;
+        
       });
     } catch (e) {
       setState(() {

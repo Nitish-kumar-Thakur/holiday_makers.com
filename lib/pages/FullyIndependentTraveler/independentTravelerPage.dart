@@ -26,9 +26,11 @@ class _IndependentTravelerPageState extends State<IndependentTravelerPage> {
   String? selectedDestination;
   String? fromDate;
   String? stayingDay;
-  String selectedRoom = "1";
-  String selectedAdult = "1";
-  String selectedChild = "0";
+  String? selectedRoom = "1";
+  String? selectedAdult = "1";
+  String? selectedChild = "0";
+  List<String>? childrenAge = [];
+  List<Map<String, dynamic>> totalRoomsdata = [];
 
   List<Map<String, String>> cities = [];
   List<Map<String, String>> destinations = [];
@@ -41,6 +43,7 @@ class _IndependentTravelerPageState extends State<IndependentTravelerPage> {
   void initState() {
     super.initState();
     fetchCities();
+    // print(selectedRoom);
   }
 
   Future<void> fetchCities() async {
@@ -83,21 +86,26 @@ class _IndependentTravelerPageState extends State<IndependentTravelerPage> {
 
     try {
       var response = await APIHandler.fitSearch(
-        sourceId: selectedCity!,
-        destinationId: selectedDestination!,
-        travelDate: fromDate!,
-        noOfNights: stayingDay!.split(' ')[0],
-        rooms: selectedRoom!,
-        adults: selectedAdult!,
-        children: selectedChild!,
-      );
+          sourceId: selectedCity!,
+          destinationId: selectedDestination!,
+          travelDate: fromDate!,
+          noOfNights: stayingDay!.split(' ')[0],
+          rooms: selectedRoom!,
+          adults: selectedAdult!,
+          children: selectedChild!,
+          childrenAge: childrenAge!);
 
       if (response["message"] == "success") {
-        // print(response);
+        print("====================");
+        print(response["data"]["hotel_list"][0]["Infant_Count"]);
+        print(totalRoomsdata); // Not Used Yet
+        print("====================");
+
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => Travelerhotels(responceData: response),
+            builder: (context) => Travelerhotels(
+                responceData: response, roomArray: totalRoomsdata),
           ),
         );
       } else {
@@ -251,11 +259,15 @@ class _IndependentTravelerPageState extends State<IndependentTravelerPage> {
                 ),
                 const SizedBox(height: 25),
                 Travelerdrawer(
-                  onSelectionChanged: (List<Map<String, dynamic>> selection) {
+                  onSelectionChanged: (Map<String, dynamic> selection) {
                     setState(() {
-                      selectedRoom = selection[0]['rooms'] ?? "1";
-                      selectedAdult = selection[1]['adults'] ?? "1";
-                      selectedChild = selection[2]['children'] ?? "0";
+                      selectedRoom = selection['totalRooms'].toString() ?? "1";
+                      selectedAdult =
+                          selection['totalAdults'].toString() ?? "1";
+                      selectedChild =
+                          selection['totalChildren'].toString() ?? "0";
+                      childrenAge = selection['childrenAges'];
+                      totalRoomsdata = selection["totalData"];
                     });
                   },
                 ),

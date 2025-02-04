@@ -2,13 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart'; // For date formatting
 
 class CruiseDealsPage extends StatefulWidget {
-  const CruiseDealsPage({super.key});
+  final String packageid;
+  const CruiseDealsPage({super.key, required this.packageid});
 
   @override
   _CruiseDealsPageState createState() => _CruiseDealsPageState();
 }
 
 class _CruiseDealsPageState extends State<CruiseDealsPage> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    print("==========================");
+    print(widget.packageid);
+    print("==========================");
+  }
+
   DateTime? selectedDate; // For storing the selected date
   int selectedOption = 0; // To track the selected cruise option
 
@@ -34,9 +44,10 @@ class _CruiseDealsPageState extends State<CruiseDealsPage> {
         backgroundColor: Colors.white,
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () {Navigator.pop(context);},
+          onPressed: () {
+            Navigator.pop(context);
+          },
         ),
-        
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -72,7 +83,8 @@ class _CruiseDealsPageState extends State<CruiseDealsPage> {
                           SizedBox(width: 8),
                           Text(
                             selectedDate != null
-                                ? DateFormat('dd MMM yyyy').format(selectedDate!)
+                                ? DateFormat('dd MMM yyyy')
+                                    .format(selectedDate!)
                                 : 'SELECT DATE',
                             style: TextStyle(
                               fontSize: 16,

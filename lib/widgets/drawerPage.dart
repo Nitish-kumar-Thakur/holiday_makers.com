@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:holdidaymakers/widgets/help_center_page.dart';
 import 'package:holdidaymakers/pages/Cruise/CurisesHome.dart';
 import 'package:holdidaymakers/pages/Cruise/CurisesHome1.dart';
@@ -144,7 +145,7 @@ class _DrawerpageState extends State<Drawerpage> {
               ),
               SizedBox(height: 20),
               Padding(
-                padding: EdgeInsets.only(left: 15),
+                padding: EdgeInsets.only(left: 5),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
@@ -158,7 +159,8 @@ class _DrawerpageState extends State<Drawerpage> {
                       icon: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          SmalCircle(image: 'img/Profile.png'),
+                          Icon(FontAwesomeIcons.user,  color: Colors.white, size: 27,),
+                          SizedBox(height: 8,),
                           AppLargeText(
                             text: 'My Profile',
                             size: 10,
@@ -177,7 +179,8 @@ class _DrawerpageState extends State<Drawerpage> {
                       icon: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          SmalCircle(image: 'img/manageAccount.png'),
+                          Icon(FontAwesomeIcons.userPen , color: Colors.white, size: 27,),
+                          SizedBox(height: 8,),
                           AppLargeText(
                             text: 'Manage Account',
                             size: 10,
@@ -196,7 +199,8 @@ class _DrawerpageState extends State<Drawerpage> {
                       icon: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          SmalCircle(image: 'img/changePassword.png'),
+                          Icon(FontAwesomeIcons.unlock, color: Colors.white, size: 27,),
+                          SizedBox(height: 8,),
                           AppLargeText(
                             text: 'Change Password',
                             size: 10,
@@ -258,9 +262,9 @@ class _DrawerpageState extends State<Drawerpage> {
                   children: [
                     AppLargeText(text: "My Trip", size: 24, color: Colors.white),
                     SizedBox(height: 3),
-                    ChildContainer(image: "img/booking.png", text: "My Booking"),
+                    ChildContainer(icon: FontAwesomeIcons.newspaper, text: "My Booking"),
                     SizedBox(height: 3),
-                    ChildContainer(image: "img/Wallet.png", text: 'Wallet'),
+                    ChildContainer(icon: FontAwesomeIcons.wallet, text: 'Wallet'),
                   ],
                 ),
               ),
@@ -273,33 +277,33 @@ class _DrawerpageState extends State<Drawerpage> {
                   children: [
                     AppLargeText(text: "About", size: 24, color: Colors.white),
                     SizedBox(height: 3),
-                    ChildContainer(image: "img/article.png", text: "Blogs",
+                    ChildContainer(icon: FontAwesomeIcons.filePen, text: "Blogs",
                     onTap: (){}),
                     SizedBox(height: 3),
-                    ChildContainer(image: "img/article.png",text: "Testimonials", onTap: () {
+                    ChildContainer(icon: FontAwesomeIcons.users,text: "Testimonials", onTap: () {
                       Navigator.push(
                           context,
                           MaterialPageRoute(builder: (context) => TestimonialsPage()),
                         );
                     },),
                     SizedBox(height: 3),
-                    ChildContainer(image: "img/article.png", text: "Company Profile"),
+                    ChildContainer(icon: FontAwesomeIcons.buildingUser, text: "Company Profile"),
                     SizedBox(height: 3),
-                    ChildContainer(image: "img/article.png", text: "Terms & Conditions", onTap: () {
+                    ChildContainer(icon: FontAwesomeIcons.fileLines, text: "Terms & Conditions", onTap: () {
                       Navigator.push(
                           context,
                           MaterialPageRoute(builder: (context) => TermsAndConditionsPage()),
                         );
                     },),
                     SizedBox( height: 3),
-                    ChildContainer(image: "img/helpCenter.png", text: "Help Center", onTap: () {
+                    ChildContainer(icon: FontAwesomeIcons.computer, text: "Help Center", onTap: () {
                       Navigator.push(
                           context,
                           MaterialPageRoute(builder: (context) => HelpCenterPage()),
                         );
                     },),
                     SizedBox(height: 3),
-                    ChildContainer(image: "img/signOut.png", text: "Sign Out",
+                    ChildContainer(icon: FontAwesomeIcons.signOut, text: "Sign Out",
                       onTap: () => _showSignOutDialog(context)
                     ),
                   ],
@@ -314,11 +318,11 @@ class _DrawerpageState extends State<Drawerpage> {
 }
 
 class ChildContainer extends StatelessWidget {
-  final String image;
+  final IconData icon;
   final String text;
   final VoidCallback? onTap;
 
-  const ChildContainer({super.key, required this.image, required this.text, this.onTap});
+  const ChildContainer({super.key, required this.icon, required this.text, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -326,16 +330,8 @@ class ChildContainer extends StatelessWidget {
       onTap: onTap,
       child: Row(
         children: [
-          Container(
-            height: 20,
-            width: 20,
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage(image),
-              ),
-            ),
-          ),
-          SizedBox(width: 5),
+          Icon(icon, color: Colors.white, size: 15,),
+          SizedBox(width: 7),
           AppText(text: text, color: Colors.white, size: 14),
         ],
       ),
