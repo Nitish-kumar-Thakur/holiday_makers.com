@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:holdidaymakers/pages/FullyIndependentTraveler/flightPage.dart';
+import 'package:holdidaymakers/pages/FixedDeparturesPages/flightPageFD.dart';
 import 'package:holdidaymakers/widgets/appLargetext.dart';
+import 'package:holdidaymakers/widgets/responciveButton.dart';
 import 'package:shimmer/shimmer.dart';
 
 class HotelsAccommodation extends StatefulWidget {
@@ -13,13 +14,11 @@ class HotelsAccommodation extends StatefulWidget {
 
 class _HotelsAccommodationState extends State<HotelsAccommodation> {
   bool isLoading = true;
+  int selectedHotelIndex = 0;
+
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    print('=============================================');
-    print(widget.packageData["hotel_details"]["4"]);
-    print('=============================================');
     Future.delayed(const Duration(milliseconds: 800), () {
       if (mounted) {
         setState(() {
@@ -31,49 +30,112 @@ class _HotelsAccommodationState extends State<HotelsAccommodation> {
 
   @override
   Widget build(BuildContext context) {
-    final screenHeight = MediaQuery.of(context).size.height;
-    final screenWidth = MediaQuery.of(context).size.width;
-    final hotelList = List<Map<String, dynamic>>.from(
-        widget.packageData["hotel_details"]["4"] ?? []);
+    List<Map<String, dynamic>> hotelList = [];
+
+    /// **Fix: Ensure hotel_details is a Map before processing it**
+    if (widget.packageData["hotel_details"] is Map<String, dynamic>) {
+      widget.packageData["hotel_details"].forEach((rating, hotels) {
+        if (hotels is List) {
+          hotelList.addAll(hotels.whereType<Map<String, dynamic>>());
+        }
+      });
+    }
+
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            icon: Icon(Icons.arrow_back)),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          icon: Icon(Icons.arrow_back),
+        ),
         title: AppLargeText(
           text: 'Accommodation',
           size: 24,
         ),
       ),
-      body: SingleChildScrollView(
-          child: hotelList.isEmpty
-              ? Center(
-                  child: AppLargeText(text: "Hotel Not Available"),
-                )
-              : SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.9,
-                  child:ListView.builder(
-                          itemCount: hotelList.length,
-                          itemBuilder: (_, index) {
-                            return Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: isLoading ?HotelCardShimmer(): HotelCard(hotel: hotelList[index]),
-                            );
-                          },
-                        ),
-                )),
+      body: Column(
+        children: [
+          Expanded(
+            child: hotelList.isEmpty
+                ? const Center(
+              child: Text(
+                "Hotels not available",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black54),
+              ),
+            )
+                : ListView.builder(
+              itemCount: hotelList.length,
+              itemBuilder: (_, index) {
+                return Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: isLoading
+                      ? const HotelCardShimmer()
+                      : HotelCard(
+                    hotel: hotelList[index],
+                    isSelected: selectedHotelIndex == index,
+                    onTap: () {
+                      setState(() {
+                        selectedHotelIndex = index;
+                      });
+                    },
+                  ),
+                );
+              },
+            ),
+          ),
+          isLoading==true ? Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Shimmer.fromColors(
+                baseColor: Colors.grey[300]!,
+                highlightColor: Colors.grey[100]!,
+                child: Container(
+                  height: 50,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+              ),
+            )
+          :Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            child: GestureDetector(
+              onTap: hotelList.isEmpty
+                  ? null
+                  : () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => FlightPageFD(
+                      selectedHotel: hotelList[selectedHotelIndex],
+                      respponceData: widget.packageData,
+                    ),
+                  ),
+                );
+              },
+              child: Padding(padding: const EdgeInsets.only(bottom: 20.0), child:responciveButton(text: "Book Now")),
+               
+            ),
+          ),
+        ],
+      ),
     );
   }
-
-  
 }
 
 class HotelCard extends StatefulWidget {
   final Map<String, dynamic> hotel;
+  final bool isSelected;
+  final VoidCallback onTap;
 
-  const HotelCard({super.key, required this.hotel});
+  const HotelCard({
+    super.key,
+    required this.hotel,
+    required this.isSelected,
+    required this.onTap,
+  });
 
   @override
   State<HotelCard> createState() => _HotelCardState();
@@ -125,13 +187,14 @@ class _HotelCardState extends State<HotelCard> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        SizedBox( width: 200,
+                          child: Text(
                           widget.hotel["hotel"],
                           style: TextStyle(
                             fontSize: screenWidth * 0.035,
                             fontWeight: FontWeight.bold,
                           ),
-                        ),
+                        ),),
                         SizedBox(height: 4),
                         Text(
                           widget.hotel["city"],
@@ -268,20 +331,22 @@ class _HotelCardState extends State<HotelCard> {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: _selectButton,
+                    onPressed: widget.onTap,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red,
+                      backgroundColor:
+                      widget.isSelected ? Colors.red : Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
                     child: Text(
-                      'SELECT',
+                      widget.isSelected ? 'SELECTED' : 'SELECT',
                       style: TextStyle(
-                          color: Colors.white, fontSize: screenWidth * 0.04),
+                          color: widget.isSelected ? Colors.white : Colors.red,
+                          fontSize: screenWidth * 0.04),
                     ),
                   ),
-                ),
+                )
               ],
             ),
           ),
@@ -317,15 +382,30 @@ class HotelCardShimmer extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(width: screenWidth * 0.5, height: 16, color: Colors.grey[300]),
+                  Container(
+                      width: screenWidth * 0.5,
+                      height: 16,
+                      color: Colors.grey[300]),
                   SizedBox(height: 8),
-                  Container(width: screenWidth * 0.3, height: 14, color: Colors.grey[300]),
+                  Container(
+                      width: screenWidth * 0.3,
+                      height: 14,
+                      color: Colors.grey[300]),
                   SizedBox(height: 16),
-                  Container(width: screenWidth * 0.7, height: 14, color: Colors.grey[300]),
+                  Container(
+                      width: screenWidth * 0.7,
+                      height: 14,
+                      color: Colors.grey[300]),
                   SizedBox(height: 4),
-                  Container(width: screenWidth * 0.6, height: 14, color: Colors.grey[300]),
+                  Container(
+                      width: screenWidth * 0.6,
+                      height: 14,
+                      color: Colors.grey[300]),
                   SizedBox(height: 4),
-                  Container(width: screenWidth * 0.5, height: 14, color: Colors.grey[300]),
+                  Container(
+                      width: screenWidth * 0.5,
+                      height: 14,
+                      color: Colors.grey[300]),
                   SizedBox(height: 16),
                   Container(
                     width: double.infinity,
@@ -341,4 +421,3 @@ class HotelCardShimmer extends StatelessWidget {
     );
   }
 }
-

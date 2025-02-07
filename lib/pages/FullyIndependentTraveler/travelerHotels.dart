@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:holdidaymakers/pages/FullyIndependentTraveler/booking_summary_fit.dart';
 import 'package:holdidaymakers/pages/FullyIndependentTraveler/flightPage.dart';
 import 'package:holdidaymakers/widgets/appLargetext.dart';
 import 'package:holdidaymakers/widgets/appText.dart';
@@ -230,8 +231,7 @@ class _HotelCardState extends State<HotelCard> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => FlightPage(
-            selectedHotel: widget.hotel, responceData: widget.responceData, roomArray: widget.roomArray,),
+        builder: (context) => BookingSummaryFIT(responceData: widget.responceData, selectedHotel: widget.hotel, roomArray: widget.roomArray),
       ),
     );
   }
@@ -271,13 +271,14 @@ class _HotelCardState extends State<HotelCard> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        SizedBox( width: 200,
+                          child: Text(
                           widget.hotel["hotel_name"],
                           style: TextStyle(
                             fontSize: screenWidth * 0.035,
                             fontWeight: FontWeight.bold,
                           ),
-                        ),
+                        ),),
                         SizedBox(height: 4),
                         Text(
                           widget.hotel["destination"],

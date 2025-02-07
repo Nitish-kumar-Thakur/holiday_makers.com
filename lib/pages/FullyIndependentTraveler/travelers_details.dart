@@ -12,8 +12,8 @@ class TravelersDetails extends StatefulWidget {
 class _TravelersDetails extends State<TravelersDetails> {
   final List<Map<String, dynamic>> travelerData = [
     {
-      "adult": "7",
-      "child": "9",
+      "adult": "2",
+      "child": "2",
       "childage1": null,
       "childage2": null,
       "childage3": null,

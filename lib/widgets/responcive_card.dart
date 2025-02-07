@@ -26,7 +26,7 @@ class ResponsiveCard extends StatelessWidget {
             height: 120,
             width: double.infinity,
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(10),
               image: DecorationImage(
   image: NetworkImage(image),
   fit: BoxFit.fill,
@@ -91,7 +91,7 @@ class ResponsiveCard2 extends StatelessWidget {
             height: 120,
             width: double.infinity,
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(10),
               image: DecorationImage(
   image: AssetImage(image),
   fit: BoxFit.fill,

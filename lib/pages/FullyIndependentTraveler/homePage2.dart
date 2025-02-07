@@ -161,12 +161,12 @@ class _Homepage2State extends State<Homepage2> {
                     context,
                     MaterialPageRoute(builder: (context) => CruiseDealsPage(packageid: package["packageId"])),
                   );
-                } else if (package["id"] == "") {
+                } else {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => DepartureDeals()),
+                    MaterialPageRoute(builder: (context) => DepartureDeals(packageId: package["packageId"])),
                   );
-                }
+                } 
               },
                 child: ResponsiveCard(
                   image: package['image'] ?? 'img/placeholder.png',

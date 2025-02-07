@@ -1,11 +1,14 @@
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:holdidaymakers/pages/FixedDeparturesPages/hotelsAccommodation.dart';
 import 'package:holdidaymakers/utils/api_handler.dart';
 import 'package:holdidaymakers/widgets/appLargetext.dart';
+import 'package:holdidaymakers/widgets/mainCarousel.dart';
 import 'package:holdidaymakers/widgets/responciveButton.dart';
 import 'package:holdidaymakers/widgets/travelerDrawer.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class DepartureDeals extends StatefulWidget {
   final String? packageId;
@@ -62,7 +65,7 @@ class _DepartureDealsState extends State<DepartureDeals> {
 
     return Container(
       width: 75,
-      height: 65,
+      height: 70,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(10),
@@ -74,7 +77,9 @@ class _DepartureDealsState extends State<DepartureDeals> {
           const SizedBox(height: 2),
           Text(
             label,
-            style: TextStyle(fontSize: 9, color: Colors.black),
+            style: TextStyle(
+                fontSize: MediaQuery.of(context).size.width * 0.02,
+                color: Colors.black),
           ),
         ],
       ),
@@ -83,7 +88,8 @@ class _DepartureDealsState extends State<DepartureDeals> {
 
   @override
   Widget build(BuildContext context) {
-    final inclusionList = (packageData['inclusion_list'] as List<dynamic>?) ?? [];
+    final inclusionList =
+        (packageData['inclusion_list'] as List<dynamic>?) ?? [];
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -94,6 +100,14 @@ class _DepartureDealsState extends State<DepartureDeals> {
             Navigator.pop(context);
           },
         ),
+        title: Text(
+          'Fixed Departures',
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
+        ),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -103,28 +117,25 @@ class _DepartureDealsState extends State<DepartureDeals> {
               : Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'Fixed Departures',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
-                    ),
-                    SizedBox(height: 20),
-
                     // Cruise Options Section
-                    CruiseOption(
+                    PackageCard(
                       title:
                           packageData['package_details']['package_name'] ?? '',
-                      checkIn: packageData['package_details']['dep_date'] ?? '',
-                      checkOut:
+                      departureDate:
                           packageData['package_details']['dep_date'] ?? '',
+                      arrivalDate:
+                          packageData['package_details']['arrival_date'] ?? '',
                       duration:
                           packageData['package_details']['duration'] ?? '',
                       price:
                           '${packageData['package_details']['currency']} ${packageData['package_details']['discounted_price'].toString()}' ??
                               '',
+                      image: List<Map<String, dynamic>>.from(
+                        packageData['package_gallery'].map((item) => {
+                              'image': item['image'],
+                              'alt_text': item['alt_text']
+                            }),
+                      ),
                       isSelected: selectedOption == 0,
                       onSelect: () {
                         setState(() {
@@ -149,8 +160,8 @@ class _DepartureDealsState extends State<DepartureDeals> {
                           const SizedBox(height: 10),
                           Center(
                             child: Wrap(
-                              spacing: 15, // Horizontal space between items
-                              runSpacing: 15, // Vertical space between rows
+                              spacing: 10, // Horizontal space between items
+                              runSpacing: 10, // Vertical space between rows
                               alignment: WrapAlignment.spaceEvenly,
                               children: inclusionList.map<Widget>((inclusion) {
                                 return buildInclusionCard(
@@ -186,214 +197,277 @@ class _DepartureDealsState extends State<DepartureDeals> {
                       },
                     ),
                     SizedBox(height: 30),
-                    Align(
-                      alignment: Alignment.center,
-                      child: IconButton(
-                          onPressed: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        HotelsAccommodation(packageData:packageData)));
-                          },
-                          icon: responciveButton(text: 'SELECT')),
-                    )
 
                     // Hotel Card Section
                   ],
                 ),
         ),
       ),
+      bottomNavigationBar: Padding(
+        padding: EdgeInsets.only(bottom: 15),
+        child: IconButton(
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          HotelsAccommodation(packageData: packageData)));
+            },
+            icon: responciveButton(text: 'SELECT')),
+      ),
     );
   }
 
   Widget _buildShimmerEffect() {
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Shimmer.fromColors(
-        baseColor: Colors.grey[300]!,
-        highlightColor: Colors.grey[100]!,
-        child: Container(
-          height: 30,
-          width: 200,
-          color: Colors.white,
-        ),
-      ),
-      SizedBox(height: 20),
-
-      // Cruise Option Shimmer
-      Shimmer.fromColors(
-        baseColor: Colors.grey[300]!,
-        highlightColor: Colors.grey[100]!,
-        child: Container(
-          height: 100,
-          width: double.infinity,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(10),
-          ),
-        ),
-      ),
-      SizedBox(height: 24),
-
-      // Inclusion Section Shimmer
-      Shimmer.fromColors(
-        baseColor: Colors.grey[300]!,
-        highlightColor: Colors.grey[100]!,
-        child: Container(
-          height: 150,
-          width: double.infinity,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(10),
-          ),
-        ),
-      ),
-      SizedBox(height: 24),
-
-      // Travelers Selection Shimmer
-      Shimmer.fromColors(
-        baseColor: Colors.grey[300]!,
-        highlightColor: Colors.grey[100]!,
-        child: Container(
-          height: 50,
-          width: double.infinity,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(10),
-          ),
-        ),
-      ),
-      SizedBox(height: 30),
-
-      // Button Shimmer
-      Align(
-        alignment: Alignment.center,
-        child: Shimmer.fromColors(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Shimmer.fromColors(
           baseColor: Colors.grey[300]!,
           highlightColor: Colors.grey[100]!,
           child: Container(
-            height: 50,
-            width: 150,
+            height: 30,
+            width: 200,
+            color: Colors.white,
+          ),
+        ),
+        SizedBox(height: 20),
+
+        // Cruise Option Shimmer
+        Shimmer.fromColors(
+          baseColor: Colors.grey[300]!,
+          highlightColor: Colors.grey[100]!,
+          child: Container(
+            height: 100,
+            width: double.infinity,
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(10),
             ),
           ),
         ),
-      ),
-    ],
-  );
+        SizedBox(height: 24),
+
+        // Inclusion Section Shimmer
+        Shimmer.fromColors(
+          baseColor: Colors.grey[300]!,
+          highlightColor: Colors.grey[100]!,
+          child: Container(
+            height: 150,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+        ),
+        SizedBox(height: 24),
+
+        // Travelers Selection Shimmer
+        Shimmer.fromColors(
+          baseColor: Colors.grey[300]!,
+          highlightColor: Colors.grey[100]!,
+          child: Container(
+            height: 50,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+        ),
+        SizedBox(height: 30),
+
+        // Button Shimmer
+        Align(
+          alignment: Alignment.center,
+          child: Shimmer.fromColors(
+            baseColor: Colors.grey[300]!,
+            highlightColor: Colors.grey[100]!,
+            child: Container(
+              height: 50,
+              width: 150,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
 }
 
-}
-
-class CruiseOption extends StatelessWidget {
+class PackageCard extends StatefulWidget {
   final String title;
-  final String checkIn;
-  final String checkOut;
+  final String departureDate;
+  final String arrivalDate;
   final String duration;
   final String price;
+  final List<Map<String, dynamic>> image;
   final bool isSelected;
   final VoidCallback onSelect;
 
-  CruiseOption({
-    required this.title,
-    required this.checkIn,
-    required this.checkOut,
-    required this.duration,
-    required this.price,
-    required this.isSelected,
-    required this.onSelect,
-  });
+  const PackageCard(
+      {super.key,
+      required this.title,
+      required this.departureDate,
+      required this.arrivalDate,
+      required this.duration,
+      required this.price,
+      required this.isSelected,
+      required this.onSelect,
+      required this.image});
 
+  @override
+  State<PackageCard> createState() => _PackageCardState();
+}
+
+class _PackageCardState extends State<PackageCard> {
+  int currentPage = 0;
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onSelect,
+      onTap: widget.onSelect,
       child: Container(
-        padding: EdgeInsets.all(16),
+        // padding: EdgeInsets.all(16  ),
         decoration: BoxDecoration(
           color: Colors.grey[200]!,
           borderRadius: BorderRadius.circular(8),
-          border:
-              Border.all(color: isSelected ? Colors.yellow : Colors.grey[300]!),
+          // border:
+          //     Border.all(color: widget.isSelected ? Colors.yellow : Colors.grey[300]!),
         ),
         child: Column(
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  title,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
+            CarouselSlider.builder(
+              itemCount: widget.image.length,
+              itemBuilder: (context, index, realIndex) {
+                return Container(
+                  margin: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    image: DecorationImage(
+                      image: NetworkImage(widget.image[index]["image"]),
+                      fit: BoxFit.fill,
+                    ),
                   ),
-                ),
-                Row(
-                  children: [
-                    Text(
-                      price,
-                      style: TextStyle(
-                        color: Colors.red,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
-                    ),
-                    SizedBox(width: 8),
-                    Container(
-                      height: 10,
-                      width: 10,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: isSelected ? Colors.yellow : Colors.transparent,
-                        border: Border.all(color: Colors.yellow),
-                      ),
-                    ),
-                  ],
+                );
+              },
+              options: CarouselOptions(
+                height: 200.0,
+                autoPlay: widget.image.length > 1 ? true : false,
+                autoPlayInterval: const Duration(milliseconds: 2500),
+                autoPlayAnimationDuration: const Duration(milliseconds: 900),
+                enlargeCenterPage: true,
+                viewportFraction: 1.0,
+                aspectRatio: 16 / 9,
+                onPageChanged: (index, carouselPageChangedReason) {
+                  setState(() {
+                    currentPage = index;
+                  });
+                },
+              ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                AnimatedSmoothIndicator(
+                  activeIndex: currentPage,
+                  count: widget.image.length,
+                  effect: WormEffect(
+                    dotHeight: 10,
+                    dotWidth: 10,
+                    activeDotColor: Colors.red,
+                    dotColor: Colors.blue.shade200.withOpacity(0.5),
+                  ),
                 ),
               ],
             ),
-            SizedBox(height: 8),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                Text(
-                  checkIn,
-                  style: TextStyle(
-                    color: Colors.grey[600],
-                    fontSize: 14,
-                  ),
-                ),
-                Container(
-                  decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(50),
-                      border: Border.all(width: 1, color: Colors.grey)),
-                  child: Center(
-                    child: Padding(
-                      padding: EdgeInsets.all(5),
-                      child: Text(
-                        duration,
-                        style: TextStyle(
-                          color: Colors.grey[600],
-                          fontSize: 14,
+            Padding(
+              padding: EdgeInsets.all(16),
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      SizedBox(
+                        width: 230,
+                        child: Text(
+                          widget.title,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: MediaQuery.of(context).size.width * 0.05,
+                          ),
                         ),
                       ),
-                    ),
+                      Row(
+                        children: [
+                          Text(
+                            widget.price,
+                            style: TextStyle(
+                              color: Colors.red,
+                              fontWeight: FontWeight.bold,
+                              fontSize:
+                                  MediaQuery.of(context).size.width * 0.05,
+                            ),
+                          ),
+                          // SizedBox(width: 8),
+                          // Container(
+                          //   height: 10,
+                          //   width: 10,
+                          //   decoration: BoxDecoration(
+                          //     shape: BoxShape.circle,
+                          //     color: widget.isSelected ? Colors.yellow : Colors.transparent,
+                          //     border: Border.all(color: Colors.yellow),
+                          //   ),
+                          // ),
+                        ],
+                      ),
+                    ],
                   ),
-                ),
-                Text(
-                  checkOut,
-                  style: TextStyle(
-                    color: Colors.grey[600],
-                    fontSize: 14,
+                  SizedBox(height: 8),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        widget.departureDate,
+                        style: TextStyle(
+                          color: Colors.grey[600],
+                          fontSize: MediaQuery.of(context).size.width * 0.04,
+                        ),
+                      ),
+                      Container(
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(50),
+                            border: Border.all(width: 1, color: Colors.grey)),
+                        child: Center(
+                          child: Padding(
+                            padding: EdgeInsets.all(5),
+                            child: Text(
+                              widget.duration,
+                              style: TextStyle(
+                                color: Colors.grey[600],
+                                fontSize:
+                                    MediaQuery.of(context).size.width * 0.03,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Text(
+                        widget.arrivalDate,
+                        style: TextStyle(
+                          color: Colors.grey[600],
+                          fontSize: MediaQuery.of(context).size.width * 0.04,
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-              ],
-            ),
+                ],
+              ),
+            )
           ],
         ),
       ),

@@ -13,6 +13,7 @@ class Travelerdrawer extends StatefulWidget {
 }
 
 class _TravelerdrawerState extends State<Travelerdrawer> {
+
   List<Map<String, dynamic>> mapData(List<Map<String, dynamic>> originalData) {
     return originalData.map((item) {
       // Check if childrenAges is a list, otherwise initialize it as an empty list
@@ -23,9 +24,9 @@ class _TravelerdrawerState extends State<Travelerdrawer> {
       }
 
       return {
-        'adults': item['adults'].toString(),
-        'children': item['children'].toString(),
-        'childrenAges': childrenAges,
+        "adult": item['adults'].toString(),
+        "child": item['children'].toString(),
+        "childage": childrenAges,
       };
     }).toList();
   }

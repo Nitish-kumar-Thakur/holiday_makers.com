@@ -270,9 +270,9 @@ class _DeparturesHome1State extends State<DeparturesHome1> {
                     Padding(padding: const EdgeInsets.only(left: 15), child: const Divider(color: Colors.grey)),
                     Padding(
                       padding: const EdgeInsets.only(left: 15),
-                      child: IconButton(onPressed: (){
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => const DeparturePackageDetails()));
-                    }, icon: Subcarousel2(lists: section['list'])),
+                    //   child: IconButton(onPressed: (){
+                    //   Navigator.push(context, MaterialPageRoute(builder: (context) => const DeparturePackageDetails()));
+                    // }, icon: Subcarousel2(lists: section['list'])),
                     ),
                     const SizedBox(height: 20),
                   ],

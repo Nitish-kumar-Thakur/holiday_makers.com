@@ -26,12 +26,14 @@ class _BookingSummaryFITState extends State<BookingSummaryFIT> {
   List<Map<String, String>> priceDetails = [];
   Map<String, dynamic> bookingApiData = {};
   Map<String, dynamic> bookingSummreyData = {};
+  bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
     bookingApiDataIntlize();
     bookingSummaryFIT();
+
     print("================================================");
     print(widget.roomArray);
     print("================================================");
@@ -80,6 +82,7 @@ class _BookingSummaryFITState extends State<BookingSummaryFIT> {
         setState(() {
           bookingSummreyData = response;
           packagedetails();
+          isLoading = false;
         });
         print(
             "Booking Summary Data Updated: ${bookingSummreyData["data"]["search_parms"]}");
@@ -159,6 +162,8 @@ class _BookingSummaryFITState extends State<BookingSummaryFIT> {
 
   Widget _buildDetailBox(String title, String value, double fontSize) {
     return Container(
+      width: 180,
+      height: 95,
       padding: EdgeInsets.all(fontSize * 0.7),
       decoration: BoxDecoration(
         color: Colors.grey.shade200,
@@ -212,180 +217,251 @@ class _BookingSummaryFITState extends State<BookingSummaryFIT> {
         centerTitle: true,
       ),
       backgroundColor: Colors.white,
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.04),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'PACKAGE DETAILS',
-                style: TextStyle(
-                  fontSize: fontSize * 1.3,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
+      body: isLoading == true
+          ? _buildShimmerEffect()
+          : SingleChildScrollView(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.04),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'PACKAGE DETAILS',
+                      style: TextStyle(
+                        fontSize: fontSize * 1.3,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        _buildDetailBox(
+                          packageDetails[0]['title']!,
+                          packageDetails[0]['value']!,
+                          fontSize,
+                        ),
+                        _buildDetailBox(
+                          packageDetails[1]['title']!,
+                          packageDetails[1]['value']!,
+                          fontSize,
+                        )
+                      ],
+                    ),
+                    SizedBox(height: 20),
+
+                    // Hotel Details Section
+                    Text(
+                      'HOTEL DETAILS',
+                      style: TextStyle(
+                        fontSize: fontSize * 1.3,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        _buildDetailBox(
+                          hotelDetails[0]['title']!,
+                          hotelDetails[0]['value']!,
+                          fontSize,
+                        ),
+                        _buildDetailBox(
+                          hotelDetails[1]['title']!,
+                          hotelDetails[1]['value']!,
+                          fontSize,
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 20),
+
+                    // Transfer Section
+                    Text(
+                      'TRANSFER DETAILS',
+                      style: TextStyle(
+                        fontSize: fontSize * 1.3,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        _buildDetailBox(
+                          transferDetails[0]['title']!,
+                          transferDetails[0]['value']!,
+                          fontSize,
+                        ),
+                        _buildDetailBox(
+                          transferDetails[1]['title']!,
+                          transferDetails[1]['value']!,
+                          fontSize,
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 20),
+
+                    // Price Details Section
+                    Text(
+                      'PRICE DETAILS',
+                      style: TextStyle(
+                        fontSize: fontSize * 1.3,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        _buildDetailBox(
+                          priceDetails[0]['title']!,
+                          priceDetails[0]['value']!,
+                          fontSize,
+                        ),
+                        _buildDetailBox(
+                          priceDetails[1]['title']!,
+                          priceDetails[1]['value']!,
+                          fontSize,
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 20),
+                  ],
                 ),
               ),
-              SizedBox(height: 10),
-              GridView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: (screenWidth > 600) ? 3 : 2,
-                  crossAxisSpacing: screenWidth * 0.02,
-                  mainAxisSpacing: screenWidth * 0.02,
-                  childAspectRatio: 2,
+            ),
+      bottomNavigationBar: isLoading == true
+          ? Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Shimmer.fromColors(
+                baseColor: Colors.grey[300]!,
+                highlightColor: Colors.grey[100]!,
+                child: Container(
+                  height: 50,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
-                itemCount: packageDetails.length,
-                itemBuilder: (context, index) {
-                  return _buildDetailBox(
-                    packageDetails[index]['title']!,
-                    packageDetails[index]['value']!,
-                    fontSize,
+              ),
+            )
+          : Padding(
+              padding: EdgeInsets.all(20.0),
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => TravelersDetails()),
                   );
                 },
+                child: responciveButton(text: 'PROCEED TO BOOKING'),
               ),
-              SizedBox(height: 20),
-
-              // Hotel Details Section
-              Text(
-                'HOTEL DETAILS',
-                style: TextStyle(
-                  fontSize: fontSize * 1.3,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-              ),
-              SizedBox(height: 10),
-              GridView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: (screenWidth > 600) ? 3 : 2,
-                  crossAxisSpacing: screenWidth * 0.02,
-                  mainAxisSpacing: screenWidth * 0.02,
-                  childAspectRatio: 2,
-                ),
-                itemCount: hotelDetails.length,
-                itemBuilder: (context, index) {
-                  return _buildDetailBox(
-                    hotelDetails[index]['title']!,
-                    hotelDetails[index]['value']!,
-                    fontSize,
-                  );
-                },
-              ),
-              SizedBox(height: 20),
-
-              // Transfer Section
-              Text(
-                'TRANSFER DETAILS',
-                style: TextStyle(
-                  fontSize: fontSize * 1.3,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-              ),
-              SizedBox(height: 10),
-              GridView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: (screenWidth > 600) ? 3 : 2,
-                  crossAxisSpacing: screenWidth * 0.02,
-                  mainAxisSpacing: screenWidth * 0.02,
-                  childAspectRatio: 2,
-                ),
-                itemCount: transferDetails.length,
-                itemBuilder: (context, index) {
-                  return _buildDetailBox(
-                    transferDetails[index]['title']!,
-                    transferDetails[index]['value']!,
-                    fontSize,
-                  );
-                },
-              ),
-              SizedBox(height: 20),
-
-              // Price Details Section
-              Text(
-                'PRICE DETAILS',
-                style: TextStyle(
-                  fontSize: fontSize * 1.3,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-              ),
-              SizedBox(height: 10),
-              GridView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: (screenWidth > 600) ? 3 : 2,
-                  crossAxisSpacing: screenWidth * 0.02,
-                  mainAxisSpacing: screenWidth * 0.02,
-                  childAspectRatio: 2,
-                ),
-                itemCount: priceDetails.length,
-                itemBuilder: (context, index) {
-                  return _buildDetailBox(
-                    priceDetails[index]['title']!,
-                    priceDetails[index]['value']!,
-                    fontSize,
-                  );
-                },
-              ),
-              SizedBox(height: 20),
-            ],
-          ),
-        ),
-      ),
-      bottomNavigationBar: Padding(
-        padding: EdgeInsets.all(20.0),
-        child: GestureDetector(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => TravelersDetails()),
-            );
-          },
-          child: responciveButton(text: 'PROCEED TO BOOKING'),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildShimmerEffect() {
-    return Shimmer.fromColors(
-      baseColor: Colors.grey[300]!,
-      highlightColor: Colors.grey[100]!,
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(10),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                height: 10,
-                width: 100,
-                color: Colors.white,
-              ),
-              SizedBox(height: 10),
-              Container(
-                height: 10,
-                width: 150,
-                color: Colors.white,
-              ),
-            ],
-          ),
-        ),
-      ),
+            ),
     );
   }
 
   // Function to build the details box
+  Widget _buildShimmerEffect() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Title shimmer
+                Shimmer.fromColors(
+                  baseColor: Colors.grey[300]!,
+                  highlightColor: Colors.grey[100]!,
+                  child: Container(
+                    height: 20,
+                    width: 150,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 10),
+
+                // Multiple shimmer rows for different sections
+                _buildShimmerRow(),
+                const SizedBox(height: 20),
+                Shimmer.fromColors(
+                  baseColor: Colors.grey[300]!,
+                  highlightColor: Colors.grey[100]!,
+                  child: Container(
+                    height: 20,
+                    width: 150,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                const SizedBox(height: 20),
+                _buildShimmerRow(),
+                const SizedBox(height: 20),
+
+                Shimmer.fromColors(
+                  baseColor: Colors.grey[300]!,
+                  highlightColor: Colors.grey[100]!,
+                  child: Container(
+                    height: 20,
+                    width: 150,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 10), const SizedBox(height: 20),
+                _buildShimmerRow(),
+                const SizedBox(height: 20),
+                Shimmer.fromColors(
+                  baseColor: Colors.grey[300]!,
+                  highlightColor: Colors.grey[100]!,
+                  child: Container(
+                    height: 20,
+                    width: 150,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                const SizedBox(height: 20),
+                _buildShimmerRow(),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+// Function to build shimmer rows
+  Widget _buildShimmerRow() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        _buildShimmerBox(),
+        _buildShimmerBox(),
+      ],
+    );
+  }
+
+// Function to create shimmer box for text placeholders
+  Widget _buildShimmerBox() {
+    return Shimmer.fromColors(
+      baseColor: Colors.grey[300]!,
+      highlightColor: Colors.grey[100]!,
+      child: Container(
+        width: 180,
+        height: 100,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(8),
+        ),
+      ),
+    );
+  }
 }
