@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart'; // For date formatting
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:holdidaymakers/pages/Cruise/cruise_deals_page2.dart';
+import 'package:holdidaymakers/utils/api_handler.dart';
+import 'package:holdidaymakers/widgets/appLargetext.dart';
+import 'package:holdidaymakers/widgets/responciveButton.dart';
 
 class CruiseDealsPage extends StatefulWidget {
   final String packageid;
@@ -10,34 +14,83 @@ class CruiseDealsPage extends StatefulWidget {
 }
 
 class _CruiseDealsPageState extends State<CruiseDealsPage> {
+  Map<String, dynamic> packageData = {};
+  Map<String, dynamic> cruiseCards = {};
+  String cruiseId = "";
+  int selectedOption = 0;
+  Map<String, dynamic>? selectedCruiseData;
+
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    print("==========================");
-    print(widget.packageid);
-    print("==========================");
+    _fetchPackageDetails();
   }
 
-  DateTime? selectedDate; // For storing the selected date
-  int selectedOption = 0; // To track the selected cruise option
-
-  Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime.now(),
-      lastDate: DateTime(2030),
-    );
-    if (picked != null && picked != selectedDate) {
-      setState(() {
-        selectedDate = picked;
-      });
+  Future<void> _fetchPackageDetails() async {
+    final response = await APIHandler.getCruiseDeal(widget.packageid ?? "");
+    setState(() {
+      packageData = response;
+    });
+    if (packageData['cruise_details']?['cruise_id'] != null) {
+      cruiseId = packageData['cruise_details']['cruise_id'];
+      await _fetchCruiseCards();
     }
+  }
+
+  Future<void> _fetchCruiseCards() async {
+    final response = await APIHandler.getCruiseCards(cruiseId ?? "");
+    setState(() {
+      cruiseCards = response;
+    });
+  }
+
+  Widget buildInclusionCard(String iconClass, String label) {
+    // Default icon in case no match is found
+    IconData icon = FontAwesomeIcons.circleQuestion;
+
+    // Map FontAwesome icon classes to Flutter icon
+    if (iconClass == "fa fa-plane") {
+      icon = FontAwesomeIcons.plane;
+    } else if (iconClass.contains("fa-bed")) {
+      icon = FontAwesomeIcons.bed;
+    } else if (iconClass.contains("fa-theater")) {
+      icon = FontAwesomeIcons.film;
+    } else if (iconClass.contains("fa-kids")) {
+      icon = FontAwesomeIcons.children;
+    } else if (iconClass.contains("fa-pool")) {
+      icon = FontAwesomeIcons.personSwimming;
+    } else if (iconClass.contains("fa-meals")) {
+      icon = FontAwesomeIcons.utensils;
+    } else if (iconClass.contains("fa-shows")) {
+      icon = FontAwesomeIcons.masksTheater;
+    }
+
+    return Container(
+      width: 75,
+      height: 70,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(icon, size: 30, color: Colors.blue),
+          const SizedBox(height: 2),
+          Text(
+            label,
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.02, color: Colors.black),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    final inclusionList = (packageData['inclusion_list'] as List<dynamic>?) ?? [];
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -63,84 +116,89 @@ class _CruiseDealsPageState extends State<CruiseDealsPage> {
                   color: Colors.black,
                 ),
               ),
-              SizedBox(height: 20),
-              // Select Date Section
-              GestureDetector(
-                onTap: () => _selectDate(context),
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                    color: Colors.grey[200],
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        children: [
-                          Icon(Icons.calendar_today_outlined,
-                              color: Colors.black54),
-                          SizedBox(width: 8),
-                          Text(
-                            selectedDate != null
-                                ? DateFormat('dd MMM yyyy')
-                                    .format(selectedDate!)
-                                : 'SELECT DATE',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ],
+              SizedBox(height: 10),
+
+              Column(
+                children: [
+                  ...(cruiseCards['data'] as List<dynamic>? ?? [])
+                      .asMap()
+                      .entries
+                      .map((entry) {
+                    int index = entry.key;
+                    var cruise = entry.value;
+
+                    return Column(
+                      children: [
+                        CruiseOption(
+                          title: cruise['cruise_name'] ?? '',
+                          checkIn:
+                          "${cruise['start_date'] ?? '00'}-${cruise['start_month'] ?? ''}-${cruise['start_year'] ?? '00'}",
+                          checkOut:
+                          "${cruise['end_date'] ?? '00'}-${cruise['end_month'] ?? ''}-${cruise['end_year'] ?? '00'}",
+                          duration:
+                          '${cruise['nights']} Nights / ${cruise['days']} Days',
+                          price: '${cruise['currency']} ${cruise['price']}',
+                          isSelected: selectedOption == index,
+                          onSelect: () {
+                            setState(() {
+                              selectedOption = index;
+                              selectedCruiseData = cruise;
+                            });
+                          },
+                        ),
+                        SizedBox(height: 10),
+                      ],
+                    );
+                  }).toList(),
+                ],
+              ),
+
+              SizedBox(height: 12),
+              Container(
+                width: double.infinity,
+                decoration: BoxDecoration(color: Colors.grey.shade200),
+                padding: const EdgeInsets.all(10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    AppLargeText(
+                      text: 'INCLUSION',
+                      size: 25,
+                    ),
+                    const SizedBox(height: 10),
+                    Center(
+                      child: Wrap(
+                        spacing: 10,
+                        runSpacing: 10,
+                        alignment: WrapAlignment.spaceEvenly,
+                        children: inclusionList.map<Widget>((inclusion) {
+                          return buildInclusionCard(
+                              inclusion['class'], inclusion['name']);
+                        }).toList(),
                       ),
-                      Icon(Icons.arrow_drop_down, color: Colors.black54),
-                    ],
-                  ),
+                    ),
+                    const SizedBox(height: 10),
+                  ],
                 ),
               ),
-              SizedBox(height: 16),
-              // Cruise Options Section
-              CruiseOption(
-                title: 'SIR BANIYAS : HIT CRUISE',
-                checkIn: '07 Dec 24, Sat',
-                checkOut: '09 Dec 24, Mon',
-                duration: '3 Night / 4 Days',
-                price: 'AED 2,377',
-                isSelected: selectedOption == 0,
-                onSelect: () {
-                  setState(() {
-                    selectedOption = 0;
-                  });
-                },
-              ),
-              SizedBox(height: 12),
-              CruiseOption(
-                title: 'UAE: SIR BANIYAS ISLAND',
-                checkIn: '07 Dec 24, Sat',
-                checkOut: '09 Dec 24, Mon',
-                duration: '3 Night / 4 Days',
-                price: 'AED 2,377',
-                isSelected: selectedOption == 1,
-                onSelect: () {
-                  setState(() {
-                    selectedOption = 1;
-                  });
-                },
-              ),
-              SizedBox(height: 24),
-              // Inclusion Section
-              SizedBox(height: 12),
-              InclusionIcons(),
-              SizedBox(height: 24),
-              // Hotel Card Section
-              HotelCard(
-                imageUrl: 'img/auditorium.png',
-                name: 'Sir Baniyas',
-                type: 'Hit Cruise',
-                rating: 4.5,
-                price: 'AED 2,377',
-              ),
             ],
+          ),
+        ),
+      ),
+
+      // Placing the button at the bottom using bottomNavigationBar
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: SizedBox(
+          width: double.infinity,
+          child: IconButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => CruiseDealsPage2()),
+              );
+            },
+            icon: responciveButton(text: 'SELECT'),
           ),
         ),
       ),
@@ -177,7 +235,7 @@ class CruiseOption extends StatelessWidget {
           color: Colors.grey[200]!,
           borderRadius: BorderRadius.circular(8),
           border:
-              Border.all(color: isSelected ? Colors.yellow : Colors.grey[300]!),
+          Border.all(color: isSelected ? Colors.pinkAccent : Colors.grey[300]!),
         ),
         child: Column(
           children: [
@@ -207,8 +265,8 @@ class CruiseOption extends StatelessWidget {
                       width: 10,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: isSelected ? Colors.yellow : Colors.transparent,
-                        border: Border.all(color: Colors.yellow),
+                        color: isSelected ? Colors.pinkAccent : Colors.transparent,
+                        border: Border.all(color: Colors.pinkAccent),
                       ),
                     ),
                   ],
@@ -226,11 +284,22 @@ class CruiseOption extends StatelessWidget {
                     fontSize: 14,
                   ),
                 ),
-                Text(
-                  duration,
-                  style: TextStyle(
-                    color: Colors.grey[600],
-                    fontSize: 14,
+                Container(
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(50),
+                      border: Border.all(width: 1, color: Colors.grey)),
+                  child: Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(5),
+                      child: Text(
+                        duration,
+                        style: TextStyle(
+                          color: Colors.grey[600],
+                          fontSize: MediaQuery.of(context).size.width * 0.03,
+                        ),
+                      ),
+                    ),
                   ),
                 ),
                 Text(
@@ -244,183 +313,6 @@ class CruiseOption extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class InclusionIcons extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    final inclusions = [
-      {'icon': Icons.bed, 'label': 'Accomodation'},
-      {'icon': Icons.restaurant, 'label': 'Meals'},
-      {'icon': Icons.theaters, 'label': 'Theater'},
-      {'icon': Icons.child_care, 'label': 'Kids Club'},
-      {'icon': Icons.pool, 'label': 'Pool'},
-      {'icon': Icons.tv, 'label': 'Entertainment'},
-    ];
-
-    return Container(
-      padding: EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.grey[200],
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        children: [
-          Align(
-            alignment: Alignment.topLeft,
-            child: Text(
-              'INCLUSION',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-          SizedBox(height: 10),
-          GridView.builder(
-            shrinkWrap: true,
-            physics: NeverScrollableScrollPhysics(),
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3,
-              childAspectRatio: 1.2,
-              crossAxisSpacing: 12,
-              mainAxisSpacing: 12,
-            ),
-            itemCount: inclusions.length,
-            itemBuilder: (context, index) {
-              return Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(10),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 3,
-                      offset: Offset(1, 1),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      inclusions[index]['icon'] as IconData,
-                      size: 40,
-                      color: Colors.black,
-                    ),
-                    SizedBox(height: 4),
-                    Text(
-                      inclusions[index]['label'] as String,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class HotelCard extends StatelessWidget {
-  final String imageUrl;
-  final String name;
-  final String type;
-  final double rating;
-  final String price;
-
-  HotelCard({
-    required this.imageUrl,
-    required this.name,
-    required this.type,
-    required this.rating,
-    required this.price,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.grey[300]!),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(8),
-              topRight: Radius.circular(8),
-            ),
-            child: Image.asset(
-              imageUrl,
-              height: 150,
-              width: double.infinity,
-              fit: BoxFit.cover,
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      name,
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(height: 4),
-                    Text(
-                      type,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey[600],
-                      ),
-                    ),
-                  ],
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Row(
-                      children: [
-                        Icon(Icons.star, color: Colors.amber, size: 14),
-                        SizedBox(width: 4),
-                        Text(
-                          rating.toString(),
-                          style: TextStyle(fontSize: 12),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 8),
-                    Text(
-                      price,
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
-                        color: Colors.red,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ],
       ),
     );
   }
