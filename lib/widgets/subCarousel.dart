@@ -1,7 +1,9 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:holdidaymakers/pages/Cruise/cruisePackagedetails.dart';
 import 'package:holdidaymakers/pages/Cruise/cruise_deals_page.dart';
 import 'package:holdidaymakers/pages/FixedDeparturesPages/departureDeals.dart';
+import 'package:holdidaymakers/pages/FixedDeparturesPages/departurePackagedetails.dart';
 import 'package:intl/intl.dart';
 
 class Subcarousel extends StatefulWidget {
@@ -63,12 +65,12 @@ class _SubcarouselState extends State<Subcarousel>
                 if (item["id"] == "cruise") {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => CruiseDealsPage(packageid: item["packageId"],)),
+                    MaterialPageRoute(builder: (context) => CruisePackageDetails(packageId: item["packageId"],)),
                   );
                 } else if (item["id"] == "FD") {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => DepartureDeals(packageId: item["packageId"])),
+                    MaterialPageRoute(builder: (context) => DeparturePackageDetails(packageId: item["packageId"])),
                   );
                 }
               },

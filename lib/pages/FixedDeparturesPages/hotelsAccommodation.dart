@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:holdidaymakers/pages/FixedDeparturesPages/flightPageFD.dart';
+import 'package:holdidaymakers/utils/api_handler.dart';
 import 'package:holdidaymakers/widgets/appLargetext.dart';
 import 'package:holdidaymakers/widgets/responciveButton.dart';
 import 'package:shimmer/shimmer.dart';
@@ -15,6 +16,9 @@ class HotelsAccommodation extends StatefulWidget {
 class _HotelsAccommodationState extends State<HotelsAccommodation> {
   bool isLoading = true;
   int selectedHotelIndex = 0;
+  Map<String, dynamic> hotelList = {};
+  List<Map<String, dynamic>> flightList = [];
+  String temp = "";
 
   @override
   void initState() {
@@ -26,23 +30,37 @@ class _HotelsAccommodationState extends State<HotelsAccommodation> {
         });
       }
     });
+    _fetchHotelFlightDetails();
+  }
+
+  Future<void> _fetchHotelFlightDetails() async {
+    try {
+      final response = await APIHandler.getFDHotelFlightDetails(widget.packageData['package_id'] ?? "");
+      setState(() {
+        hotelList = response['data']['hotel_details'] ?? {};
+        flightList = (response['data']['group_by_flight_details'] as List)
+            .map((e) => e as Map<String, dynamic>)
+            .toList() ?? [];
+        isLoading = false;
+      });
+    } catch (e) {
+      print("Error fetching package cards: $e");
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    List<Map<String, dynamic>> hotelList = [];
+    List<Map<String, dynamic>> flattenedHotelList = [];
 
-    /// **Fix: Ensure hotel_details is a Map before processing it**
-    if (widget.packageData["hotel_details"] is Map<String, dynamic>) {
-      widget.packageData["hotel_details"].forEach((rating, hotels) {
-        if (hotels is List) {
-          hotelList.addAll(hotels.whereType<Map<String, dynamic>>());
-        }
-      });
-    }
+    hotelList.forEach((rating, hotels) {
+      if (hotels is List) {
+        flattenedHotelList.addAll(hotels.whereType<Map<String, dynamic>>());
+      }
+    });
 
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.white,
         leading: IconButton(
           onPressed: () {
             Navigator.pop(context);
@@ -54,72 +72,71 @@ class _HotelsAccommodationState extends State<HotelsAccommodation> {
           size: 24,
         ),
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: hotelList.isEmpty
-                ? const Center(
-              child: Text(
-                "Hotels not available",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black54),
+      body: Container(
+        color: Colors.white,
+        child: Column(
+          children: [
+            Expanded(
+              child: isLoading
+                  ? const HotelCardShimmer()
+                  : ListView.builder(
+                itemCount: flattenedHotelList.length,
+                itemBuilder: (_, index) {
+                  return Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: isLoading
+                        ? const HotelCardShimmer()
+                        : HotelCard(
+                      hotel: flattenedHotelList[index],
+                      isSelected: selectedHotelIndex == index,
+                      onTap: () {
+                        setState(() {
+                          selectedHotelIndex = index;
+                        });
+                      },
+                    ),
+                  );
+                },
               ),
-            )
-                : ListView.builder(
-              itemCount: hotelList.length,
-              itemBuilder: (_, index) {
-                return Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: isLoading
-                      ? const HotelCardShimmer()
-                      : HotelCard(
-                    hotel: hotelList[index],
-                    isSelected: selectedHotelIndex == index,
-                    onTap: () {
-                      setState(() {
-                        selectedHotelIndex = index;
-                      });
-                    },
-                  ),
-                );
-              },
             ),
-          ),
-          isLoading==true ? Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Shimmer.fromColors(
-                baseColor: Colors.grey[300]!,
-                highlightColor: Colors.grey[100]!,
-                child: Container(
-                  height: 50,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-              ),
-            )
-          :Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            child: GestureDetector(
-              onTap: hotelList.isEmpty
-                  ? null
-                  : () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => FlightPageFD(
-                      selectedHotel: hotelList[selectedHotelIndex],
-                      respponceData: widget.packageData,
+            isLoading==true ? Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Shimmer.fromColors(
+                  baseColor: Colors.grey[300]!,
+                  highlightColor: Colors.grey[100]!,
+                  child: Container(
+                    height: 50,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                );
-              },
-              child: Padding(padding: const EdgeInsets.only(bottom: 20.0), child:responciveButton(text: "Book Now")),
-               
+                ),
+              )
+            :Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              child: GestureDetector(
+                onTap: flattenedHotelList.isEmpty
+                    ? null
+                    : () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => FlightPageFD(
+                        selectedHotel: flattenedHotelList[selectedHotelIndex],
+                        respponceData: widget.packageData,
+                          flightList: flightList
+                      ),
+                    ),
+                  );
+                },
+                child: Padding(padding: const EdgeInsets.only(bottom: 20.0), child:responciveButton(text: "Book Now")),
+
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -159,9 +176,10 @@ class _HotelCardState extends State<HotelCard> {
     final String roomType = widget.hotel["room_category"];
     final String mealType = widget.hotel["meal_plan"];
     final String price = widget.hotel["price_per_person"].toString() ?? "N/A";
-    final int star = int.parse(widget.hotel["rating"] ?? 3);
+    final int star = int.parse(widget.hotel["rating"] ?? 0);
 
     return Card(
+      color: Colors.white,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       elevation: 8,
       child: Column(

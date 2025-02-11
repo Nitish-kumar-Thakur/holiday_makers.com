@@ -3,71 +3,74 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:holdidaymakers/widgets/appLargetext.dart';
 import 'package:holdidaymakers/widgets/responciveButton.dart';
 
-class Travelerdrawer extends StatefulWidget {
-  final ValueChanged<Map<String, dynamic>> onSelectionChanged;
+class PaxDetails extends StatefulWidget {
+  // final ValueChanged<Map<String, dynamic>> onSelectionChanged;
 
-  const Travelerdrawer({super.key, required this.onSelectionChanged});
+  const PaxDetails({super.key});        //required this.onSelectionChanged
 
   @override
-  _TravelerdrawerState createState() => _TravelerdrawerState();
+  _PaxDetailsState createState() => _PaxDetailsState();
 }
 
-class _TravelerdrawerState extends State<Travelerdrawer> {
-
+class _PaxDetailsState extends State<PaxDetails> {
   List<Map<String, dynamic>> mapData(List<Map<String, dynamic>> originalData) {
     return originalData.map((item) {
-      // Check if childrenAges is a list, otherwise initialize it as an empty list
-      List<String> childrenAges = [];
-      if (item['childrenAges'] is List) {
-        childrenAges = List<String>.from(
-            item['childrenAges'].map((age) => age.toString()));
+      // Check if paxAges is a list, otherwise initialize it as an empty list
+      List<String> paxAges = [];
+      if (item['paxAges'] is List) {
+        paxAges = List<String>.from(
+            item['paxAges'].map((age) => age.toString()));
       }
 
       return {
-        "adult": item['adults'].toString(),
-        "child": item['children'].toString(),
-        "childage": childrenAges,
+        'paxCount': item['paxCount'].toString(),
+        'paxAges': paxAges,
       };
     }).toList();
   }
 
   bool update = false;
+  String? errorMessage;
   List<Map<String, dynamic>> roomDetails = [
-    {"adults": 2, "children": 0, "childrenAges": <String>[]}
+    {"paxCount": 2, "paxAges": <String>["21", "21"]}
   ];
   final ScrollController _scrollController = ScrollController();
 
   Map<String, dynamic> totalSummary = {
-    "totalAdults": 2,
-    "totalChildren": 0,
+    "totalPaxCount": 2,
     "totalRooms": 1,
-    "childrenAges": <String>[],
-    "totalData": <List<Map<String, dynamic>>>[],
+    "paxAges": <String>["21","21"],
+    "totalData": [{"paxCount": "2", "paxAges": ["21", "21"]}],
   };
 
+  bool _validateRooms() {
+    for (var room in roomDetails) {
+      if (!room["paxAges"].any((age) => int.parse(age) >= 21)) {
+        return false; // If no pax is 21 or older, return false
+      }
+    }
+    return true;
+  }
+
   void _updateTotalSummary() {
-    int totalAdults = 0;
-    int totalChildren = 0;
-    List<String> childrenAges = [];
-    // print(roomDetails);
+    int totalPaxCount = 0;
+    List<String> paxAges = [];
 
     for (var room in roomDetails) {
-      totalAdults += room["adults"] as int;
-      totalChildren += room["children"] as int;
-      childrenAges.addAll(List<String>.from(room["childrenAges"]));
+      totalPaxCount += room["paxCount"] as int;
+      paxAges.addAll(List<String>.from(room["paxAges"]));
     }
-    var data = mapData(roomDetails);
-    // print('=---=====================');
-    // print(data);
-    // print('=---=====================');
+
+    // Validate room conditions
+    bool isValid = _validateRooms();
 
     setState(() {
+      errorMessage = isValid ? null : "At least one 21-year-old pax should be in each room";
       totalSummary = {
-        "totalAdults": totalAdults,
-        "totalChildren": totalChildren,
+        "totalPaxCount": totalPaxCount,
         "totalRooms": roomDetails.length,
-        "childrenAges": childrenAges,
-        "totalData": mapData(roomDetails)
+        "paxAges": paxAges,
+        "totalData": List.from(roomDetails)
       };
     });
   }
@@ -77,8 +80,7 @@ class _TravelerdrawerState extends State<Travelerdrawer> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.white,
-      shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(50))),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(50))),
       builder: (context) {
         return StatefulBuilder(
           builder: (context, setState) {
@@ -90,10 +92,19 @@ class _TravelerdrawerState extends State<Travelerdrawer> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Center(
-                        child:
-                            AppLargeText(text: 'Select Occupancy', size: 24)),
+                    Center(child: AppLargeText(text: 'Select Occupancy', size: 24)),
                     const SizedBox(height: 10),
+
+                    // Show error message if validation fails
+                    if (errorMessage != null)
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          errorMessage!,
+                          style: TextStyle(color: Colors.red, fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+
                     Expanded(
                       child: ListView.builder(
                         controller: _scrollController,
@@ -103,11 +114,9 @@ class _TravelerdrawerState extends State<Travelerdrawer> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
-                                  AppLargeText(
-                                      text: 'Room ${index + 1}', size: 20),
+                                  AppLargeText(text: 'Room ${index + 1}', size: 20),
                                   if (roomDetails.length > 1)
                                     GestureDetector(
                                       onTap: () {
@@ -123,86 +132,68 @@ class _TravelerdrawerState extends State<Travelerdrawer> {
                                           color: Colors.red,
                                           shape: BoxShape.circle,
                                         ),
-                                        child: Icon(Icons.remove,
-                                            color: Colors.white, size: 18),
+                                        child: Icon(Icons.remove, color: Colors.white, size: 18),
                                       ),
                                     ),
                                 ],
                               ),
                               const SizedBox(height: 5),
+
+                              // Pax Count Dropdown
                               _buildDropdownRow(
-                                'Adults',
-                                roomDetails[index]["adults"].toString(),
-                                List.generate(3, (i) => (i + 1).toString()),
-                                (value) {
+                                'No. of Pax',
+                                roomDetails[index]["paxCount"].toString(),
+                                List.generate(4, (i) => (i + 1).toString()),
+                                    (value) {
                                   setState(() {
-                                    roomDetails[index]["adults"] =
-                                        int.parse(value);
+                                    roomDetails[index]["paxCount"] = int.parse(value);
+                                    roomDetails[index]["paxAges"] =
+                                        List.generate(int.parse(value), (i) => (21 + i).toString());
                                     _updateTotalSummary();
                                   });
                                 },
                               ),
-                              const SizedBox(height: 5),
-                              _buildDropdownRow(
-                                'Children',
-                                roomDetails[index]["children"].toString(),
-                                List.generate(3, (i) => i.toString()),
-                                (value) {
-                                  setState(() {
-                                    roomDetails[index]["children"] =
-                                        int.parse(value);
-                                    roomDetails[index]["childrenAges"] =
-                                        List.generate(
-                                            int.parse(value), (index) => "0");
-                                    _updateTotalSummary();
-                                  });
-                                },
-                              ),
-                              if (roomDetails[index]["children"] > 0)
-                                Column(
-                                  children: List.generate(
-                                    roomDetails[index]["children"],
-                                    (childIndex) => Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        const SizedBox(height: 5),
-                                        _buildDropdownRow(
-                                          'Child ${childIndex + 1} Age',
-                                          roomDetails[index]["childrenAges"]
-                                              [childIndex],
-                                          List.generate(
-                                              12, (i) => i.toString()),
-                                          (value) {
-                                            setState(() {
-                                              roomDetails[index]["childrenAges"]
-                                                  [childIndex] = value;
-                                              _updateTotalSummary();
-                                            });
-                                          },
-                                        ),
-                                      ],
-                                    ),
+
+                              // Pax Age Dropdowns
+                              Column(
+                                children: List.generate(
+                                  roomDetails[index]["paxCount"],
+                                      (childIndex) => Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      const SizedBox(height: 5),
+                                      _buildDropdownRow(
+                                        'Pax ${childIndex + 1} Age',
+                                        roomDetails[index]["paxAges"][childIndex],
+                                        List.generate(100, (i) => (i + 1).toString()),
+                                            (value) {
+                                          setState(() {
+                                            roomDetails[index]["paxAges"][childIndex] = value;
+                                            _updateTotalSummary();
+                                          });
+                                        },
+                                      ),
+                                    ],
                                   ),
                                 ),
+                              ),
                               const SizedBox(height: 10),
-                              Divider(
-                                  thickness: 1, color: Colors.grey.shade300),
+                              Divider(thickness: 1, color: Colors.grey.shade300),
                               const SizedBox(height: 10),
                             ],
                           );
                         },
                       ),
                     ),
-                    if (roomDetails.length < 10)
+
+                    if (roomDetails.length < 3)
                       Center(
                         child: ElevatedButton.icon(
                           onPressed: () {
                             setState(() {
                               roomDetails.add({
-                                "adults": 1,
-                                "children": 0,
-                                "childrenAges": <String>[]
+                                "paxCount": 2,
+                                "paxAges": ["21", "22"]
                               });
                               _updateTotalSummary();
                               Future.delayed(Duration(milliseconds: 300), () {
@@ -218,13 +209,17 @@ class _TravelerdrawerState extends State<Travelerdrawer> {
                           label: Text("Add Room"),
                         ),
                       ),
+
                     const SizedBox(height: 10),
+
                     GestureDetector(
                       onTap: () {
-                        widget.onSelectionChanged(totalSummary);
-                        Navigator.pop(context);
+                        if (_validateRooms()) {
+                          Navigator.pop(context);
+                        }
+                        print('======================');
                         print(totalSummary);
-                        print(roomDetails);
+                        print('======================');
                       },
                       child: Align(
                         alignment: Alignment.center,
@@ -310,7 +305,7 @@ class _TravelerdrawerState extends State<Travelerdrawer> {
               const SizedBox(width: 13),
               Text(update
                   ? '${totalSummary['totalRooms']} Room(s) Selected'
-                  : 'Select Rooms and Adults'),
+                  : 'Select Rooms and Pax'),
             ],
           ),
         ),

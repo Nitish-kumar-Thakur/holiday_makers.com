@@ -211,7 +211,7 @@ class APIHandler {
   }
 
   static Future<Map<String, List<Map<String, String>>>>
-      fetchCruiseCountryMonthList(String sourceId) async {
+  fetchCruiseCountryMonthList(String sourceId) async {
     try {
       final response = await http.post(
         Uri.parse(
@@ -227,17 +227,17 @@ class APIHandler {
           // Extracting country_list
           final countryList = (data['data']['country_list'] as List<dynamic>)
               .map<Map<String, String>>((item) => {
-                    'id': item['country_id'] ?? '',
-                    'name': item['country_name'] ?? '',
-                  })
+            'id': item['country_id'] ?? '',
+            'name': item['country_name'] ?? '',
+          })
               .toList();
 
           // Extracting month_list
           final monthList = (data['data']['month_list'] as List<dynamic>)
               .map<Map<String, String>>((month) => {
-                    'id': month.toString(),
-                    'name': month.toString(),
-                  })
+            'id': month.toString(),
+            'name': month.toString(),
+          })
               .toList();
 
           return {
@@ -273,17 +273,17 @@ class APIHandler {
           // Extracting country_list
           final countryList = (data['data']['country_list'] as List<dynamic>)
               .map<Map<String, String>>((item) => {
-                    'id': item['country_id'] ?? '',
-                    'name': item['country_name'] ?? '',
-                  })
+            'id': item['country_id'] ?? '',
+            'name': item['country_name'] ?? '',
+          })
               .toList();
 
           // Extracting month_list
           final monthList = (data['data']['month_list'] as List<dynamic>)
               .map<Map<String, String>>((month) => {
-                    'id': month.toString(),
-                    'name': month.toString(),
-                  })
+            'id': month.toString(),
+            'name': month.toString(),
+          })
               .toList();
 
           return {
@@ -320,7 +320,7 @@ class APIHandler {
         body: jsonEncode(requestBody),
       );
 
-      
+
 
       if (response.statusCode != 200) {
         throw Exception("Server error: ${response.statusCode}");
@@ -338,7 +338,7 @@ class APIHandler {
         };
       }
     } catch (e) {
-      
+
       return {
         "status": false,
         "message": "Error fetching data",
@@ -347,7 +347,7 @@ class APIHandler {
     }
   }
 
-    static Future<Map<String, dynamic>> fitBookingSummary(Map<String, dynamic> bookingApiData) async {
+  static Future<Map<String, dynamic>> fitBookingSummary(Map<String, dynamic> bookingApiData) async {
     final url = Uri.parse("https://b2cuat.tikipopi.com/index.php/holiday_api/fit_booking_summary");
     final body = jsonEncode(bookingApiData);
 
@@ -398,6 +398,7 @@ class APIHandler {
       };
     }
   }
+
   static Future<Map<String, dynamic>> getCruiseDeal(String packageId) async {
     final Uri url = Uri.parse('https://b2cuat.tikipopi.com/index.php/holiday_api/cruise_details');
 
@@ -433,4 +434,119 @@ class APIHandler {
     }
   }
 
+  static Future<Map<String, dynamic>> getCruiseCards(String cruiseId) async {
+    final Uri url = Uri.parse('https://b2cuat.tikipopi.com/index.php/holiday_api/get_departure_and_similar_cruise');
+    final Map<String, dynamic> requestBody = {
+      "cruise_id": cruiseId
+    };
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(requestBody),
+      );
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = jsonDecode(response.body);
+        if (data["status"] == true) {
+          return data; // Return full package details
+        } else {
+          return {
+            "status": false,
+            "message": "No package details found",
+            "data": {}
+          };
+        }
+      } else {
+        throw Exception("Server error: ${response.statusCode}");
+      }
+    } catch (e) {
+      return {
+        "status": false,
+        "message": "Error fetching package details",
+        "data": {}
+      };
+    }
+  }
+
+  static Future<Map<String, dynamic>> getCruiseCabin() async {
+    try {
+      final response = await http.get(Uri.parse("https://b2cuat.tikipopi.com/index.php/holiday_api/cruise_cabin_type"));
+      if (response.statusCode == 200) {
+        return json.decode(response.body);
+      } else {
+        throw Exception("Failed to load homepage data");
+      }
+    } catch (e) {
+      print("API Error: $e");
+      throw Exception("Error fetching data");
+    }
+  }
+
+  static Future<Map<String, dynamic>> getFDCards(String packageId) async {
+    final Uri url = Uri.parse('https://b2cuat.tikipopi.com/index.php/holiday_api/get_departure_and_similar_package');
+    final Map<String, dynamic> requestBody = {
+      "package_id": packageId
+    };
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(requestBody),
+      );
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = jsonDecode(response.body);
+        if (data["status"] == true) {
+          return data;
+        } else {
+          return {
+            "status": false,
+            "message": "No package details found",
+            "data": {}
+          };
+        }
+      } else {
+        throw Exception("Server error: ${response.statusCode}");
+      }
+    } catch (e) {
+      return {
+        "status": false,
+        "message": "Error fetching package details",
+        "data": {}
+      };
+    }
+  }
+
+  static Future<Map<String, dynamic>> getFDHotelFlightDetails(String packageId) async {
+    final Uri url = Uri.parse('https://b2cuat.tikipopi.com/index.php/holiday_api/fd_package_flight_hotel_details');
+    final Map<String, dynamic> requestBody = {
+      "package_id": packageId
+    };
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(requestBody),
+      );
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = jsonDecode(response.body);
+        if (data["status"] == true) {
+          return data;
+        } else {
+          return {
+            "status": false,
+            "message": "No package details found",
+            "data": {}
+          };
+        }
+      } else {
+        throw Exception("Server error: ${response.statusCode}");
+      }
+    } catch (e) {
+      return {
+        "status": false,
+        "message": "Error fetching package details",
+        "data": {}
+      };
+    }
+  }
 }
