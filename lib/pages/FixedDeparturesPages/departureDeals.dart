@@ -360,105 +360,87 @@ class _PackageCardState extends State<PackageCard> {
     return GestureDetector(
       onTap: widget.onSelect,
       child: Container(
+        padding: EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: Colors.grey[200]!,
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(
-            color: widget.isSelected ? Colors.pinkAccent : Colors.transparent, // Highlight selected card
-            width: 2,
-          ),
+          border:
+          Border.all(color: widget.isSelected ? Colors.pinkAccent : Colors.grey[300]!),
         ),
-        child: Stack(
+        child: Column(
           children: [
-            Padding(
-              padding: EdgeInsets.all(16),
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      SizedBox(
-                        width: 230,
-                        child: Text(
-                          widget.title,
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: MediaQuery.of(context).size.width * 0.05,
-                          ),
-                        ),
-                      ),
-                      Row(
-                        children: [
-                          Text(
-                            widget.price,
-                            style: TextStyle(
-                              color: Colors.red,
-                              fontWeight: FontWeight.bold,
-                              fontSize:
-                              MediaQuery.of(context).size.width * 0.05,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 8),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        widget.departureDate,
-                        style: TextStyle(
-                          color: Colors.grey[600],
-                          fontSize: MediaQuery.of(context).size.width * 0.04,
-                        ),
-                      ),
-                      Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(50),
-                          border: Border.all(width: 1, color: Colors.grey),
-                        ),
-                        child: Center(
-                          child: Padding(
-                            padding: EdgeInsets.all(5),
-                            child: Text(
-                              widget.duration,
-                              style: TextStyle(
-                                color: Colors.grey[600],
-                                fontSize:
-                                MediaQuery.of(context).size.width * 0.03,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      Text(
-                        widget.arrivalDate,
-                        style: TextStyle(
-                          color: Colors.grey[600],
-                          fontSize: MediaQuery.of(context).size.width * 0.04,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            // Dot Indicator for Selected Card
-            if (widget.isSelected)
-              Positioned(
-                top: 8,
-                right: 8,
-                child: Container(
-                  width: 12,
-                  height: 12,
-                  decoration: BoxDecoration(
-                    color: Colors.pinkAccent, // Dot color
-                    shape: BoxShape.circle,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  widget.title,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
                   ),
                 ),
-              ),
+                Row(
+                  children: [
+                    Text(
+                      widget.price,
+                      style: TextStyle(
+                        color: Colors.red,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                    SizedBox(width: 8),
+                    Container(
+                      height: 10,
+                      width: 10,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: widget.isSelected ? Colors.pinkAccent : Colors.transparent,
+                        border: Border.all(color: Colors.pinkAccent),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  widget.departureDate,
+                  style: TextStyle(
+                    color: Colors.grey[600],
+                    fontSize: 14,
+                  ),
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(50),
+                      border: Border.all(width: 1, color: Colors.grey)),
+                  child: Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(5),
+                      child: Text(
+                        widget.duration,
+                        style: TextStyle(
+                          color: Colors.grey[600],
+                          fontSize: MediaQuery.of(context).size.width * 0.03,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                Text(
+                  widget.arrivalDate,
+                  style: TextStyle(
+                    color: Colors.grey[600],
+                    fontSize: 14,
+                  ),
+                ),
+              ],
+            ),
           ],
         ),
       ),
