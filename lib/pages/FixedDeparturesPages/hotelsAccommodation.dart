@@ -4,7 +4,7 @@ import 'package:holdidaymakers/utils/api_handler.dart';
 import 'package:holdidaymakers/widgets/appLargetext.dart';
 import 'package:holdidaymakers/widgets/responciveButton.dart';
 import 'package:shimmer/shimmer.dart';
-
+ 
 class HotelsAccommodation extends StatefulWidget {
   final Map<String, dynamic> packageData;
   const HotelsAccommodation({super.key, required this.packageData});
