@@ -15,6 +15,10 @@ class CruiseDealsPage2 extends StatefulWidget {
 class _CruiseDealsPage2State extends State<CruiseDealsPage2> {
   List<Map<String, String>> cruiseCabins = [];
   String? selectedCabin;
+  String? selectedRoom = "1";
+  String? totalPaxCount = "2";
+  List<String>? paxAges = ["21", "21"];
+  List<dynamic> totalRoomsdata = [];
 
   @override
   void initState() {
@@ -28,12 +32,14 @@ class _CruiseDealsPage2State extends State<CruiseDealsPage2> {
       cruiseCabins = (response['data'] as List<dynamic>).map((item) {
         return {
           'origin': item['origin'].toString(), // Unique ID
-          'cabin_type': item['cabin_type'].toString(), // Display name & selected value
+          'cabin_type':
+              item['cabin_type'].toString(), // Display name & selected value
           'status': item['status'].toString(), // Status if needed
         };
       }).toList();
     });
     print(cruiseCabins);
+    print(selectedCabin);
   }
 
   @override
@@ -56,15 +62,28 @@ class _CruiseDealsPage2State extends State<CruiseDealsPage2> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 10),
-              Text('Select Travelers', style: const TextStyle(fontSize: 20, color: Colors.black)),
-              PaxDetails(),
+              Text('Select Travelers',
+                  style: const TextStyle(fontSize: 20, color: Colors.black)),
+              PaxDetails(
+                onSelectionChanged: (Map<String, dynamic> selection) {
+                  setState(() {
+                    selectedRoom = selection['totalRooms'].toString() ?? "1";
+                    totalPaxCount = selection['totalPaxCount'].toString() ?? "2";
+                    paxAges = selection['paxAges'];
+                      
+                    totalRoomsdata = selection["totalData"];
+                  });
+                },
+              ),
               const SizedBox(height: 20),
               Dropdownwidget(
                 selectedValue: selectedCabin,
                 items: cruiseCabins.map((item) {
                   return {
-                    'id': item['cabin_type']!, // Now 'cabin_type' is used as the value
-                    'name': item['cabin_type']!, // Display 'cabin_type' in dropdown
+                    'id': item[
+                        'cabin_type']!, // Now 'cabin_type' is used as the value
+                    'name':
+                        item['cabin_type']!, // Display 'cabin_type' in dropdown
                   };
                 }).toList(),
                 hintText: 'Choose a cabin type',
@@ -95,6 +114,10 @@ class _CruiseDealsPage2State extends State<CruiseDealsPage2> {
                 context,
                 MaterialPageRoute(builder: (context) => BookingSummaryPage()),
               );
+              print("=======================================");
+              print(totalPaxCount);
+              print(totalRoomsdata);
+              print("=======================================");
             },
             icon: responciveButton(text: 'SELECT'),
           ),

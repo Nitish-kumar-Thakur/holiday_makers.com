@@ -35,12 +35,14 @@ class _HotelsAccommodationState extends State<HotelsAccommodation> {
 
   Future<void> _fetchHotelFlightDetails() async {
     try {
-      final response = await APIHandler.getFDHotelFlightDetails(widget.packageData['package_id'] ?? "");
+      final response = await APIHandler.getFDHotelFlightDetails(
+          widget.packageData['package_id'] ?? "");
       setState(() {
         hotelList = response['data']['hotel_details'] ?? {};
         flightList = (response['data']['group_by_flight_details'] as List)
-            .map((e) => e as Map<String, dynamic>)
-            .toList() ?? [];
+                .map((e) => e as Map<String, dynamic>)
+                .toList() ??
+            [];
         isLoading = false;
       });
     } catch (e) {
@@ -80,61 +82,64 @@ class _HotelsAccommodationState extends State<HotelsAccommodation> {
               child: isLoading
                   ? const HotelCardShimmer()
                   : ListView.builder(
-                itemCount: flattenedHotelList.length,
-                itemBuilder: (_, index) {
-                  return Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: isLoading
-                        ? const HotelCardShimmer()
-                        : HotelCard(
-                      hotel: flattenedHotelList[index],
-                      isSelected: selectedHotelIndex == index,
-                      onTap: () {
-                        setState(() {
-                          selectedHotelIndex = index;
-                        });
+                      itemCount: flattenedHotelList.length,
+                      itemBuilder: (_, index) {
+                        return Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: isLoading
+                              ? const HotelCardShimmer()
+                              : HotelCard(
+                                  hotel: flattenedHotelList[index],
+                                  isSelected: selectedHotelIndex == index,
+                                  onTap: () {
+                                    setState(() {
+                                      selectedHotelIndex = index;
+                                    });
+                                  },
+                                ),
+                        );
                       },
                     ),
-                  );
-                },
-              ),
             ),
-            isLoading==true ? Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: Shimmer.fromColors(
-                  baseColor: Colors.grey[300]!,
-                  highlightColor: Colors.grey[100]!,
-                  child: Container(
-                    height: 50,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                ),
-              )
-            :Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              child: GestureDetector(
-                onTap: flattenedHotelList.isEmpty
-                    ? null
-                    : () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => FlightPageFD(
-                        selectedHotel: flattenedHotelList[selectedHotelIndex],
-                        respponceData: widget.packageData,
-                          flightList: flightList
+            isLoading == true
+                ? Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: Shimmer.fromColors(
+                      baseColor: Colors.grey[300]!,
+                      highlightColor: Colors.grey[100]!,
+                      child: Container(
+                        height: 50,
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
                     ),
-                  );
-                },
-                child: Padding(padding: const EdgeInsets.only(bottom: 20.0), child:responciveButton(text: "Book Now")),
-
-              ),
-            ),
+                  )
+                : Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 10),
+                    child: GestureDetector(
+                      onTap: flattenedHotelList.isEmpty
+                          ? null
+                          : () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => FlightPageFD(
+                                      selectedHotel: flattenedHotelList[
+                                          selectedHotelIndex],
+                                      respponceData: widget.packageData,
+                                      flightList: flightList),
+                                ),
+                              );
+                            },
+                      child: Padding(
+                          padding: const EdgeInsets.only(bottom: 20.0),
+                          child: responciveButton(text: "Book Now")),
+                    ),
+                  ),
           ],
         ),
       ),
@@ -205,14 +210,16 @@ class _HotelCardState extends State<HotelCard> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        SizedBox( width: 200,
+                        SizedBox(
+                          width: 200,
                           child: Text(
-                          widget.hotel["hotel"],
-                          style: TextStyle(
-                            fontSize: screenWidth * 0.035,
-                            fontWeight: FontWeight.bold,
+                            widget.hotel["hotel"],
+                            style: TextStyle(
+                              fontSize: screenWidth * 0.035,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                        ),),
+                        ),
                         SizedBox(height: 4),
                         Text(
                           widget.hotel["city"],
@@ -346,25 +353,34 @@ class _HotelCardState extends State<HotelCard> {
                   ],
                 ),
                 SizedBox(height: screenWidth * 0.03),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: widget.onTap,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor:
-                      widget.isSelected ? Colors.red : Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
+                Align(
+                  alignment: Alignment.center,
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: widget.onTap,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor:
+                            widget.isSelected ? Colors.red : Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        side: BorderSide(
+                            color: Colors.red), // Add a border for visibility
+                      ),
+                      child: Text(
+                        widget.isSelected ? 'SELECTED' : 'SELECT',
+                        style: TextStyle(
+                          color: widget.isSelected
+                              ? Colors.white
+                              : Colors.red, // Fix text color
+                          fontSize: 16.0, // Set proper font size
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
-                    child: Text(
-                      widget.isSelected ? 'SELECTED' : 'SELECT',
-                      style: TextStyle(
-                          color: widget.isSelected ? Colors.white : Colors.red,
-                          fontSize: screenWidth * 0.04),
-                    ),
                   ),
-                )
+                ),
               ],
             ),
           ),

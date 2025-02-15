@@ -175,16 +175,15 @@ class APIHandler {
     }
   }
 
-  static Future<Map<String, dynamic>> fitSearch({
-    required String sourceId,
-    required String destinationId,
-    required String travelDate,
-    required String noOfNights,
-    required String rooms,
-    required String adults,
-    required String children,
-    required List<String> childrenAge
-  }) async {
+  static Future<Map<String, dynamic>> fitSearch(
+      {required String sourceId,
+      required String destinationId,
+      required String travelDate,
+      required String noOfNights,
+      required String rooms,
+      required String adults,
+      required String children,
+      required List<dynamic> childrenAge}) async {
     final url = Uri.parse(fitSearchUrl);
     final body = jsonEncode({
       "source_id": sourceId,
@@ -192,9 +191,7 @@ class APIHandler {
       "travel_date": travelDate,
       "no_of_nights": noOfNights,
       "rooms": rooms,
-      "adult": adults,
-      "child": children,
-      "childAge_0": childrenAge
+      "room_wise_pax": childrenAge
     });
 
     final response = await http.post(
@@ -211,7 +208,7 @@ class APIHandler {
   }
 
   static Future<Map<String, List<Map<String, String>>>>
-  fetchCruiseCountryMonthList(String sourceId) async {
+      fetchCruiseCountryMonthList(String sourceId) async {
     try {
       final response = await http.post(
         Uri.parse(
@@ -227,17 +224,17 @@ class APIHandler {
           // Extracting country_list
           final countryList = (data['data']['country_list'] as List<dynamic>)
               .map<Map<String, String>>((item) => {
-            'id': item['country_id'] ?? '',
-            'name': item['country_name'] ?? '',
-          })
+                    'id': item['country_id'] ?? '',
+                    'name': item['country_name'] ?? '',
+                  })
               .toList();
 
           // Extracting month_list
           final monthList = (data['data']['month_list'] as List<dynamic>)
               .map<Map<String, String>>((month) => {
-            'id': month.toString(),
-            'name': month.toString(),
-          })
+                    'id': month.toString(),
+                    'name': month.toString(),
+                  })
               .toList();
 
           return {
@@ -273,17 +270,17 @@ class APIHandler {
           // Extracting country_list
           final countryList = (data['data']['country_list'] as List<dynamic>)
               .map<Map<String, String>>((item) => {
-            'id': item['country_id'] ?? '',
-            'name': item['country_name'] ?? '',
-          })
+                    'id': item['country_id'] ?? '',
+                    'name': item['country_name'] ?? '',
+                  })
               .toList();
 
           // Extracting month_list
           final monthList = (data['data']['month_list'] as List<dynamic>)
               .map<Map<String, String>>((month) => {
-            'id': month.toString(),
-            'name': month.toString(),
-          })
+                    'id': month.toString(),
+                    'name': month.toString(),
+                  })
               .toList();
 
           return {
@@ -306,11 +303,12 @@ class APIHandler {
   static Future<Map<String, dynamic>> getNewPackagesData(
       String package, String country, String month) async {
     try {
-      final Uri url = Uri.parse('https://b2cuat.tikipopi.com/index.php/holiday_api/get_package_list');
+      final Uri url = Uri.parse(
+          'https://b2cuat.tikipopi.com/index.php/holiday_api/get_package_list');
 
       final Map<String, dynamic> requestBody = {
         "type": package,
-        "country_id": country,//country
+        "country_id": country, //country
         "month": month //month
       };
 
@@ -319,8 +317,6 @@ class APIHandler {
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode(requestBody),
       );
-
-
 
       if (response.statusCode != 200) {
         throw Exception("Server error: ${response.statusCode}");
@@ -338,7 +334,6 @@ class APIHandler {
         };
       }
     } catch (e) {
-
       return {
         "status": false,
         "message": "Error fetching data",
@@ -347,8 +342,10 @@ class APIHandler {
     }
   }
 
-  static Future<Map<String, dynamic>> fitBookingSummary(Map<String, dynamic> bookingApiData) async {
-    final url = Uri.parse("https://b2cuat.tikipopi.com/index.php/holiday_api/fit_booking_summary");
+  static Future<Map<String, dynamic>> fitBookingSummary(
+      Map<String, dynamic> bookingApiData) async {
+    final url = Uri.parse(
+        "https://b2cuat.tikipopi.com/index.php/holiday_api/fit_booking_summary");
     final body = jsonEncode(bookingApiData);
 
     final response = await http.post(
@@ -358,14 +355,20 @@ class APIHandler {
     );
 
     if (response.statusCode == 200) {
+      
+    print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+    print(jsonDecode(response.body));
+    print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
       return jsonDecode(response.body);
+      
     } else {
       throw Exception('Error: ${response.statusCode}');
     }
   }
 
   static Future<Map<String, dynamic>> getDepartureDeal(String packageId) async {
-    final Uri url = Uri.parse('https://b2cuat.tikipopi.com/index.php/holiday_api/fd_package_details');
+    final Uri url = Uri.parse(
+        'https://b2cuat.tikipopi.com/index.php/holiday_api/fd_package_details');
 
     final Map<String, dynamic> requestBody = {
       "package_id": packageId,
@@ -400,7 +403,8 @@ class APIHandler {
   }
 
   static Future<Map<String, dynamic>> getCruiseDeal(String packageId) async {
-    final Uri url = Uri.parse('https://b2cuat.tikipopi.com/index.php/holiday_api/cruise_details');
+    final Uri url = Uri.parse(
+        'https://b2cuat.tikipopi.com/index.php/holiday_api/cruise_details');
 
     final Map<String, dynamic> requestBody = {
       "package_id": packageId,
@@ -435,10 +439,9 @@ class APIHandler {
   }
 
   static Future<Map<String, dynamic>> getCruiseCards(String cruiseId) async {
-    final Uri url = Uri.parse('https://b2cuat.tikipopi.com/index.php/holiday_api/get_departure_and_similar_cruise');
-    final Map<String, dynamic> requestBody = {
-      "cruise_id": cruiseId
-    };
+    final Uri url = Uri.parse(
+        'https://b2cuat.tikipopi.com/index.php/holiday_api/get_departure_and_similar_cruise');
+    final Map<String, dynamic> requestBody = {"cruise_id": cruiseId};
     try {
       final response = await http.post(
         url,
@@ -470,7 +473,8 @@ class APIHandler {
 
   static Future<Map<String, dynamic>> getCruiseCabin() async {
     try {
-      final response = await http.get(Uri.parse("https://b2cuat.tikipopi.com/index.php/holiday_api/cruise_cabin_type"));
+      final response = await http.get(Uri.parse(
+          "https://b2cuat.tikipopi.com/index.php/holiday_api/cruise_cabin_type"));
       if (response.statusCode == 200) {
         return json.decode(response.body);
       } else {
@@ -483,10 +487,9 @@ class APIHandler {
   }
 
   static Future<Map<String, dynamic>> getFDCards(String packageId) async {
-    final Uri url = Uri.parse('https://b2cuat.tikipopi.com/index.php/holiday_api/get_departure_and_similar_package');
-    final Map<String, dynamic> requestBody = {
-      "package_id": packageId
-    };
+    final Uri url = Uri.parse(
+        'https://b2cuat.tikipopi.com/index.php/holiday_api/get_departure_and_similar_package');
+    final Map<String, dynamic> requestBody = {"package_id": packageId};
     try {
       final response = await http.post(
         url,
@@ -516,11 +519,11 @@ class APIHandler {
     }
   }
 
-  static Future<Map<String, dynamic>> getFDHotelFlightDetails(String packageId) async {
-    final Uri url = Uri.parse('https://b2cuat.tikipopi.com/index.php/holiday_api/fd_package_flight_hotel_details');
-    final Map<String, dynamic> requestBody = {
-      "package_id": packageId
-    };
+  static Future<Map<String, dynamic>> getFDHotelFlightDetails(
+      String packageId) async {
+    final Uri url = Uri.parse(
+        'https://b2cuat.tikipopi.com/index.php/holiday_api/fd_package_flight_hotel_details');
+    final Map<String, dynamic> requestBody = {"package_id": packageId};
     try {
       final response = await http.post(
         url,

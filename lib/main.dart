@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:holdidaymakers/pages/FullyIndependentTraveler/mainPage.dart';
+import 'package:holdidaymakers/pages/login&signup/loginPage.dart';
 import 'package:holdidaymakers/splashscreen.dart';
 
 Future<void> main() async {

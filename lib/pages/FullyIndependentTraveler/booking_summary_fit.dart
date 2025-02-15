@@ -8,7 +8,7 @@ import 'package:shimmer/shimmer.dart';
 class BookingSummaryFIT extends StatefulWidget {
   final Map<String, dynamic> responceData;
   final Map<String, dynamic> selectedHotel;
-  final List<Map<String, dynamic>> roomArray;
+  final List<dynamic> roomArray;
   const BookingSummaryFIT(
       {super.key,
       required this.responceData,
@@ -34,15 +34,15 @@ class _BookingSummaryFITState extends State<BookingSummaryFIT> {
     bookingApiDataIntlize();
     bookingSummaryFIT();
 
-    print("================================================");
-    print(widget.roomArray);
-    print("================================================");
+    // print("================================================");
+    // print(widget.roomArray);
+    // print("================================================");
   }
 
   void bookingApiDataIntlize() {
     final hotel = widget.selectedHotel;
     final searchParms = widget.responceData["data"]["search_params"];
-    final roomArray = widget.responceData["data"]["room_array"];
+    final roomArray = widget.roomArray;
     final onwardFlight = widget.responceData["data"]["flight"]["onward"];
     final returnFlight = widget.responceData["data"]["flight"]["return"];
     final insuranceList = widget.responceData["data"]["insurance_list"];
@@ -65,7 +65,7 @@ class _BookingSummaryFITState extends State<BookingSummaryFIT> {
         "insurance_id": insuranceList["origin"],
         "break_fast": "",
         "search_params": searchParms,
-        "room_array": roomArray
+        "room_wise_pax": roomArray
       };
     });
   }
@@ -76,7 +76,7 @@ class _BookingSummaryFITState extends State<BookingSummaryFIT> {
       Map<String, dynamic> response =
           await APIHandler.fitBookingSummary(bookingApiData);
 
-      print("API Response: ${response["data"]["search_parms"]}");
+      print("API Response: ${response["data"]}");
 
       if (response["message"] == "success") {
         setState(() {
@@ -85,7 +85,7 @@ class _BookingSummaryFITState extends State<BookingSummaryFIT> {
           isLoading = false;
         });
         print(
-            "Booking Summary Data Updated: ${bookingSummreyData["data"]["search_parms"]}");
+            "Booking Summary Data Updated: ${bookingSummreyData["data"]}");
       } else {
         print("API Error: ${response["message"]}");
       }
@@ -96,16 +96,16 @@ class _BookingSummaryFITState extends State<BookingSummaryFIT> {
 
   void packagedetails() {
     // final searchparams = bookingSummreyData["data"]["search_parms"];
-    final searchParms = bookingSummreyData["data"]["search_parms"];
-    final hotel = bookingSummreyData["data"]["result"]["hotel"];
-    final amount = bookingSummreyData["data"];
+    final searchParms = bookingSummreyData["data"]["search_parms"]??[];
+    final hotel = bookingSummreyData["data"]["result"]["hotel"]??[];
+    final amount = bookingSummreyData["data"]??[];
 
     if (searchParms != null && hotel != null && amount != null) {
       int n = int.parse(searchParms["no_of_nights"]) - 1;
       String night = n.toString();
       // Parsing the check_out_date String to DateTime
-      DateTime checkInDateTime = DateTime.parse(searchParms["check_in_date"]);
-      DateTime checkOutDateTime = DateTime.parse(searchParms["check_out_date"]);
+      DateTime checkInDateTime = DateTime.parse(searchParms["check_in_date"]?? null);
+      DateTime checkOutDateTime = DateTime.parse(searchParms["check_out_date"]?? null);
       // Formatting it to "dd-MM-yyyy"
       String checkInDate = DateFormat('dd MMM yy, EEE').format(checkInDateTime);
       // Parsing the check_out_date String to DateTime
