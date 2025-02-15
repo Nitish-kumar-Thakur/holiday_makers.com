@@ -67,6 +67,7 @@ class _BookingSummaryFITState extends State<BookingSummaryFIT> {
         "search_params": searchParms,
         "room_wise_pax": roomArray
       };
+      
     });
   }
 
