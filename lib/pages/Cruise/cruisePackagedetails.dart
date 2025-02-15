@@ -32,7 +32,7 @@ class _CruisePackageDetailsState extends State<CruisePackageDetails> {
   Future<void> _fetchPackageDetails() async {
 
     try {
-      final response = await APIHandler.getCruiseDeal("21" ?? "");
+      final response = await APIHandler.getCruiseDeal(package_id ?? "");
       setState(() {
         packageData = response ?? {};
 

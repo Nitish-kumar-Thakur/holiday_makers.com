@@ -132,9 +132,9 @@ class _CruiseDealsPageState extends State<CruiseDealsPage> {
                         CruiseOption(
                           title: cruise['cruise_name'] ?? '',
                           checkIn:
-                          "${cruise['start_date'] ?? '00'}-${cruise['start_month'] ?? ''}-${cruise['start_year'] ?? '00'}",
+                          "${cruise['dep_date'] ?? '00'}",
                           checkOut:
-                          "${cruise['end_date'] ?? '00'}-${cruise['end_month'] ?? ''}-${cruise['end_year'] ?? '00'}",
+                          "${cruise['arrival_date'] ?? '00'}",
                           duration:
                           '${cruise['nights']} Nights / ${cruise['days']} Days',
                           price: '${cruise['currency']} ${cruise['price']}',

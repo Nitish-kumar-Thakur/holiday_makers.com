@@ -20,11 +20,12 @@ class _DepartureDealsState extends State<DepartureDeals> {
   List<dynamic> packageList = [];
   bool isLoading = true;
   int selectedOption = 0;
-  String? selectedRoom;
-  String? selectedAdult;
-  String? selectedChild;
+  String? selectedRoom= "1";
+  String? selectedAdult="2";
+  String? selectedChild="0";
   List<String>? childrenAge;
   Map<String, dynamic>? selectedPackageData;
+  List<dynamic> totalRoomsdata = [{"adult": "1", "child": "0", "childage": []}];
 
   @override
   void initState() {
@@ -101,7 +102,8 @@ class _DepartureDealsState extends State<DepartureDeals> {
 
   @override
   Widget build(BuildContext context) {
-    final inclusionList = (packageData['inclusion_list'] as List<dynamic>?) ?? [];
+    final inclusionList =
+        (packageData['inclusion_list'] as List<dynamic>?) ?? [];
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -128,103 +130,108 @@ class _DepartureDealsState extends State<DepartureDeals> {
           child: isLoading
               ? _buildShimmerEffect()
               : Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Package Selection Section
-              Text(
-                'Available Packages',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-              ),
-              SizedBox(height: 10),
-
-              Column(
-                children: packageList.asMap().entries.map((entry) {
-                  int index = entry.key;
-                  var package = entry.value;
-
-                  return Column(
-                    children: [
-                      PackageCard(
-                        title: package['package_name'] ?? '',
-                        departureDate:
-                        "${package['start_date']}-${package['start_month']}-${package['start_year']}",
-                        arrivalDate:
-                        "${package['end_date']}-${package['end_month']}-${package['end_year']}",
-                        duration:
-                        '${package['nights']} Nights / ${package['days']} Days',
-                        price: '${package['currency']} ${package['price']}',
-                        isSelected: selectedOption == index,
-                        onSelect: () {
-                          setState(() {
-                            selectedOption = index;
-                            selectedPackageData = package; // Store selected package data
-                          });
-                        },
-                      ),
-                      SizedBox(height: 10),
-                    ],
-                  );
-                }).toList(),
-              ),
-              SizedBox(height: 24),
-
-              // Inclusion Section
-              Container(
-                width: double.infinity,
-                decoration: BoxDecoration(color: Colors.grey.shade200),
-                padding: const EdgeInsets.all(10),
-                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    AppLargeText(
-                      text: 'INCLUSION',
-                      size: 25,
-                    ),
-                    const SizedBox(height: 10),
-                    Center(
-                      child: Wrap(
-                        spacing: 10, // Horizontal space between items
-                        runSpacing: 10, // Vertical space between rows
-                        alignment: WrapAlignment.spaceEvenly,
-                        children: inclusionList.map<Widget>((inclusion) {
-                          return buildInclusionCard(
-                              inclusion['class'], inclusion['name']);
-                        }).toList(),
+                    // Package Selection Section
+                    Text(
+                      'Available Packages',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
                       ),
                     ),
-                    const SizedBox(height: 10),
+                    SizedBox(height: 10),
+
+                    Column(
+                      children: packageList.asMap().entries.map((entry) {
+                        int index = entry.key;
+                        var package = entry.value;
+
+                        return Column(
+                          children: [
+                            PackageCard(
+                              title: package['package_name'] ?? '',
+                              departureDate:
+                                  "${package['start_date']}-${package['start_month']}-${package['start_year']}",
+                              arrivalDate:
+                                  "${package['end_date']}-${package['end_month']}-${package['end_year']}",
+                              duration:
+                                  '${package['nights']} Nights / ${package['days']} Days',
+                              price:
+                                  '${package['currency']} ${package['price']}',
+                              isSelected: selectedOption == index,
+                              onSelect: () {
+                                setState(() {
+                                  selectedOption = index;
+                                  selectedPackageData = package; // Store selected package data
+                                });
+                              },
+                            ),
+                            SizedBox(height: 10),
+                          ],
+                        );
+                      }).toList(),
+                    ),
+                    SizedBox(height: 24),
+
+                    // Inclusion Section
+                    Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(color: Colors.grey.shade200),
+                      padding: const EdgeInsets.all(10),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          AppLargeText(
+                            text: 'INCLUSION',
+                            size: 25,
+                          ),
+                          const SizedBox(height: 10),
+                          Center(
+                            child: Wrap(
+                              spacing: 10, // Horizontal space between items
+                              runSpacing: 10, // Vertical space between rows
+                              alignment: WrapAlignment.spaceEvenly,
+                              children: inclusionList.map<Widget>((inclusion) {
+                                return buildInclusionCard(
+                                    inclusion['class'], inclusion['name']);
+                              }).toList(),
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: 24),
+
+                    // Traveler Selection
+                    Text(
+                      'SELECT TRAVELLERS',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    Travelerdrawer(
+                      onSelectionChanged: (Map<String, dynamic> selection) {
+                        setState(() {
+                          selectedRoom =
+                              selection['totalRooms'].toString() ?? "1";
+                          selectedAdult =
+                              selection['totalAdults'].toString() ?? "1";
+                          selectedChild =
+                              selection['totalChildren'].toString() ?? "0";
+                          childrenAge = selection['childrenAges'];
+                          totalRoomsdata = selection["totalData"];
+                        });
+                      },
+                    ),
+                    SizedBox(height: 30),
                   ],
                 ),
-              ),
-              SizedBox(height: 24),
-
-              // Traveler Selection
-              Text(
-                'SELECT TRAVELLERS',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-              ),
-              SizedBox(height: 10),
-              Travelerdrawer(
-                onSelectionChanged: (Map<String, dynamic> selection) {
-                  setState(() {
-                    selectedRoom = selection['totalRooms'].toString() ?? "1";
-                    selectedAdult = selection['totalAdults'].toString() ?? "1";
-                    selectedChild = selection['totalChildren'].toString() ?? "0";
-                    childrenAge = selection['childrenAges'];
-                  });
-                },
-              ),
-              SizedBox(height: 30),
-            ],
-          ),
         ),
       ),
 
@@ -242,6 +249,11 @@ class _DepartureDealsState extends State<DepartureDeals> {
                 ),
               );
             }
+            print('====================================');
+            print(totalRoomsdata);
+            print('====================================');
+            print(selectedRoom);
+            print('====================================');
           },
           icon: responciveButton(text: 'SELECT'),
         ),
@@ -360,109 +372,90 @@ class _PackageCardState extends State<PackageCard> {
     return GestureDetector(
       onTap: widget.onSelect,
       child: Container(
+        padding: EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: Colors.grey[200]!,
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(
-            color: widget.isSelected ? Colors.pinkAccent : Colors.transparent, // Highlight selected card
-            width: 2,
-          ),
+          border:
+          Border.all(color: widget.isSelected ? Colors.pinkAccent : Colors.grey[300]!),
         ),
-        child: Stack(
+        child: Column(
           children: [
-            Padding(
-              padding: EdgeInsets.all(16),
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      SizedBox(
-                        width: 230,
-                        child: Text(
-                          widget.title,
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: MediaQuery.of(context).size.width * 0.05,
-                          ),
-                        ),
-                      ),
-                      Row(
-                        children: [
-                          Text(
-                            widget.price,
-                            style: TextStyle(
-                              color: Colors.red,
-                              fontWeight: FontWeight.bold,
-                              fontSize:
-                              MediaQuery.of(context).size.width * 0.05,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 8),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        widget.departureDate,
-                        style: TextStyle(
-                          color: Colors.grey[600],
-                          fontSize: MediaQuery.of(context).size.width * 0.04,
-                        ),
-                      ),
-                      Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(50),
-                          border: Border.all(width: 1, color: Colors.grey),
-                        ),
-                        child: Center(
-                          child: Padding(
-                            padding: EdgeInsets.all(5),
-                            child: Text(
-                              widget.duration,
-                              style: TextStyle(
-                                color: Colors.grey[600],
-                                fontSize:
-                                MediaQuery.of(context).size.width * 0.03,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      Text(
-                        widget.arrivalDate,
-                        style: TextStyle(
-                          color: Colors.grey[600],
-                          fontSize: MediaQuery.of(context).size.width * 0.04,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            // Dot Indicator for Selected Card
-            if (widget.isSelected)
-              Positioned(
-                top: 8,
-                right: 8,
-                child: Container(
-                  width: 12,
-                  height: 12,
-                  decoration: BoxDecoration(
-                    color: Colors.pinkAccent, // Dot color
-                    shape: BoxShape.circle,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  widget.title,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
                   ),
                 ),
-              ),
+                Row(
+                  children: [
+                    Text(
+                      widget.price,
+                      style: TextStyle(
+                        color: Colors.red,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                    SizedBox(width: 8),
+                    Container(
+                      height: 10,
+                      width: 10,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: widget.isSelected ? Colors.pinkAccent : Colors.transparent,
+                        border: Border.all(color: Colors.pinkAccent),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  widget.departureDate,
+                  style: TextStyle(
+                    color: Colors.grey[600],
+                    fontSize: 14,
+                  ),
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(50),
+                      border: Border.all(width: 1, color: Colors.grey)),
+                  child: Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(5),
+                      child: Text(
+                        widget.duration,
+                        style: TextStyle(
+                          color: Colors.grey[600],
+                          fontSize: MediaQuery.of(context).size.width * 0.03,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                Text(
+                  widget.arrivalDate,
+                  style: TextStyle(
+                    color: Colors.grey[600],
+                    fontSize: 14,
+                  ),
+                ),
+              ],
+            ),
           ],
         ),
       ),
     );
   }
 }
-

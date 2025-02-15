@@ -8,7 +8,7 @@ import 'package:shimmer/shimmer.dart';
 
 class Travelerhotels extends StatefulWidget {
   final Map<String, dynamic> responceData;
-  final List<Map<String, dynamic>> roomArray;
+  final List<dynamic> roomArray;
   const Travelerhotels({super.key, required this.responceData , required this.roomArray});
 
   @override
@@ -54,53 +54,55 @@ class _TravelerhotelsState extends State<Travelerhotels> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    final screenHeight = MediaQuery.of(context).size.height;
-    final screenWidth = MediaQuery.of(context).size.width;
-    final hotelList = List<Map<String, dynamic>>.from(
-        widget.responceData['data']['hotel_list']);
+Widget build(BuildContext context) {
+  final screenHeight = MediaQuery.of(context).size.height;
+  final screenWidth = MediaQuery.of(context).size.width;
 
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Container(
-              height: screenHeight * 0.3,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage('img/hotel1.png'),
-                  fit: BoxFit.cover,
-                ),
-              ),
-              child: Padding(
-                padding: EdgeInsets.only(top: screenHeight * 0.05),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    IconButton(
-                      icon: const Icon(
-                        Icons.arrow_back,
-                        color: Colors.white,
-                      ),
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                    ),
-                    
-                  ],
-                ),
-              ),
+  final hotelList = List<Map<String, dynamic>>.from(
+      widget.responceData['data']['hotel_list'] ?? []);
+
+  return Scaffold(
+    backgroundColor: Colors.white,
+    body: Column(
+      children: [
+        // Header Image with Back Button
+        isLoading? HotelImageShimmer(screenHeight: screenHeight) :Container(
+          height: screenHeight * 0.3,
+          width: double.infinity,
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: NetworkImage(hotelList[0]["hotel_image"]),
+              fit: BoxFit.cover,
             ),
-            // SizedBox(height: screenHeight * 0.02),
-            Container(
-              width: double.infinity,
-              decoration: BoxDecoration(color: Colors.grey.shade200),
-              child: Padding(
-                padding: EdgeInsets.all(screenWidth * 0.03),
-                child: Column(
+          ),
+          child: Padding(
+            padding: EdgeInsets.only(top: screenHeight * 0.05),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                IconButton(
+                  icon: const Icon(
+                    Icons.arrow_back,
+                    color: Colors.white,
+                  ),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
+            ),
+          ),
+        ),
+
+        // Container with Inclusion & Hotel List
+        Expanded(
+          child: Container(
+            width: double.infinity,
+            decoration: BoxDecoration(color: Colors.grey.shade200),
+            child: Padding(
+              padding: EdgeInsets.all(screenWidth * 0.03),
+              child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     AppLargeText(
@@ -118,35 +120,38 @@ class _TravelerhotelsState extends State<Travelerhotels> {
                         buildInclusionCard(FontAwesomeIcons.user, 'Tour Guide'),
                       ],
                     ),
-                    SizedBox(height: screenHeight * 0.02),
-                    SizedBox(
-                      height: screenHeight * 0.6,
-                      child: isLoading
-                          ? _buildShimmerGrid(screenWidth)
-                          : ListView.builder(
-                              itemCount: hotelList.length,
-                              itemBuilder: (_, index) {
-                                return Padding(
-                                  padding: EdgeInsets.only(
-                                      bottom: screenHeight * 0.09),
-                                  child: HotelCard(
-                                    hotel: hotelList[index],
-                                    responceData: widget.responceData,
-                                    roomArray: widget.roomArray,
-                                  ),
-                                );
-                              },
-                            ),
-                    )
-                  ],
-                ),
+
+                  SizedBox(height: screenHeight * 0.02),
+
+                  // Expanded ListView to avoid overflow
+                  Expanded(
+                    child: isLoading
+                        ? _buildShimmerGrid(screenWidth)
+                        : ListView.builder(
+                            itemCount: hotelList.length,
+                            itemBuilder: (_, index) {
+                              return Padding(
+                                padding: EdgeInsets.only(
+                                    bottom: screenHeight * 0.04),
+                                child: HotelCard(
+                                  hotel: hotelList[index],
+                                  responceData: widget.responceData,
+                                  roomArray: widget.roomArray,
+                                ),
+                              );
+                            },
+                          ),
+                  ),
+                ],
               ),
             ),
-          ],
+          ),
         ),
-      ),
-    );
-  }
+      ],
+    ),
+  );
+}
+
 
   // Shimmer effect for hotel grid while loading
   Widget _buildShimmerGrid(double screenWidth) {
@@ -217,7 +222,7 @@ class _TravelerhotelsState extends State<Travelerhotels> {
 class HotelCard extends StatefulWidget {
   final Map<String, dynamic> hotel;
   final Map<String, dynamic> responceData;
-  final List<Map<String, dynamic>> roomArray;
+  final List<dynamic> roomArray;
 
   const HotelCard({super.key, required this.hotel, required this.responceData, required this.roomArray});
 
@@ -433,6 +438,31 @@ class _HotelCardState extends State<HotelCard> {
             ),
           ),
         ],
+      ),
+    );
+  }
+  
+}
+class HotelImageShimmer extends StatelessWidget {
+  final double screenHeight;
+
+  const HotelImageShimmer({
+    required this.screenHeight,
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Shimmer.fromColors(
+      baseColor: Colors.grey[300]!,
+      highlightColor: Colors.grey[100]!,
+      child: Container(
+        height: screenHeight * 0.3,
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: Colors.grey[300], // Placeholder color
+          borderRadius: BorderRadius.circular(8),
+        ),
       ),
     );
   }

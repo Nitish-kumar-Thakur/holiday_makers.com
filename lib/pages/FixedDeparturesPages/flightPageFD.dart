@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:holdidaymakers/pages/FixedDeparturesPages/booking_summary_fd.dart';
 import 'package:holdidaymakers/widgets/responciveButton.dart';
 
-class FlightPageFD extends StatelessWidget {
+class FlightPageFD extends StatefulWidget {
   final Map<String, dynamic> respponceData;
   final Map<String, dynamic> selectedHotel;
   final List<Map<String, dynamic>> flightList;
 
-  const FlightPageFD({
+  FlightPageFD({
     super.key,
     required this.respponceData,
     required this.selectedHotel,
@@ -15,152 +15,13 @@ class FlightPageFD extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    // List<Map<String, dynamic>> flightList = [
-    //     {
-    //       "option_type": "Option_1",
-    //       "Onward": [
-    //         {
-    //           "flight_details_id": "591",
-    //           "flight_option": "Option_1",
-    //           "flight": "PQ123",
-    //           "dep_from": "DMB",
-    //           "arr_to": "IST",
-    //           "travel_date": "2024-12-02",
-    //           "dep_time": "08:30",
-    //           "arr_time": "11:30",
-    //           "flight_duration": "3:00",
-    //           "package_id": "79",
-    //           "depart_terminal": "Terminal 1",
-    //           "arrival_terminal": "Terminal 2",
-    //           "flight_no": "58967",
-    //           "cabin_baggage": "7",
-    //           "checkin_baggage": "15",
-    //           "flight_type": "Onward",
-    //           "airline_name": "Airline A",
-    //           "from_airport_name": "Dzhambyl",
-    //           "to_airport_name": "Istanbul"
-    //         },
-    //         {
-    //           "flight_details_id": "592",
-    //           "flight_option": "Option_1",
-    //           "flight": "PQ125",
-    //           "dep_from": "IST",
-    //           "arr_to": "DXB",
-    //           "travel_date": "2024-12-02",
-    //           "dep_time": "13:00",
-    //           "arr_time": "16:30",
-    //           "flight_duration": "3:30",
-    //           "package_id": "79",
-    //           "depart_terminal": "Terminal 2",
-    //           "arrival_terminal": "Terminal 3",
-    //           "flight_no": "58968",
-    //           "cabin_baggage": "7",
-    //           "checkin_baggage": "15",
-    //           "flight_type": "Onward",
-    //           "airline_name": "Airline B",
-    //           "from_airport_name": "Istanbul",
-    //           "to_airport_name": "Dubai"
-    //         }
-    //       ],
-    //       "Return": [
-    //         {
-    //           "flight_details_id": "577",
-    //           "flight_option": "Option_1",
-    //           "flight": "PQ126",
-    //           "dep_from": "DXB",
-    //           "arr_to": "IST",
-    //           "travel_date": "2024-12-10",
-    //           "dep_time": "01:30",
-    //           "arr_time": "04:30",
-    //           "flight_duration": "3:00",
-    //           "package_id": "79",
-    //           "depart_terminal": "Terminal 3",
-    //           "arrival_terminal": "Terminal 2",
-    //           "flight_no": "58969",
-    //           "cabin_baggage": "7",
-    //           "checkin_baggage": "15",
-    //           "flight_type": "Return",
-    //           "airline_name": "Airline A",
-    //           "from_airport_name": "Dubai",
-    //           "to_airport_name": "Istanbul"
-    //         },
-    //         {
-    //           "flight_details_id": "578",
-    //           "flight_option": "Option_1",
-    //           "flight": "PQ127",
-    //           "dep_from": "IST",
-    //           "arr_to": "DMB",
-    //           "travel_date": "2024-12-10",
-    //           "dep_time": "07:00",
-    //           "arr_time": "10:00",
-    //           "flight_duration": "3:00",
-    //           "package_id": "79",
-    //           "depart_terminal": "Terminal 2",
-    //           "arrival_terminal": "Terminal 1",
-    //           "flight_no": "58970",
-    //           "cabin_baggage": "7",
-    //           "checkin_baggage": "15",
-    //           "flight_type": "Return",
-    //           "airline_name": "Airline B",
-    //           "from_airport_name": "Istanbul",
-    //           "to_airport_name": "Dzhambyl"
-    //         }
-    //       ],
-    //       "total": 500
-    //     },
-    //     {
-    //       "option_type": "Option_2",
-    //       "Onward": [
-    //         {
-    //           "flight_details_id": "593",
-    //           "flight_option": "Option_2",
-    //           "flight": "PQ128",
-    //           "dep_from": "DMB",
-    //           "arr_to": "DXB",
-    //           "travel_date": "2024-12-01",
-    //           "dep_time": "08:30",
-    //           "arr_time": "11:30",
-    //           "flight_duration": "3:00",
-    //           "package_id": "80",
-    //           "depart_terminal": "Terminal 1",
-    //           "arrival_terminal": "Terminal 1",
-    //           "flight_no": "58971",
-    //           "cabin_baggage": "7",
-    //           "checkin_baggage": "15",
-    //           "flight_type": "Onward",
-    //           "airline_name": "Airline C",
-    //           "from_airport_name": "Dzhambyl",
-    //           "to_airport_name": "Dubai"
-    //         }
-    //       ],
-    //       "Return": [
-    //         {
-    //           "flight_details_id": "579",
-    //           "flight_option": "Option_2",
-    //           "flight": "PQ129",
-    //           "dep_from": "DXB",
-    //           "arr_to": "DMB",
-    //           "travel_date": "2024-12-05",
-    //           "dep_time": "04:30",
-    //           "arr_time": "07:30",
-    //           "flight_duration": "3:00",
-    //           "package_id": "80",
-    //           "depart_terminal": "Terminal 1",
-    //           "arrival_terminal": "Terminal 1",
-    //           "flight_no": "58972",
-    //           "cabin_baggage": "7",
-    //           "checkin_baggage": "15",
-    //           "flight_type": "Return",
-    //           "airline_name": "Airline C",
-    //           "from_airport_name": "Dubai",
-    //           "to_airport_name": "Dzhambyl"
-    //         }
-    //       ],
-    //       "total": 450
-    //     }
-    //   ];
+  State<FlightPageFD> createState() => _FlightPageFDState();
+}
 
+class _FlightPageFDState extends State<FlightPageFD> {
+  int selectedFlightIndex = 0;
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[100],
       appBar: AppBar(
@@ -178,27 +39,67 @@ class FlightPageFD extends StatelessWidget {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: flightList.isEmpty
+        child: widget.flightList.isEmpty
             ? const Center(
-          child: Text(
-            "Flights not available",
-            style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.black54),
+                child: Text(
+                  "Flights not available",
+                  style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black54),
+                ),
+              )
+            : ListView.builder(
+                itemCount: widget.flightList.length,
+                itemBuilder: (context, index) {
+                  final flightData = widget.flightList[index];
+
+                  return FlightPackageCard(
+                    optionKey:
+                        flightData["option_type"], // "Option_1", "Option_2"
+                    onwardFlights: List<Map<String, dynamic>>.from(
+                        flightData["Onward"] ?? []),
+                    returnFlights: List<Map<String, dynamic>>.from(
+                        flightData["Return"] ?? []),
+                    isSelected: selectedFlightIndex == index,
+                    onTap: () {
+                      setState(() {
+                        selectedFlightIndex = index;
+                      });
+                    },
+                  );
+                },
+              ),
+      ),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        child: GestureDetector(
+          onTap: () {
+            if (widget.flightList.isNotEmpty) {
+              List<Map<String, dynamic>> selectedFlightPackage = [
+                ...widget.flightList[selectedFlightIndex]
+                    ["Onward"], // Add all onward flights
+                ...widget.flightList[selectedFlightIndex]
+                    ["Return"] // Add all return flights
+              ];
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => BookingSummaryFD(
+                    flightDetails: selectedFlightPackage,
+                    selectedHotel: widget.selectedHotel,
+                    packageDetails: widget.respponceData,
+                  ),
+                ),
+              );
+            }
+          },
+          child: Padding(
+            padding: const EdgeInsets.only(bottom: 20.0),
+            child: responciveButton(text: "Book Now"),
           ),
-        )
-            : ListView(
-          children: flightList.map((flightData) {
-            return FlightPackageCard(
-              optionKey: flightData["option_type"], // "Option_1", "Option_2"
-              onwardFlights: List<Map<String, dynamic>>.from(flightData["Onward"] ?? []),
-              returnFlights: List<Map<String, dynamic>>.from(flightData["Return"] ?? []),
-            );
-          }).toList(),
         ),
       ),
-
     );
   }
 }
@@ -207,12 +108,16 @@ class FlightPackageCard extends StatefulWidget {
   final String optionKey;
   final List<Map<String, dynamic>> onwardFlights;
   final List<Map<String, dynamic>> returnFlights;
+  final bool isSelected;
+  final VoidCallback onTap; // Add this
 
   const FlightPackageCard({
     super.key,
     required this.optionKey,
     required this.onwardFlights,
     required this.returnFlights,
+    required this.isSelected,
+    required this.onTap,
   });
 
   @override
@@ -220,7 +125,10 @@ class FlightPackageCard extends StatefulWidget {
 }
 
 class _FlightPackageCardState extends State<FlightPackageCard> {
-  final Set<String> _expandedFlights = {}; // Tracks which flight details are expanded
+  final Set<String> _expandedFlights =
+      {}; // Tracks which flight details are expanded
+  String? selectedOnwardFlight;
+  String? selectedReturnFlight;
 
   void _toggleExpand(String flightKey) {
     setState(() {
@@ -228,6 +136,16 @@ class _FlightPackageCardState extends State<FlightPackageCard> {
         _expandedFlights.remove(flightKey);
       } else {
         _expandedFlights.add(flightKey);
+      }
+    });
+  }
+
+  void _selectFlight(String flightKey, bool isOnward) {
+    setState(() {
+      if (isOnward) {
+        selectedOnwardFlight = flightKey;
+      } else {
+        selectedReturnFlight = flightKey;
       }
     });
   }
@@ -248,37 +166,34 @@ class _FlightPackageCardState extends State<FlightPackageCard> {
             Divider(),
             _flightSection("Return Flight", widget.returnFlights),
             const SizedBox(height: 15),
-            // SizedBox(
-            //   width: double.infinity,
-            //   child: ElevatedButton(
-            //     onPressed: () {},
-            //     style: ElevatedButton.styleFrom(
-            //       backgroundColor: Colors.blueAccent,
-            //       shape: RoundedRectangleBorder(
-            //           borderRadius: BorderRadius.circular(10)),
-            //       padding: const EdgeInsets.symmetric(vertical: 12),
-            //     ),
-            //     child: const Text(
-            //       "Select Flight Package",
-            //       style: TextStyle(
-            //           fontSize: 16,
-            //           fontWeight: FontWeight.bold,
-            //           color: Colors.white),
-            //     ),
-            //   ),
-            // ),
             Align(
               alignment: Alignment.center,
-              child: IconButton(
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                BookingSummaryFD()));
-                  },
-                  icon: responciveButton(text: 'SELECT')),
-            )
+              child: SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: widget.onTap,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor:
+                        widget.isSelected ? Colors.red : Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    side: BorderSide(
+                        color: Colors.red), // Add a border for visibility
+                  ),
+                  child: Text(
+                    widget.isSelected ? 'SELECTED' : 'SELECT',
+                    style: TextStyle(
+                      color: widget.isSelected
+                          ? Colors.white
+                          : Colors.red, // Fix text color
+                      fontSize: 16.0, // Set proper font size
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
       ),
@@ -297,10 +212,9 @@ class _FlightPackageCardState extends State<FlightPackageCard> {
               fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black87),
         ),
         const SizedBox(height: 10),
-
         Column(
           children: flights.map((flight) {
-            String flightKey = "${flight["flight_no"]}_${flight["dep_time"]}";
+            String flightKey = flight["flight_details_id"];
 
             return Column(
               children: [
@@ -318,7 +232,6 @@ class _FlightPackageCardState extends State<FlightPackageCard> {
                   flight["cabin_baggage"] ?? "0",
                   flight["checkin_baggage"] ?? "0",
                 ),
-                // const Divider(thickness: 1), // Separator for multiple flights
               ],
             );
           }).toList(),
@@ -329,19 +242,19 @@ class _FlightPackageCardState extends State<FlightPackageCard> {
   }
 
   Widget _flightSegment(
-      String flightKey,
-      String flightName,
-      String depTime,
-      String depFrom,
-      String depTerminal,
-      String duration,
-      String arrTime,
-      String arrTo,
-      String arrTerminal,
-      String flightNo,
-      String cabinBaggage,
-      String checkinBaggage,
-      ) {
+    String flightKey,
+    String flightName,
+    String depTime,
+    String depFrom,
+    String depTerminal,
+    String duration,
+    String arrTime,
+    String arrTo,
+    String arrTerminal,
+    String flightNo,
+    String cabinBaggage,
+    String checkinBaggage,
+  ) {
     bool isExpanded = _expandedFlights.contains(flightKey);
 
     return Column(
@@ -353,7 +266,10 @@ class _FlightPackageCardState extends State<FlightPackageCard> {
             Expanded(
               child: Text(
                 flightName,
-                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.black87),
+                style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87),
               ),
             ),
             Text(
@@ -370,7 +286,8 @@ class _FlightPackageCardState extends State<FlightPackageCard> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(depTime,
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                    style: const TextStyle(
+                        fontSize: 16, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 4),
                 Text(depFrom,
                     style: const TextStyle(fontSize: 14, color: Colors.black)),
@@ -381,8 +298,10 @@ class _FlightPackageCardState extends State<FlightPackageCard> {
             const Spacer(),
             Column(
               children: [
-                const Icon(Icons.flight_takeoff, color: Colors.blueAccent, size: 30),
-                Text(duration, style: const TextStyle(fontSize: 14, color: Colors.grey)),
+                const Icon(Icons.flight_takeoff,
+                    color: Colors.blueAccent, size: 30),
+                Text(duration,
+                    style: const TextStyle(fontSize: 14, color: Colors.grey)),
               ],
             ),
             const Spacer(),
@@ -390,7 +309,8 @@ class _FlightPackageCardState extends State<FlightPackageCard> {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(arrTime,
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                    style: const TextStyle(
+                        fontSize: 16, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 4),
                 Text(arrTo,
                     style: const TextStyle(fontSize: 14, color: Colors.black)),
@@ -407,7 +327,8 @@ class _FlightPackageCardState extends State<FlightPackageCard> {
           onTap: () => _toggleExpand(flightKey),
           child: Row(
             children: [
-              const Icon(Icons.info_outline, size: 16, color: Colors.blueAccent),
+              const Icon(Icons.info_outline,
+                  size: 16, color: Colors.blueAccent),
               const SizedBox(width: 5),
               Text(
                 isExpanded ? "Hide Info" : "Show More",
@@ -427,7 +348,7 @@ class _FlightPackageCardState extends State<FlightPackageCard> {
             ],
           ),
           crossFadeState:
-          isExpanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+              isExpanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
           duration: const Duration(milliseconds: 300),
         ),
       ],

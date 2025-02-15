@@ -27,10 +27,12 @@ class _IndependentTravelerPageState extends State<IndependentTravelerPage> {
   String? fromDate;
   String? stayingDay;
   String? selectedRoom = "1";
-  String? selectedAdult = "1";
+  String? selectedAdult = "2";
   String? selectedChild = "0";
   List<String>? childrenAge = [];
-  List<Map<String, dynamic>> totalRoomsdata = [];
+  List<dynamic> totalRoomsdata = [
+    {"adults": "1", "children": "0", "childrenAges": []}
+  ];
 
   List<Map<String, String>> cities = [];
   List<Map<String, String>> destinations = [];
@@ -47,6 +49,7 @@ class _IndependentTravelerPageState extends State<IndependentTravelerPage> {
   }
 
   Future<void> fetchCities() async {
+    print(totalRoomsdata);
     try {
       List<Map<String, String>> fetchedCities =
           await APIHandler.fetchSourceList();
@@ -93,11 +96,11 @@ class _IndependentTravelerPageState extends State<IndependentTravelerPage> {
           rooms: selectedRoom!,
           adults: selectedAdult!,
           children: selectedChild!,
-          childrenAge: childrenAge!);
+          childrenAge: totalRoomsdata!);
 
       if (response["message"] == "success") {
         print("====================");
-        print(response["data"]["hotel_list"][0]["Infant_Count"]);
+        print(response["data"]["hotel_list"][0]);
         print(totalRoomsdata); // Not Used Yet
         print("====================");
 
@@ -105,7 +108,9 @@ class _IndependentTravelerPageState extends State<IndependentTravelerPage> {
           context,
           MaterialPageRoute(
             builder: (context) => Travelerhotels(
-                responceData: response, roomArray: totalRoomsdata),
+              responceData: response,
+              roomArray: totalRoomsdata,
+            ),
           ),
         );
       } else {

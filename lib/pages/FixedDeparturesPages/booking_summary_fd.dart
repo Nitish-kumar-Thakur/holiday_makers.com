@@ -4,14 +4,34 @@ import 'package:holdidaymakers/widgets/responciveButton.dart';
 import 'package:shimmer/shimmer.dart';
 
 class BookingSummaryFD extends StatefulWidget {
-  const BookingSummaryFD({super.key});
+  final Map<String, dynamic> packageDetails;
+  final Map<String, dynamic> selectedHotel;
+  final List<Map<String, dynamic>> flightDetails;
+
+  const BookingSummaryFD({super.key, required this.packageDetails, required this.selectedHotel, required this.flightDetails});
 
   @override
   State<BookingSummaryFD> createState() => _BookingSummaryFDState();
 }
 
 class _BookingSummaryFDState extends State<BookingSummaryFD> {
+  @override
+  void initState() {
+    super.initState();
 
+    Future.delayed(const Duration(milliseconds: 800), () {
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
+    });
+    print('&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&');
+    // print(widget.packageDetails);
+    // print(widget.selectedHotel);
+    print(widget.flightDetails);
+    print('&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&');
+  }
   bool isLoading = false;
 
   final List<Map<String, String>> packageDetails = [

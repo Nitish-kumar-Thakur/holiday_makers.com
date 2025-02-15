@@ -4,9 +4,9 @@ import 'package:holdidaymakers/widgets/appLargetext.dart';
 import 'package:holdidaymakers/widgets/responciveButton.dart';
 
 class PaxDetails extends StatefulWidget {
-  // final ValueChanged<Map<String, dynamic>> onSelectionChanged;
+  final ValueChanged<Map<String, dynamic>> onSelectionChanged;
 
-  const PaxDetails({super.key});        //required this.onSelectionChanged
+  const PaxDetails({super.key, required this.onSelectionChanged});        //required this.onSelectionChanged
 
   @override
   _PaxDetailsState createState() => _PaxDetailsState();
@@ -65,7 +65,7 @@ class _PaxDetailsState extends State<PaxDetails> {
     bool isValid = _validateRooms();
 
     setState(() {
-      errorMessage = isValid ? null : "At least one 21-year-old pax should be in each room";
+      errorMessage = isValid ? null : "Atleast one 21 year old pax should be there in each room";
       totalSummary = {
         "totalPaxCount": totalPaxCount,
         "totalRooms": roomDetails.length,
@@ -215,7 +215,12 @@ class _PaxDetailsState extends State<PaxDetails> {
                     GestureDetector(
                       onTap: () {
                         if (_validateRooms()) {
+                          widget.onSelectionChanged(totalSummary);
                           Navigator.pop(context);
+                        }
+                        else{
+                        widget.onSelectionChanged(totalSummary);
+                        Navigator.pop(context);
                         }
                         print('======================');
                         print(totalSummary);

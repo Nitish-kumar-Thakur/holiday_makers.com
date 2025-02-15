@@ -308,9 +308,7 @@ class _TravelerdrawerState extends State<Travelerdrawer> {
             children: [
               Icon(FontAwesomeIcons.users, size: 20),
               const SizedBox(width: 13),
-              Text(update
-                  ? '${totalSummary['totalRooms']} Room(s) Selected'
-                  : 'Select Rooms and Adults'),
+              Text('${totalSummary['totalAdults']} Adults, ${totalSummary['totalRooms']} Rooms, ${totalSummary['totalChildren']} Child'),
             ],
           ),
         ),

@@ -34,7 +34,7 @@ class LoginButton extends StatelessWidget {
               offset: Offset(0, 4), // X and Y offset;
             )
           ]),
-      width: 155,
+      width: 160,
       height: 56,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
