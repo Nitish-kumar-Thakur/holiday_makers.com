@@ -24,9 +24,9 @@ class _TravelerdrawerState extends State<Travelerdrawer> {
       }
 
       return {
-        "adult": item['adults'].toString(),
-        "child": item['children'].toString(),
-        "childage": childrenAges,
+        "adults": item['adults'].toString(),
+        "children": item['children'].toString(),
+        "childrenAges": childrenAges,
       };
     }).toList();
   }

@@ -25,7 +25,7 @@ class _DepartureDealsState extends State<DepartureDeals> {
   String? selectedChild="0";
   List<String>? childrenAge;
   Map<String, dynamic>? selectedPackageData;
-  List<dynamic> totalRoomsdata = [{"adult": "1", "child": "0", "childage": []}];
+  List<dynamic> totalRoomsdata = [{"adult": "2", "child": "0", "childage": []}];
 
   @override
   void initState() {
@@ -153,11 +153,11 @@ class _DepartureDealsState extends State<DepartureDeals> {
                             PackageCard(
                               title: package['package_name'] ?? '',
                               departureDate:
-                                  "${package['start_date']}-${package['start_month']}-${package['start_year']}",
+                                  "${package['dep_date']}",
                               arrivalDate:
-                                  "${package['end_date']}-${package['end_month']}-${package['end_year']}",
+                                  "${package['arrival_date']}",
                               duration:
-                                  '${package['nights']} Nights / ${package['days']} Days',
+                                  '${package['duration']}',
                               price:
                                   '${package['currency']} ${package['price']}',
                               isSelected: selectedOption == index,
@@ -245,15 +245,10 @@ class _DepartureDealsState extends State<DepartureDeals> {
                 context,
                 MaterialPageRoute(
                   builder: (context) =>
-                      HotelsAccommodation(packageData: selectedPackageData!),
+                      HotelsAccommodation(packageData: selectedPackageData!, totalRoomsdata: totalRoomsdata),
                 ),
               );
             }
-            print('====================================');
-            print(totalRoomsdata);
-            print('====================================');
-            print(selectedRoom);
-            print('====================================');
           },
           icon: responciveButton(text: 'SELECT'),
         ),

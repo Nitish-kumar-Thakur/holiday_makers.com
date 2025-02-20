@@ -41,6 +41,7 @@ class _CruiseDealsPageState extends State<CruiseDealsPage> {
     final response = await APIHandler.getCruiseCards(cruiseId ?? "");
     setState(() {
       cruiseCards = response;
+      selectedCruiseData = cruiseCards['data'][0];
     });
   }
 
@@ -53,7 +54,7 @@ class _CruiseDealsPageState extends State<CruiseDealsPage> {
       icon = FontAwesomeIcons.plane;
     } else if (iconClass.contains("fa-bed")) {
       icon = FontAwesomeIcons.bed;
-    } else if (iconClass.contains("fa-theater")) {
+    } else if (iconClass.contains("fa-theater"))  {
       icon = FontAwesomeIcons.film;
     } else if (iconClass.contains("fa-kids")) {
       icon = FontAwesomeIcons.children;
@@ -136,7 +137,7 @@ class _CruiseDealsPageState extends State<CruiseDealsPage> {
                           checkOut:
                           "${cruise['arrival_date'] ?? '00'}",
                           duration:
-                          '${cruise['nights']} Nights / ${cruise['days']} Days',
+                          '${cruise['duration']}',
                           price: '${cruise['currency']} ${cruise['price']}',
                           isSelected: selectedOption == index,
                           onSelect: () {
@@ -145,9 +146,9 @@ class _CruiseDealsPageState extends State<CruiseDealsPage> {
                               selectedCruiseData = cruise;
                             });
                           },
-                        ),
-                        SizedBox(height: 10),
-                      ],
+                         ),
+                         SizedBox(height: 10),
+                       ],
                     );
                   }).toList(),
                 ],
@@ -195,7 +196,7 @@ class _CruiseDealsPageState extends State<CruiseDealsPage> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => CruiseDealsPage2()),
+                MaterialPageRoute(builder: (context) => CruiseDealsPage2(selectedCruiseData: selectedCruiseData)),
               );
             },
             icon: responciveButton(text: 'SELECT'),

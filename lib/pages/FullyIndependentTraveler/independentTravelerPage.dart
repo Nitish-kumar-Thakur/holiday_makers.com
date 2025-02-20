@@ -81,6 +81,10 @@ class _IndependentTravelerPageState extends State<IndependentTravelerPage> {
         selectedRoom == null ||
         selectedAdult == null ||
         selectedChild == null) {
+          print("====================");
+        
+        print(totalRoomsdata); // Not Used Yet
+        print("====================");
       setState(() {
         errorMessage = "Please fill all the required fields";
       });
@@ -97,6 +101,7 @@ class _IndependentTravelerPageState extends State<IndependentTravelerPage> {
           adults: selectedAdult!,
           children: selectedChild!,
           childrenAge: totalRoomsdata!);
+
 
       if (response["message"] == "success") {
         print("====================");

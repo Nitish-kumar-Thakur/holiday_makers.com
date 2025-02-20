@@ -5,7 +5,7 @@ class SharedPreferencesHandler {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('isLoggedIn', true);
     await prefs.setString("user_id", data["data"]["user_id"].toString());
-    await prefs.setString("token", data["token"].toString());
+    await prefs.setString("token", data["data"]["token"].toString());
     await prefs.setString("first_name", data["data"]["first_name"].toString());
     await prefs.setString("last_name", data["data"]["last_name"].toString());
     await prefs.setString("email_org", data["data"]["email_org"].toString());

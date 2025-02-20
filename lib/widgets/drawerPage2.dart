@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:holdidaymakers/pages/Cruise/CurisesHome.dart';
 import 'package:holdidaymakers/pages/FixedDeparturesPages/departuresHome.dart';
 import 'package:holdidaymakers/pages/FullyIndependentTraveler/mainPage.dart';
-import 'package:holdidaymakers/widgets/ChangePassword.dart';
+import 'package:holdidaymakers/widgets/ChangePasswordScreen.dart';
 import 'package:holdidaymakers/widgets/ManageAccount.dart';
 import 'package:holdidaymakers/widgets/appLargetext.dart';
 import 'package:holdidaymakers/widgets/appText.dart';

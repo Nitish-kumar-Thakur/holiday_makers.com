@@ -1,64 +1,114 @@
 import 'package:flutter/material.dart';
-import 'package:holdidaymakers/pages/FixedDeparturesPages/traveler_details_fd.dart';
+import 'package:holdidaymakers/pages/FullyIndependentTraveler/booking_summary_fit.dart';
 import 'package:holdidaymakers/utils/api_handler.dart';
 import 'package:holdidaymakers/widgets/responciveButton.dart';
+import 'dart:collection';
 
-class FlightPageFD extends StatefulWidget {
-  final Map<String, dynamic> packageData;
-  final Map<String, dynamic> selectedHotel;
-  // final List<Map<String, dynamic>> flightList;
-  String searchId;
-  final List<dynamic> totalRoomsdata;
+class FlightPageFIT extends StatefulWidget {
+  final Map<dynamic, dynamic>? responceData;
+  final Map<dynamic, dynamic>? flightList;
 
-  FlightPageFD({
+  const FlightPageFIT({
     super.key,
-    required this.searchId,
-    required this.packageData,
-    required this.selectedHotel,
-    // required this.flightList,
-    required this.totalRoomsdata,
+    required this.flightList,
+    required this.responceData,
   });
 
   @override
-  State<FlightPageFD> createState() => _FlightPageFDState();
+  State<FlightPageFIT> createState() => _FlightPageFITState();
 }
 
-class _FlightPageFDState extends State<FlightPageFD> {
-  List<Map<String, dynamic>> flightList = [];
-  List<Map<String, dynamic>> selectedFlightPackage = [];
-  bool isLoading = true;
-
-  void initState() {
-    super.initState();
-    Future.delayed(const Duration(milliseconds: 800), () {
-      if (mounted) {
-        setState(() {
-          isLoading = false;
-        });
-      }
-    });
-    _fetchFDFlightDetails();
-  }
-
-  Future<void> _fetchFDFlightDetails() async {
-    try {
-      final response = await APIHandler.getFDFlightDetails(
-          widget.searchId ?? "", widget.selectedHotel['git_adhoc_hotel_id'] ?? "");
-      setState(() {
-        flightList = (response['data']['group_by_flight_details'] as List)
-                .map((e) => e as Map<String, dynamic>)
-                .toList() ??
-            [];
-        isLoading = false;
-      });
-    } catch (e) {
-      print("Error fetching package cards: $e");
-    }
-  }
-
+class _FlightPageFITState extends State<FlightPageFIT> {
+  bool isLoading = false;
   int selectedFlightIndex = 0;
+  Future<void> fitUpdateFlight(
+      final Map<String, dynamic> selectedFlightPackage) async {
+    Map<String, dynamic> fitUpdateFlightData = {
+      "search_id": widget.responceData?["data"]["search_id"],
+      "flight_fare_id":
+          "${selectedFlightPackage["onward"][0]["flight_fare_id"]}_${selectedFlightPackage["return"][0]["flight_fare_id"]}"
+    };
+    try {
+      // print("Sending API Request with Data: $fitUpdateHotelData");
+      Map<dynamic, dynamic> response =
+          await APIHandler.fitUpdateFlight(fitUpdateFlightData);
+
+      print("Flight Response: ${response}");
+
+      if (response["message"] == "success") {
+        isLoading = false;
+        // print("Update Hotel Data Updated: ${fitUpdateHotelData}");
+      } else {
+        print("API Error: ${response["message"]}");
+      }
+    } catch (error) {
+      print("Exception in API Call: $error");
+    }
+  } // Default: No selection
+
+  _selectButton(final Map<String, dynamic> selectedFlightPackage) async {
+    setState(() {
+      isLoading = true;
+    });
+
+    await fitUpdateFlight(
+        selectedFlightPackage); // Wait for API response before proceeding
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => BookingSummaryFIT(
+              searchId: (widget.responceData?["data"]["search_id"]).toString())),
+    );
+
+    setState(() {
+      isLoading = false;
+    });
+  }
+
+  /// Function to group flights by `flight_name`
+  Map<String, Map<String, dynamic>> _groupFlightsByName() {
+    Map<String, Map<String, dynamic>> groupedFlights = {};
+
+    final List<Map<String, dynamic>> onwardFlights =
+        List<Map<String, dynamic>>.from(
+            widget.flightList?["flight"]["onward"] ?? []);
+    final List<Map<String, dynamic>> returnFlights =
+        List<Map<String, dynamic>>.from(
+            widget.flightList?["flight"]["return"] ?? []);
+
+    // Group onward flights by `flight_name`
+    for (var flight in onwardFlights) {
+      String flightName = flight["flight_name"] ?? "Unknown Airline";
+      if (!groupedFlights.containsKey(flightName)) {
+        groupedFlights[flightName] = {
+          "onward": [],
+          "return": [],
+        };
+      }
+      groupedFlights[flightName]?["onward"]!.add(flight);
+    }
+
+    // Group return flights by `flight_name`
+    for (var flight in returnFlights) {
+      String flightName = flight["flight_name"] ?? "Unknown Airline";
+      if (groupedFlights.containsKey(flightName)) {
+        groupedFlights[flightName]?["return"]!.add(flight);
+      } else {
+        groupedFlights[flightName] = {
+          "onward": [],
+          "return": [flight],
+        };
+      }
+    }
+
+    return groupedFlights;
+  }
+
   @override
   Widget build(BuildContext context) {
+    Map<String, Map<String, dynamic>> groupedFlights = _groupFlightsByName();
+
     return Scaffold(
       backgroundColor: Colors.grey[100],
       appBar: AppBar(
@@ -76,7 +126,7 @@ class _FlightPageFDState extends State<FlightPageFD> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: flightList.isEmpty
+        child: groupedFlights.isEmpty
             ? const Center(
                 child: Text(
                   "Flights not available",
@@ -87,17 +137,16 @@ class _FlightPageFDState extends State<FlightPageFD> {
                 ),
               )
             : ListView.builder(
-                itemCount: flightList.length,
+                itemCount: groupedFlights.length,
                 itemBuilder: (context, index) {
-                  final flightData = flightList[index];
+                  String flightName = groupedFlights.keys.elementAt(index);
+                  Map<String, dynamic> flightData = groupedFlights[flightName]!;
 
                   return FlightPackageCard(
-                    optionKey:
-                        flightData["option_type"], // "Option_1", "Option_2"
                     onwardFlights: List<Map<String, dynamic>>.from(
-                        flightData["Onward"] ?? []),
+                        flightData["onward"] ?? []),
                     returnFlights: List<Map<String, dynamic>>.from(
-                        flightData["Return"] ?? []),
+                        flightData["return"] ?? []),
                     isSelected: selectedFlightIndex == index,
                     onTap: () {
                       setState(() {
@@ -107,78 +156,22 @@ class _FlightPageFDState extends State<FlightPageFD> {
                   );
                 },
               ),
-
-
       ),
-      // body: Container(
-      //   color: Colors.white, // Set background color to white
-      //   child: Padding(
-      //     padding: const EdgeInsets.all(16.0),
-      //     child: widget.flightList.isEmpty
-      //         ? const Center(
-      //       child: Text(
-      //         "Flights not available",
-      //         style: TextStyle(
-      //             fontSize: 18,
-      //             fontWeight: FontWeight.bold,
-      //             color: Colors.black54),
-      //       ),
-      //     )
-      //         : ListView.builder(
-      //       itemCount: widget.flightList.length,
-      //       itemBuilder: (context, index) {
-      //         final flightData = widget.flightList[index];
-      //
-      //         return FlightPackageCard(
-      //           optionKey:
-      //           flightData["option_type"], // "Option_1", "Option_2"
-      //           onwardFlights: List<Map<String, dynamic>>.from(
-      //               flightData["Onward"] ?? []),
-      //           returnFlights: List<Map<String, dynamic>>.from(
-      //               flightData["Return"] ?? []),
-      //           isSelected: selectedFlightIndex == index,
-      //           onTap: () {
-      //             setState(() {
-      //               selectedFlightIndex = index;
-      //             });
-      //           },
-      //         );
-      //       },
-      //     ),
-      //   ),
-      // ),
-
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         child: GestureDetector(
           onTap: () {
-            if (flightList.isNotEmpty) {
-              selectedFlightPackage = [
-                ...flightList[selectedFlightIndex]
-                    ["Onward"], // Add all onward flights
-                ...flightList[selectedFlightIndex]
-                    ["Return"] // Add all return flights
-              ];
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => TravelersDetailsFD(
-                    flightDetails: selectedFlightPackage,
-                    selectedHotel: widget.selectedHotel,
-                    packageDetails: widget.packageData,
-                      totalRoomsdata: widget.totalRoomsdata,
-                    searchId: widget.searchId
-                  ),
-                ),
-              );
+            if (groupedFlights.isNotEmpty && selectedFlightIndex >= 0) {
+              String selectedFlightName =
+                  groupedFlights.keys.elementAt(selectedFlightIndex);
+              Map<String, dynamic> selectedFlightPackage =
+                  groupedFlights[selectedFlightName]!;
+              print("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
+              print(
+                  "${selectedFlightPackage["onward"][0]["flight_fare_id"]}_${selectedFlightPackage["return"][0]["flight_fare_id"]}");
+              print("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
+              _selectButton(selectedFlightPackage);
             }
-            // print('########################################################');
-            // print(widget.selectedHotel);
-            // print(widget.packageData);
-            // print(widget.totalRoomsdata);
-            // print(widget.searchId);
-            // print(selectedFlightPackage);
-            // print('########################################################');
           },
           child: Padding(
             padding: const EdgeInsets.only(bottom: 20.0),
@@ -191,7 +184,6 @@ class _FlightPageFDState extends State<FlightPageFD> {
 }
 
 class FlightPackageCard extends StatefulWidget {
-  final String optionKey;
   final List<Map<String, dynamic>> onwardFlights;
   final List<Map<String, dynamic>> returnFlights;
   final bool isSelected;
@@ -199,7 +191,6 @@ class FlightPackageCard extends StatefulWidget {
 
   const FlightPackageCard({
     super.key,
-    required this.optionKey,
     required this.onwardFlights,
     required this.returnFlights,
     required this.isSelected,
@@ -211,7 +202,8 @@ class FlightPackageCard extends StatefulWidget {
 }
 
 class _FlightPackageCardState extends State<FlightPackageCard> {
-  final Set<String> _expandedFlights = {}; // Tracks which flight details are expanded
+  final Set<String> _expandedFlights =
+      {}; // Tracks which flight details are expanded
   String? selectedOnwardFlight;
   String? selectedReturnFlight;
 
@@ -221,16 +213,6 @@ class _FlightPackageCardState extends State<FlightPackageCard> {
         _expandedFlights.remove(flightKey);
       } else {
         _expandedFlights.add(flightKey);
-      }
-    });
-  }
-
-  void _selectFlight(String flightKey, bool isOnward) {
-    setState(() {
-      if (isOnward) {
-        selectedOnwardFlight = flightKey;
-      } else {
-        selectedReturnFlight = flightKey;
       }
     });
   }
@@ -304,16 +286,17 @@ class _FlightPackageCardState extends State<FlightPackageCard> {
             return Column(
               children: [
                 _flightSegment(
+                  title,
                   flightKey,
-                  flight["airline_name"] ?? "Unknown Airline",
+                  flight["flight_name"] ?? "Unknown Airline",
                   flight["dep_time"] ?? "--:--",
-                  flight["from_airport_name"] ?? "Unknown",
+                  flight["dep_airport_city"] ?? "Unknown",
                   flight["depart_terminal"] ?? "N/A",
                   flight["flight_duration"] ?? "--h --m",
                   flight["arr_time"] ?? "--:--",
-                  flight["to_airport_name"] ?? "Unknown",
+                  flight["arr_airport_city"] ?? "Unknown",
                   flight["arrival_terminal"] ?? "N/A",
-                  flight["flight_no"] ?? "",
+                  flight["flight_number"] ?? "",
                   flight["cabin_baggage"] ?? "0",
                   flight["checkin_baggage"] ?? "0",
                 ),
@@ -327,6 +310,7 @@ class _FlightPackageCardState extends State<FlightPackageCard> {
   }
 
   Widget _flightSegment(
+    String title,
     String flightKey,
     String flightName,
     String depTime,
@@ -383,8 +367,12 @@ class _FlightPackageCardState extends State<FlightPackageCard> {
             const Spacer(),
             Column(
               children: [
-                const Icon(Icons.flight_takeoff,
-                    color: Colors.blueAccent, size: 30),
+                Icon(
+                    title == "Onward Flight"
+                        ? Icons.flight_takeoff
+                        : Icons.flight_land_outlined,
+                    color: Colors.blueAccent,
+                    size: 30),
                 Text(duration,
                     style: const TextStyle(fontSize: 14, color: Colors.grey)),
               ],

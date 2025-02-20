@@ -79,6 +79,8 @@ class _PaxDetailsState extends State<PaxDetails> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      isDismissible: false,  // Prevents dismissing by tapping outside
+      enableDrag: false,      // Prevents swipe-down dismissal
       backgroundColor: Colors.white,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(50))),
       builder: (context) {
@@ -116,7 +118,7 @@ class _PaxDetailsState extends State<PaxDetails> {
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
-                                  AppLargeText(text: 'Room ${index + 1}', size: 20),
+                                  AppLargeText(text: 'State Room ${index + 1}', size: 20),
                                   if (roomDetails.length > 1)
                                     GestureDetector(
                                       onTap: () {
@@ -217,14 +219,14 @@ class _PaxDetailsState extends State<PaxDetails> {
                         if (_validateRooms()) {
                           widget.onSelectionChanged(totalSummary);
                           Navigator.pop(context);
+                          print('======================');
+                          print(totalSummary);
+                          print('======================');
+                        } else {
+                          setState(() {
+                            errorMessage = "At least one 21-year-old pax should be there in each room";
+                          });
                         }
-                        else{
-                        widget.onSelectionChanged(totalSummary);
-                        Navigator.pop(context);
-                        }
-                        print('======================');
-                        print(totalSummary);
-                        print('======================');
                       },
                       child: Align(
                         alignment: Alignment.center,

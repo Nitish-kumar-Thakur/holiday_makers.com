@@ -11,7 +11,7 @@ import 'package:holdidaymakers/widgets/terms_and_conditions_page.dart';
 import 'package:holdidaymakers/widgets/terms_and_conditions_page1.dart';
 import 'package:holdidaymakers/widgets/testimonials_page.dart';
 import 'package:holdidaymakers/utils/shared_preferences_handler.dart';
-import 'package:holdidaymakers/widgets/ChangePassword.dart';
+import 'package:holdidaymakers/widgets/ChangePasswordScreen.dart';
 import 'package:holdidaymakers/widgets/ManageAccount.dart';
 import 'package:holdidaymakers/widgets/appLargetext.dart';
 import 'package:holdidaymakers/widgets/appText.dart';
@@ -40,7 +40,9 @@ class _DrawerpageState extends State<Drawerpage> {
     setState(() {
       profileImg = prefs.getString("profileImg") ?? "";
       firstName = prefs.getString("first_name") ?? "";
-      firstName = firstName.isNotEmpty ? firstName[0].toUpperCase() + firstName.substring(1) : firstName;
+      firstName = firstName.isNotEmpty
+          ? firstName[0].toUpperCase() + firstName.substring(1)
+          : firstName;
     });
   }
 
@@ -66,7 +68,9 @@ class _DrawerpageState extends State<Drawerpage> {
                 // Perform sign-out logic here
                 Navigator.of(context).pop();
                 SharedPreferencesHandler.signOut(); // Close the dialog
-                Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => IntroPage())); // Redirect to login screen or relevant page
+                Navigator.of(context).pushReplacement(MaterialPageRoute(
+                    builder: (context) =>
+                        IntroPage())); // Redirect to login screen or relevant page
               },
               child: Text("Yes"),
             ),
@@ -153,14 +157,21 @@ class _DrawerpageState extends State<Drawerpage> {
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => ProfilePage()),
+                          MaterialPageRoute(
+                              builder: (context) => ProfilePage()),
                         );
                       },
                       icon: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(FontAwesomeIcons.user,  color: Colors.white, size: 27,),
-                          SizedBox(height: 8,),
+                          Icon(
+                            FontAwesomeIcons.user,
+                            color: Colors.white,
+                            size: 27,
+                          ),
+                          SizedBox(
+                            height: 8,
+                          ),
                           AppLargeText(
                             text: 'My Profile',
                             size: 10,
@@ -173,14 +184,21 @@ class _DrawerpageState extends State<Drawerpage> {
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => ManageAccount()),
+                          MaterialPageRoute(
+                              builder: (context) => ManageAccount()),
                         );
                       },
                       icon: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(FontAwesomeIcons.userPen , color: Colors.white, size: 27,),
-                          SizedBox(height: 8,),
+                          Icon(
+                            FontAwesomeIcons.userPen,
+                            color: Colors.white,
+                            size: 27,
+                          ),
+                          SizedBox(
+                            height: 8,
+                          ),
                           AppLargeText(
                             text: 'Manage Account',
                             size: 10,
@@ -193,14 +211,21 @@ class _DrawerpageState extends State<Drawerpage> {
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => ChangePasswordScreen()),
+                          MaterialPageRoute(
+                              builder: (context) => ChangePasswordScreen()),
                         );
                       },
                       icon: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(FontAwesomeIcons.unlock, color: Colors.white, size: 27,),
-                          SizedBox(height: 8,),
+                          Icon(
+                            FontAwesomeIcons.unlock,
+                            color: Colors.white,
+                            size: 27,
+                          ),
+                          SizedBox(
+                            height: 8,
+                          ),
                           AppLargeText(
                             text: 'Change Password',
                             size: 10,
@@ -260,11 +285,14 @@ class _DrawerpageState extends State<Drawerpage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    AppLargeText(text: "My Trip", size: 24, color: Colors.white),
+                    AppLargeText(
+                        text: "My Trip", size: 24, color: Colors.white),
                     SizedBox(height: 3),
-                    ChildContainer(icon: FontAwesomeIcons.newspaper, text: "My Booking"),
+                    ChildContainer(
+                        icon: FontAwesomeIcons.newspaper, text: "My Booking"),
                     SizedBox(height: 3),
-                    ChildContainer(icon: FontAwesomeIcons.wallet, text: 'Wallet'),
+                    ChildContainer(
+                        icon: FontAwesomeIcons.wallet, text: 'Wallet'),
                   ],
                 ),
               ),
@@ -277,35 +305,55 @@ class _DrawerpageState extends State<Drawerpage> {
                   children: [
                     AppLargeText(text: "About", size: 24, color: Colors.white),
                     SizedBox(height: 3),
-                    ChildContainer(icon: FontAwesomeIcons.filePen, text: "Blogs",
-                    onTap: (){}),
+                    ChildContainer(
+                        icon: FontAwesomeIcons.filePen,
+                        text: "Blogs",
+                        onTap: () {}),
                     SizedBox(height: 3),
-                    ChildContainer(icon: FontAwesomeIcons.users,text: "Testimonials", onTap: () {
-                      Navigator.push(
+                    ChildContainer(
+                      icon: FontAwesomeIcons.users,
+                      text: "Testimonials",
+                      onTap: () {
+                        Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => TestimonialsPage()),
+                          MaterialPageRoute(
+                              builder: (context) => TestimonialsPage()),
                         );
-                    },),
-                    SizedBox(height: 3),
-                    ChildContainer(icon: FontAwesomeIcons.buildingUser, text: "Company Profile"),
-                    SizedBox(height: 3),
-                    ChildContainer(icon: FontAwesomeIcons.fileLines, text: "Terms & Conditions", onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => TermsAndConditionsPage()),
-                        );
-                    },),
-                    SizedBox( height: 3),
-                    ChildContainer(icon: FontAwesomeIcons.computer, text: "Help Center", onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => HelpCenterPage()),
-                        );
-                    },),
-                    SizedBox(height: 3),
-                    ChildContainer(icon: FontAwesomeIcons.signOut, text: "Sign Out",
-                      onTap: () => _showSignOutDialog(context)
+                      },
                     ),
+                    SizedBox(height: 3),
+                    ChildContainer(
+                        icon: FontAwesomeIcons.buildingUser,
+                        text: "Company Profile"),
+                    SizedBox(height: 3),
+                    ChildContainer(
+                      icon: FontAwesomeIcons.fileLines,
+                      text: "Terms & Conditions",
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => TermsAndConditionsPage()),
+                        );
+                      },
+                    ),
+                    SizedBox(height: 3),
+                    ChildContainer(
+                      icon: FontAwesomeIcons.computer,
+                      text: "Help Center",
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => HelpCenterPage()),
+                        );
+                      },
+                    ),
+                    SizedBox(height: 3),
+                    ChildContainer(
+                        icon: FontAwesomeIcons.signOut,
+                        text: "Sign Out",
+                        onTap: () => _showSignOutDialog(context)),
                   ],
                 ),
               ),
@@ -322,7 +370,8 @@ class ChildContainer extends StatelessWidget {
   final String text;
   final VoidCallback? onTap;
 
-  const ChildContainer({super.key, required this.icon, required this.text, this.onTap});
+  const ChildContainer(
+      {super.key, required this.icon, required this.text, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -330,7 +379,11 @@ class ChildContainer extends StatelessWidget {
       onTap: onTap,
       child: Row(
         children: [
-          Icon(icon, color: Colors.white, size: 15,),
+          Icon(
+            icon,
+            color: Colors.white,
+            size: 15,
+          ),
           SizedBox(width: 7),
           AppText(text: text, color: Colors.white, size: 14),
         ],

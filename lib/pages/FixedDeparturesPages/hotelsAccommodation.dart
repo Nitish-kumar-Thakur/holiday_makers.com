@@ -4,10 +4,11 @@ import 'package:holdidaymakers/utils/api_handler.dart';
 import 'package:holdidaymakers/widgets/appLargetext.dart';
 import 'package:holdidaymakers/widgets/responciveButton.dart';
 import 'package:shimmer/shimmer.dart';
- 
+
 class HotelsAccommodation extends StatefulWidget {
   final Map<String, dynamic> packageData;
-  const HotelsAccommodation({super.key, required this.packageData});
+  final List<dynamic> totalRoomsdata;
+  const HotelsAccommodation({super.key, required this.packageData, required this.totalRoomsdata});
 
   @override
   State<HotelsAccommodation> createState() => _HotelsAccommodationState();
@@ -17,8 +18,9 @@ class _HotelsAccommodationState extends State<HotelsAccommodation> {
   bool isLoading = true;
   int selectedHotelIndex = 0;
   Map<String, dynamic> hotelList = {};
-  List<Map<String, dynamic>> flightList = [];
+  // List<Map<String, dynamic>> flightList = [];
   String temp = "";
+  String searchId = "";
 
   @override
   void initState() {
@@ -30,19 +32,20 @@ class _HotelsAccommodationState extends State<HotelsAccommodation> {
         });
       }
     });
-    _fetchHotelFlightDetails();
+    _fetchFDHotelDetails();
   }
 
-  Future<void> _fetchHotelFlightDetails() async {
+  Future<void> _fetchFDHotelDetails() async {
     try {
-      final response = await APIHandler.getFDHotelFlightDetails(
+      final response = await APIHandler.getFDHotelDetails(
           widget.packageData['package_id'] ?? "");
       setState(() {
         hotelList = response['data']['hotel_details'] ?? {};
-        flightList = (response['data']['group_by_flight_details'] as List)
-                .map((e) => e as Map<String, dynamic>)
-                .toList() ??
-            [];
+        // flightList = (response['data']['group_by_flight_details'] as List)
+        //         .map((e) => e as Map<String, dynamic>)
+        //         .toList() ??
+        //     [];
+        searchId = response['data']['search_id'].toString() ?? response['data']['search_id'];
         isLoading = false;
       });
     } catch (e) {
@@ -128,10 +131,12 @@ class _HotelsAccommodationState extends State<HotelsAccommodation> {
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => FlightPageFD(
-                                      selectedHotel: flattenedHotelList[
-                                          selectedHotelIndex],
-                                      respponceData: widget.packageData,
-                                      flightList: flightList),
+                                      selectedHotel: flattenedHotelList[selectedHotelIndex],
+                                      packageData: widget.packageData,
+                                      // flightList: flightList,
+                                      totalRoomsdata: widget.totalRoomsdata,
+                                      searchId: searchId,
+                                  ),
                                 ),
                               );
                             },

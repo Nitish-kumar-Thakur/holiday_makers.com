@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class APIHandler {
   static const String loginUrl =
@@ -18,6 +19,13 @@ class APIHandler {
       "https://b2cuat.tikipopi.com/index.php/holiday_api/destination_list";
   static const String fitSearchUrl =
       "https://b2cuat.tikipopi.com/index.php/holiday_api/fit_package_search";
+
+  static Future<Map<String, String>> _ProfileDetails() async {
+    final prefs = await SharedPreferences.getInstance();
+    String userId = prefs.getString("user_id") ?? "";
+    String token = prefs.getString("token") ?? "";
+    return {"userId": userId, "token": token};
+  }
 
   static Future<Map<String, dynamic>> login(
       String email, String password) async {
@@ -355,17 +363,56 @@ class APIHandler {
     );
 
     if (response.statusCode == 200) {
-      
-    print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-    print(jsonDecode(response.body));
-    print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+      print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+      print(jsonDecode(response.body));
+      print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
       return jsonDecode(response.body);
-      
     } else {
       throw Exception('Error: ${response.statusCode}');
     }
   }
+  static Future<Map<String, dynamic>> fitUpdateHotel(
+      Map<String, dynamic> fitUpdateHotelData) async {
+    final url = Uri.parse(
+        "https://b2cuat.tikipopi.com/index.php/holiday_api/fit_update_hotel");
+    final body = jsonEncode(fitUpdateHotelData);
 
+    final response = await http.post(
+      url,
+      headers: {"Content-Type": "application/json"},
+      body: body,
+    );
+
+    if (response.statusCode == 200) {
+      // print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+      // print(jsonDecode(response.body));
+      // print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+      return jsonDecode(response.body);
+    } else {
+      throw Exception('Error: ${response.statusCode}');
+    }
+  }
+  static Future<Map<String, dynamic>> fitUpdateFlight(
+      Map<String, dynamic> fitUpdateFlightData) async {
+    final url = Uri.parse(
+        "https://b2cuat.tikipopi.com/index.php/holiday_api/fit_update_flight");
+    final body = jsonEncode(fitUpdateFlightData);
+
+    final response = await http.post(
+      url,
+      headers: {"Content-Type": "application/json"},
+      body: body,
+    );
+
+    if (response.statusCode == 200) {
+      // print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+      // print(jsonDecode(response.body));
+      // print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+      return jsonDecode(response.body);
+    } else {
+      throw Exception('Error: ${response.statusCode}');
+    }
+  }
   static Future<Map<String, dynamic>> getDepartureDeal(String packageId) async {
     final Uri url = Uri.parse(
         'https://b2cuat.tikipopi.com/index.php/holiday_api/fd_package_details');
@@ -471,14 +518,25 @@ class APIHandler {
     }
   }
 
-  static Future<Map<String, dynamic>> getCruiseCabin() async {
+  static Future<Map<String, dynamic>> getCruiseCabin({
+    required String depDate,
+    required String cruiseId,
+  }) async {
     try {
-      final response = await http.get(Uri.parse(
-          "https://b2cuat.tikipopi.com/index.php/holiday_api/cruise_cabin_type"));
+      final response = await http.post(
+        Uri.parse(
+            "https://b2cuat.tikipopi.com/index.php/holiday_api/cruise_cabin_type"),
+        headers: {"Content-Type": "application/json"},
+        body: json.encode({
+          "dep_date": depDate,
+          "cruise_id": cruiseId,
+        }),
+      );
+
       if (response.statusCode == 200) {
         return json.decode(response.body);
       } else {
-        throw Exception("Failed to load homepage data");
+        throw Exception("Failed to load cruise cabin data");
       }
     } catch (e) {
       print("API Error: $e");
@@ -529,6 +587,181 @@ class APIHandler {
         url,
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode(requestBody),
+      );
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = jsonDecode(response.body);
+        if (data["status"] == true) {
+          return data;
+        } else {
+          return {
+            "status": false,
+            "message": "No package details found",
+            "data": {}
+          };
+        }
+      } else {
+        throw Exception("Server error: ${response.statusCode}");
+      }
+    } catch (e) {
+      return {
+        "status": false,
+        "message": "Error fetching package details",
+        "data": {}
+      };
+    }
+  }
+
+  static Future<Map<String, dynamic>> getCruiseBSDetails({
+    required Map<String, dynamic> requestBody,
+  }) async {
+    try {
+      final response = await http.post(
+        Uri.parse(
+            "https://b2cuat.tikipopi.com/index.php/holiday_api/cruise_booking_summary"),
+        headers: {"Content-Type": "application/json"},
+        body: json.encode(requestBody),
+      );
+
+      if (response.statusCode == 200) {
+        return json.decode(response.body);
+      } else {
+        throw Exception("Failed to load cruise booking summary details");
+      }
+    } catch (e) {
+      print("API Error: $e");
+      throw Exception("Error fetching booking summary data");
+    }
+  }
+
+  static Future<Map<String, dynamic>> changePassword({
+    required String oldPassword,
+    required String newPassword,
+  }) async {
+    final String url =
+        "https://b2cuat.tikipopi.com/index.php/holiday_api/change_password";
+
+    // Await the _ProfileDetails() method to get the values
+    Map<String, String> profileDetails = await _ProfileDetails();
+    String userId = profileDetails['userId'] ?? "";
+    String token = profileDetails['token'] ?? "";
+    print("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
+    print(userId);
+    print(token);
+    print("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
+
+    final Map<String, String> headers = {
+      "Authorization": "Bearer $token",
+      "Content-Type": "application/json",
+    };
+
+    final Map<String, dynamic> body = {
+      "user_id": userId,
+      "old_password": oldPassword,
+      "new_password": newPassword
+    };
+
+    try {
+      final response = await http.post(
+        Uri.parse(url),
+        headers: headers,
+        body: jsonEncode(body),
+      );
+
+      final Map<String, dynamic> responseData = jsonDecode(response.body);
+
+      if (response.statusCode == 200) {
+        return responseData; // Success response
+      } else {
+        return {
+          "status": "error",
+          "message": responseData["message"] ?? "Password change failed",
+        };
+      }
+    } catch (e) {
+      return {
+        "status": "error",
+        "message": "An error occurred: $e",
+      };
+    }
+  }
+    static Future<Map<String, dynamic>> getFDHotelDetails(
+      String packageId) async {
+    final Uri url = Uri.parse(
+        'https://b2cuat.tikipopi.com/index.php/holiday_api/fd_package_hotel_details');
+    final Map<String, dynamic> requestBody = {"package_id": packageId};
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(requestBody),
+      );
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = jsonDecode(response.body);
+        if (data["status"] == true) {
+          return data;
+        } else {
+          return {
+            "status": false,
+            "message": "No package details found",
+            "data": {}
+          };
+        }
+      } else {
+        throw Exception("Server error: ${response.statusCode}");
+      }
+    } catch (e) {
+      return {
+        "status": false,
+        "message": "Error fetching package details",
+        "data": {}
+      };
+    }
+  }
+  static Future<Map<String, dynamic>> getFDFlightDetails(
+      String searchId, String hotelId) async {
+    final Uri url = Uri.parse(
+        'https://b2cuat.tikipopi.com/index.php/holiday_api/fd_update_hotel');
+    final Map<String, dynamic> requestBody = {"search_id": searchId, "hotel_id": hotelId};
+    // final Map<String, dynamic> requestBody = {"search_id": "3649", "hotel_id": "380"};
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(requestBody),
+      );
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = jsonDecode(response.body);
+        if (data["status"] == true) {
+          return data;
+        } else {
+          return {
+            "status": false,
+            "message": "No package details found",
+            "data": {}
+          };
+        }
+      } else {
+        throw Exception("Server error: ${response.statusCode}");
+      }
+    } catch (e) {
+      return {
+        "status": false,
+        "message": "Error fetching package details",
+        "data": {}
+      };
+    }
+  }
+
+  static Future<Map<String, dynamic>> getFDBSDetails(
+      Map<dynamic,dynamic> temp) async {
+    final Uri url = Uri.parse(
+        'https://b2cuat.tikipopi.com/index.php/holiday_api/fd_booking_summary');
+    // final Map<String, dynamic> requestBody = {temp};
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(temp),
       );
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = jsonDecode(response.body);

@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:holdidaymakers/pages/introPage.dart';
+import 'package:holdidaymakers/utils/api_handler.dart';
+import 'package:holdidaymakers/utils/shared_preferences_handler.dart';
+import 'package:holdidaymakers/widgets/appText.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
   @override
@@ -12,10 +17,12 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   final TextEditingController _newPasswordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
       TextEditingController();
+  String _message = "";
 
   bool _isOldPasswordObscure = true;
   bool _isNewPasswordObscure = true;
   bool _isConfirmPasswordObscure = true;
+  bool _isLoading = false;
 
   String? _validatePassword(String? password) {
     if (password == null || password.isEmpty) {
@@ -24,7 +31,12 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     final regex = RegExp(
         r'^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$');
     if (!regex.hasMatch(password)) {
-      return 'Password must contain:\n- At least 8 characters\n- One uppercase letter\n- One lowercase letter\n- One number\n- One special character';
+      return 'Password must contain:\n'
+          '- At least 8 characters\n'
+          '- One uppercase letter\n'
+          '- One lowercase letter\n'
+          '- One number\n'
+          '- One special character';
     }
     return null;
   }
@@ -37,6 +49,60 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       return 'New password and confirm password do not match';
     }
     return null;
+  }
+
+  Future<void> _changePassword() async {
+    if (!_formKey.currentState!.validate()) {
+      return; // Stop execution if validation fails
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final response = await APIHandler.changePassword(
+        oldPassword: _oldPasswordController.text,
+        newPassword: _newPasswordController.text,
+      );
+
+      setState(() {
+        _message = response["message"];
+      });
+
+      // Reset the message after 3 seconds
+      Future.delayed(Duration(seconds: 5), () {
+        setState(() {
+          _message = ""; // Clear the message after 3 seconds
+        });
+      });
+      
+
+      if (response["status"] == true) {
+        _oldPasswordController.clear();
+      _newPasswordController.clear();
+      _confirmPasswordController.clear();
+
+      // Redirect to login page after successful password change
+      Future.delayed(Duration(seconds: 2), () {
+        SharedPreferencesHandler.signOut(); // Close the dialog
+        Navigator.of(context).pushReplacement(MaterialPageRoute(
+            builder: (context) =>
+                IntroPage())); // Replace with your login screen route
+      });
+        print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+        print("chl raha h");
+        print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+      }
+    } catch (error) {
+      setState(() {
+        _message = '$error';
+      });
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   @override
@@ -117,15 +183,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text("Password Changed Successfully"),
-                        ),
-                      );
-                    }
-                  },
+                  onPressed: _isLoading ? null : _changePassword,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.green,
                     foregroundColor: Colors.white,
@@ -134,22 +192,27 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  child: const Text(
-                    "Save Changes",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
+                  child: _isLoading
+                      ? CircularProgressIndicator(color: Colors.white)
+                      : const Text(
+                          "Save Changes",
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
                 ),
               ),
               const SizedBox(height: 40),
-              // Cancel Button
+// Cancel Button
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () {
-                    _oldPasswordController.clear();
-                    _newPasswordController.clear();
-                    _confirmPasswordController.clear();
-                  },
+                  onPressed: _isLoading
+                      ? null
+                      : () {
+                          _oldPasswordController.clear();
+                          _newPasswordController.clear();
+                          _confirmPasswordController.clear();
+                        },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.red,
                     foregroundColor: Colors.white,
@@ -164,6 +227,12 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   ),
                 ),
               ),
+              SizedBox(
+                height: 10,
+              ),
+              Center(
+                child: AppText(text: _message),
+              )
             ],
           ),
         ),

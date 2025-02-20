@@ -1,42 +1,96 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
-import 'package:holdidaymakers/pages/FullyIndependentTraveler/travelers_details.dart';
+import 'package:holdidaymakers/utils/api_handler.dart';
 import 'package:holdidaymakers/widgets/responciveButton.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 
 class BookingSummaryPage extends StatefulWidget {
-  const BookingSummaryPage({super.key});
+  final Map<String, dynamic>? selectedCruiseData;
+  final List<dynamic> totalRoomsdata;
+  final Map<String, String>? selectedCabin;
+  const BookingSummaryPage({super.key, required this.selectedCruiseData, required this.selectedCabin, required this.totalRoomsdata});
 
   @override
   State<BookingSummaryPage> createState() => _BookingSummaryPageState();
 }
 
 class _BookingSummaryPageState extends State<BookingSummaryPage> {
-  bool isLoading = false;
+  bool isLoading = true;
   final _formKey = GlobalKey<FormState>();
+  Map<String, dynamic> packageDetailss = {};
+  Map<String, dynamic> priceDetailss = {};
 
-  final List<Map<String, String>> packageDetails = [
-    {'title': 'PACKAGE', 'value': 'Malaysia Duo: Koala & Lumpur'},
-    {'title': 'DURATION', 'value': '2 NIGHT / 1 DAY'},
-    {'title': 'SHIP', 'value': 'Resorts World One'},
-    {'title': 'CABIN', 'value': 'Interior Cabin'},
-    {'title': 'DEPARTURE DATE', 'value': '11-Dec-2024'},
-    {'title': 'ARRIVAL DATE', 'value': '15-Dec-2024'},
-    {'title': 'NO. OF ROOMS', 'value': '1'},
-    {'title': 'CHECK IN TIME', 'value': '19:00 - 20:00'},
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _fetchCruiseBookingSummary();
+  }
 
-  final List<Map<String, String>> priceDetails = [
-    {'title': 'TOTAL (1 ADULT)', 'value': 'AED 1,310'},
-    {'title': 'TOTAL', 'value': 'AED 1,310'},
-  ];
+  Future<void> _fetchCruiseBookingSummary() async {
+    setState(() {
+      isLoading = true; // ✅ Start loading before API call
+    });
+
+    try {
+      Map<String, dynamic> requestBody = {
+        "cruise_id": widget.selectedCruiseData?['cruise_id'].toString() ?? "",
+        "dep_date": widget.selectedCruiseData?['dep_date'].toString() ?? "",
+        "rooms": widget.totalRoomsdata.length.toString(),
+        "room_wise_pax": widget.totalRoomsdata.map((room) {
+          return {
+            "paxCount": room["paxCount"].toString(),
+            "paxAges": room["paxAges"].map((age) => age.toString()).toList(),
+          };
+        }).toList(),
+        "cabin_type": widget.selectedCabin?['origin'].toString() ?? "",
+      };
+
+      final response = await APIHandler.getCruiseBSDetails(requestBody: requestBody);
+
+      setState(() {
+        var data = response['data'] ?? {};
+
+        packageDetailss = {
+          'PACKAGE': data['cruise_details']?['cruise_name'] ?? 'N/A',
+          'DURATION': data['cruise_details']?['duration'] ?? 'N/A',
+          'SHIP': data['cruise_details']?['ship_name'] ?? 'N/A',
+          'CABIN': data['cruise_details']?['cabin_type'] ?? 'N/A',
+          'DEPARTURE DATE': data['cruise_details']?['dep_date'] ?? 'N/A',
+          'ARRIVAL DATE': data['cruise_details']?['arrival_date'] ?? 'N/A',
+          'NO. OF ROOMS': widget.totalRoomsdata.length.toString(),
+          'CHECK IN TIME': '${data['cruise_details']?['checkin_from_time'] ?? 'N/A'} - ${data['cruise_details']?['checkin_to_time'] ?? 'N/A'}',
+        };
+
+        priceDetailss = {
+          'PAX': [
+            if ((data['cruise_price']?['adult_count'] ?? 0) > 0)
+              '${data['cruise_price']?['adult_count']} Adult(s)',
+            if ((data['cruise_price']?['child_count'] ?? 0) > 0)
+              '${data['cruise_price']?['child_count']} Child(ren)',
+            if ((data['cruise_price']?['infant_count'] ?? 0) > 0)
+              '${data['cruise_price']?['infant_count']} Infant(s)',
+          ].join('\n'),
+          'TOTAL': '${data['cruise_price']?['currency'] ?? 'AED'} ${data['cruise_price']?['total'] ?? 'N/A'}',
+        };
+
+        isLoading = false;
+      });
+    } catch (e) {
+      print("Error: $e");
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
 
   // Controllers for input fields
   final TextEditingController contactNameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
   String? selectedTitle;
-  PhoneNumber? number;
+  PhoneNumber?number = PhoneNumber(isoCode: 'AE');
 
   @override
   Widget build(BuildContext context) {
@@ -58,16 +112,17 @@ class _BookingSummaryPageState extends State<BookingSummaryPage> {
         centerTitle: true,
       ),
       backgroundColor: Colors.white,
-      body: isLoading
-          ? _buildShimmerEffect()
-          : SingleChildScrollView(
+      body: SingleChildScrollView(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.04),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildSection('PACKAGE DETAILS', packageDetails, fontSize),
-              _buildSection('PRICE DETAILS', priceDetails, fontSize),
+              isLoading ? _buildShimmerEffect() :
+              _buildSection('PACKAGE DETAILS', packageDetailss, fontSize),
+              isLoading ? _buildShimmerEffect() :
+              _buildSection('PRICE DETAILS', priceDetailss, fontSize),
+              isLoading ? _buildShimmerEffect() :
               _buildContactInfo(fontSize),
             ],
           ),
@@ -90,7 +145,10 @@ class _BookingSummaryPageState extends State<BookingSummaryPage> {
     );
   }
 
-  Widget _buildSection(String title, List<Map<String, String>> details, double fontSize) {
+  Widget _buildSection(String title, Map<String, dynamic> details, double fontSize) {
+    // Convert the map entries into a list of entries
+    List<MapEntry<String, dynamic>> entryList = details.entries.toList();
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -103,23 +161,51 @@ class _BookingSummaryPageState extends State<BookingSummaryPage> {
           ),
         ),
         const SizedBox(height: 10),
-        Wrap(
-          spacing: 10,
-          runSpacing: 10,
-          children: details.map((detail) {
-            return _buildDetailBox(detail['title']!, detail['value']!, fontSize);
-          }).toList(),
+        Column(
+          children: List.generate(
+            (entryList.length / 2).ceil(), // Divide into rows
+                (index) {
+              bool isLastOdd =
+                  entryList.length % 2 != 0 && index == entryList.length ~/ 2;
+              return Column(
+                children: [
+                  IntrinsicHeight(  // Ensures both boxes in the row will have equal height
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: _buildDetailBox(
+                            entryList[index * 2].key, // Key as the title
+                            entryList[index * 2].value.toString(), // Value as the value
+                            fontSize,
+                          ),
+                        ),
+                        if (!isLastOdd) ...[
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: _buildDetailBox(
+                              entryList[index * 2 + 1].key, // Key as the title
+                              entryList[index * 2 + 1].value.toString(), // Value as the value
+                              fontSize,
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 10), // Space after each row
+                ],
+              );
+            },
+          ),
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: 10),
       ],
     );
   }
 
   Widget _buildDetailBox(String title, String value, double fontSize) {
     return Container(
-      width: (MediaQuery.of(context).size.width / 2) - 25,
-      height: 95,
-      padding: EdgeInsets.all(fontSize * 0.7),
+      padding: EdgeInsets.all(fontSize * 0.5),
       decoration: BoxDecoration(
         color: Colors.grey.shade200,
         borderRadius: BorderRadius.circular(8),
@@ -222,30 +308,36 @@ class _BookingSummaryPageState extends State<BookingSummaryPage> {
 
           // Phone Number input with reduced width for the country code dropdown
           InternationalPhoneNumberInput(
-            onInputChanged: (PhoneNumber number) {
-              setState(() {
-                this.number = number;
-              });
-            },
-            onInputValidated: (bool value) {
-              print(value ? 'Valid' : 'Invalid');
-            },
-            selectorConfig: SelectorConfig(
-              selectorType: PhoneInputSelectorType.DROPDOWN,
-              trailingSpace: false,
-            ),
-            hintText: 'Enter phone number',
-            initialValue: PhoneNumber(isoCode: 'AE'), // Set default country as Dubai (UAE)
-            textFieldController: phoneController,
-            inputDecoration: InputDecoration(
-              filled: true,
-              fillColor: Colors.grey.shade200,
-              labelText: 'Phone Number',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
-          ),
+  onInputChanged: (PhoneNumber number) {
+    setState(() {
+      this.number = number;
+    });
+  },
+  onInputValidated: (bool value) {
+    print(value ? 'Valid' : 'Invalid');
+  },
+  selectorConfig: SelectorConfig(
+    selectorType: PhoneInputSelectorType.DROPDOWN,
+    trailingSpace: false,
+  ),
+  hintText: 'Enter phone number',
+  initialValue: number,
+  textFieldController: phoneController,
+  onSaved: (PhoneNumber number) {
+    setState(() {
+      this.number = number;
+    });
+  },
+  inputDecoration: InputDecoration(
+    filled: true,
+    fillColor: Colors.grey.shade200,
+    labelText: 'Phone Number',
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(8),
+    ),
+  ),
+),
+
           const SizedBox(height: 20),
         ],
       ),

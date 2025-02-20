@@ -6,7 +6,8 @@ import 'package:holdidaymakers/widgets/dropdownwidget.dart';
 import 'package:holdidaymakers/widgets/responciveButton.dart';
 
 class CruiseDealsPage2 extends StatefulWidget {
-  const CruiseDealsPage2({super.key});
+  final Map<String, dynamic>? selectedCruiseData;
+  const CruiseDealsPage2({super.key, required this.selectedCruiseData});
 
   @override
   _CruiseDealsPage2State createState() => _CruiseDealsPage2State();
@@ -14,11 +15,19 @@ class CruiseDealsPage2 extends StatefulWidget {
 
 class _CruiseDealsPage2State extends State<CruiseDealsPage2> {
   List<Map<String, String>> cruiseCabins = [];
-  String? selectedCabin;
+  Map<String, String>? selectedCabin;
   String? selectedRoom = "1";
   String? totalPaxCount = "2";
   List<String>? paxAges = ["21", "21"];
-  List<dynamic> totalRoomsdata = [];
+
+  List<dynamic> totalRoomsdata = [
+    {
+      "paxCount": 2,
+      "paxAges": [21, 21]
+    }
+  ];
+
+  String? cabinError;
 
   @override
   void initState() {
@@ -27,19 +36,63 @@ class _CruiseDealsPage2State extends State<CruiseDealsPage2> {
   }
 
   Future<void> _fetchCruiseCards() async {
-    final response = await APIHandler.getCruiseCabin();
+    try {
+      final response = await APIHandler.getCruiseCabin(
+        depDate: widget.selectedCruiseData?['dep_date'] ?? "",
+        cruiseId: widget.selectedCruiseData?['cruise_id'] ?? "",
+      );
+
+      if (response.isEmpty || response['data'] == null) {
+        throw Exception("No data found");
+      }
+
+      final List<dynamic> cabinList = response['data'];
+      if (cabinList.isEmpty) {
+        throw Exception("No cruise cabins available");
+      }
+
+      if (!mounted) return;
+
+      setState(() {
+        cruiseCabins = cabinList.map((item) {
+          return {
+            'origin': (item['origin'] ?? "N/A").toString(),
+            'cabin_type': (item['cabin_type'] ?? "Unknown").toString(),
+            'is_selected': (item['is_selected'] ?? "0").toString(),
+          };
+        }).toList();
+
+        selectedCabin = null; // No default selection
+      });
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        cruiseCabins = [];
+        selectedCabin = null;
+      });
+
+      print("Error fetching cruise cabins: $e");
+    }
+  }
+
+  void _validateAndProceed() {
     setState(() {
-      cruiseCabins = (response['data'] as List<dynamic>).map((item) {
-        return {
-          'origin': item['origin'].toString(), // Unique ID
-          'cabin_type':
-              item['cabin_type'].toString(), // Display name & selected value
-          'status': item['status'].toString(), // Status if needed
-        };
-      }).toList();
+      cabinError = selectedCabin == null ? "Please select a cabin type" : null;
     });
-    print(cruiseCabins);
-    print(selectedCabin);
+
+    if (selectedCabin != null) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => BookingSummaryPage(
+            selectedCabin: selectedCabin!,
+            selectedCruiseData: widget.selectedCruiseData!,
+            totalRoomsdata: totalRoomsdata,
+          ),
+        ),
+      );
+    }
   }
 
   @override
@@ -67,39 +120,45 @@ class _CruiseDealsPage2State extends State<CruiseDealsPage2> {
               PaxDetails(
                 onSelectionChanged: (Map<String, dynamic> selection) {
                   setState(() {
-                    selectedRoom = selection['totalRooms'].toString() ?? "1";
-                    totalPaxCount = selection['totalPaxCount'].toString() ?? "2";
-                    paxAges = selection['paxAges'];
-                      
-                    totalRoomsdata = selection["totalData"];
+                    selectedRoom = selection['totalRooms']?.toString() ?? "1";
+                    totalPaxCount = selection['totalPaxCount']?.toString() ?? "2";
+                    paxAges = selection['paxAges'] ?? ["21", "21"];
+
+                    totalRoomsdata = selection["totalData"] ?? [
+                      {
+                        "paxCount": 2,
+                        "paxAges": [21, 21]
+                      }
+                    ];
                   });
                 },
               ),
               const SizedBox(height: 20),
               Dropdownwidget(
-                selectedValue: selectedCabin,
-                items: cruiseCabins.map((item) {
-                  return {
-                    'id': item[
-                        'cabin_type']!, // Now 'cabin_type' is used as the value
-                    'name':
-                        item['cabin_type']!, // Display 'cabin_type' in dropdown
-                  };
+                selectedValue: selectedCabin?['cabin_type'],
+                items: cruiseCabins.map((item) => {
+                  'id': item['cabin_type']!,
+                  'name': item['cabin_type']!,
                 }).toList(),
                 hintText: 'Choose a cabin type',
                 onChanged: (String? newValue) {
                   setState(() {
-                    selectedCabin = newValue;
+                    selectedCabin = cruiseCabins.firstWhere(
+                          (item) => item['cabin_type'] == newValue,
+                      orElse: () => {'origin': "N/A", 'cabin_type': "Unknown", 'is_selected': "0"},
+                    );
+                    cabinError = null; // Clear error
                   });
                 },
               ),
-              const SizedBox(height: 20),
-              Text(
-                selectedCabin != null
-                    ? '$selectedCabin' // Directly show selected cabin_type
-                    : 'No cabin selected',
-                style: const TextStyle(fontSize: 25, color: Colors.black),
-              ),
+              if (cabinError != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8.0),
+                  child: Text(
+                    cabinError!,
+                    style: const TextStyle(color: Colors.red, fontSize: 14),
+                  ),
+                ),
             ],
           ),
         ),
@@ -109,16 +168,7 @@ class _CruiseDealsPage2State extends State<CruiseDealsPage2> {
         child: SizedBox(
           width: double.infinity,
           child: IconButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => BookingSummaryPage()),
-              );
-              print("=======================================");
-              print(totalPaxCount);
-              print(totalRoomsdata);
-              print("=======================================");
-            },
+            onPressed: _validateAndProceed,
             icon: responciveButton(text: 'SELECT'),
           ),
         ),

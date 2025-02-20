@@ -6,14 +6,9 @@ import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
 
 class BookingSummaryFIT extends StatefulWidget {
-  final Map<String, dynamic> responceData;
-  final Map<String, dynamic> selectedHotel;
-  final List<dynamic> roomArray;
+  final String searchId;
   const BookingSummaryFIT(
-      {super.key,
-      required this.responceData,
-      required this.selectedHotel,
-      required this.roomArray});
+      {super.key, required this.searchId});
 
   @override
   State<BookingSummaryFIT> createState() => _BookingSummaryFITState();
@@ -21,11 +16,15 @@ class BookingSummaryFIT extends StatefulWidget {
 
 class _BookingSummaryFITState extends State<BookingSummaryFIT> {
   List<Map<String, dynamic>> packageDetails = [];
-  List<Map<String, String>> hotelDetails = [];
-  List<Map<String, String>> transferDetails = [];
-  List<Map<String, String>> priceDetails = [];
+  List<Map<String, dynamic>> hotelDetails = [];
+  List<Map<String, dynamic>> transferDetails = [];
+  List<Map<String, dynamic>> priceDetails = [];
+  List<Map<String, dynamic>> flightDetails = [];
+  List<Map<String, dynamic>> insuranceDetails = [];
+
   Map<String, dynamic> bookingApiData = {};
-  Map<String, dynamic> bookingSummreyData = {};
+  Map<dynamic, dynamic> bookingSummreyData = {};
+  // List<dynamic> destinationList = [];
   bool isLoading = true;
 
   @override
@@ -33,51 +32,43 @@ class _BookingSummaryFITState extends State<BookingSummaryFIT> {
     super.initState();
     bookingApiDataIntlize();
     bookingSummaryFIT();
-
     // print("================================================");
-    // print(widget.roomArray);
+    // print(widget.searchId);
+    // print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
     // print("================================================");
   }
 
   void bookingApiDataIntlize() {
-    final hotel = widget.selectedHotel;
-    final searchParms = widget.responceData["data"]["search_params"];
-    final roomArray = widget.roomArray;
-    final onwardFlight = widget.responceData["data"]["flight"]["onward"];
-    final returnFlight = widget.responceData["data"]["flight"]["return"];
-    final insuranceList = widget.responceData["data"]["insurance_list"];
+    final searchId = widget.searchId;
+    // final hotel = widget.responceData["data"]["search_params"];
+    // final roomArray = widget.roomArray;
+
+    // final onwardFlight = widget.responceData["data"]["flight"]["onward"];
+    // final returnFlight = widget.responceData["data"]["flight"]["return"];
+    // final insuranceList = widget.responceData["data"]["insurance_list"];
+
     setState(() {
       bookingApiData = {
-        "hotel_id": hotel["hotel_id"],
-        "hotel_fit_id": hotel["id"],
-        "onward_flight_id": onwardFlight["flight_details_id"],
-        "onward_flight_fare_id": onwardFlight["flight_fare_id"],
-        "return_flight_id": returnFlight["flight_details_id"],
-        "return_flight_fare_id": returnFlight["flight_fare_id"],
-        "ath_transfer_id": hotel["airport_to_hotel_transfer"]
-            ["ath_transfer_id"],
-        "ath_transfer_price_id": hotel["airport_to_hotel_transfer"]
-            ["ath_transfer_price_id"],
-        "hta_transfer_id": hotel["hotel_to_airport_transfer"]
-            ["hta_transfer_id"],
-        "hta_transfer_price_id": hotel["hotel_to_airport_transfer"]
-            ["hta_transfer_price_id"],
-        "insurance_id": insuranceList["origin"],
-        "break_fast": "",
-        "search_params": searchParms,
-        "room_wise_pax": roomArray
+        "search_id": searchId,
+        "activity_list": [
+          {
+            "destination": "49529",
+            "activity": [
+              {"day": "1", "activity_id": "56"}
+            ]
+          }
+        ]
       };
-      
     });
   }
 
   Future<void> bookingSummaryFIT() async {
     try {
-      print("Sending API Request with Data: $bookingApiData");
-      Map<String, dynamic> response =
+      // print("Sending API Request with Data: $bookingApiData");
+      Map<dynamic, dynamic> response =
           await APIHandler.fitBookingSummary(bookingApiData);
 
-      print("API Response: ${response["data"]}");
+      // print("API Response: ${response["data"]["result"]["activity"]}");
 
       if (response["message"] == "success") {
         setState(() {
@@ -85,28 +76,30 @@ class _BookingSummaryFITState extends State<BookingSummaryFIT> {
           packagedetails();
           isLoading = false;
         });
-        print(
-            "Booking Summary Data Updated: ${bookingSummreyData["data"]}");
+        // print("Booking Summary Data Updated: ${bookingSummreyData["data"]}");
       } else {
-        print("API Error: ${response["message"]}");
+        // print("API Error: ${response["message"]}");
       }
     } catch (error) {
-      print("Exception in API Call: $error");
+      // print("Exception in API Call: $error");
     }
   }
 
   void packagedetails() {
     // final searchparams = bookingSummreyData["data"]["search_parms"];
-    final searchParms = bookingSummreyData["data"]["search_parms"]??[];
-    final hotel = bookingSummreyData["data"]["result"]["hotel"]??[];
-    final amount = bookingSummreyData["data"]??[];
+    // final searchParms = widget.responceData["data"]["search_params"] ?? [];
+    final hotel = bookingSummreyData["data"]["result"]["hotel"] ?? [];
+    final amount = bookingSummreyData["data"] ?? [];
+    final onwardFlight= bookingSummreyData["data"]["result"]["flight"]["onward"] ?? [];
+    final returnFlight=bookingSummreyData["data"]["result"]["flight"]["return"] ?? [];
 
-    if (searchParms != null && hotel != null && amount != null) {
-      int n = int.parse(searchParms["no_of_nights"]) - 1;
+    if (hotel != null && amount != null) {
+      int n = int.parse(hotel["no_of_nights"]) - 1;
       String night = n.toString();
       // Parsing the check_out_date String to DateTime
-      DateTime checkInDateTime = DateTime.parse(searchParms["check_in_date"]?? null);
-      DateTime checkOutDateTime = DateTime.parse(searchParms["check_out_date"]?? null);
+      DateTime checkInDateTime = DateTime.parse(hotel["check_in_date"] ?? null);
+      DateTime checkOutDateTime =
+          DateTime.parse(hotel["check_out_date"] ?? null);
       // Formatting it to "dd-MM-yyyy"
       String checkInDate = DateFormat('dd MMM yy, EEE').format(checkInDateTime);
       // Parsing the check_out_date String to DateTime
@@ -115,32 +108,48 @@ class _BookingSummaryFITState extends State<BookingSummaryFIT> {
       String checkOutDate =
           DateFormat('dd MMM yy, EEE').format(checkOutDateTime);
       setState(() {
-        packageDetails = [
-          {
-            "title": "Package",
-            "value":
-                "${searchParms["source"]}: ${searchParms["destination"]}" ??
-                    "N/A"
-          },
-          // {"title": "Destination", "value": searchParms["destination"] ?? "N/A"},
-          {
-            "title": "Duration",
-            "value": "${searchParms["no_of_nights"]} Days/ $night Night"
-          },
-          {"title": "Departure Date", "value": checkInDate},
-          {"title": "Arrival Date", "value": checkOutDate},
-          // {"title": "Arrival Date", "value": searchParms["room_count"] ?? "N/A"},
-        ];
+        // packageDetails = [
+        //   {
+        //     "title": "Package",
+        //     "value": "${hotel["destination"]}: ${hotel["destination"]}" ?? "N/A"
+        //   },
+        //   // {"title": "Destination", "value": hotel["destination"] ?? "N/A"},
+        //   {
+        //     "title": "Duration",
+        //     "value": "${hotel["no_of_nights"]} Days/ $n Night"
+        //   },
+        //   {"title": "Departure Date", "value": checkInDate},
+        //   {"title": "Arrival Date", "value": checkOutDate},
+        //   // {"title": "Arrival Date", "value": hotel["room_count"] ?? "N/A"},
+        // ];
         hotelDetails = [
           {"title": "Hotel Name", "value": hotel["hotel_name"]},
           {"title": "Room Type", "value": hotel["room_category_name"]},
           {"title": "Check In Time", "value": hotel["checkin_time"]},
           {"title": "Check Out Time", "value": hotel["checkout_time"]},
-          {
-            "title": "No. of Rooms",
-            "value": searchParms["room_count"] ?? "N/A"
-          },
+          {"title": "No. of Rooms", "value": hotel["room_count"] ?? "N/A"},
           {"title": "Meal Plan", "value": hotel["meal_type_name"]},
+        ];
+        flightDetails = [
+          {
+            'flight': onwardFlight["flight_name"],
+            'type': 'Departure',
+            'icon': 'takeoff',
+            'airport': onwardFlight["dep_from_city"],
+            'date': onwardFlight["onward_date"],
+            'terminal': onwardFlight["depart_terminal"]
+          },
+          {
+            'flight': returnFlight["flight_name"],
+            'type': 'Arrival',
+            'icon': 'landing',
+            'airport': returnFlight["dep_from_city"],
+            'date': returnFlight["return_date"],
+            'terminal': returnFlight["depart_terminal"]
+          },
+        ];
+        insuranceDetails = [
+          {'title': 'Travel Insurance in accordance to standards', 'value': ''},
         ];
         transferDetails = [
           {"title": "Arrival Transfer", "value": "Airport to Hotel"},
@@ -148,9 +157,15 @@ class _BookingSummaryFITState extends State<BookingSummaryFIT> {
         ];
         priceDetails = [
           {
-            "title": "Price",
-            "value":
-                "Total Adult(${hotel["Adult_Count"]})  AED \$${amount["total_adult_amount"].toString()} \n Total Child(${hotel["Child_Count"]})  AED \$${amount["total_child_amount"].toString()} \n Total Infant(${hotel["Infant_Count"]})  AED \$${amount["total_infant_amount"].toString()}"
+            "title": "Prices",
+            "value": [
+              if (amount["total_adult_count"] != null && amount["total_adult_count"] > 0)
+                "${amount["total_adult_count"]} Adult(s) AED \$${amount["total_adult_amount"]}",
+              if (amount["total_child_count"] != null && amount["total_child_count"] > 0)
+                "${amount["total_child_count"]} Child(ren) AED \$${amount["total_child_amount"]}",
+              if (amount["total_infant_coiunt"] != null && amount["total_infant_coiunt"] > 0)
+                "${amount["total_infant_coiunt"]} Infant(s) AED \$${amount["total_infant_amount"]}",
+            ].where((element) => element.isNotEmpty).join("\n"),  // Join all valid values with line breaks
           },
           {
             "title": "Total",
@@ -161,39 +176,39 @@ class _BookingSummaryFITState extends State<BookingSummaryFIT> {
     }
   }
 
-  Widget _buildDetailBox(String title, String value, double fontSize) {
-    return Container(
-      width: 180,
-      height: 95,
-      padding: EdgeInsets.all(fontSize * 0.7),
-      decoration: BoxDecoration(
-        color: Colors.grey.shade200,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: TextStyle(
-              fontSize: fontSize * 1.2,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
-            ),
-          ),
-          SizedBox(height: fontSize * 0.3),
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: title == "Price" ? 10 : fontSize,
-              fontWeight: FontWeight.normal,
-              color: Colors.black,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  // Widget _buildDetailBox(String title, String value, double fontSize) {
+  //   return Container(
+  //     width: 180,
+  //     height: 95,
+  //     padding: EdgeInsets.all(fontSize * 0.7),
+  //     decoration: BoxDecoration(
+  //       color: Colors.grey.shade200,
+  //       borderRadius: BorderRadius.circular(8),
+  //     ),
+  //     child: Column(
+  //       crossAxisAlignment: CrossAxisAlignment.start,
+  //       children: [
+  //         Text(
+  //           title,
+  //           style: TextStyle(
+  //             fontSize: fontSize * 1.2,
+  //             fontWeight: FontWeight.bold,
+  //             color: Colors.black,
+  //           ),
+  //         ),
+  //         SizedBox(height: fontSize * 0.3),
+  //         Text(
+  //           value,
+  //           style: TextStyle(
+  //             fontSize: title == "Price" ? 10 : fontSize,
+  //             fontWeight: FontWeight.normal,
+  //             color: Colors.black,
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -226,112 +241,15 @@ class _BookingSummaryFITState extends State<BookingSummaryFIT> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'PACKAGE DETAILS',
-                      style: TextStyle(
-                        fontSize: fontSize * 1.3,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        _buildDetailBox(
-                          packageDetails[0]['title']!,
-                          packageDetails[0]['value']!,
-                          fontSize,
-                        ),
-                        _buildDetailBox(
-                          packageDetails[1]['title']!,
-                          packageDetails[1]['value']!,
-                          fontSize,
-                        )
-                      ],
-                    ),
-                    SizedBox(height: 20),
-
-                    // Hotel Details Section
-                    Text(
-                      'HOTEL DETAILS',
-                      style: TextStyle(
-                        fontSize: fontSize * 1.3,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        _buildDetailBox(
-                          hotelDetails[0]['title']!,
-                          hotelDetails[0]['value']!,
-                          fontSize,
-                        ),
-                        _buildDetailBox(
-                          hotelDetails[1]['title']!,
-                          hotelDetails[1]['value']!,
-                          fontSize,
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 20),
-
-                    // Transfer Section
-                    Text(
-                      'TRANSFER DETAILS',
-                      style: TextStyle(
-                        fontSize: fontSize * 1.3,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        _buildDetailBox(
-                          transferDetails[0]['title']!,
-                          transferDetails[0]['value']!,
-                          fontSize,
-                        ),
-                        _buildDetailBox(
-                          transferDetails[1]['title']!,
-                          transferDetails[1]['value']!,
-                          fontSize,
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 20),
-
-                    // Price Details Section
-                    Text(
-                      'PRICE DETAILS',
-                      style: TextStyle(
-                        fontSize: fontSize * 1.3,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        _buildDetailBox(
-                          priceDetails[0]['title']!,
-                          priceDetails[0]['value']!,
-                          fontSize,
-                        ),
-                        _buildDetailBox(
-                          priceDetails[1]['title']!,
-                          priceDetails[1]['value']!,
-                          fontSize,
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 20),
+                    // _buildSection('PACKAGE DETAILS', packageDetails, fontSize),
+                    _buildFlightDetailsSection(
+                        'FLIGHT DETAILS', flightDetails, fontSize),
+                    _buildSection('HOTEL DETAILS', hotelDetails, fontSize),
+                    _buildSection(
+                        'TRANSFER DETAILS', transferDetails, fontSize),
+                    _buildSection(
+                        'TRAVEL INSURANCE DETAILS', insuranceDetails, fontSize),
+                    _buildPriceSection('PRICE DETAILS', priceDetails, fontSize),
                   ],
                 ),
               ),
@@ -366,6 +284,367 @@ class _BookingSummaryFITState extends State<BookingSummaryFIT> {
             ),
     );
   }
+
+  Widget _buildFlightDetailsSection(
+      String title, List<Map<String, dynamic>> details, double fontSize) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: TextStyle(
+            fontSize: fontSize * 1.3,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
+        ),
+        const SizedBox(height: 10),
+        Column(
+          children: details.map((flight) {
+            return _buildFlightCard(flight, fontSize);
+          }).toList(),
+        ),
+        const SizedBox(height: 10),
+      ],
+    );
+  }
+
+  Widget _buildFlightCard(Map<String, dynamic> flight, double fontSize) {
+    return Container(
+      padding: EdgeInsets.all(fontSize * 0.7),
+      margin: const EdgeInsets.only(bottom: 10),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade200,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                flight['type'] == 'Departure'
+                    ? Icons.flight_takeoff
+                    : Icons.flight_land,
+                color: Colors.black54,
+              ),
+              const SizedBox(width: 5),
+              Text(
+                flight['type']!,
+                style: TextStyle(
+                    fontSize: fontSize * 1.2, fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+          const SizedBox(height: 5),
+
+          // Flight Name
+          Text(
+            flight['flight']!,
+            style: TextStyle(
+                fontSize: fontSize * 1.1,
+                fontWeight: FontWeight.bold,
+                color: Colors.blue),
+          ),
+          const SizedBox(height: 5),
+
+          // Airport Name
+          Row(
+            children: [
+              const Icon(Icons.location_on, color: Colors.black54),
+              const SizedBox(width: 5),
+              Text(flight['airport']!, style: TextStyle(fontSize: fontSize)),
+            ],
+          ),
+          const SizedBox(height: 5),
+
+          // Date
+          Row(
+            children: [
+              const Icon(Icons.date_range, color: Colors.black54),
+              const SizedBox(width: 5),
+              Text("Date: ${flight['date']}",
+                  style: TextStyle(fontSize: fontSize)),
+            ],
+          ),
+          const SizedBox(height: 5),
+
+          // Terminal
+          Row(
+            children: [
+              const Icon(Icons.directions_transit, color: Colors.black54),
+              const SizedBox(width: 5),
+              Text("Terminal: ${flight['terminal']}",
+                  style: TextStyle(fontSize: fontSize)),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Widget _buildSection(
+  //     String title, List<Map<String, dynamic>> details, double fontSize) {
+  //   return Column(
+  //     crossAxisAlignment: CrossAxisAlignment.start,
+  //     children: [
+  //       Text(
+  //         title,
+  //         style: TextStyle(
+  //           fontSize: fontSize * 1.3,
+  //           fontWeight: FontWeight.bold,
+  //           color: Colors.black,
+  //         ),
+  //       ),
+  //       const SizedBox(height: 10),
+  //       Column(
+  //         children: List.generate(
+  //           (details.length / 2).ceil(), // Divide into rows
+  //           (index) {
+  //             bool isLastOdd =
+  //                 details.length % 2 != 0 && index == details.length ~/ 2;
+  //             return Column(
+  //               children: [
+  //                 Row(
+  //                   children: [
+  //                     Expanded(
+  //                       child: _buildDetailBox(
+  //                         details[index * 2]['title']!,
+  //                         details[index * 2]['value']!,
+  //                         fontSize,
+  //                       ),
+  //                     ),
+  //                     if (!isLastOdd) ...[
+  //                       const SizedBox(width: 10),
+  //                       Expanded(
+  //                         child: _buildDetailBox(
+  //                           details[index * 2 + 1]['title']!,
+  //                           details[index * 2 + 1]['value']!,
+  //                           fontSize,
+  //                         ),
+  //                       ),
+  //                     ],
+  //                   ],
+  //                 ),
+  //                 const SizedBox(height: 10), // Space after each row
+  //               ],
+  //             );
+  //           },
+  //         ),
+  //       ),
+  //       const SizedBox(height: 10),
+  //     ],
+  //   );
+  // }
+
+  // Widget _buildDetailBox(String title, String value, double fontSize) {
+  //   return Container(
+  //     width: (MediaQuery.of(context).size.width / 2) - 25,
+  //     height: 95,
+  //     padding: EdgeInsets.all(fontSize * 0.7),
+  //     decoration: BoxDecoration(
+  //       color: Colors.grey.shade200,
+  //       borderRadius: BorderRadius.circular(8),
+  //     ),
+  //     child: Column(
+  //       crossAxisAlignment: CrossAxisAlignment.start,
+  //       children: [
+  //         Text(
+  //           title,
+  //           style: TextStyle(
+  //             fontSize: fontSize * 1.2,
+  //             fontWeight: FontWeight.bold,
+  //             color: Colors.black,
+  //           ),
+  //         ),
+  //         SizedBox(height: fontSize * 0.3),
+  //         Text(
+  //           value,
+  //           style: TextStyle(
+  //             fontSize: fontSize,
+  //             fontWeight: FontWeight.normal,
+  //             color: Colors.black,
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
+
+  Widget _buildSection(String title, List<Map<String, dynamic>> details, double fontSize) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: TextStyle(
+            fontSize: fontSize * 1.3,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
+        ),
+        const SizedBox(height: 10),
+        Column(
+          children: List.generate(
+            (details.length / 2).ceil(), // Divide into rows
+                (index) {
+              bool isLastOdd =
+                  details.length % 2 != 0 && index == details.length ~/ 2;
+              return Column(
+                children: [
+                  IntrinsicHeight(  // This ensures both boxes in the row will have equal height
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: _buildDetailBox(
+                            details[index * 2]['title']!,
+                            details[index * 2]['value']!,
+                            fontSize,
+                          ),
+                        ),
+                        if (!isLastOdd) ...[
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: _buildDetailBox(
+                              details[index * 2 + 1]['title']!,
+                              details[index * 2 + 1]['value']!,
+                              fontSize,
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 10), // Space after each row
+                ],
+              );
+            },
+          ),
+        ),
+        const SizedBox(height: 10),
+      ],
+    );
+  }
+
+  Widget _buildDetailBox(String title, String value, double fontSize) {
+    return Container(
+      padding: EdgeInsets.all(fontSize * 0.5),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade200,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: fontSize * 1.2,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
+          ),
+          SizedBox(height: fontSize * 0.3),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: fontSize,
+              fontWeight: FontWeight.normal,
+              color: Colors.black,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPriceSection(String title, List<Map<String, dynamic>> details, double fontSize) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: TextStyle(
+            fontSize: fontSize * 1.3,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
+        ),
+        const SizedBox(height: 10),
+        Column(
+          children: List.generate(
+            (details.length / 2).ceil(), // Divide into rows
+                (index) {
+              bool isLastOdd =
+                  details.length % 2 != 0 && index == details.length ~/ 2;
+              return Column(
+                children: [
+                  IntrinsicHeight(  // This ensures both boxes in the row will have equal height
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: _buildPriceDetailBox(
+                            details[index * 2]['title']!,
+                            details[index * 2]['value']!,
+                            fontSize,
+                          ),
+                        ),
+                        if (!isLastOdd) ...[
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: _buildPriceDetailBox(
+                              details[index * 2 + 1]['title']!,
+                              details[index * 2 + 1]['value']!,
+                              fontSize,
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 10), // Space after each row
+                ],
+              );
+            },
+          ),
+        ),
+        const SizedBox(height: 10),
+      ],
+    );
+  }
+
+  Widget _buildPriceDetailBox(String title, String value, double fontSize) {
+    return Container(
+      padding: EdgeInsets.all(fontSize * 0.7),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade200,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: fontSize * 1.2,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
+          ),
+          SizedBox(height: fontSize * 0.3),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: fontSize * 0.95,
+              fontWeight: FontWeight.normal,
+              color: Colors.black,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
 
   // Function to build the details box
   Widget _buildShimmerEffect() {

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:holdidaymakers/pages/FullyIndependentTraveler/travelers_details.dart';
+import 'package:holdidaymakers/pages/FixedDeparturesPages/traveler_details_fd.dart';
+import 'package:holdidaymakers/utils/api_handler.dart';
 import 'package:holdidaymakers/widgets/responciveButton.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -7,14 +8,19 @@ class BookingSummaryFD extends StatefulWidget {
   final Map<String, dynamic> packageDetails;
   final Map<String, dynamic> selectedHotel;
   final List<Map<String, dynamic>> flightDetails;
+  final List<dynamic> totalRoomsdata;
+  final String searchId;
 
-  const BookingSummaryFD({super.key, required this.packageDetails, required this.selectedHotel, required this.flightDetails});
+  const BookingSummaryFD({super.key, required this.packageDetails, required this.selectedHotel, required this.flightDetails, required this.totalRoomsdata, required this.searchId});
 
   @override
   State<BookingSummaryFD> createState() => _BookingSummaryFDState();
 }
 
 class _BookingSummaryFDState extends State<BookingSummaryFD> {
+  Map<String, dynamic> BSData = {};
+  bool isLoading = false;
+
   @override
   void initState() {
     super.initState();
@@ -26,65 +32,115 @@ class _BookingSummaryFDState extends State<BookingSummaryFD> {
         });
       }
     });
-    print('&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&');
+    // print('&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&');
     // print(widget.packageDetails);
     // print(widget.selectedHotel);
-    print(widget.flightDetails);
-    print('&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&');
+    // print(widget.flightDetails);
+    // print(widget.totalRoomsdata);
+    // print(widget.searchId);
+    // print('&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&');
+    _fetchFDBSDetails();
   }
-  bool isLoading = false;
 
-  final List<Map<String, String>> packageDetails = [
-    {'title': 'PACKAGE', 'value': 'Malaysia Duo: Koala and Lumpur'},
-    {'title': 'DURATION', 'value': '2 NIGHT / 1 DAY'},
-    {'title': 'DEPARTURE DATE', 'value': '11-Dec-2024'},
-  ];
+  Future<void> _fetchFDBSDetails() async {
+    print(widget.searchId);
+    Map<dynamic,dynamic> temp= {
+      "search_id": "3649",
+      "activity_list": [
+        {
+          "destination": "13770",
+          "activity": [{
+            "day":"1",
+            "activity_id":"83",
+            "fixed_tour":"Yes"
+          }
+          ]
+        }
+      ]
+    };
+    try {
+      final response = await APIHandler.getFDBSDetails(temp);         //widget.searchId
 
-  final List<Map<String, String>> flightDetails = [
-    {
-      'flight': 'Emirates EK 567',
-      'type': 'Departure',
-      'icon': 'takeoff',
-      'airport': 'Bangalore (BLR), India',
-      'date': '11-Dec-2024',
-      'terminal': 'T1'
-    },
-    {
-      'flight': 'Emirates EK 568',
-      'type': 'Arrival',
-      'icon': 'landing',
-      'airport': 'Dubai (DXB), UAE',
-      'date': '12-Dec-2024',
-      'terminal': 'T3'
-    },
-  ];
+      // Ensure response contains expected keys and types
+      if (response.containsKey('data') && response['data'] is Map<String, dynamic>) {
+        setState(() {
+          BSData = response['data'];
+          isLoading = false;
+        });
 
-  final List<Map<String, String>> hotelDetails = [
-    {'title': 'HOTEL NAME', 'value': 'Qatar : Doha'},
-    {'title': 'ROOM TYPE', 'value': '2 NIGHT / 1 DAY'},
-    {'title': 'CHECK IN DATE', 'value': '11-Dec-2024'},
-    {'title': 'CHECK OUT DATE', 'value': '14-Dec-2024'},
-    {'title': 'NO. OF NIGHTS', 'value': '2'},
-    {'title': 'NO. OF ROOMS', 'value': '1'},
-    {'title': 'MEAL PLAN', 'value': 'BREAKFAST'},
-  ];
+        print('Fetched Data: $BSData');
+      } else {
+        throw Exception("Invalid data structure: ${response.toString()}");
+      }
+    } catch (e) {
+      print("Error fetching package cards: $e");
+    }
+  }
 
-  final List<Map<String, String>> transferDetails = [
-    {'title': 'ARRIVAL TRANSFER', 'value': 'Airport to Hotel'},
-    {'title': 'RETURN TRANSFER', 'value': 'Hotel To Airport'},
-  ];
 
-  final List<Map<String, String>> insuranceDetails = [
-    {'title': 'Travel Insurance in accordance to standards', 'value': ''},
-  ];
-
-  final List<Map<String, String>> priceDetails = [
-    {'title': 'TOTAL (1 ADULT)', 'value': 'AED 1,310'},
-    {'title': 'TOTAL', 'value': 'AED 1,310'},
-  ];
 
   @override
   Widget build(BuildContext context) {
+    final List<Map<String, String>> packageDetails = [
+      {'title': 'PACKAGE', 'value': BSData['package_details']['package_name']?.toString() ?? "N/A"},
+      {'title': 'DURATION', 'value': BSData['package_details']['duration']?.toString() ?? "N/A"},
+      {'title': 'DEPARTURE DATE', 'value': BSData['package_details']['dep_date']?.toString() ?? "N/A"},
+    ];
+
+    final List<Map<String, String>> flightDetails = [
+      {
+        'flight': 'Emirates EK 567',
+        'type': 'Departure',
+        'icon': 'takeoff',
+        'airport': 'Bangalore (BLR), India',
+        'date': '11-Dec-2024',
+        'terminal': 'T1',
+        'flight': BSData['flight_details'][0]['airline_name']?.toString() ?? "N/A",
+        'type': BSData['flight_details'][0]['flight_type']?.toString() ?? "N/A",
+        'icon': 'takeoff',
+        'airport': BSData['flight_details'][0]['from_city']?.toString() ?? "N/A",
+        'date': BSData['flight_details'][0]['travel_date']?.toString() ?? "N/A",
+        'terminal': BSData['flight_details'][0]['depart_terminal']?.toString() ?? "N/A"
+      },
+      {
+        'flight': BSData['flight_details'][1]['airline_name']?.toString() ?? "N/A",
+        'type': BSData['flight_details'][1]['flight_type']?.toString() ?? "N/A",
+        'icon': 'landing',
+        'airport': BSData['flight_details'][1]['from_city']?.toString() ?? "N/A",
+        'date': BSData['flight_details'][1]['travel_date']?.toString() ?? "N/A",
+        'terminal': BSData['flight_details'][1]['depart_terminal']?.toString() ?? "N/A"
+      },
+    ];
+
+    final List<Map<String, String>> hotelDetails = [
+      {'title': 'HOTEL NAME', 'value': BSData['hotel_details'][0]['hotel']?.toString() ?? "N/A"},
+      {'title': 'ROOM TYPE', 'value': BSData['hotel_details'][0]['room_category']?.toString() ?? "N/A"},
+      // {'title': 'CHECK IN DATE', 'value': BSData['hotel_details'][0]['hotel']?.toString() ?? "N/A"},
+      // {'title': 'CHECK OUT DATE', 'value': BSData['hotel_details'][0]['hotel']?.toString() ?? "N/A"},
+      {'title': 'DURATION', 'value': BSData['hotel_details'][0]['duration']?.toString() ?? "N/A"},
+      // {'title': 'NO. OF NIGHTS', 'value': BSData['hotel_details'][0]['hotel']?.toString() ?? "N/A"},
+      // {'title': 'NO. OF ROOMS', 'value': BSData['hotel_details'][0]['hotel']?.toString() ?? "N/A"},
+      {'title': 'MEAL PLAN', 'value': BSData['hotel_details'][0]['meal_plan']?.toString() ?? "N/A"},
+      {'title': 'CITY', 'value': BSData['hotel_details'][0]['city']?.toString() ?? "N/A"},
+      {'title': 'OCCUPANCY', 'value': BSData['hotel_details'][0]['occupancy']?.toString() ?? "N/A"},
+    ];
+
+    final List<Map<String, String>> transferDetails = [
+      {'title': 'ARRIVAL TRANSFER', 'value': BSData['transfer_details']['arrival_transfer']?.toString() ?? "N/A"},
+      {'title': 'RETURN TRANSFER', 'value': BSData['transfer_details']['return_transfer']?.toString() ?? "N/A"},
+    ];
+
+    final List<Map<String, String>> insuranceDetails = [
+      {'title': 'Travel Insurance in accordance to standards', 'value': ''},
+    ];
+
+    final List<Map<String, String>> priceDetails = [
+      {'title': 'TOTAL (1 ADULT)', 'value': 'AED 1,310'},
+      {'title': 'TOTAL', 'value': BSData['package_price']['total']?.toString() ?? "N/A"},
+    ];
+
+
+
     final double screenWidth = MediaQuery.of(context).size.width;
     final double fontSize = screenWidth * 0.035;
 
@@ -127,10 +183,10 @@ class _BookingSummaryFDState extends State<BookingSummaryFD> {
           width: double.infinity,
           child: IconButton(
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => TravelersDetails()),
-              );
+              // Navigator.push(
+              //   context,
+              //   MaterialPageRoute(builder: (context) => TravelersDetailsFD()),
+              // );
             },
             icon: responciveButton(text: 'SELECT'),
           ),
