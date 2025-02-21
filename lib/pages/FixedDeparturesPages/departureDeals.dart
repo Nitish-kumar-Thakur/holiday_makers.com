@@ -20,12 +20,14 @@ class _DepartureDealsState extends State<DepartureDeals> {
   List<dynamic> packageList = [];
   bool isLoading = true;
   int selectedOption = 0;
-  String? selectedRoom= "1";
-  String? selectedAdult="2";
-  String? selectedChild="0";
+  String? selectedRoom = "1";
+  String? selectedAdult = "2";
+  String? selectedChild = "0";
   List<String>? childrenAge;
   Map<String, dynamic>? selectedPackageData;
-  List<dynamic> totalRoomsdata = [{"adult": "2", "child": "0", "childage": []}];
+  List<dynamic> totalRoomsdata = [
+    {"adults": "2", "children": "0", "childrenAges": []}
+  ];
 
   @override
   void initState() {
@@ -38,7 +40,7 @@ class _DepartureDealsState extends State<DepartureDeals> {
     final response = await APIHandler.getDepartureDeal(widget.packageId ?? "");
     setState(() {
       packageData = response;
-      isLoading = false;
+      // isLoading = false;
     });
   }
 
@@ -121,7 +123,7 @@ class _DepartureDealsState extends State<DepartureDeals> {
             fontSize: 24,
             fontWeight: FontWeight.bold,
             color: Colors.black,
-          ),
+          ), 
         ),
       ),
       body: SingleChildScrollView(
@@ -152,19 +154,17 @@ class _DepartureDealsState extends State<DepartureDeals> {
                           children: [
                             PackageCard(
                               title: package['package_name'] ?? '',
-                              departureDate:
-                                  "${package['dep_date']}",
-                              arrivalDate:
-                                  "${package['arrival_date']}",
-                              duration:
-                                  '${package['duration']}',
+                              departureDate: "${package['dep_date']}",
+                              arrivalDate: "${package['arrival_date']}",
+                              duration: '${package['duration']}',
                               price:
                                   '${package['currency']} ${package['price']}',
                               isSelected: selectedOption == index,
                               onSelect: () {
                                 setState(() {
                                   selectedOption = index;
-                                  selectedPackageData = package; // Store selected package data
+                                  selectedPackageData =
+                                      package; // Store selected package data
                                 });
                               },
                             ),
@@ -226,6 +226,9 @@ class _DepartureDealsState extends State<DepartureDeals> {
                               selection['totalChildren'].toString() ?? "0";
                           childrenAge = selection['childrenAges'];
                           totalRoomsdata = selection["totalData"];
+                          // print("@@@@@@@@@@@@@@@@@@@@@@@@");
+                          // print(selectedAdult);
+                          // print("@@@@@@@@@@@@@@@@@@@@@@@@@@");
                         });
                       },
                     ),
@@ -236,16 +239,20 @@ class _DepartureDealsState extends State<DepartureDeals> {
       ),
 
       // Bottom Navigation Button
-      bottomNavigationBar: Padding(
+      bottomNavigationBar: isLoading?null: Padding(
         padding: EdgeInsets.only(bottom: 15),
         child: IconButton(
           onPressed: () {
             if (selectedPackageData != null) {
+               print("@@@@@@@@@@@@@@@@@@@@@@@@");
+                          print(totalRoomsdata);
+                          print("@@@@@@@@@@@@@@@@@@@@@@@@@@");
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) =>
-                      HotelsAccommodation(packageData: selectedPackageData!, totalRoomsdata: totalRoomsdata),
+                  builder: (context) => HotelsAccommodation(
+                      packageData: selectedPackageData!,
+                      totalRoomsdata: totalRoomsdata),
                 ),
               );
             }
@@ -371,20 +378,22 @@ class _PackageCardState extends State<PackageCard> {
         decoration: BoxDecoration(
           color: Colors.grey[200]!,
           borderRadius: BorderRadius.circular(8),
-          border:
-          Border.all(color: widget.isSelected ? Colors.pinkAccent : Colors.grey[300]!),
+          border: Border.all(
+              color: widget.isSelected ? Colors.pinkAccent : Colors.grey[300]!),
         ),
         child: Column(
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
+                SizedBox( width: MediaQuery.of(context).size.width * 0.6,
+                  child: Text(
                   widget.title,
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
                   ),
+                ),
                 ),
                 Row(
                   children: [
@@ -402,7 +411,9 @@ class _PackageCardState extends State<PackageCard> {
                       width: 10,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: widget.isSelected ? Colors.pinkAccent : Colors.transparent,
+                        color: widget.isSelected
+                            ? Colors.pinkAccent
+                            : Colors.transparent,
                         border: Border.all(color: Colors.pinkAccent),
                       ),
                     ),

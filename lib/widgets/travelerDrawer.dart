@@ -24,7 +24,7 @@ class _TravelerdrawerState extends State<Travelerdrawer> {
       }
 
       return {
-        "adults": item['adults'].toString(),
+        "adults":  item['adults'].toString(),
         "children": item['children'].toString(),
         "childrenAges": childrenAges,
       };
@@ -40,9 +40,11 @@ class _TravelerdrawerState extends State<Travelerdrawer> {
   Map<String, dynamic> totalSummary = {
     "totalAdults": 2,
     "totalChildren": 0,
-    "totalRooms": 1,
+    "totalRooms": 1, 
     "childrenAges": <String>[],
-    "totalData": <List<Map<String, dynamic>>>[],
+    "totalData": [
+    {"adults": 2, "children": 0, "childrenAges": <String>[]}
+  ]
   };
 
   void _updateTotalSummary() {

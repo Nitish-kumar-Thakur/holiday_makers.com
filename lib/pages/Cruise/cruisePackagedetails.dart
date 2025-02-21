@@ -74,7 +74,7 @@ class _CruisePackageDetailsState extends State<CruisePackageDetails> {
                 decoration: BoxDecoration(
                   image: DecorationImage(
                     image: NetworkImage(image[index]["image"]),
-                    fit: BoxFit.cover,
+                    fit: BoxFit.fill,
                   ),
                 ),
               );

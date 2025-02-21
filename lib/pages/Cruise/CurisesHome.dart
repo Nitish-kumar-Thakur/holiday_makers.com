@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:holdidaymakers/pages/Cruise/cruisePackagedetails.dart';
 import 'package:holdidaymakers/pages/Cruise/cruise_deals_page.dart';
 import 'package:holdidaymakers/utils/api_handler.dart';
 import 'package:holdidaymakers/widgets/appLargetext.dart';
@@ -398,8 +399,8 @@ Future<void> _fetchCruisePackages(String country, String month) async {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => CruiseDealsPage(packageid: package["packageid"])),
-                  );
+                    MaterialPageRoute(builder: (context) => CruisePackageDetails(packageId: package["packageid"],)),
+                  ); 
                 },
                 child: ResponsiveCard(
                   image: package['image'] ?? 'img/placeholder.png',

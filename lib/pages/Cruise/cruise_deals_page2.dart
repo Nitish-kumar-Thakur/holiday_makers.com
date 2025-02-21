@@ -82,16 +82,19 @@ class _CruiseDealsPage2State extends State<CruiseDealsPage2> {
     });
 
     if (selectedCabin != null) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => BookingSummaryPage(
-            selectedCabin: selectedCabin!,
-            selectedCruiseData: widget.selectedCruiseData!,
-            totalRoomsdata: totalRoomsdata,
-          ),
-        ),
-      );
+      print("@@@@@@@@@@@@@NitisH@@@@@@@@@@@@@@@@@@@@@");
+      print(totalRoomsdata);
+      print("@@@@@@@@@@@@@NitisH@@@@@@@@@@@@@@@@@@@@@");
+      // Navigator.push(
+      //   context,
+      //   MaterialPageRoute(
+      //     builder: (context) => BookingSummaryPage(
+      //       selectedCabin: selectedCabin!,
+      //       selectedCruiseData: widget.selectedCruiseData!,
+      //       totalRoomsdata: totalRoomsdata,
+      //     ),
+      //   ),
+      // );
     }
   }
 
@@ -121,31 +124,39 @@ class _CruiseDealsPage2State extends State<CruiseDealsPage2> {
                 onSelectionChanged: (Map<String, dynamic> selection) {
                   setState(() {
                     selectedRoom = selection['totalRooms']?.toString() ?? "1";
-                    totalPaxCount = selection['totalPaxCount']?.toString() ?? "2";
+                    totalPaxCount =
+                        selection['totalPaxCount']?.toString() ?? "2";
                     paxAges = selection['paxAges'] ?? ["21", "21"];
 
-                    totalRoomsdata = selection["totalData"] ?? [
-                      {
-                        "paxCount": 2,
-                        "paxAges": [21, 21]
-                      }
-                    ];
+                    totalRoomsdata = selection["totalData"] ??
+                        [
+                          {
+                            "paxCount": 2,
+                            "paxAges": [21, 21]
+                          }
+                        ];
                   });
                 },
               ),
               const SizedBox(height: 20),
               Dropdownwidget(
                 selectedValue: selectedCabin?['cabin_type'],
-                items: cruiseCabins.map((item) => {
-                  'id': item['cabin_type']!,
-                  'name': item['cabin_type']!,
-                }).toList(),
+                items: cruiseCabins
+                    .map((item) => {
+                          'id': item['cabin_type']!,
+                          'name': item['cabin_type']!,
+                        })
+                    .toList(),
                 hintText: 'Choose a cabin type',
                 onChanged: (String? newValue) {
                   setState(() {
                     selectedCabin = cruiseCabins.firstWhere(
-                          (item) => item['cabin_type'] == newValue,
-                      orElse: () => {'origin': "N/A", 'cabin_type': "Unknown", 'is_selected': "0"},
+                      (item) => item['cabin_type'] == newValue,
+                      orElse: () => {
+                        'origin': "N/A",
+                        'cabin_type': "Unknown",
+                        'is_selected': "0"
+                      },
                     );
                     cabinError = null; // Clear error
                   });

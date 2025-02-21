@@ -38,7 +38,7 @@ class _PaxDetailsState extends State<PaxDetails> {
 
   Map<String, dynamic> totalSummary = {
     "totalPaxCount": 2,
-    "totalRooms": 1,
+    "totalRooms": 1, 
     "paxAges": <String>["21","21"],
     "totalData": [{"paxCount": "2", "paxAges": ["21", "21"]}],
   };
@@ -310,9 +310,7 @@ class _PaxDetailsState extends State<PaxDetails> {
             children: [
               Icon(FontAwesomeIcons.users, size: 20),
               const SizedBox(width: 13),
-              Text(update
-                  ? '${totalSummary['totalRooms']} Room(s) Selected'
-                  : 'Select Rooms and Pax'),
+              Text('${totalSummary['totalPaxCount']} Pax,${totalSummary['totalRooms']} State Room'),
             ],
           ),
         ),

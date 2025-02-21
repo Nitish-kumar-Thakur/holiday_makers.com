@@ -240,7 +240,7 @@ class _TravelerhotelsState extends State<Travelerhotels> {
 class HotelCard extends StatefulWidget {
   final Map<String, dynamic> hotel;
   final Map<String, dynamic> responceData;
-  final List<dynamic> roomArray;
+  final List<dynamic> roomArray; 
 
   const HotelCard(
       {super.key,
@@ -253,58 +253,45 @@ class HotelCard extends StatefulWidget {
 }
 
 class _HotelCardState extends State<HotelCard> {
-  bool isLoading = false;
-  Map<dynamic, dynamic> flightData = {};
-  Future<void> fitUpdateHotel() async {
-    final hotel = widget.hotel;
-    Map<String, dynamic> fitUpdateHotelData = {
-      "search_id": widget.responceData["data"]["search_id"],
-      "hotel_id": hotel["parent_ht_id"],
-      "hotel_fit_id": hotel["hotel_fit_id"]
-    };
-    try {
-      // print("Sending API Request with Data: $fitUpdateHotelData");
-      Map<dynamic, dynamic> response =
-          await APIHandler.fitUpdateHotel(fitUpdateHotelData);
+  // bool isLoading = false;
+  // Map<dynamic, dynamic> flightData = {};
+  // Future<void> fitUpdateHotel() async {
+  //   final hotel = widget.hotel;
+  //   Map<String, dynamic> fitUpdateHotelData = {
+  //     "search_id": widget.responceData["data"]["search_id"],
+  //     "hotel_id": hotel["parent_ht_id"],
+  //     "hotel_fit_id": hotel["hotel_fit_id"]
+  //   };
+  //   try {
+  //     // print("Sending API Request with Data: $fitUpdateHotelData");
+  //     Map<dynamic, dynamic> response =
+  //         await APIHandler.fitUpdateHotel(fitUpdateHotelData);
 
-      // print("API Response: ${response}");
+  //     // print("API Response: ${response}");
 
-      if (response["message"] == "success") {
-        flightData = response;
-        isLoading = false;
-        // print("Update Hotel Data Updated: ${fitUpdateHotelData}");
-      } else {
-        print("API Error: ${response["message"]}");
-      }
-    } catch (error) {
-      print("Exception in API Call: $error");
-    }
-  }
+  //     if (response["message"] == "success") {
+  //       flightData = response;
+  //       isLoading = false;
+  //       // print("Update Hotel Data Updated: ${fitUpdateHotelData}");
+  //     } else {
+  //       print("API Error: ${response["message"]}");
+  //     }
+  //   } catch (error) {
+  //     print("Exception in API Call: $error");
+  //   }
+  // }
 
-    _selectButton() async {
-    setState(() {
-      isLoading = true;
-    });
-
-    await fitUpdateHotel(); // Wait for API response before proceeding
-
-    if (flightData.isNotEmpty && flightData["data"] != null) {
-      Navigator.push(
+    _selectButton(){
+    Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) => FlightPageFIT(
-            flightList: flightData["data"],
+            hotel: widget.hotel,
             responceData: widget.responceData,
+            roomArray: widget.roomArray,
           ),
         ),
       );
-    } else {
-      print("Error: No flight data available.");
-    }
-
-    setState(() {
-      isLoading = false;
-    });
   }
 
 

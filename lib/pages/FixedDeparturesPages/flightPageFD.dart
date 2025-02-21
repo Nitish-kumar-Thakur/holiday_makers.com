@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:holdidaymakers/pages/FixedDeparturesPages/traveler_details_fd.dart';
+import 'package:holdidaymakers/pages/FixedDeparturesPages/booking_summary_fd.dart';
 import 'package:holdidaymakers/utils/api_handler.dart';
+import 'package:holdidaymakers/widgets/appLargetext.dart';
 import 'package:holdidaymakers/widgets/responciveButton.dart';
+import 'package:shimmer/shimmer.dart';
 
 class FlightPageFD extends StatefulWidget {
   final Map<String, dynamic> packageData;
@@ -27,23 +29,26 @@ class _FlightPageFDState extends State<FlightPageFD> {
   List<Map<String, dynamic>> flightList = [];
   List<Map<String, dynamic>> selectedFlightPackage = [];
   bool isLoading = true;
-
+  @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(milliseconds: 800), () {
-      if (mounted) {
-        setState(() {
-          isLoading = false;
-        });
-      }
-    });
+
+    // print(widget.searchId);
+    // print(widget.selectedHotel['git_adhoc_hotel_id']);
     _fetchFDFlightDetails();
   }
 
   Future<void> _fetchFDFlightDetails() async {
+    Map<dynamic, dynamic> body = {
+      "search_id": widget.searchId,
+      "hotel_id": widget.selectedHotel['git_adhoc_hotel_id']
+    };
     try {
-      final response = await APIHandler.getFDFlightDetails(
-          widget.searchId ?? "", widget.selectedHotel['git_adhoc_hotel_id'] ?? "");
+      final response = await APIHandler.getFDFlightDetails(body);
+
+      // Introduce a delay before setting the state
+      await Future.delayed(Duration(seconds: 2));
+
       setState(() {
         flightList = (response['data']['group_by_flight_details'] as List)
                 .map((e) => e as Map<String, dynamic>)
@@ -53,6 +58,20 @@ class _FlightPageFDState extends State<FlightPageFD> {
       });
     } catch (e) {
       print("Error fetching package cards: $e");
+    }
+  }
+
+  // called when clicked on Book Now button
+  Future<void> _updateFlightDetails(String search_id, String flight_id) async {
+    Map<dynamic, dynamic> body = {
+      'search_id': search_id,
+      'flight_id': flight_id
+    };
+    try {
+      final response = await APIHandler.updateFlightDetails(body);
+      print(response);
+    } catch (e) {
+      print("Error occurred while updating flight details: $e");
     }
   }
 
@@ -76,39 +95,43 @@ class _FlightPageFDState extends State<FlightPageFD> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: flightList.isEmpty
-            ? const Center(
-                child: Text(
-                  "Flights not available",
-                  style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black54),
+        child: isLoading == true
+            ? SingleChildScrollView(
+                child: Column(
+                  children: [FlightPackageShimmer(), FlightPackageShimmer()],
                 ),
               )
-            : ListView.builder(
-                itemCount: flightList.length,
-                itemBuilder: (context, index) {
-                  final flightData = flightList[index];
+            : flightList.isEmpty
+                ? const Center(
+                    child: Text(
+                      "Flights not available",
+                      style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black54),
+                    ),
+                  )
+                : ListView.builder(
+                    itemCount: flightList.length,
+                    itemBuilder: (context, index) {
+                      final flightData = flightList[index];
 
-                  return FlightPackageCard(
-                    optionKey:
-                        flightData["option_type"], // "Option_1", "Option_2"
-                    onwardFlights: List<Map<String, dynamic>>.from(
-                        flightData["Onward"] ?? []),
-                    returnFlights: List<Map<String, dynamic>>.from(
-                        flightData["Return"] ?? []),
-                    isSelected: selectedFlightIndex == index,
-                    onTap: () {
-                      setState(() {
-                        selectedFlightIndex = index;
-                      });
+                      return FlightPackageCard(
+                        optionKey:
+                            flightData["option_type"], // "Option_1", "Option_2"
+                        onwardFlights: List<Map<String, dynamic>>.from(
+                            flightData["Onward"] ?? []),
+                        returnFlights: List<Map<String, dynamic>>.from(
+                            flightData["Return"] ?? []),
+                        isSelected: selectedFlightIndex == index,
+                        onTap: () {
+                          setState(() {
+                            selectedFlightIndex = index;
+                          });
+                        },
+                      );
                     },
-                  );
-                },
-              ),
-
-
+                  ),
       ),
       // body: Container(
       //   color: Colors.white, // Set background color to white
@@ -159,26 +182,30 @@ class _FlightPageFDState extends State<FlightPageFD> {
                 ...flightList[selectedFlightIndex]
                     ["Return"] // Add all return flights
               ];
+
+              String search_id = widget.searchId;
+              String flight_id =
+                  '${selectedFlightPackage[0]['flight_details_id']}_${selectedFlightPackage[1]['flight_details_id']}';
+
+              // print('########################################################');
+              // print(search_id);
+              // print(search_id.runtimeType);
+              // print(flight_id);
+              // print(flight_id.runtimeType);
+              // print('########################################################');
+              _updateFlightDetails(search_id, flight_id);
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => TravelersDetailsFD(
-                    flightDetails: selectedFlightPackage,
-                    selectedHotel: widget.selectedHotel,
-                    packageDetails: widget.packageData,
+                  builder: (context) => BookingSummaryFD(
+                      flightDetails: selectedFlightPackage,
+                      selectedHotel: widget.selectedHotel,
+                      packageDetails: widget.packageData,
                       totalRoomsdata: widget.totalRoomsdata,
-                    searchId: widget.searchId
-                  ),
+                      searchId: widget.searchId),
                 ),
               );
             }
-            // print('########################################################');
-            // print(widget.selectedHotel);
-            // print(widget.packageData);
-            // print(widget.totalRoomsdata);
-            // print(widget.searchId);
-            // print(selectedFlightPackage);
-            // print('########################################################');
           },
           child: Padding(
             padding: const EdgeInsets.only(bottom: 20.0),
@@ -211,7 +238,8 @@ class FlightPackageCard extends StatefulWidget {
 }
 
 class _FlightPackageCardState extends State<FlightPackageCard> {
-  final Set<String> _expandedFlights = {}; // Tracks which flight details are expanded
+  final Set<String> _expandedFlights =
+      {}; // Tracks which flight details are expanded
   String? selectedOnwardFlight;
   String? selectedReturnFlight;
 
@@ -304,6 +332,7 @@ class _FlightPackageCardState extends State<FlightPackageCard> {
             return Column(
               children: [
                 _flightSegment(
+                  title,
                   flightKey,
                   flight["airline_name"] ?? "Unknown Airline",
                   flight["dep_time"] ?? "--:--",
@@ -327,6 +356,7 @@ class _FlightPackageCardState extends State<FlightPackageCard> {
   }
 
   Widget _flightSegment(
+    String title,
     String flightKey,
     String flightName,
     String depTime,
@@ -383,8 +413,12 @@ class _FlightPackageCardState extends State<FlightPackageCard> {
             const Spacer(),
             Column(
               children: [
-                const Icon(Icons.flight_takeoff,
-                    color: Colors.blueAccent, size: 30),
+                 Icon(
+                    title == "Onward Flight"
+                        ? Icons.flight_takeoff
+                        : Icons.flight_land_outlined,
+                    color: Colors.blueAccent,
+                    size: 30),
                 Text(duration,
                     style: const TextStyle(fontSize: 14, color: Colors.grey)),
               ],
@@ -437,6 +471,102 @@ class _FlightPackageCardState extends State<FlightPackageCard> {
           duration: const Duration(milliseconds: 300),
         ),
       ],
+    );
+  }
+}
+
+class FlightPackageShimmer extends StatelessWidget {
+  const FlightPackageShimmer({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      color: Colors.white,
+      margin: const EdgeInsets.only(bottom: 20),
+      elevation: 6,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [ // Onward Flight Title
+            const SizedBox(height: 15),
+            _shimmerFlightDetails(),
+            const Divider(), // Return Flight Title
+            const SizedBox(height: 15),
+            const SizedBox(height: 15),
+            _shimmerButton(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _shimmerFlightDetails() {
+    return Column(
+      children: List.generate(2, (index) {
+        return Column(
+          children: [
+            Row(
+              children: [
+                _shimmerBox(height: 20, width: 100), // Flight No
+              ],
+            ),
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                _shimmerColumn(width: 80), // Departure Details
+                const Spacer(),
+                const Icon(Icons.flight_takeoff, color: Colors.grey, size: 30),
+                const Spacer(),
+                _shimmerColumn(width: 80), // Arrival Details
+              ],
+            ),
+            const SizedBox(height: 15),
+          ],
+        );
+      }),
+    );
+  }
+
+  Widget _shimmerColumn({required double width}) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _shimmerBox(height: 18, width: width), // Time
+        const SizedBox(height: 5),
+        _shimmerBox(height: 14, width: width - 20), // Terminal
+      ],
+    );
+  }
+
+  Widget _shimmerBox({required double height, required double width}) {
+    return Shimmer.fromColors(
+      baseColor: Colors.grey[300]!,
+      highlightColor: Colors.grey[100]!,
+      child: Container(
+        height: height,
+        width: width,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(5),
+        ),
+      ),
+    );
+  }
+
+  Widget _shimmerButton() {
+    return Shimmer.fromColors(
+      baseColor: Colors.grey[300]!,
+      highlightColor: Colors.grey[100]!,
+      child: Container(
+        height: 45,
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(10),
+        ),
+      ),
     );
   }
 }

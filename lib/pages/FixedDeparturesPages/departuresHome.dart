@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:holdidaymakers/pages/Cruise/cruisePackagedetails.dart';
 import 'package:holdidaymakers/pages/Cruise/cruise_deals_page.dart';
 import 'package:holdidaymakers/pages/FixedDeparturesPages/departureDeals.dart';
+import 'package:holdidaymakers/pages/FixedDeparturesPages/departurePackagedetails.dart';
 import 'package:holdidaymakers/pages/FixedDeparturesPages/departuresPackages.dart';
 import 'package:holdidaymakers/utils/api_handler.dart';
 import 'package:holdidaymakers/widgets/appLargetext.dart';
@@ -400,12 +402,12 @@ Future<void> _fetchFDPackages(String country, String month) async {
                 if (package["id"] == "cruise") {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => CruiseDealsPage(packageid: package["packageId"])),
+                    MaterialPageRoute(builder: (context) => CruisePackageDetails(packageId: package["packageId"],)),
                   );
                 } else if (package["id"] == "") {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => DepartureDeals(packageId: package["packageId"])),
+                    MaterialPageRoute(builder: (context) => DeparturePackageDetails(packageId: package["packageId"])),
                   );
                 }
               },

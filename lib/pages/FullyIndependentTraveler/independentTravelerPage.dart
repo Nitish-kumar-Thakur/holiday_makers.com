@@ -31,7 +31,7 @@ class _IndependentTravelerPageState extends State<IndependentTravelerPage> {
   String? selectedChild = "0";
   List<String>? childrenAge = [];
   List<dynamic> totalRoomsdata = [
-    {"adults": "1", "children": "0", "childrenAges": []}
+    {"adults": "2", "children": "0", "childrenAges": []}
   ];
 
   List<Map<String, String>> cities = [];

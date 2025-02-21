@@ -7,8 +7,9 @@ import 'package:shimmer/shimmer.dart';
 
 class BookingSummaryFIT extends StatefulWidget {
   final String searchId;
+  final List<dynamic> roomArray;
   const BookingSummaryFIT(
-      {super.key, required this.searchId});
+      {super.key, required this.searchId, required this.roomArray});
 
   @override
   State<BookingSummaryFIT> createState() => _BookingSummaryFITState();
@@ -254,29 +255,15 @@ class _BookingSummaryFITState extends State<BookingSummaryFIT> {
                 ),
               ),
             ),
-      bottomNavigationBar: isLoading == true
-          ? Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Shimmer.fromColors(
-                baseColor: Colors.grey[300]!,
-                highlightColor: Colors.grey[100]!,
-                child: Container(
-                  height: 50,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-              ),
-            )
+      bottomNavigationBar: isLoading
+          ? null
           : Padding(
               padding: EdgeInsets.all(20.0),
               child: GestureDetector(
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => TravelersDetails()),
+                    MaterialPageRoute(builder: (context) => TravelersDetailsFIT(totalRoomsdata: widget.roomArray, searchId: widget.searchId)),
                   );
                 },
                 child: responciveButton(text: 'PROCEED TO BOOKING'),
@@ -710,6 +697,33 @@ class _BookingSummaryFITState extends State<BookingSummaryFIT> {
                 const SizedBox(height: 10),
                 const SizedBox(height: 20),
                 _buildShimmerRow(),
+                const SizedBox(height: 20),
+                Shimmer.fromColors(
+                  baseColor: Colors.grey[300]!,
+                  highlightColor: Colors.grey[100]!,
+                  child: Container(
+                    height: 20,
+                    width: 150,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                const SizedBox(height: 20),
+                _buildShimmerRow(),
+                const SizedBox(height: 20),
+                Shimmer.fromColors(
+                  baseColor: Colors.grey[300]!,
+                  highlightColor: Colors.grey[100]!,
+                  child: Container(
+                    height: 20,
+                    width: 150,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                const SizedBox(height: 20),
+                _buildShimmerRow(),
+                
               ],
             ),
           ),
@@ -735,8 +749,8 @@ class _BookingSummaryFITState extends State<BookingSummaryFIT> {
       baseColor: Colors.grey[300]!,
       highlightColor: Colors.grey[100]!,
       child: Container(
-        width: 180,
-        height: 100,
+        width: MediaQuery.of(context).size.width * (150 / 375),
+        height: MediaQuery.of(context).size.width * (100 / 812),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(8),

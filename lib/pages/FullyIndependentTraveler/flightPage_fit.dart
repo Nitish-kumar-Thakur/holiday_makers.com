@@ -4,23 +4,63 @@ import 'package:holdidaymakers/utils/api_handler.dart';
 import 'package:holdidaymakers/widgets/responciveButton.dart';
 import 'dart:collection';
 
+import 'package:shimmer/shimmer.dart';
+
 class FlightPageFIT extends StatefulWidget {
   final Map<dynamic, dynamic>? responceData;
-  final Map<dynamic, dynamic>? flightList;
+  final Map<dynamic, dynamic>? hotel;
+  final List<dynamic> roomArray;
 
-  const FlightPageFIT({
-    super.key,
-    required this.flightList,
-    required this.responceData,
-  });
+  const FlightPageFIT(
+      {super.key,
+      required this.hotel,
+      required this.responceData,
+      required this.roomArray});
 
   @override
   State<FlightPageFIT> createState() => _FlightPageFITState();
 }
 
 class _FlightPageFITState extends State<FlightPageFIT> {
-  bool isLoading = false;
+  Map<dynamic, dynamic>? flightList;
+  bool isLoading = true;
   int selectedFlightIndex = 0;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    fitFlightList();
+  }
+
+  Future<void> fitFlightList() async {
+    final hotel = widget.hotel;
+    Map<String, dynamic> fitUpdateHotelData = {
+      "search_id": widget.responceData?["data"]["search_id"],
+      "hotel_id": hotel?["parent_ht_id"],
+      "hotel_fit_id": hotel?["hotel_fit_id"]
+    };
+    try {
+      print("Sending API Request with Data: $fitUpdateHotelData");
+      Map<dynamic, dynamic> response =
+          await APIHandler.fitUpdateHotel(fitUpdateHotelData);
+
+      print("API Response: ${response}");
+
+      if (response["message"] == "success") {
+        setState(() {
+          flightList = response["data"];
+          isLoading = false;
+    });
+       
+        // print("Update Hotel Data Updated: ${fitUpdateHotelData}");
+      } else {
+        print("API Error: ${response["message"]}");
+      }
+    } catch (error) {
+      print("Exception in API Call: $error");
+    }
+  }
+
   Future<void> fitUpdateFlight(
       final Map<String, dynamic> selectedFlightPackage) async {
     Map<String, dynamic> fitUpdateFlightData = {
@@ -36,7 +76,7 @@ class _FlightPageFITState extends State<FlightPageFIT> {
       print("Flight Response: ${response}");
 
       if (response["message"] == "success") {
-        isLoading = false;
+        
         // print("Update Hotel Data Updated: ${fitUpdateHotelData}");
       } else {
         print("API Error: ${response["message"]}");
@@ -47,23 +87,16 @@ class _FlightPageFITState extends State<FlightPageFIT> {
   } // Default: No selection
 
   _selectButton(final Map<String, dynamic> selectedFlightPackage) async {
-    setState(() {
-      isLoading = true;
-    });
-
     await fitUpdateFlight(
         selectedFlightPackage); // Wait for API response before proceeding
-
     Navigator.push(
       context,
       MaterialPageRoute(
-          builder: (context) => BookingSummaryFIT(
-              searchId: (widget.responceData?["data"]["search_id"]).toString())),
+        builder: (context) => BookingSummaryFIT(
+            searchId: (widget.responceData?["data"]["search_id"]).toString(),
+            roomArray: widget.roomArray),
+      ),
     );
-
-    setState(() {
-      isLoading = false;
-    });
   }
 
   /// Function to group flights by `flight_name`
@@ -71,11 +104,9 @@ class _FlightPageFITState extends State<FlightPageFIT> {
     Map<String, Map<String, dynamic>> groupedFlights = {};
 
     final List<Map<String, dynamic>> onwardFlights =
-        List<Map<String, dynamic>>.from(
-            widget.flightList?["flight"]["onward"] ?? []);
+        List<Map<String, dynamic>>.from(flightList?["flight"]["onward"] ?? []);
     final List<Map<String, dynamic>> returnFlights =
-        List<Map<String, dynamic>>.from(
-            widget.flightList?["flight"]["return"] ?? []);
+        List<Map<String, dynamic>>.from(flightList?["flight"]["return"] ?? []);
 
     // Group onward flights by `flight_name`
     for (var flight in onwardFlights) {
@@ -126,17 +157,23 @@ class _FlightPageFITState extends State<FlightPageFIT> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: groupedFlights.isEmpty
-            ? const Center(
-                child: Text(
-                  "Flights not available",
-                  style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black54),
+        child: isLoading
+            ? SingleChildScrollView(
+                child: Column(
+                  children: [FlightPackageShimmer(), FlightPackageShimmer()],
                 ),
               )
-            : ListView.builder(
+            :groupedFlights.isEmpty
+                ? const Center(
+                    child: Text(
+                      "Flights not available",
+                      style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black54),
+                    ),
+                  )
+                : ListView.builder(
                 itemCount: groupedFlights.length,
                 itemBuilder: (context, index) {
                   String flightName = groupedFlights.keys.elementAt(index);
@@ -157,9 +194,9 @@ class _FlightPageFITState extends State<FlightPageFIT> {
                 },
               ),
       ),
-      bottomNavigationBar: Padding(
+      bottomNavigationBar: isLoading?null: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-        child: GestureDetector(
+        child:  GestureDetector(
           onTap: () {
             if (groupedFlights.isNotEmpty && selectedFlightIndex >= 0) {
               String selectedFlightName =
@@ -428,3 +465,100 @@ class _FlightPackageCardState extends State<FlightPackageCard> {
     );
   }
 }
+
+class FlightPackageShimmer extends StatelessWidget {
+  const FlightPackageShimmer({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      color: Colors.white,
+      margin: const EdgeInsets.only(bottom: 20),
+      elevation: 6,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [ // Onward Flight Title
+            const SizedBox(height: 15),
+            _shimmerFlightDetails(),
+            const Divider(), // Return Flight Title
+            const SizedBox(height: 15),
+            const SizedBox(height: 15),
+            _shimmerButton(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _shimmerFlightDetails() {
+    return Column(
+      children: List.generate(2, (index) {
+        return Column(
+          children: [
+            Row(
+              children: [
+                _shimmerBox(height: 20, width: 100), // Flight No
+              ],
+            ),
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                _shimmerColumn(width: 80), // Departure Details
+                const Spacer(),
+                const Icon(Icons.flight_takeoff, color: Colors.grey, size: 30),
+                const Spacer(),
+                _shimmerColumn(width: 80), // Arrival Details
+              ],
+            ),
+            const SizedBox(height: 15),
+          ],
+        );
+      }),
+    );
+  }
+
+  Widget _shimmerColumn({required double width}) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _shimmerBox(height: 18, width: width), // Time
+        const SizedBox(height: 5),
+        _shimmerBox(height: 14, width: width - 20), // Terminal
+      ],
+    );
+  }
+
+  Widget _shimmerBox({required double height, required double width}) {
+    return Shimmer.fromColors(
+      baseColor: Colors.grey[300]!,
+      highlightColor: Colors.grey[100]!,
+      child: Container(
+        height: height,
+        width: width,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(5),
+        ),
+      ),
+    );
+  }
+
+  Widget _shimmerButton() {
+    return Shimmer.fromColors(
+      baseColor: Colors.grey[300]!,
+      highlightColor: Colors.grey[100]!,
+      child: Container(
+        height: 45,
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(10),
+        ),
+      ),
+    );
+  }
+}
+

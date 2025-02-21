@@ -685,15 +685,15 @@ class APIHandler {
     }
   }
     static Future<Map<String, dynamic>> getFDHotelDetails(
-      String packageId) async {
+      Map<dynamic, dynamic> body) async {
     final Uri url = Uri.parse(
         'https://b2cuat.tikipopi.com/index.php/holiday_api/fd_package_hotel_details');
-    final Map<String, dynamic> requestBody = {"package_id": packageId};
+    // final Map<String, dynamic> requestBody = {"package_id": body};
     try {
       final response = await http.post(
         url,
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode(requestBody),
+        body: jsonEncode(body),
       );
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = jsonDecode(response.body);
@@ -717,17 +717,16 @@ class APIHandler {
       };
     }
   }
-  static Future<Map<String, dynamic>> getFDFlightDetails(
-      String searchId, String hotelId) async {
+  static Future<Map<String, dynamic>> getFDFlightDetails(Map<dynamic, dynamic> body) async {
     final Uri url = Uri.parse(
         'https://b2cuat.tikipopi.com/index.php/holiday_api/fd_update_hotel');
-    final Map<String, dynamic> requestBody = {"search_id": searchId, "hotel_id": hotelId};
+    // final Map<String, dynamic> requestBody = {"search_id": searchId, "hotel_id": hotelId};
     // final Map<String, dynamic> requestBody = {"search_id": "3649", "hotel_id": "380"};
     try {
       final response = await http.post(
         url,
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode(requestBody),
+        body: jsonEncode(body),
       );
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = jsonDecode(response.body);
@@ -747,6 +746,37 @@ class APIHandler {
       return {
         "status": false,
         "message": "Error fetching package details",
+        "data": {}
+      };
+    }
+  }
+  static Future<Map<String, dynamic>> updateFlightDetails(Map<dynamic, dynamic> body) async {
+    final Uri url = Uri.parse(
+        'https://b2cuat.tikipopi.com/index.php/holiday_api/fd_update_flight');
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(body),
+      );
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = jsonDecode(response.body);
+        if (data["status"] == true) {
+          return data;
+        } else {
+          return {
+            "status": false,
+            "message": "Failed to update flight",
+            "data": {}
+          };
+        }
+      } else {
+        throw Exception("Server error: ${response.statusCode}");
+      }
+    } catch (e) {
+      return {
+        "status": false,
+        "message": "Error updating flight",
         "data": {}
       };
     }
@@ -762,6 +792,52 @@ class APIHandler {
         url,
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode(temp),
+      );
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = jsonDecode(response.body);
+        if (data["status"] == true) {
+          return data;
+        } else {
+          return {
+            "status": false,
+            "message": "No package details found",
+            "data": {}
+          };
+        }
+      } else {
+        throw Exception("Server error: ${response.statusCode}");
+      }
+    } catch (e) {
+      return {
+        "status": false,
+        "message": "Error fetching package details",
+        "data": {}
+      };
+    }
+  }
+  static Future<Map<String, dynamic>> getCountryList() async {
+    try {
+      final response = await http.get(Uri.parse('https://b2cuat.tikipopi.com/index.php/holiday_api/country_list'));
+      if (response.statusCode == 200) {
+        return json.decode(response.body);
+      } else {
+        throw Exception("Failed to load country list...");
+      }
+    } catch (e) {
+      print("API Error: $e");
+      throw Exception("Error fetching country list");
+    }
+  }
+
+  static Future<Map<String, dynamic>> getCity(String country_id) async {
+    final Uri url = Uri.parse('https://b2cuat.tikipopi.com/index.php/holiday_api/city_list_by_country');
+    final Map<String, dynamic> requestBody = {"country_id": country_id};
+    // final Map<String, dynamic> requestBody = {"search_id": '3649'};
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(requestBody),
       );
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = jsonDecode(response.body);

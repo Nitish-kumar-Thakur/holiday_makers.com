@@ -8,7 +8,8 @@ import 'package:shimmer/shimmer.dart';
 class HotelsAccommodation extends StatefulWidget {
   final Map<String, dynamic> packageData;
   final List<dynamic> totalRoomsdata;
-  const HotelsAccommodation({super.key, required this.packageData, required this.totalRoomsdata});
+  const HotelsAccommodation(
+      {super.key, required this.packageData, required this.totalRoomsdata});
 
   @override
   State<HotelsAccommodation> createState() => _HotelsAccommodationState();
@@ -24,6 +25,11 @@ class _HotelsAccommodationState extends State<HotelsAccommodation> {
 
   @override
   void initState() {
+    print("@@@@@@@@@@@@@@@@Nitish Thakur@@@@@@@@@@@@@@@@");
+    print(widget.packageData["dep_date"]);
+    print(widget.packageData["package_id"]);
+    print("@@@@@@@@@@@@@@@@Nitish Thakur@@@@@@@@@@@@@@@@");
+
     super.initState();
     Future.delayed(const Duration(milliseconds: 800), () {
       if (mounted) {
@@ -36,16 +42,21 @@ class _HotelsAccommodationState extends State<HotelsAccommodation> {
   }
 
   Future<void> _fetchFDHotelDetails() async {
+    Map<dynamic, dynamic> body = {
+      "package_id": widget.packageData['package_id'],
+      "rooms": widget.totalRoomsdata.length.toString(),
+      "room_wise_pax": widget.totalRoomsdata,
+      "dep_date": "2024-11-30"
+    };
     try {
-      final response = await APIHandler.getFDHotelDetails(
-          widget.packageData['package_id'] ?? "");
+      final response = await APIHandler.getFDHotelDetails(body);
       setState(() {
         hotelList = response['data']['hotel_details'] ?? {};
         // flightList = (response['data']['group_by_flight_details'] as List)
         //         .map((e) => e as Map<String, dynamic>)
         //         .toList() ??
         //     [];
-        searchId = response['data']['search_id'].toString() ?? response['data']['search_id'];
+        searchId = response['data']['search_id'].toString();
         isLoading = false;
       });
     } catch (e) {
@@ -131,11 +142,12 @@ class _HotelsAccommodationState extends State<HotelsAccommodation> {
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => FlightPageFD(
-                                      selectedHotel: flattenedHotelList[selectedHotelIndex],
-                                      packageData: widget.packageData,
-                                      // flightList: flightList,
-                                      totalRoomsdata: widget.totalRoomsdata,
-                                      searchId: searchId,
+                                    selectedHotel:
+                                        flattenedHotelList[selectedHotelIndex],
+                                    packageData: widget.packageData,
+                                    // flightList: flightList,
+                                    totalRoomsdata: widget.totalRoomsdata,
+                                    searchId: searchId,
                                   ),
                                 ),
                               );
@@ -185,7 +197,7 @@ class _HotelCardState extends State<HotelCard> {
     final screenWidth = MediaQuery.of(context).size.width;
     final String roomType = widget.hotel["room_category"];
     final String mealType = widget.hotel["meal_plan"];
-    final String price = widget.hotel["price_per_person"].toString() ?? "N/A";
+    final String price = widget.hotel["total_price"].toString() ?? "N/A";
     final int star = int.parse(widget.hotel["rating"] ?? 0);
 
     return Card(

@@ -4,6 +4,7 @@ import 'package:holdidaymakers/pages/Cruise/cruise_deals_page2.dart';
 import 'package:holdidaymakers/utils/api_handler.dart';
 import 'package:holdidaymakers/widgets/appLargetext.dart';
 import 'package:holdidaymakers/widgets/responciveButton.dart';
+import 'package:shimmer/shimmer.dart';
 
 class CruiseDealsPage extends StatefulWidget {
   final String packageid;
@@ -14,6 +15,7 @@ class CruiseDealsPage extends StatefulWidget {
 }
 
 class _CruiseDealsPageState extends State<CruiseDealsPage> {
+  bool isLoading = true;
   Map<String, dynamic> packageData = {};
   Map<String, dynamic> cruiseCards = {};
   String cruiseId = "";
@@ -30,6 +32,7 @@ class _CruiseDealsPageState extends State<CruiseDealsPage> {
     final response = await APIHandler.getCruiseDeal(widget.packageid ?? "");
     setState(() {
       packageData = response;
+      // isLoading = false;
     });
     if (packageData['cruise_details']?['cruise_id'] != null) {
       cruiseId = packageData['cruise_details']['cruise_id'];
@@ -42,6 +45,7 @@ class _CruiseDealsPageState extends State<CruiseDealsPage> {
     setState(() {
       cruiseCards = response;
       selectedCruiseData = cruiseCards['data'][0];
+      isLoading = false;
     });
   }
 
@@ -54,7 +58,7 @@ class _CruiseDealsPageState extends State<CruiseDealsPage> {
       icon = FontAwesomeIcons.plane;
     } else if (iconClass.contains("fa-bed")) {
       icon = FontAwesomeIcons.bed;
-    } else if (iconClass.contains("fa-theater"))  {
+    } else if (iconClass.contains("fa-theater")) {
       icon = FontAwesomeIcons.film;
     } else if (iconClass.contains("fa-kids")) {
       icon = FontAwesomeIcons.children;
@@ -81,7 +85,9 @@ class _CruiseDealsPageState extends State<CruiseDealsPage> {
           Text(
             label,
             textAlign: TextAlign.center,
-            style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.02, color: Colors.black),
+            style: TextStyle(
+                fontSize: MediaQuery.of(context).size.width * 0.02,
+                color: Colors.black),
           ),
         ],
       ),
@@ -90,7 +96,8 @@ class _CruiseDealsPageState extends State<CruiseDealsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final inclusionList = (packageData['inclusion_list'] as List<dynamic>?) ?? [];
+    final inclusionList =
+        (packageData['inclusion_list'] as List<dynamic>?) ?? [];
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -106,7 +113,9 @@ class _CruiseDealsPageState extends State<CruiseDealsPage> {
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: Column(
+          child: isLoading
+              ? _buildShimmerEffect()
+              : Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
@@ -118,7 +127,6 @@ class _CruiseDealsPageState extends State<CruiseDealsPage> {
                 ),
               ),
               SizedBox(height: 10),
-
               Column(
                 children: [
                   ...(cruiseCards['data'] as List<dynamic>? ?? [])
@@ -132,12 +140,9 @@ class _CruiseDealsPageState extends State<CruiseDealsPage> {
                       children: [
                         CruiseOption(
                           title: cruise['cruise_name'] ?? '',
-                          checkIn:
-                          "${cruise['dep_date'] ?? '00'}",
-                          checkOut:
-                          "${cruise['arrival_date'] ?? '00'}",
-                          duration:
-                          '${cruise['duration']}',
+                          checkIn: "${cruise['dep_date'] ?? '00'}",
+                          checkOut: "${cruise['arrival_date'] ?? '00'}",
+                          duration: '${cruise['duration']}',
                           price: '${cruise['currency']} ${cruise['price']}',
                           isSelected: selectedOption == index,
                           onSelect: () {
@@ -146,14 +151,13 @@ class _CruiseDealsPageState extends State<CruiseDealsPage> {
                               selectedCruiseData = cruise;
                             });
                           },
-                         ),
-                         SizedBox(height: 10),
-                       ],
+                        ),
+                        SizedBox(height: 10),
+                      ],
                     );
                   }).toList(),
                 ],
               ),
-
               SizedBox(height: 12),
               Container(
                 width: double.infinity,
@@ -188,7 +192,7 @@ class _CruiseDealsPageState extends State<CruiseDealsPage> {
       ),
 
       // Placing the button at the bottom using bottomNavigationBar
-      bottomNavigationBar: Padding(
+      bottomNavigationBar: isLoading? null: Padding(
         padding: const EdgeInsets.all(16.0),
         child: SizedBox(
           width: double.infinity,
@@ -196,13 +200,95 @@ class _CruiseDealsPageState extends State<CruiseDealsPage> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => CruiseDealsPage2(selectedCruiseData: selectedCruiseData)),
+                MaterialPageRoute(
+                    builder: (context) => CruiseDealsPage2(
+                        selectedCruiseData: selectedCruiseData)),
               );
             },
             icon: responciveButton(text: 'SELECT'),
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildShimmerEffect() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Shimmer.fromColors(
+          baseColor: Colors.grey[300]!,
+          highlightColor: Colors.grey[100]!,
+          child: Container(
+            height: 30,
+            width: 200,
+            color: Colors.white,
+          ),
+        ),
+        SizedBox(height: 20),
+
+        // Cruise Option Shimmer
+        Shimmer.fromColors(
+          baseColor: Colors.grey[300]!,
+          highlightColor: Colors.grey[100]!,
+          child: Container(
+            height: 100,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+        ),
+        SizedBox(height: 24),
+
+        // Inclusion Section Shimmer
+        Shimmer.fromColors(
+          baseColor: Colors.grey[300]!,
+          highlightColor: Colors.grey[100]!,
+          child: Container(
+            height: 150,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+        ),
+        SizedBox(height: 24),
+
+        // Travelers Selection Shimmer
+        Shimmer.fromColors(
+          baseColor: Colors.grey[300]!,
+          highlightColor: Colors.grey[100]!,
+          child: Container(
+            height: 50,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+        ),
+        SizedBox(height: 30),
+
+        // Button Shimmer
+        Align(
+          alignment: Alignment.center,
+          child: Shimmer.fromColors(
+            baseColor: Colors.grey[300]!,
+            highlightColor: Colors.grey[100]!,
+            child: Container(
+              height: 50,
+              width: 150,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
@@ -235,20 +321,22 @@ class CruiseOption extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.grey[200]!,
           borderRadius: BorderRadius.circular(8),
-          border:
-          Border.all(color: isSelected ? Colors.pinkAccent : Colors.grey[300]!),
+          border: Border.all(
+              color: isSelected ? Colors.pinkAccent : Colors.grey[300]!),
         ),
         child: Column(
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
+                SizedBox( width: MediaQuery.of(context).size.width * 0.6,
+                  child: Text(
                   title,
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
                   ),
+                ),
                 ),
                 Row(
                   children: [
@@ -266,7 +354,8 @@ class CruiseOption extends StatelessWidget {
                       width: 10,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: isSelected ? Colors.pinkAccent : Colors.transparent,
+                        color:
+                            isSelected ? Colors.pinkAccent : Colors.transparent,
                         border: Border.all(color: Colors.pinkAccent),
                       ),
                     ),

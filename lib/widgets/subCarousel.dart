@@ -60,7 +60,7 @@ class _SubcarouselState extends State<Subcarousel>
             final item = widget.lists[index];
             print(item);
             return GestureDetector(
-              onTap: () {
+              onTap: () {  
                 print(item["id"].toString());
                 if (item["id"] == "cruise") {
                   Navigator.push(
