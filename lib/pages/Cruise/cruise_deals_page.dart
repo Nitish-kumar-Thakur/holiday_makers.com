@@ -28,26 +28,43 @@ class _CruiseDealsPageState extends State<CruiseDealsPage> {
     _fetchPackageDetails();
   }
 
-  Future<void> _fetchPackageDetails() async {
-    final response = await APIHandler.getCruiseDeal(widget.packageid ?? "");
+Future<void> _fetchPackageDetails() async {
+  try {
+    final response = await APIHandler.getCruiseDeal(widget.packageid);
     setState(() {
       packageData = response;
-      // isLoading = false;
     });
+
     if (packageData['cruise_details']?['cruise_id'] != null) {
       cruiseId = packageData['cruise_details']['cruise_id'];
       await _fetchCruiseCards();
     }
-  }
-
-  Future<void> _fetchCruiseCards() async {
-    final response = await APIHandler.getCruiseCards(cruiseId ?? "");
+  } catch (error) {
+    print("Error fetching package details: $error");
     setState(() {
-      cruiseCards = response;
-      selectedCruiseData = cruiseCards['data'][0];
       isLoading = false;
     });
   }
+}
+
+Future<void> _fetchCruiseCards() async {
+  try {
+    final response = await APIHandler.getCruiseCards(cruiseId ?? "");
+    setState(() {
+      cruiseCards = response;
+      if (cruiseCards['data'] != null && cruiseCards['data'].isNotEmpty) {
+        selectedCruiseData = cruiseCards['data'][0];
+      }
+      isLoading = false;
+    });
+  } catch (error) {
+    print("Error fetching cruise cards: $error");
+    setState(() {
+      isLoading = false;
+    });
+  }
+}
+
 
   Widget buildInclusionCard(String iconClass, String label) {
     // Default icon in case no match is found
@@ -329,7 +346,7 @@ class CruiseOption extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                SizedBox( width: MediaQuery.of(context).size.width * 0.6,
+                SizedBox( width: MediaQuery.of(context).size.width * 0.5,
                   child: Text(
                   title,
                   style: TextStyle(

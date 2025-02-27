@@ -3,8 +3,9 @@ import 'package:intl/intl.dart'; // Import the intl package for date formatting
 
 class Calendarwidget extends StatefulWidget {
   final ValueChanged<DateTime?> onDateSelected;
+  final  List<DateTime> blockedDates;
 
-  const Calendarwidget({Key? key, required this.onDateSelected}) : super(key: key);
+  const Calendarwidget({Key? key, required this.onDateSelected, required this.blockedDates}) : super(key: key);
 
   @override
   _CalendarwidgetState createState() => _CalendarwidgetState();
@@ -14,12 +15,30 @@ class _CalendarwidgetState extends State<Calendarwidget> {
   DateTime? _selectedDate; // Allow null initially
 
   Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: _selectedDate ?? DateTime.now(),
-      firstDate: DateTime.now(),
-      lastDate: DateTime(2100),
-    );
+//     final List<DateTime> blockedDates = [
+//   DateTime(2025, 03, 14),
+//   DateTime(2025, 03, 22),
+//   DateTime(2025, 03, 23),
+// ];
+
+final DateTime? picked = await showDatePicker(
+  context: context,
+  initialDate: _selectedDate ?? DateTime.now(),
+  firstDate: DateTime.now(),
+  lastDate: DateTime(2100),
+  selectableDayPredicate: (DateTime date) {
+    // Check if the selected date matches any blocked date
+    for (DateTime blockedDate in widget.blockedDates) {
+      if (date.year == blockedDate.year &&
+          date.month == blockedDate.month &&
+          date.day == blockedDate.day) {
+        return false; // Block this date
+      }
+    }
+    return true; // Allow all other dates
+  },
+);
+
 
     if (picked != null) {
       setState(() {

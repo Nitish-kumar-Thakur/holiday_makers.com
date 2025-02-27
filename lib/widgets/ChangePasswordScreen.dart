@@ -3,7 +3,6 @@ import 'package:holdidaymakers/pages/introPage.dart';
 import 'package:holdidaymakers/utils/api_handler.dart';
 import 'package:holdidaymakers/utils/shared_preferences_handler.dart';
 import 'package:holdidaymakers/widgets/appText.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
   @override

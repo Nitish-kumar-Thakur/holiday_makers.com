@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:holdidaymakers/pages/FixedDeparturesPages/add_tour_fd.dart';
 import 'package:holdidaymakers/pages/FixedDeparturesPages/booking_summary_fd.dart';
 import 'package:holdidaymakers/utils/api_handler.dart';
 import 'package:holdidaymakers/widgets/appLargetext.dart';
@@ -171,48 +172,50 @@ class _FlightPageFDState extends State<FlightPageFD> {
       //   ),
       // ),
 
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-        child: GestureDetector(
-          onTap: () {
-            if (flightList.isNotEmpty) {
-              selectedFlightPackage = [
-                ...flightList[selectedFlightIndex]
-                    ["Onward"], // Add all onward flights
-                ...flightList[selectedFlightIndex]
-                    ["Return"] // Add all return flights
-              ];
+      bottomNavigationBar: isLoading
+          ? null
+          : Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              child: GestureDetector(
+                onTap: () {
+                  if (flightList.isNotEmpty) {
+                    selectedFlightPackage = [
+                      ...flightList[selectedFlightIndex]
+                          ["Onward"], // Add all onward flights
+                      ...flightList[selectedFlightIndex]
+                          ["Return"] // Add all return flights
+                    ];
 
-              String search_id = widget.searchId;
-              String flight_id =
-                  '${selectedFlightPackage[0]['flight_details_id']}_${selectedFlightPackage[1]['flight_details_id']}';
+                    String search_id = widget.searchId;
+                    String flight_id =
+                        '${selectedFlightPackage[0]['flight_details_id']}_${selectedFlightPackage[1]['flight_details_id']}';
 
-              // print('########################################################');
-              // print(search_id);
-              // print(search_id.runtimeType);
-              // print(flight_id);
-              // print(flight_id.runtimeType);
-              // print('########################################################');
-              _updateFlightDetails(search_id, flight_id);
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => BookingSummaryFD(
-                      flightDetails: selectedFlightPackage,
-                      selectedHotel: widget.selectedHotel,
-                      packageDetails: widget.packageData,
-                      totalRoomsdata: widget.totalRoomsdata,
-                      searchId: widget.searchId),
+                    // print('########################################################');
+                    // print(search_id);
+                    // print(search_id.runtimeType);
+                    // print(flight_id);
+                    // print(flight_id.runtimeType);
+                    // print('########################################################');
+                    _updateFlightDetails(search_id, flight_id);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => TourBookingPage(
+                            flightDetails: selectedFlightPackage,
+                            selectedHotel: widget.selectedHotel,
+                            packageDetails: widget.packageData,
+                            totalRoomsdata: widget.totalRoomsdata,
+                            searchId: widget.searchId),
+                      ),
+                    );
+                  }
+                },
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 20.0),
+                  child: responciveButton(text: "Book Now"),
                 ),
-              );
-            }
-          },
-          child: Padding(
-            padding: const EdgeInsets.only(bottom: 20.0),
-            child: responciveButton(text: "Book Now"),
-          ),
-        ),
-      ),
+              ),
+            ),
     );
   }
 }
@@ -319,10 +322,41 @@ class _FlightPackageCardState extends State<FlightPackageCard> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          title,
-          style: const TextStyle(
-              fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black87),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              title,
+              style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87),
+            ),
+            Row(
+              children: [
+                Text(
+                  "AED N/A",
+                  style: TextStyle(
+                    color: Colors.red,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
+                SizedBox(width: 8),
+                // Container(
+                //   height: 10,
+                //   width: 10,
+                //   decoration: BoxDecoration(
+                //     shape: BoxShape.circle,
+                //     color: widget.isSelected
+                //         ? Colors.pinkAccent
+                //         : Colors.transparent,
+                //     border: Border.all(color: Colors.pinkAccent),
+                //   ),
+                // ),
+              ],
+            ),
+          ],
         ),
         const SizedBox(height: 10),
         Column(
@@ -413,7 +447,7 @@ class _FlightPackageCardState extends State<FlightPackageCard> {
             const Spacer(),
             Column(
               children: [
-                 Icon(
+                Icon(
                     title == "Onward Flight"
                         ? Icons.flight_takeoff
                         : Icons.flight_land_outlined,
@@ -489,7 +523,8 @@ class FlightPackageShimmer extends StatelessWidget {
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [ // Onward Flight Title
+          children: [
+            // Onward Flight Title
             const SizedBox(height: 15),
             _shimmerFlightDetails(),
             const Divider(), // Return Flight Title

@@ -37,12 +37,17 @@ class _CurisesHomeState extends State<CurisesHome> {
     _fetchCruisePackages('', ''); // Fetch cruise package data.
   }
 
-  Future<void> _loadProfileDetails() async {
+Future<void> _loadProfileDetails() async {
+  try {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
       profileImg = prefs.getString("profileImg") ?? "";
     });
+  } catch (error) {
+    print("Error loading profile details: $error");
   }
+}
+
 
   Future<void> _fetchCountryAndMonthLists() async {
     try {

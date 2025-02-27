@@ -85,16 +85,16 @@ class _CruiseDealsPage2State extends State<CruiseDealsPage2> {
       print("@@@@@@@@@@@@@NitisH@@@@@@@@@@@@@@@@@@@@@");
       print(totalRoomsdata);
       print("@@@@@@@@@@@@@NitisH@@@@@@@@@@@@@@@@@@@@@");
-      // Navigator.push(
-      //   context,
-      //   MaterialPageRoute(
-      //     builder: (context) => BookingSummaryPage(
-      //       selectedCabin: selectedCabin!,
-      //       selectedCruiseData: widget.selectedCruiseData!,
-      //       totalRoomsdata: totalRoomsdata,
-      //     ),
-      //   ),
-      // );
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => BookingSummaryPage(
+            selectedCabin: selectedCabin!,
+            selectedCruiseData: widget.selectedCruiseData!,
+            totalRoomsdata: totalRoomsdata,
+          ),
+        ),
+      );
     }
   }
 

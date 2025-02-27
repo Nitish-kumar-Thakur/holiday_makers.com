@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:holdidaymakers/utils/api_handler.dart';
 import 'package:holdidaymakers/widgets/responciveButton.dart';
@@ -112,23 +110,22 @@ class _BookingSummaryPageState extends State<BookingSummaryPage> {
         centerTitle: true,
       ),
       backgroundColor: Colors.white,
-      body: SingleChildScrollView(
+      body: isLoading == true
+          ? _buildShimmerEffect()
+          : SingleChildScrollView(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.04),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              isLoading ? _buildShimmerEffect() :
               _buildSection('PACKAGE DETAILS', packageDetailss, fontSize),
-              isLoading ? _buildShimmerEffect() :
               _buildSection('PRICE DETAILS', priceDetailss, fontSize),
-              isLoading ? _buildShimmerEffect() :
               _buildContactInfo(fontSize),
             ],
           ),
         ),
       ),
-      bottomNavigationBar: Padding(
+      bottomNavigationBar:isLoading?null:Padding(
         padding: const EdgeInsets.all(16.0),
         child: SizedBox(
           width: double.infinity,
@@ -345,25 +342,125 @@ class _BookingSummaryPageState extends State<BookingSummaryPage> {
   }
 
   Widget _buildShimmerEffect() {
-    return Center(
-      child: Shimmer.fromColors(
-        baseColor: Colors.grey[300]!,
-        highlightColor: Colors.grey[100]!,
-        child: Column(
-          children: List.generate(4, (index) => _buildShimmerBox()),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Title shimmer
+                Shimmer.fromColors(
+                  baseColor: Colors.grey[300]!,
+                  highlightColor: Colors.grey[100]!,
+                  child: Container(
+                    height: 20,
+                    width: 150,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 10),
+
+                // Multiple shimmer rows for different sections
+                _buildShimmerRow(),
+                const SizedBox(height: 20),
+                Shimmer.fromColors(
+                  baseColor: Colors.grey[300]!,
+                  highlightColor: Colors.grey[100]!,
+                  child: Container(
+                    height: 20,
+                    width: 150,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                const SizedBox(height: 20),
+                _buildShimmerRow(),
+                const SizedBox(height: 20),
+
+                Shimmer.fromColors(
+                  baseColor: Colors.grey[300]!,
+                  highlightColor: Colors.grey[100]!,
+                  child: Container(
+                    height: 20,
+                    width: 150,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 10), const SizedBox(height: 20),
+                _buildShimmerRow(),
+                const SizedBox(height: 20),
+                Shimmer.fromColors(
+                  baseColor: Colors.grey[300]!,
+                  highlightColor: Colors.grey[100]!,
+                  child: Container(
+                    height: 20,
+                    width: 150,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                const SizedBox(height: 20),
+                _buildShimmerRow(),
+                const SizedBox(height: 20),
+                Shimmer.fromColors(
+                  baseColor: Colors.grey[300]!,
+                  highlightColor: Colors.grey[100]!,
+                  child: Container(
+                    height: 20,
+                    width: 150,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                const SizedBox(height: 20),
+                _buildShimmerRow(),
+                const SizedBox(height: 20),
+                Shimmer.fromColors(
+                  baseColor: Colors.grey[300]!,
+                  highlightColor: Colors.grey[100]!,
+                  child: Container(
+                    height: 20,
+                    width: 150,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                const SizedBox(height: 20),
+                _buildShimmerRow(),
+              ],
+            ),
+          ),
         ),
-      ),
+      ],
     );
   }
 
+// Function to build shimmer rows
+  Widget _buildShimmerRow() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        _buildShimmerBox(),
+        _buildShimmerBox(),
+      ],
+    );
+  }
+
+// Function to create shimmer box for text placeholders
   Widget _buildShimmerBox() {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 10),
-      width: 200,
-      height: 100,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+    return Shimmer.fromColors(
+      baseColor: Colors.grey[300]!,
+      highlightColor: Colors.grey[100]!,
+      child: Container(
+        width: MediaQuery.of(context).size.width * (150 / 375),
+        height: MediaQuery.of(context).size.width * (100 / 812),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(8),
+        ),
       ),
     );
   }

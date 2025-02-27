@@ -18,17 +18,25 @@ class Travelerhotels extends StatefulWidget {
 }
 
 class _TravelerhotelsState extends State<Travelerhotels> {
+  List<dynamic> inclusionList = [];
   bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    // Simulate a network delay to fetch hotel data
-    Future.delayed(Duration(seconds: 2), () {
+    _fetchPackageCards();
+  }
+
+  Future<void> _fetchPackageCards() async {
+    try {
+      final response = await APIHandler.fitInclusionList();
       setState(() {
-        isLoading = false;
+          inclusionList = response['data'];
+          isLoading = false;
       });
-    });
+    } catch (e) {
+      print("Error fetching inclusion list: $e");
+    }
   }
 
   Widget buildInclusionCard(IconData icon, String label) {
@@ -55,6 +63,21 @@ class _TravelerhotelsState extends State<Travelerhotels> {
     );
   }
 
+  IconData getFontAwesomeIcon(String iconClass) {
+    if (iconClass.contains("plane")) {
+      return FontAwesomeIcons.plane;
+    } else if (iconClass.contains("car")) {
+      return FontAwesomeIcons.car;
+    } else if (iconClass.contains("shield")) {
+      return FontAwesomeIcons.shieldHalved;
+    } else if (iconClass.contains("user")) {
+      return FontAwesomeIcons.user;
+    } else if (iconClass.contains("hotel")) {
+      return FontAwesomeIcons.hotel;
+    } else {
+      return FontAwesomeIcons.circleQuestion; // Default icon
+    }
+  }
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
@@ -109,24 +132,28 @@ class _TravelerhotelsState extends State<Travelerhotels> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    AppLargeText(
-                      text: 'INCLUSION',
-                      size: screenWidth * 0.06,
-                    ),
-                    SizedBox(height: screenHeight * 0.01),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        buildInclusionCard(FontAwesomeIcons.plane, 'Flights'),
-                        buildInclusionCard(FontAwesomeIcons.hotel, 'Hotels'),
-                        buildInclusionCard(FontAwesomeIcons.car, 'Transfers'),
-                        buildInclusionCard(
-                            FontAwesomeIcons.userShield, 'Insurance'),
-                        buildInclusionCard(FontAwesomeIcons.user, 'Tour Guide'),
-                      ],
-                    ),
-
-                    SizedBox(height: screenHeight * 0.02),
+                    if (inclusionList.isNotEmpty) ...[
+                      AppLargeText(
+                        text: 'INCLUSION',
+                        size: screenWidth * 0.06,
+                      ),
+                      SizedBox(height: screenHeight * 0.01),
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: inclusionList.map<Widget>((inclusion) {
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 4), // Add spacing
+                              child: buildInclusionCard(
+                                getFontAwesomeIcon(inclusion['class']),
+                                inclusion['name'],
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                      SizedBox(height: screenHeight * 0.02),
+                    ],
 
                     // Expanded ListView to avoid overflow
                     Expanded(

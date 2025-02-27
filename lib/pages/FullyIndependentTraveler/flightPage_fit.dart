@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:holdidaymakers/pages/FullyIndependentTraveler/add_tour_fit.dart';
 import 'package:holdidaymakers/pages/FullyIndependentTraveler/booking_summary_fit.dart';
 import 'package:holdidaymakers/utils/api_handler.dart';
 import 'package:holdidaymakers/widgets/responciveButton.dart';
@@ -92,9 +93,9 @@ class _FlightPageFITState extends State<FlightPageFIT> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => BookingSummaryFIT(
+        builder: (context) => TourBookingPageFIT(
             searchId: (widget.responceData?["data"]["search_id"]).toString(),
-            roomArray: widget.roomArray),
+            totalRoomsdata: widget.roomArray),
       ),
     );
   }

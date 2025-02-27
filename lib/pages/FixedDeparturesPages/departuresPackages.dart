@@ -38,11 +38,16 @@ class _DeparturespackagesState extends State<Departurespackages> {
   bool isLoading = true; 
 
   Future<void> _loadProfileDetails() async {
+  try {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
       profileImg = prefs.getString("profileImg") ?? "";
     });
+  } catch (error) {
+    print("Error loading profile details: $error");
   }
+}
+
 
   Future<void> _fetchHomePageData() async {
     try {

@@ -7,9 +7,15 @@ import 'package:shimmer/shimmer.dart';
 
 class BookingSummaryFIT extends StatefulWidget {
   final String searchId;
+  final List<dynamic> activityList;
   final List<dynamic> roomArray;
+  final String destination;
   const BookingSummaryFIT(
-      {super.key, required this.searchId, required this.roomArray});
+      {super.key,
+      required this.searchId,
+      required this.roomArray,
+      required this.activityList,
+      required this.destination});
 
   @override
   State<BookingSummaryFIT> createState() => _BookingSummaryFITState();
@@ -53,10 +59,8 @@ class _BookingSummaryFITState extends State<BookingSummaryFIT> {
         "search_id": searchId,
         "activity_list": [
           {
-            "destination": "49529",
-            "activity": [
-              {"day": "1", "activity_id": "56"}
-            ]
+            "destination": widget.destination,
+            "activity": widget.activityList
           }
         ]
       };
@@ -91,8 +95,12 @@ class _BookingSummaryFITState extends State<BookingSummaryFIT> {
     // final searchParms = widget.responceData["data"]["search_params"] ?? [];
     final hotel = bookingSummreyData["data"]["result"]["hotel"] ?? [];
     final amount = bookingSummreyData["data"] ?? [];
-    final onwardFlight= bookingSummreyData["data"]["result"]["flight"]["onward"] ?? [];
-    final returnFlight=bookingSummreyData["data"]["result"]["flight"]["return"] ?? [];
+    final onwardFlight =
+        bookingSummreyData["data"]["result"]["flight"]["onward"] ?? [];
+    final returnFlight =
+        bookingSummreyData["data"]["result"]["flight"]["return"] ?? [];
+    final airportToHotel =
+        bookingSummreyData["data"]["result"]["transfer"]["airport_to_hotel"];
 
     if (hotel != null && amount != null) {
       int n = int.parse(hotel["no_of_nights"]) - 1;
@@ -128,7 +136,7 @@ class _BookingSummaryFITState extends State<BookingSummaryFIT> {
           {"title": "Room Type", "value": hotel["room_category_name"]},
           {"title": "Check In Time", "value": hotel["checkin_time"]},
           {"title": "Check Out Time", "value": hotel["checkout_time"]},
-          {"title": "No. of Rooms", "value": hotel["room_count"] ?? "N/A"},
+          {"title": "No. of Rooms", "value": amount["room_count"].toString() ?? "N/A"},
           {"title": "Meal Plan", "value": hotel["meal_type_name"]},
         ];
         flightDetails = [
@@ -160,17 +168,22 @@ class _BookingSummaryFITState extends State<BookingSummaryFIT> {
           {
             "title": "Prices",
             "value": [
-              if (amount["total_adult_count"] != null && amount["total_adult_count"] > 0)
-                "${amount["total_adult_count"]} Adult(s) AED \$${amount["total_adult_amount"]}",
-              if (amount["total_child_count"] != null && amount["total_child_count"] > 0)
-                "${amount["total_child_count"]} Child(ren) AED \$${amount["total_child_amount"]}",
-              if (amount["total_infant_coiunt"] != null && amount["total_infant_coiunt"] > 0)
-                "${amount["total_infant_coiunt"]} Infant(s) AED \$${amount["total_infant_amount"]}",
-            ].where((element) => element.isNotEmpty).join("\n"),  // Join all valid values with line breaks
+              if (amount["total_adult_count"] != null &&
+                  amount["total_adult_count"] > 0)
+                "${amount["total_adult_count"]} Adult(s) AED ${amount["total_adult_amount"]}",
+              if (amount["total_child_count"] != null &&
+                  amount["total_child_count"] > 0)
+                "${amount["total_child_count"]} Child(ren) AED ${amount["total_child_amount"]}",
+              if (amount["total_infant_count"] != null &&
+                  amount["total_infant_count"] > 0)
+                "${amount["total_infant_count"]} Infant(s) AED ${amount["total_infant_amount"]}",
+            ]
+                .where((element) => element.isNotEmpty)
+                .join("\n"), // Join all valid values with line breaks
           },
           {
             "title": "Total",
-            "value": "AED \$${amount["total_amount"].toString()}"
+            "value": "AED \ ${amount["total_amount"].toString()}"
           },
         ];
       });
@@ -234,7 +247,7 @@ class _BookingSummaryFITState extends State<BookingSummaryFIT> {
         centerTitle: true,
       ),
       backgroundColor: Colors.white,
-      body: isLoading == true
+      body: isLoading
           ? _buildShimmerEffect()
           : SingleChildScrollView(
               child: Padding(
@@ -263,7 +276,10 @@ class _BookingSummaryFITState extends State<BookingSummaryFIT> {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => TravelersDetailsFIT(totalRoomsdata: widget.roomArray, searchId: widget.searchId)),
+                    MaterialPageRoute(
+                        builder: (context) => TravelersDetailsFIT(
+                            totalRoomsdata: widget.roomArray,
+                            searchId: widget.searchId)),
                   );
                 },
                 child: responciveButton(text: 'PROCEED TO BOOKING'),
@@ -458,7 +474,8 @@ class _BookingSummaryFITState extends State<BookingSummaryFIT> {
   //   );
   // }
 
-  Widget _buildSection(String title, List<Map<String, dynamic>> details, double fontSize) {
+  Widget _buildSection(
+      String title, List<Map<String, dynamic>> details, double fontSize) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -474,12 +491,13 @@ class _BookingSummaryFITState extends State<BookingSummaryFIT> {
         Column(
           children: List.generate(
             (details.length / 2).ceil(), // Divide into rows
-                (index) {
+            (index) {
               bool isLastOdd =
                   details.length % 2 != 0 && index == details.length ~/ 2;
               return Column(
                 children: [
-                  IntrinsicHeight(  // This ensures both boxes in the row will have equal height
+                  IntrinsicHeight(
+                    // This ensures both boxes in the row will have equal height
                     child: Row(
                       children: [
                         Expanded(
@@ -545,7 +563,8 @@ class _BookingSummaryFITState extends State<BookingSummaryFIT> {
     );
   }
 
-  Widget _buildPriceSection(String title, List<Map<String, dynamic>> details, double fontSize) {
+  Widget _buildPriceSection(
+      String title, List<Map<String, dynamic>> details, double fontSize) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -561,12 +580,13 @@ class _BookingSummaryFITState extends State<BookingSummaryFIT> {
         Column(
           children: List.generate(
             (details.length / 2).ceil(), // Divide into rows
-                (index) {
+            (index) {
               bool isLastOdd =
                   details.length % 2 != 0 && index == details.length ~/ 2;
               return Column(
                 children: [
-                  IntrinsicHeight(  // This ensures both boxes in the row will have equal height
+                  IntrinsicHeight(
+                    // This ensures both boxes in the row will have equal height
                     child: Row(
                       children: [
                         Expanded(
@@ -631,7 +651,6 @@ class _BookingSummaryFITState extends State<BookingSummaryFIT> {
       ),
     );
   }
-
 
   // Function to build the details box
   Widget _buildShimmerEffect() {
@@ -723,7 +742,6 @@ class _BookingSummaryFITState extends State<BookingSummaryFIT> {
                 const SizedBox(height: 10),
                 const SizedBox(height: 20),
                 _buildShimmerRow(),
-                
               ],
             ),
           ),

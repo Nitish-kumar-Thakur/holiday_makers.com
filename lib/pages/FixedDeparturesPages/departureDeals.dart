@@ -17,6 +17,7 @@ class DepartureDeals extends StatefulWidget {
 
 class _DepartureDealsState extends State<DepartureDeals> {
   Map<String, dynamic> packageData = {};
+  List<dynamic> inclusionList = [];
   List<dynamic> packageList = [];
   bool isLoading = true;
   int selectedOption = 0;
@@ -37,11 +38,20 @@ class _DepartureDealsState extends State<DepartureDeals> {
   }
 
   Future<void> _fetchPackageDetails() async {
-    final response = await APIHandler.getDepartureDeal(widget.packageId ?? "");
-    setState(() {
-      packageData = response;
-      // isLoading = false;
-    });
+    try {
+      final response =
+          await APIHandler.getDepartureDeal(widget.packageId ?? "");
+      setState(() {
+        packageData = response;
+        inclusionList = response["inclusion_list"];
+      });
+    } catch (error) {
+      print("Error fetching package details: $error");
+      setState(() {
+        isLoading =
+            false; // Ensures loading state is updated even if an error occurs
+      });
+    }
   }
 
   Future<void> _fetchPackageCards() async {
@@ -104,9 +114,6 @@ class _DepartureDealsState extends State<DepartureDeals> {
 
   @override
   Widget build(BuildContext context) {
-    final inclusionList =
-        (packageData['inclusion_list'] as List<dynamic>?) ?? [];
-
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -123,7 +130,7 @@ class _DepartureDealsState extends State<DepartureDeals> {
             fontSize: 24,
             fontWeight: FontWeight.bold,
             color: Colors.black,
-          ), 
+          ),
         ),
       ),
       body: SingleChildScrollView(
@@ -136,7 +143,7 @@ class _DepartureDealsState extends State<DepartureDeals> {
                   children: [
                     // Package Selection Section
                     Text(
-                      'Available Packages',
+                      'Select Departure',
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
@@ -176,34 +183,34 @@ class _DepartureDealsState extends State<DepartureDeals> {
                     SizedBox(height: 24),
 
                     // Inclusion Section
-                    Container(
-                      width: double.infinity,
-                      decoration: BoxDecoration(color: Colors.grey.shade200),
-                      padding: const EdgeInsets.all(10),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          AppLargeText(
-                            text: 'INCLUSION',
-                            size: 25,
-                          ),
-                          const SizedBox(height: 10),
-                          Center(
-                            child: Wrap(
-                              spacing: 10, // Horizontal space between items
-                              runSpacing: 10, // Vertical space between rows
-                              alignment: WrapAlignment.spaceEvenly,
-                              children: inclusionList.map<Widget>((inclusion) {
-                                return buildInclusionCard(
-                                    inclusion['class'], inclusion['name']);
-                              }).toList(),
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: 24),
+                    // Container(
+                    //   width: double.infinity,
+                    //   decoration: BoxDecoration(color: Colors.grey.shade200),
+                    //   padding: const EdgeInsets.all(10),
+                    //   child: Column(
+                    //     crossAxisAlignment: CrossAxisAlignment.start,
+                    //     children: [
+                    //       AppLargeText(
+                    //         text: 'INCLUSION',
+                    //         size: 25,
+                    //       ),
+                    //       const SizedBox(height: 10),
+                    //       Center(
+                    //         child: Wrap(
+                    //           spacing: 10, // Horizontal space between items
+                    //           runSpacing: 10, // Vertical space between rows
+                    //           alignment: WrapAlignment.spaceEvenly,
+                    //           children: inclusionList.map<Widget>((inclusion) {
+                    //             return buildInclusionCard(
+                    //                 inclusion['class'], inclusion['name']);
+                    //           }).toList(),
+                    //         ),
+                    //       ),
+                    //       const SizedBox(height: 10),
+                    //     ],
+                    //   ),
+                    // ),
+                    // SizedBox(height: 24),
 
                     // Traveler Selection
                     Text(
@@ -239,27 +246,29 @@ class _DepartureDealsState extends State<DepartureDeals> {
       ),
 
       // Bottom Navigation Button
-      bottomNavigationBar: isLoading?null: Padding(
-        padding: EdgeInsets.only(bottom: 15),
-        child: IconButton(
-          onPressed: () {
-            if (selectedPackageData != null) {
-               print("@@@@@@@@@@@@@@@@@@@@@@@@");
-                          print(totalRoomsdata);
-                          print("@@@@@@@@@@@@@@@@@@@@@@@@@@");
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => HotelsAccommodation(
-                      packageData: selectedPackageData!,
-                      totalRoomsdata: totalRoomsdata),
-                ),
-              );
-            }
-          },
-          icon: responciveButton(text: 'SELECT'),
-        ),
-      ),
+      bottomNavigationBar: isLoading
+          ? null
+          : Padding(
+              padding: EdgeInsets.only(bottom: 15),
+              child: IconButton(
+                onPressed: () {
+                  if (selectedPackageData != null) {
+                    print("@@@@@@@@@@@@@@@@@@@@@@@@");
+                    print(totalRoomsdata);
+                    print("@@@@@@@@@@@@@@@@@@@@@@@@@@");
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => HotelsAccommodation(
+                            packageData: selectedPackageData!,
+                            totalRoomsdata: totalRoomsdata),
+                      ),
+                    );
+                  }
+                },
+                icon: responciveButton(text: 'SELECT'),
+              ),
+            ),
     );
   }
 
@@ -386,14 +395,16 @@ class _PackageCardState extends State<PackageCard> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                SizedBox( width: MediaQuery.of(context).size.width * 0.6,
+                SizedBox(
+                  width: MediaQuery.of(context).size.width *
+                      0.5, // 50% of screen width
                   child: Text(
-                  widget.title,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
+                    widget.title,
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
                   ),
-                ),
                 ),
                 Row(
                   children: [

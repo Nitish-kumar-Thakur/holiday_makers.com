@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:holdidaymakers/pages/FixedDeparturesPages/booking_summary_fd.dart';
 import 'package:holdidaymakers/utils/api_handler.dart';
 import 'package:holdidaymakers/widgets/responciveButton.dart';
 
 class TravelersDetailsFD extends StatefulWidget {
+  final Map<String, dynamic> packageDetails;
+  final Map<String, dynamic> selectedHotel;
+  final List<Map<String, dynamic>> flightDetails;
   final List<dynamic> totalRoomsdata;
   final String searchId;
+  final String destination;
+  final List<Map<String, dynamic>> activityList;
 
-  const TravelersDetailsFD({super.key,  required this.totalRoomsdata, required this.searchId});
+  const TravelersDetailsFD({super.key, required this.packageDetails, required this.selectedHotel, required this.flightDetails, required this.totalRoomsdata, required this.searchId, required this.activityList, required this.destination});
 
   @override
   State<TravelersDetailsFD> createState() => _TravelersDetailsFD();
@@ -459,8 +465,18 @@ class _TravelersDetailsFD extends State<TravelersDetailsFD> {
           child: GestureDetector(
             onTap: () {
               if (_formKey.currentState!.validate()) {
-                print("Traveler Details:");
-                print(_travelerDetails);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => BookingSummaryFD(
+                      packageDetails: widget.packageDetails,
+                      selectedHotel: widget.selectedHotel,
+                      flightDetails: widget.flightDetails,
+                      totalRoomsdata: widget.totalRoomsdata,
+                      searchId: widget.searchId,
+                      activityList: widget.activityList,
+                      destination: widget.destination
+                  )),
+                );
               } else {
                 print("Form is not valid");
               }

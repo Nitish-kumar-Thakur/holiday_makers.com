@@ -11,6 +11,8 @@ class BookingSummaryFD extends StatefulWidget {
   final List<Map<String, dynamic>> flightDetails;
   final List<dynamic> totalRoomsdata;
   final String searchId;
+  final String destination;
+  final List<Map<String, dynamic>> activityList;
 
   const BookingSummaryFD(
       {super.key,
@@ -18,7 +20,9 @@ class BookingSummaryFD extends StatefulWidget {
       required this.selectedHotel,
       required this.flightDetails,
       required this.totalRoomsdata,
-      required this.searchId});
+      required this.searchId,
+      required this.activityList,
+      required this.destination});
 
   @override
   State<BookingSummaryFD> createState() => _BookingSummaryFDState();
@@ -32,11 +36,11 @@ class _BookingSummaryFDState extends State<BookingSummaryFD> {
   List<Map<String, String>> transferDetails = [];
   List<Map<String, String>> priceDetails = [];
   List<Map<String, String>> insuranceDetails = [];
+  List<Map<String, dynamic>> tourList = [];
   bool isLoading = true;
 
   @override
   void initState() {
-    print(widget.searchId);
     super.initState();
 
     // Future.delayed(const Duration(milliseconds: 800), () {
@@ -52,25 +56,22 @@ class _BookingSummaryFDState extends State<BookingSummaryFD> {
     // print(widget.flightDetails);
     // print(widget.totalRoomsdata);
     // print(widget.searchId);
+    // print(widget.activityList);
     // print('&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&');
     _fetchFDBSDetails();
   }
 
   Future<void> _fetchFDBSDetails() async {
-    print(widget.searchId);
-    Map<dynamic, dynamic> temp = {
+    // print(widget.searchId);
+    Map<dynamic, dynamic> apiBody = {
       "search_id": widget.searchId,
       "activity_list": [
-        {
-          "destination": "13770",
-          "activity": [
-            {"day": "1", "activity_id": "83", "fixed_tour": "Yes"}
-          ]
-        }
+        {"destination": widget.destination, "activity": widget.activityList}
       ]
     };
     try {
-      final response = await APIHandler.getFDBSDetails(temp); //widget.searchId
+      final response =
+          await APIHandler.getFDBSDetails(apiBody); //widget.searchId
 
       // Ensure response contains expected keys and types
       if (response.containsKey('data') &&
@@ -78,10 +79,9 @@ class _BookingSummaryFDState extends State<BookingSummaryFD> {
         setState(() {
           BSData = response['data'];
           _PackageData();
-          isLoading = false;
         });
 
-        print('Fetched Data: $BSData');
+        // print('Fetched Data: $BSData');
       } else {
         throw Exception("Invalid data structure: ${response.toString()}");
       }
@@ -204,11 +204,11 @@ class _BookingSummaryFDState extends State<BookingSummaryFD> {
           "title": "Prices",
           "value": [
             if ((BSData['package_price']['adult_count'] ?? 0) > 0)
-              "${BSData['package_price']['adult_count']} Adult(s) ${BSData['package_price']['currency']} \$${BSData['package_price']['adult_price']}",
+              "${BSData['package_price']['adult_count']} Adult(s) ${BSData['package_price']['currency']} ${BSData['package_price']['adult_price']}",
             if ((BSData['package_price']['cwb_count'] ?? 0) > 0)
-              "${BSData['package_price']['cwb_count']} Child(ren) ${BSData['package_price']['currency']} \$${BSData['package_price']['cwb_price']}",
+              "${BSData['package_price']['cwb_count']} Child(ren) ${BSData['package_price']['currency']} ${BSData['package_price']['cwb_price']}",
             if ((BSData['package_price']['infant_count'] ?? 0) > 0)
-              "${BSData['package_price']['infant_count']} Infant(s) ${BSData['package_price']['currency']} \$${BSData['package_price']['infant_price']}",
+              "${BSData['package_price']['infant_count']} Infant(s) ${BSData['package_price']['currency']}  ${BSData['package_price']['infant_price']}",
           ]
               .where((element) => element.isNotEmpty)
               .join("\n"), // Join all valid values with line breaks
@@ -216,9 +216,33 @@ class _BookingSummaryFDState extends State<BookingSummaryFD> {
         {
           "title": "Total",
           "value":
-              "${BSData['package_price']['currency']} \$${BSData['package_price']['total'].toString()}"
+              "${BSData['package_price']['currency']} ${BSData['package_price']['total'].toString()}"
         },
       ];
+      tourList = (BSData["activities_list"] as List).map((activity) {
+        // Extract duration in hours from the "duration" string
+        RegExp regExp = RegExp(r'(\d+) Hours'); // Regex to extract hours
+        var match = regExp.firstMatch(activity["duration"] ?? "");
+
+        // Default to 0 if no match is found
+        int hours =
+            match != null ? int.tryParse(match.group(1) ?? "0") ?? 0 : 0;
+
+        // Return the mapped result
+        return {
+          "day": activity["day"] ?? "",
+          "title": activity["service"] ?? "",
+          "duration":
+              "$hours Hours", // You can adjust this if you want a different format
+        };
+      }).toList();
+
+      // [
+      //   {"day": "1", "title": "Adventure Trip, City Tour and Resort Visit", "duration": "1"},
+      //   {"day": "2", "title": "", "duration": ""},
+      //   {"day": "3", "title": "", "duration": ""}
+      // ];
+      isLoading = false;
     });
   }
 
@@ -242,10 +266,10 @@ class _BookingSummaryFDState extends State<BookingSummaryFD> {
         centerTitle: true,
       ),
       backgroundColor: Colors.white,
-      body: isLoading == true
-          ? _buildShimmerEffect()
-          : SingleChildScrollView(
-              child: Padding(
+      body: SingleChildScrollView(
+        child: isLoading
+            ? _buildShimmerEffect()
+            : Padding(
                 padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.04),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -253,6 +277,8 @@ class _BookingSummaryFDState extends State<BookingSummaryFD> {
                     _buildSection('PACKAGE DETAILS', packageDetails, fontSize),
                     _buildFlightDetailsSection(
                         'FLIGHT DETAILS', flightDetails, fontSize),
+                    tourList.isEmpty? SizedBox():_buildtourDetailsSection(
+                        "TOUR DETAILS", tourList, fontSize),
                     _buildSection('HOTEL DETAILS', hotelDetails, fontSize),
                     _buildSection(
                         'TRANSFER DETAILS', transferDetails, fontSize),
@@ -262,17 +288,25 @@ class _BookingSummaryFDState extends State<BookingSummaryFD> {
                   ],
                 ),
               ),
-            ),
+      ),
       bottomNavigationBar: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.only(left: 16.0,right: 16.0,bottom: 16.0,top: 7),
         child: SizedBox(
           width: double.infinity,
           child: IconButton(
             onPressed: () {
               Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => TravelersDetailsFD(totalRoomsdata: widget.totalRoomsdata, searchId: widget.searchId)),
-              );
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => TravelersDetailsFD(
+                        flightDetails: widget.flightDetails,
+                        selectedHotel: widget.selectedHotel,
+                        packageDetails: widget.packageDetails,
+                        totalRoomsdata: widget.totalRoomsdata,
+                        searchId: widget.searchId,
+                        activityList: widget.activityList,
+                        destination: widget.destination),
+                  ));
             },
             icon: responciveButton(text: 'SELECT'),
           ),
@@ -303,26 +337,29 @@ class _BookingSummaryFDState extends State<BookingSummaryFD> {
                   details.length % 2 != 0 && index == details.length ~/ 2;
               return Column(
                 children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _buildDetailBox(
-                          details[index * 2]['title']!,
-                          details[index * 2]['value']!,
-                          fontSize,
-                        ),
-                      ),
-                      if (!isLastOdd) ...[
-                        const SizedBox(width: 10),
+                  IntrinsicHeight(
+                    // This ensures both boxes in the row will have equal height
+                    child: Row(
+                      children: [
                         Expanded(
-                          child: _buildDetailBox(
-                            details[index * 2 + 1]['title']!,
-                            details[index * 2 + 1]['value']!,
+                          child: _buildPriceDetailBox(
+                            details[index * 2]['title']!,
+                            details[index * 2]['value']!,
                             fontSize,
                           ),
                         ),
+                        if (!isLastOdd) ...[
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: _buildPriceDetailBox(
+                              details[index * 2 + 1]['title']!,
+                              details[index * 2 + 1]['value']!,
+                              fontSize,
+                            ),
+                          ),
+                        ],
                       ],
-                    ],
+                    ),
                   ),
                   const SizedBox(height: 10), // Space after each row
                 ],
@@ -435,8 +472,6 @@ class _BookingSummaryFDState extends State<BookingSummaryFD> {
 
   Widget _buildDetailBox(String title, String value, double fontSize) {
     return Container(
-      width: (MediaQuery.of(context).size.width / 2) - 25,
-      height: 95,
       padding: EdgeInsets.all(fontSize * 0.7),
       decoration: BoxDecoration(
         color: Colors.grey.shade200,
@@ -457,7 +492,7 @@ class _BookingSummaryFDState extends State<BookingSummaryFD> {
           Text(
             value,
             style: TextStyle(
-              fontSize: fontSize,
+              fontSize: fontSize * 0.95,
               fontWeight: FontWeight.normal,
               color: Colors.black,
             ),
@@ -556,6 +591,62 @@ class _BookingSummaryFDState extends State<BookingSummaryFD> {
     );
   }
 
+  Widget _buildtourDetailsSection(
+      String title, List<Map<String, dynamic>> tour, double fontSize) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: TextStyle(
+            fontSize: fontSize * 1.3,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
+        ),
+        const SizedBox(height: 10),
+        Column(
+          children: tour.map((tour) {
+            return _buildTourCard(tour, fontSize);
+          }).toList(),
+        ),
+        const SizedBox(height: 10),
+      ],
+    );
+  }
+
+  Widget _buildTourCard(Map<dynamic, dynamic> tour, double fontSize) {
+    return Container(
+      padding: EdgeInsets.all(fontSize * 0.7),
+      margin: const EdgeInsets.only(bottom: 10),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade200,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          SizedBox(
+            width:
+                MediaQuery.of(context).size.width * 0.4, // 40% of screen width
+            child: Text(
+              "Day ${tour['day'] ?? 'N/A'}: ${tour['title'] ?? 'N/A'}",
+              style: TextStyle(
+                fontSize: fontSize,
+              ),
+            ),
+          ),
+          Text(
+            "Duration ${tour['duration'] ?? "N/A"}",
+            style: TextStyle(
+              fontSize: fontSize,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildShimmerEffect() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -645,7 +736,6 @@ class _BookingSummaryFDState extends State<BookingSummaryFD> {
                 const SizedBox(height: 10),
                 const SizedBox(height: 20),
                 _buildShimmerRow(),
-                
               ],
             ),
           ),

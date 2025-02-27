@@ -371,6 +371,7 @@ class APIHandler {
       throw Exception('Error: ${response.statusCode}');
     }
   }
+
   static Future<Map<String, dynamic>> fitUpdateHotel(
       Map<String, dynamic> fitUpdateHotelData) async {
     final url = Uri.parse(
@@ -392,6 +393,7 @@ class APIHandler {
       throw Exception('Error: ${response.statusCode}');
     }
   }
+
   static Future<Map<String, dynamic>> fitUpdateFlight(
       Map<String, dynamic> fitUpdateFlightData) async {
     final url = Uri.parse(
@@ -413,6 +415,7 @@ class APIHandler {
       throw Exception('Error: ${response.statusCode}');
     }
   }
+
   static Future<Map<String, dynamic>> getDepartureDeal(String packageId) async {
     final Uri url = Uri.parse(
         'https://b2cuat.tikipopi.com/index.php/holiday_api/fd_package_details');
@@ -684,7 +687,8 @@ class APIHandler {
       };
     }
   }
-    static Future<Map<String, dynamic>> getFDHotelDetails(
+
+  static Future<Map<String, dynamic>> getFDHotelDetails(
       Map<dynamic, dynamic> body) async {
     final Uri url = Uri.parse(
         'https://b2cuat.tikipopi.com/index.php/holiday_api/fd_package_hotel_details');
@@ -717,7 +721,9 @@ class APIHandler {
       };
     }
   }
-  static Future<Map<String, dynamic>> getFDFlightDetails(Map<dynamic, dynamic> body) async {
+
+  static Future<Map<String, dynamic>> getFDFlightDetails(
+      Map<dynamic, dynamic> body) async {
     final Uri url = Uri.parse(
         'https://b2cuat.tikipopi.com/index.php/holiday_api/fd_update_hotel');
     // final Map<String, dynamic> requestBody = {"search_id": searchId, "hotel_id": hotelId};
@@ -750,7 +756,9 @@ class APIHandler {
       };
     }
   }
-  static Future<Map<String, dynamic>> updateFlightDetails(Map<dynamic, dynamic> body) async {
+
+  static Future<Map<String, dynamic>> updateFlightDetails(
+      Map<dynamic, dynamic> body) async {
     final Uri url = Uri.parse(
         'https://b2cuat.tikipopi.com/index.php/holiday_api/fd_update_flight');
     try {
@@ -774,16 +782,12 @@ class APIHandler {
         throw Exception("Server error: ${response.statusCode}");
       }
     } catch (e) {
-      return {
-        "status": false,
-        "message": "Error updating flight",
-        "data": {}
-      };
+      return {"status": false, "message": "Error updating flight", "data": {}};
     }
   }
 
   static Future<Map<String, dynamic>> getFDBSDetails(
-      Map<dynamic,dynamic> temp) async {
+      Map<dynamic, dynamic> temp) async {
     final Uri url = Uri.parse(
         'https://b2cuat.tikipopi.com/index.php/holiday_api/fd_booking_summary');
     // final Map<String, dynamic> requestBody = {temp};
@@ -815,9 +819,11 @@ class APIHandler {
       };
     }
   }
+
   static Future<Map<String, dynamic>> getCountryList() async {
     try {
-      final response = await http.get(Uri.parse('https://b2cuat.tikipopi.com/index.php/holiday_api/country_list'));
+      final response = await http.get(Uri.parse(
+          'https://b2cuat.tikipopi.com/index.php/holiday_api/country_list'));
       if (response.statusCode == 200) {
         return json.decode(response.body);
       } else {
@@ -830,7 +836,8 @@ class APIHandler {
   }
 
   static Future<Map<String, dynamic>> getCity(String country_id) async {
-    final Uri url = Uri.parse('https://b2cuat.tikipopi.com/index.php/holiday_api/city_list_by_country');
+    final Uri url = Uri.parse(
+        'https://b2cuat.tikipopi.com/index.php/holiday_api/city_list_by_country');
     final Map<String, dynamic> requestBody = {"country_id": country_id};
     // final Map<String, dynamic> requestBody = {"search_id": '3649'};
     try {
@@ -859,6 +866,126 @@ class APIHandler {
         "message": "Error fetching package details",
         "data": {}
       };
+    }
+  }
+
+  static Future<Map<String, dynamic>> getFDTourList(String searchId) async {
+    final Uri url = Uri.parse(
+        'https://b2cuat.tikipopi.com/index.php/holiday_api/fd_tour_list');
+    final Map<String, dynamic> requestBody = {"search_id": searchId};
+    // final Map<String, dynamic> requestBody = {"search_id": '3649'};
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(requestBody),
+      );
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = jsonDecode(response.body);
+        if (data["status"] == true) {
+          return data;
+        } else {
+          return {
+            "status": false,
+            "message": "No tour details found",
+            "data": {}
+          };
+        }
+      } else {
+        throw Exception("Server error: ${response.statusCode}");
+      }
+    } catch (e) {
+      return {
+        "status": false,
+        "message": "Error fetching tour details",
+        "data": {}
+      };
+    }
+  }
+
+  static Future<Map<String, dynamic>> getFITTourList(String searchId) async {
+    final Uri url = Uri.parse(
+        'https://b2cuat.tikipopi.com/index.php/holiday_api/fit_tour_list');
+    final Map<String, dynamic> requestBody = {"search_id": searchId};
+    // final Map<String, dynamic> requestBody = {"search_id": '3649'};
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(requestBody),
+      );
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = jsonDecode(response.body);
+        if (data["status"] == true) {
+          return data;
+        } else {
+          return {
+            "status": false,
+            "message": "No tour details found",
+            "data": {}
+          };
+        }
+      } else {
+        throw Exception("Server error: ${response.statusCode}");
+      }
+    } catch (e) {
+      return {
+        "status": false,
+        "message": "Error fetching tour details",
+        "data": {}
+      };
+    }
+  }
+
+  static Future<List<DateTime>> fetchBlockedDates(
+      String source, String destination) async {
+    final Uri url = Uri.parse(
+        'https://b2cuat.tikipopi.com/index.php/holiday_api/fit_block_dates');
+    final Map<String, dynamic> requestBody = {
+      "origin_id": source,
+      "destination_id": destination
+    };
+    print("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
+    print("Blocked Body = $requestBody");
+    print("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
+    // final Map<String, dynamic> requestBody = {"search_id": '3649'};
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(requestBody),
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        print("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
+      print("Blocked responce = $data");
+      print("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
+
+        if (data['status'] == true && data['data'] is List) {
+          print("Chla to bhai");
+          return (data['data'] as List)
+              .map((dateString) => DateTime.parse(dateString))
+              .toList();
+        }
+      }
+    } catch (e) {
+      print("Error fetching blocked dates: $e");
+    }
+    return [];
+  }
+    static Future<Map<String, dynamic>> fitInclusionList() async {
+    final Uri url = Uri.parse('https://b2cuat.tikipopi.com/index.php/holiday_api/fit_inclusion_list');
+    try {
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        return json.decode(response.body);
+      } else {
+        throw Exception('Failed to load inclusion list');
+      }
+    } catch (e) {
+      throw Exception('Error fetching inclusion list: $e');
     }
   }
 }

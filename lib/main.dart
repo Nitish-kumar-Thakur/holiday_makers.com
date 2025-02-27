@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:holdidaymakers/pages/FullyIndependentTraveler/mainPage.dart';
-import 'package:holdidaymakers/pages/login&signup/loginPage.dart';
+import 'package:holdidaymakers/pages/learn.dart';
 import 'package:holdidaymakers/splashscreen.dart';
 
 Future<void> main() async {
@@ -24,7 +23,7 @@ class MyApp extends StatelessWidget {
         ,
           useMaterial3: true,
         ),
-        home: const Splashscreen(), // Use `const` for better performance.
+        home: Splashscreen(), // Use `const` for better performance.
         );
   }
 }
