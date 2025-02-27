@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:holdidaymakers/pages/FixedDeparturesPages/traveler_details_fd.dart';
 import 'package:holdidaymakers/utils/api_handler.dart';
-import 'package:holdidaymakers/widgets/appLargetext.dart';
 import 'package:holdidaymakers/widgets/responciveButton.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -470,38 +469,6 @@ class _BookingSummaryFDState extends State<BookingSummaryFD> {
     );
   }
 
-  Widget _buildDetailBox(String title, String value, double fontSize) {
-    return Container(
-      padding: EdgeInsets.all(fontSize * 0.7),
-      decoration: BoxDecoration(
-        color: Colors.grey.shade200,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: TextStyle(
-              fontSize: fontSize * 1.2,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
-            ),
-          ),
-          SizedBox(height: fontSize * 0.3),
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: fontSize * 0.95,
-              fontWeight: FontWeight.normal,
-              color: Colors.black,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildPriceSection(
       String title, List<Map<String, dynamic>> details, double fontSize) {
     return Column(
@@ -766,27 +733,6 @@ class _BookingSummaryFDState extends State<BookingSummaryFD> {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(8),
-        ),
-      ),
-    );
-  }
-
-  Widget _responsiveButton({required String text}) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 15),
-      decoration: BoxDecoration(
-        color: Colors.red,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Center(
-        child: Text(
-          text,
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
         ),
       ),
     );

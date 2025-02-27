@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:holdidaymakers/pages/FixedDeparturesPages/hotelsAccommodation.dart';
 import 'package:holdidaymakers/utils/api_handler.dart';
-import 'package:holdidaymakers/widgets/appLargetext.dart';
 import 'package:holdidaymakers/widgets/responciveButton.dart';
 import 'package:holdidaymakers/widgets/travelerDrawer.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -9,9 +8,10 @@ import 'package:shimmer/shimmer.dart';
 
 class DepartureDeals extends StatefulWidget {
   final String? packageId;
-  const DepartureDeals({Key? key, this.packageId}) : super(key: key);
+  const DepartureDeals({super.key, this.packageId});
 
   @override
+  // ignore: library_private_types_in_public_api
   _DepartureDealsState createState() => _DepartureDealsState();
 }
 
@@ -226,11 +226,11 @@ class _DepartureDealsState extends State<DepartureDeals> {
                       onSelectionChanged: (Map<String, dynamic> selection) {
                         setState(() {
                           selectedRoom =
-                              selection['totalRooms'].toString() ?? "1";
+                              selection['totalRooms'].toString();
                           selectedAdult =
-                              selection['totalAdults'].toString() ?? "1";
+                              selection['totalAdults'].toString();
                           selectedChild =
-                              selection['totalChildren'].toString() ?? "0";
+                              selection['totalChildren'].toString();
                           childrenAge = selection['childrenAges'];
                           totalRoomsdata = selection["totalData"];
                           // print("@@@@@@@@@@@@@@@@@@@@@@@@");

@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:holdidaymakers/pages/FixedDeparturesPages/add_tour_fd.dart';
-import 'package:holdidaymakers/pages/FixedDeparturesPages/booking_summary_fd.dart';
 import 'package:holdidaymakers/utils/api_handler.dart';
-import 'package:holdidaymakers/widgets/appLargetext.dart';
 import 'package:holdidaymakers/widgets/responciveButton.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -10,10 +8,10 @@ class FlightPageFD extends StatefulWidget {
   final Map<String, dynamic> packageData;
   final Map<String, dynamic> selectedHotel;
   // final List<Map<String, dynamic>> flightList;
-  String searchId;
+  final String searchId;
   final List<dynamic> totalRoomsdata;
 
-  FlightPageFD({
+  const FlightPageFD({
     super.key,
     required this.searchId,
     required this.packageData,
@@ -53,8 +51,7 @@ class _FlightPageFDState extends State<FlightPageFD> {
       setState(() {
         flightList = (response['data']['group_by_flight_details'] as List)
                 .map((e) => e as Map<String, dynamic>)
-                .toList() ??
-            [];
+                .toList();
         isLoading = false;
       });
     } catch (e) {
@@ -252,16 +249,6 @@ class _FlightPackageCardState extends State<FlightPackageCard> {
         _expandedFlights.remove(flightKey);
       } else {
         _expandedFlights.add(flightKey);
-      }
-    });
-  }
-
-  void _selectFlight(String flightKey, bool isOnward) {
-    setState(() {
-      if (isOnward) {
-        selectedOnwardFlight = flightKey;
-      } else {
-        selectedReturnFlight = flightKey;
       }
     });
   }

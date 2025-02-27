@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_html/flutter_html.dart';
 
 class TourSelectionModal extends StatefulWidget {
-   List<Map<String, dynamic>> tours;
+   final List<Map<String, dynamic>> tours;
    // Function(Map<String, dynamic>) onSelectTour;
    final ValueChanged<Map<String, dynamic>> onSelectionChanged;
 
 
-  TourSelectionModal({required this.tours,
+  const TourSelectionModal({super.key, required this.tours,
     required this.onSelectionChanged});
 
   @override
+  // ignore: library_private_types_in_public_api
   _TourSelectionModalState createState() => _TourSelectionModalState();
 }
 
 class _TourSelectionModalState extends State<TourSelectionModal> {
-  Map<int, bool> isExpanded = {}; // Track which inclusion are expanded
+  Map<int, bool> isExpanded = {};
 
   @override
   Widget build(BuildContext context) {

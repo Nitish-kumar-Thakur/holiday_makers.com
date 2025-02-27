@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:holdidaymakers/pages/Cruise/CurisesHome.dart';
-import 'package:holdidaymakers/pages/Cruise/CurisesHome1.dart';
 import 'package:holdidaymakers/pages/searchBarpage.dart';
 import 'package:holdidaymakers/widgets/bottomNavigationBar.dart';
 import 'package:holdidaymakers/widgets/notifications.dart';

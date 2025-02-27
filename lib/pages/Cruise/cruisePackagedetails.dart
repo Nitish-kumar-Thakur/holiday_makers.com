@@ -29,9 +29,9 @@ class _CruisePackageDetailsState extends State<CruisePackageDetails> {
 
   Future<void> _fetchPackageDetails() async {
     try {
-      final response = await APIHandler.getCruiseDeal(package_id ?? "");
+      final response = await APIHandler.getCruiseDeal(package_id);
       setState(() {
-        packageData = response ?? {};
+        packageData = response ;
 
         image = List<Map<String, dynamic>>.from(response['cruise_gallery'].map(
             (item) => {'image': item['image'], 'alt_text': item['alt_text']}));

@@ -1,8 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:holdidaymakers/pages/Cruise/cruisePackagedetails.dart';
-import 'package:holdidaymakers/pages/Cruise/cruise_deals_page.dart';
-import 'package:holdidaymakers/pages/FixedDeparturesPages/departureDeals.dart';
 import 'package:holdidaymakers/pages/FixedDeparturesPages/departurePackagedetails.dart';
 import 'package:intl/intl.dart';
 

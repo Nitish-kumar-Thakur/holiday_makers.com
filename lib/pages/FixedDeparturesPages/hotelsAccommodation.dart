@@ -181,23 +181,13 @@ class HotelCard extends StatefulWidget {
 }
 
 class _HotelCardState extends State<HotelCard> {
-  _selectButton() {
-    // print(widget.hotel);
-    // Navigator.push(
-    //   context,
-    //   MaterialPageRoute(
-    //     builder: (context) => FlightPage(
-    //         selectedHotel: widget.hotel, responceData: widget.responceData, roomArray: widget.roomArray,),
-    //   ),
-    // );
-  }
 
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final String roomType = widget.hotel["room_category"];
     final String mealType = widget.hotel["meal_plan"];
-    final String price = widget.hotel["total_price"].toString() ?? "N/A";
+    final String price = widget.hotel["total_price"].toString();
     final int star = int.parse(widget.hotel["rating"] ?? 0);
 
     return Card(

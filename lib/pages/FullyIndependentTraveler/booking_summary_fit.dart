@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:holdidaymakers/pages/FullyIndependentTraveler/travelers_details.dart';
 import 'package:holdidaymakers/utils/api_handler.dart';
 import 'package:holdidaymakers/widgets/responciveButton.dart';
-import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
 
 class BookingSummaryFIT extends StatefulWidget {
@@ -99,23 +98,23 @@ class _BookingSummaryFITState extends State<BookingSummaryFIT> {
         bookingSummreyData["data"]["result"]["flight"]["onward"] ?? [];
     final returnFlight =
         bookingSummreyData["data"]["result"]["flight"]["return"] ?? [];
-    final airportToHotel =
-        bookingSummreyData["data"]["result"]["transfer"]["airport_to_hotel"];
+    // final airportToHotel =
+    //     bookingSummreyData["data"]["result"]["transfer"]["airport_to_hotel"];
 
     if (hotel != null && amount != null) {
-      int n = int.parse(hotel["no_of_nights"]) - 1;
-      String night = n.toString();
-      // Parsing the check_out_date String to DateTime
-      DateTime checkInDateTime = DateTime.parse(hotel["check_in_date"] ?? null);
-      DateTime checkOutDateTime =
-          DateTime.parse(hotel["check_out_date"] ?? null);
-      // Formatting it to "dd-MM-yyyy"
-      String checkInDate = DateFormat('dd MMM yy, EEE').format(checkInDateTime);
-      // Parsing the check_out_date String to DateTime
+      // int n = int.parse(hotel["no_of_nights"]) - 1;
+      // String night = n.toString();
+      // // Parsing the check_out_date String to DateTime
+      // DateTime checkInDateTime = DateTime.parse(hotel["check_in_date"]);
+      // DateTime checkOutDateTime =
+      //     DateTime.parse(hotel["check_out_date"]);
+      // // Formatting it to "dd-MM-yyyy"
+      // String checkInDate = DateFormat('dd MMM yy, EEE').format(checkInDateTime);
+      // // Parsing the check_out_date String to DateTime
 
-      // Formatting it to "dd-MM-yyyy"
-      String checkOutDate =
-          DateFormat('dd MMM yy, EEE').format(checkOutDateTime);
+      // // Formatting it to "dd-MM-yyyy"
+      // String checkOutDate =
+      //     DateFormat('dd MMM yy, EEE').format(checkOutDateTime);
       setState(() {
         // packageDetails = [
         //   {
@@ -136,7 +135,7 @@ class _BookingSummaryFITState extends State<BookingSummaryFIT> {
           {"title": "Room Type", "value": hotel["room_category_name"]},
           {"title": "Check In Time", "value": hotel["checkin_time"]},
           {"title": "Check Out Time", "value": hotel["checkout_time"]},
-          {"title": "No. of Rooms", "value": amount["room_count"].toString() ?? "N/A"},
+          {"title": "No. of Rooms", "value": amount["room_count"].toString()},
           {"title": "Meal Plan", "value": hotel["meal_type_name"]},
         ];
         flightDetails = [
@@ -227,7 +226,6 @@ class _BookingSummaryFITState extends State<BookingSummaryFIT> {
   @override
   Widget build(BuildContext context) {
     final double screenWidth = MediaQuery.of(context).size.width;
-    final double screenHeight = MediaQuery.of(context).size.height;
     final double fontSize = screenWidth * 0.035;
 
     return Scaffold(

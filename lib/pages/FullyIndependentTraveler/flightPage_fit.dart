@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:holdidaymakers/pages/FullyIndependentTraveler/add_tour_fit.dart';
-import 'package:holdidaymakers/pages/FullyIndependentTraveler/booking_summary_fit.dart';
 import 'package:holdidaymakers/utils/api_handler.dart';
 import 'package:holdidaymakers/widgets/responciveButton.dart';
-import 'dart:collection';
 
 import 'package:shimmer/shimmer.dart';
 

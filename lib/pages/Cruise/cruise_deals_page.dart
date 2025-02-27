@@ -11,6 +11,7 @@ class CruiseDealsPage extends StatefulWidget {
   const CruiseDealsPage({super.key, required this.packageid});
 
   @override
+  // ignore: library_private_types_in_public_api
   _CruiseDealsPageState createState() => _CruiseDealsPageState();
 }
 
@@ -49,7 +50,7 @@ Future<void> _fetchPackageDetails() async {
 
 Future<void> _fetchCruiseCards() async {
   try {
-    final response = await APIHandler.getCruiseCards(cruiseId ?? "");
+    final response = await APIHandler.getCruiseCards(cruiseId);
     setState(() {
       cruiseCards = response;
       if (cruiseCards['data'] != null && cruiseCards['data'].isNotEmpty) {

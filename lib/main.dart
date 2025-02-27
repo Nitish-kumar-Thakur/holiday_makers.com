@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:holdidaymakers/pages/learn.dart';
 import 'package:holdidaymakers/splashscreen.dart';
 
 Future<void> main() async {

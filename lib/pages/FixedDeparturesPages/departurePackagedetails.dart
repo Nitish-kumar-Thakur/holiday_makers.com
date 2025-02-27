@@ -23,17 +23,17 @@ class _DeparturePackageDetailsState extends State<DeparturePackageDetails> {
   List<dynamic> inclusionList = [];
   List<Map<String, dynamic>> image = [];
   bool isLoading = true;
-  String package_id = "";
+  String packageId = "";
   @override
   void initState() {
     super.initState();
-    package_id = widget.packageId ?? "";
+    packageId = widget.packageId ?? "";
     _fetchPackageDetails();
   }
 
   Future<void> _fetchPackageDetails() async {
     try {
-      final response = await APIHandler.getDepartureDeal(package_id ?? "");
+      final response = await APIHandler.getDepartureDeal(packageId);
       setState(() {
         packageData = response['package_details'] ?? {};
         inclusionList = response["inclusion_list"];
@@ -396,7 +396,7 @@ class _DeparturePackageDetailsState extends State<DeparturePackageDetails> {
                                         MaterialPageRoute(
                                             builder: (context) =>
                                                 DepartureDeals(
-                                                    packageId: package_id)),
+                                                    packageId: packageId)),
                                       );
                                     },
                                     child: const Text(

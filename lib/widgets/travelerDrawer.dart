@@ -58,7 +58,7 @@ class _TravelerdrawerState extends State<Travelerdrawer> {
       totalChildren += room["children"] as int;
       childrenAges.addAll(List<String>.from(room["childrenAges"]));
     }
-    var data = mapData(roomDetails);
+    // var data = mapData(roomDetails);
     // print('=---=====================');
     // print(data);
     // print('=---=====================');

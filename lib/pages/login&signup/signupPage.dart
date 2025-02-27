@@ -3,7 +3,6 @@ import 'package:holdidaymakers/pages/FullyIndependentTraveler/mainPage.dart';
 import 'package:holdidaymakers/pages/introPage.dart';
 import 'package:holdidaymakers/pages/login&signup/loginPage.dart';
 import 'package:holdidaymakers/utils/api_handler.dart';
-import 'package:holdidaymakers/utils/shared_preferences_handler.dart';
 import 'package:holdidaymakers/widgets/appLargetext.dart';
 import 'package:holdidaymakers/widgets/appText.dart';
 import 'package:holdidaymakers/widgets/loginButton.dart';
@@ -36,13 +35,6 @@ class _SignuppageState extends State<Signuppage> {
     final password = _passwordController.text.trim();
     final phone = _phoneController.text.trim();
 
-  void _completeLogin(Map<String, dynamic> responseData) async {
-    await SharedPreferencesHandler.saveLoginData(responseData);
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => const LoginPage()),
-    );
-  }
     setState(() {
       _errorMessage = '';
       _isLoading = true;

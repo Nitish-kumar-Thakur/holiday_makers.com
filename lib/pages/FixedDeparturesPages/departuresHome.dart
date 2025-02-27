@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:holdidaymakers/pages/Cruise/cruisePackagedetails.dart';
-import 'package:holdidaymakers/pages/Cruise/cruise_deals_page.dart';
-import 'package:holdidaymakers/pages/FixedDeparturesPages/departureDeals.dart';
 import 'package:holdidaymakers/pages/FixedDeparturesPages/departurePackagedetails.dart';
 import 'package:holdidaymakers/pages/FixedDeparturesPages/departuresPackages.dart';
 import 'package:holdidaymakers/utils/api_handler.dart';

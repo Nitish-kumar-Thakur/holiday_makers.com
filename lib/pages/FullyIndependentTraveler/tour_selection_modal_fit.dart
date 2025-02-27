@@ -2,17 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 
 class TourSelectionModalFIT extends StatefulWidget {
-  List<Map<String, dynamic>> tours;
+  final List<Map<String, dynamic>> tours;
   // Function(Map<String, dynamic>) onSelectTour;
   final ValueChanged<Map<String, dynamic>> onSelectionChanged;
 
 
-  TourSelectionModalFIT({
+  const TourSelectionModalFIT({super.key, 
     required this.tours,
     required this.onSelectionChanged
   });
 
   @override
+  // ignore: library_private_types_in_public_api
   _TourSelectionModalFITState createState() => _TourSelectionModalFITState();
 }
 

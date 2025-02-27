@@ -113,7 +113,7 @@
             rooms: selectedRoom!,
             adults: selectedAdult!,
             children: selectedChild!,
-            childrenAge: totalRoomsdata!);
+            childrenAge: totalRoomsdata);
 
         if (response["message"] == "success") {
           print("====================");
@@ -122,6 +122,7 @@
           print("====================");
 
           Navigator.push(
+            // ignore: use_build_context_synchronously
             context,
             MaterialPageRoute(
               builder: (context) => Travelerhotels(
@@ -291,11 +292,11 @@
                   Travelerdrawer(
                     onSelectionChanged: (Map<String, dynamic> selection) {
                       setState(() {
-                        selectedRoom = selection['totalRooms'].toString() ?? "1";
+                        selectedRoom = selection['totalRooms'].toString();
                         selectedAdult =
-                            selection['totalAdults'].toString() ?? "1";
+                            selection['totalAdults'].toString();
                         selectedChild =
-                            selection['totalChildren'].toString() ?? "0";
+                            selection['totalChildren'].toString();
                         childrenAge = selection['childrenAges'];
                         totalRoomsdata = selection["totalData"];
                       });

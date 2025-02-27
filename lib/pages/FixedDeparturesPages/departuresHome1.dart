@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:holdidaymakers/widgets/learn.dart';
-import 'package:holdidaymakers/pages/FixedDeparturesPages/departurePackagedetails.dart';
 import 'package:holdidaymakers/pages/FixedDeparturesPages/departuresPackages.dart';
 import 'package:holdidaymakers/utils/api_handler.dart';
 import 'package:holdidaymakers/widgets/appLargetext.dart';
