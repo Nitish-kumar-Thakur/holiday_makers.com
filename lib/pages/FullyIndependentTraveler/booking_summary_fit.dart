@@ -64,7 +64,7 @@ class _BookingSummaryFITState extends State<BookingSummaryFIT> {
         ]
       };
     });
-  }
+  } 
 
   Future<void> bookingSummaryFIT() async {
     try {

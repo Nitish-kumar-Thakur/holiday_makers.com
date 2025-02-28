@@ -6,10 +6,12 @@ import 'package:holdidaymakers/widgets/responciveButton.dart';
 import 'package:shimmer/shimmer.dart';
 
 class HotelsAccommodation extends StatefulWidget {
+  final List<dynamic> activityList;
   final Map<String, dynamic> packageData;
   final List<dynamic> totalRoomsdata;
   const HotelsAccommodation(
-      {super.key, required this.packageData, required this.totalRoomsdata});
+      {super.key, required this.packageData, required this.totalRoomsdata,
+      required this.activityList});
 
   @override
   State<HotelsAccommodation> createState() => _HotelsAccommodationState();
@@ -142,6 +144,7 @@ class _HotelsAccommodationState extends State<HotelsAccommodation> {
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => FlightPageFD(
+                                    activityList: widget.activityList,
                                     selectedHotel:
                                         flattenedHotelList[selectedHotelIndex],
                                     packageData: widget.packageData,
@@ -181,7 +184,6 @@ class HotelCard extends StatefulWidget {
 }
 
 class _HotelCardState extends State<HotelCard> {
-
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;

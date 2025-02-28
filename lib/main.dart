@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:holdidaymakers/splashscreen.dart';
+import 'package:holdidaymakers/pages/homePages/splashscreen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

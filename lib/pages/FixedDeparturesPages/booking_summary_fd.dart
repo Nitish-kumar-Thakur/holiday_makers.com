@@ -279,10 +279,8 @@ class _BookingSummaryFDState extends State<BookingSummaryFD> {
                     tourList.isEmpty? SizedBox():_buildtourDetailsSection(
                         "TOUR DETAILS", tourList, fontSize),
                     _buildSection('HOTEL DETAILS', hotelDetails, fontSize),
-                    _buildSection(
-                        'TRANSFER DETAILS', transferDetails, fontSize),
-                    _buildSection(
-                        'TRAVEL INSURANCE DETAILS', insuranceDetails, fontSize),
+                    _buildSection('TRANSFER DETAILS', transferDetails, fontSize),
+                    _buildSection('TRAVEL INSURANCE DETAILS', insuranceDetails, fontSize),
                     _buildPriceSection('PRICE DETAILS', priceDetails, fontSize),
                   ],
                 ),

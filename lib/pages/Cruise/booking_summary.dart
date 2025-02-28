@@ -6,9 +6,9 @@ import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 
 class BookingSummaryPage extends StatefulWidget {
   final Map<String, dynamic>? selectedCruiseData;
-  final List<dynamic> totalRoomsdata;
+  final List<dynamic> totalRoomdata;
   final Map<String, String>? selectedCabin;
-  const BookingSummaryPage({super.key, required this.selectedCruiseData, required this.selectedCabin, required this.totalRoomsdata});
+  const BookingSummaryPage({super.key, required this.selectedCruiseData, required this.selectedCabin, required this.totalRoomdata});
 
   @override
   State<BookingSummaryPage> createState() => _BookingSummaryPageState();
@@ -17,8 +17,8 @@ class BookingSummaryPage extends StatefulWidget {
 class _BookingSummaryPageState extends State<BookingSummaryPage> {
   bool isLoading = true;
   final _formKey = GlobalKey<FormState>();
-  Map<String, dynamic> packageDetailss = {};
-  Map<String, dynamic> priceDetailss = {};
+  Map<String, dynamic> packageDetails = {};
+  Map<String, dynamic> priceDetails = {};
 
   @override
   void initState() {
@@ -35,8 +35,8 @@ class _BookingSummaryPageState extends State<BookingSummaryPage> {
       Map<String, dynamic> requestBody = {
         "cruise_id": widget.selectedCruiseData?['cruise_id'].toString() ?? "",
         "dep_date": widget.selectedCruiseData?['dep_date'].toString() ?? "",
-        "rooms": widget.totalRoomsdata.length.toString(),
-        "room_wise_pax": widget.totalRoomsdata.map((room) {
+        "rooms": widget.totalRoomdata.length.toString(),
+        "room_wise_pax": widget.totalRoomdata.map((room) {
           return {
             "paxCount": room["paxCount"].toString(),
             "paxAges": room["paxAges"].map((age) => age.toString()).toList(),
@@ -50,18 +50,18 @@ class _BookingSummaryPageState extends State<BookingSummaryPage> {
       setState(() {
         var data = response['data'] ?? {};
 
-        packageDetailss = {
+        packageDetails = {
           'PACKAGE': data['cruise_details']?['cruise_name'] ?? 'N/A',
           'DURATION': data['cruise_details']?['duration'] ?? 'N/A',
           'SHIP': data['cruise_details']?['ship_name'] ?? 'N/A',
           'CABIN': data['cruise_details']?['cabin_type'] ?? 'N/A',
           'DEPARTURE DATE': data['cruise_details']?['dep_date'] ?? 'N/A',
           'ARRIVAL DATE': data['cruise_details']?['arrival_date'] ?? 'N/A',
-          'NO. OF ROOMS': widget.totalRoomsdata.length.toString(),
+          'NO. OF ROOMS': widget.totalRoomdata.length.toString(),
           'CHECK IN TIME': '${data['cruise_details']?['checkin_from_time'] ?? 'N/A'} - ${data['cruise_details']?['checkin_to_time'] ?? 'N/A'}',
         };
 
-        priceDetailss = {
+        priceDetails = {
           'PAX': [
             if ((data['cruise_price']?['adult_count'] ?? 0) > 0)
               '${data['cruise_price']?['adult_count']} Adult(s)',
@@ -118,8 +118,8 @@ class _BookingSummaryPageState extends State<BookingSummaryPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildSection('PACKAGE DETAILS', packageDetailss, fontSize),
-              _buildSection('PRICE DETAILS', priceDetailss, fontSize),
+              _buildSection('PACKAGE DETAILS', packageDetails, fontSize),
+              _buildSection('PRICE DETAILS', priceDetails, fontSize),
               _buildContactInfo(fontSize),
             ],
           ),

@@ -21,7 +21,10 @@ class _DeparturePackageDetailsState extends State<DeparturePackageDetails> {
   int currentPage = 0;
   Map<String, dynamic> packageData = {};
   List<dynamic> inclusionList = [];
+  String countryName = "";
+  String cityName = "";
   List<Map<String, dynamic>> image = [];
+  
   bool isLoading = true;
   String packageId = "";
   @override
@@ -37,6 +40,9 @@ class _DeparturePackageDetailsState extends State<DeparturePackageDetails> {
       setState(() {
         packageData = response['package_details'] ?? {};
         inclusionList = response["inclusion_list"];
+        countryName = response["country_name"];
+        cityName = response["city_name"];
+        
 
         image = List<Map<String, dynamic>>.from(response['package_gallery'].map(
             (item) => {'image': item['image'], 'alt_text': item['alt_text']}));
@@ -168,7 +174,7 @@ class _DeparturePackageDetailsState extends State<DeparturePackageDetails> {
                           const SizedBox(height: 4),
                           // Location
                           Text(
-                            packageData['location'] ?? "Unknown Location",
+                            "$cityName, $countryName" ?? "Unknown Location",
                             style: const TextStyle(
                               fontSize: 16,
                               color: Colors.grey,
@@ -184,10 +190,10 @@ class _DeparturePackageDetailsState extends State<DeparturePackageDetails> {
                                 label: packageData["dep_date"]?.toString() ??
                                     "4.8/5.0",
                               ),
-                              _InfoChip(
-                                icon: Icons.location_on,
-                                label: "${packageData['distance'] ?? '0'} km",
-                              ),
+                              // _InfoChip(
+                              //   icon: Icons.location_on,
+                              //   label: "${packageData['distance'] ?? '0'} km",
+                              // ),
                               _InfoChip(
                                 icon: Icons.access_time,
                                 label: "${packageData['duration'] ?? 'N/A'}",
@@ -202,7 +208,7 @@ class _DeparturePackageDetailsState extends State<DeparturePackageDetails> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Container( 
+                                  Container(
                                     width: double.infinity,
                                     decoration: BoxDecoration(
                                         color: Colors.grey.shade200),

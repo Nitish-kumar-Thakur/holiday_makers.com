@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:holdidaymakers/pages/FullyIndependentTraveler/mainPage.dart';
-import 'package:holdidaymakers/pages/introPage.dart';
+import 'package:holdidaymakers/pages/homePages/mainPage.dart';
+import 'package:holdidaymakers/pages/homePages/introPage.dart';
 import 'package:holdidaymakers/pages/login&signup/loginPage.dart';
 import 'package:holdidaymakers/utils/api_handler.dart';
 import 'package:holdidaymakers/widgets/appLargetext.dart';

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:holdidaymakers/pages/Cruise/CurisesHome.dart';
 import 'package:holdidaymakers/pages/FixedDeparturesPages/departuresHome.dart';
-import 'package:holdidaymakers/pages/FullyIndependentTraveler/homePage.dart';
+import 'package:holdidaymakers/pages/homePages/homePage.dart';
 import 'package:holdidaymakers/pages/FullyIndependentTraveler/independentTravelerPage.dart';
 import 'package:holdidaymakers/widgets/bottomNavigationBar.dart';
 import 'package:holdidaymakers/widgets/profile_page.dart';

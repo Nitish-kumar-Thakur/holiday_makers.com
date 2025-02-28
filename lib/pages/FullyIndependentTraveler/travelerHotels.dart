@@ -7,10 +7,11 @@ import 'package:holdidaymakers/widgets/appText.dart';
 import 'package:shimmer/shimmer.dart';
 
 class Travelerhotels extends StatefulWidget {
+  final String numberOfNights;
   final Map<String, dynamic> responceData;
   final List<dynamic> roomArray;
   const Travelerhotels(
-      {super.key, required this.responceData, required this.roomArray});
+      {super.key, required this.responceData, required this.roomArray, required this.numberOfNights});
 
   @override
   State<Travelerhotels> createState() => _TravelerhotelsState();
@@ -30,8 +31,8 @@ class _TravelerhotelsState extends State<Travelerhotels> {
     try {
       final response = await APIHandler.fitInclusionList();
       setState(() {
-          inclusionList = response['data'];
-          isLoading = false;
+        inclusionList = response['data'];
+        isLoading = false;
       });
     } catch (e) {
       print("Error fetching inclusion list: $e");
@@ -77,6 +78,7 @@ class _TravelerhotelsState extends State<Travelerhotels> {
       return FontAwesomeIcons.circleQuestion; // Default icon
     }
   }
+
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
@@ -142,7 +144,8 @@ class _TravelerhotelsState extends State<Travelerhotels> {
                         child: Row(
                           children: inclusionList.map<Widget>((inclusion) {
                             return Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 4), // Add spacing
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 4), // Add spacing
                               child: buildInclusionCard(
                                 getFontAwesomeIcon(inclusion['class']),
                                 inclusion['name'],
@@ -165,6 +168,7 @@ class _TravelerhotelsState extends State<Travelerhotels> {
                                   padding: EdgeInsets.only(
                                       bottom: screenHeight * 0.04),
                                   child: HotelCard(
+                                    numberOfNights:widget.numberOfNights,
                                     hotel: hotelList[index],
                                     responceData: widget.responceData,
                                     roomArray: widget.roomArray,
@@ -264,15 +268,17 @@ class _TravelerhotelsState extends State<Travelerhotels> {
 }
 
 class HotelCard extends StatefulWidget {
+  final String numberOfNights;
   final Map<String, dynamic> hotel;
   final Map<String, dynamic> responceData;
-  final List<dynamic> roomArray; 
+  final List<dynamic> roomArray;
 
   const HotelCard(
       {super.key,
       required this.hotel,
       required this.responceData,
-      required this.roomArray});
+      required this.roomArray,
+      required this.numberOfNights});
 
   @override
   State<HotelCard> createState() => _HotelCardState();
@@ -307,19 +313,19 @@ class _HotelCardState extends State<HotelCard> {
   //   }
   // }
 
-    _selectButton(){
+  _selectButton() {
     Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => FlightPageFIT(
-            hotel: widget.hotel,
-            responceData: widget.responceData,
-            roomArray: widget.roomArray,
-          ),
+      context,
+      MaterialPageRoute(
+        builder: (context) => FlightPageFIT(
+          numberOfNights: widget.numberOfNights,
+          hotel: widget.hotel,
+          responceData: widget.responceData,
+          roomArray: widget.roomArray,
         ),
-      );
+      ),
+    );
   }
-
 
   @override
   Widget build(BuildContext context) {

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:holdidaymakers/pages/introPage.dart';
+import 'package:holdidaymakers/pages/homePages/introPage.dart';
 import 'package:holdidaymakers/widgets/appText.dart';
 import 'package:holdidaymakers/widgets/responciveButton.dart';
 import 'package:shared_preferences/shared_preferences.dart';

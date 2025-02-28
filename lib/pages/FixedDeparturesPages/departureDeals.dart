@@ -18,6 +18,7 @@ class DepartureDeals extends StatefulWidget {
 class _DepartureDealsState extends State<DepartureDeals> {
   Map<String, dynamic> packageData = {};
   List<dynamic> inclusionList = [];
+  List<dynamic> activityList = [];
   List<dynamic> packageList = [];
   bool isLoading = true;
   int selectedOption = 0;
@@ -44,6 +45,7 @@ class _DepartureDealsState extends State<DepartureDeals> {
       setState(() {
         packageData = response;
         inclusionList = response["inclusion_list"];
+        activityList = response["activity_list"];
       });
     } catch (error) {
       print("Error fetching package details: $error");
@@ -260,8 +262,10 @@ class _DepartureDealsState extends State<DepartureDeals> {
                       context,
                       MaterialPageRoute(
                         builder: (context) => HotelsAccommodation(
+                          activityList: activityList,
                             packageData: selectedPackageData!,
                             totalRoomsdata: totalRoomsdata),
+                            
                       ),
                     );
                   }

@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:holdidaymakers/pages/FullyIndependentTraveler/mainPage.dart';
-import 'package:holdidaymakers/pages/introPage.dart';
-import 'package:holdidaymakers/pages/onboardPage.dart';
+import 'package:holdidaymakers/pages/homePages/mainPage.dart';
+import 'package:holdidaymakers/pages/homePages/introPage.dart';
+import 'package:holdidaymakers/pages/homePages/onboardPage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Splashscreen extends StatefulWidget {

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:holdidaymakers/pages/FullyIndependentTraveler/mainPage.dart';
+import 'package:holdidaymakers/pages/homePages/mainPage.dart';
 
 class PaymentSuccessScreen extends StatefulWidget {
   const PaymentSuccessScreen({super.key});

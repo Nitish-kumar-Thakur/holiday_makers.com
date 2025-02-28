@@ -1,21 +1,20 @@
 import 'package:flutter/material.dart';
 
 class TourSelectionModal extends StatefulWidget {
-   final List<Map<String, dynamic>> tours;
+  final List<Map<String, dynamic>> tours;
    // Function(Map<String, dynamic>) onSelectTour;
    final ValueChanged<Map<String, dynamic>> onSelectionChanged;
 
 
-  const TourSelectionModal({super.key, required this.tours,
+  const TourSelectionModal({required this.tours,
     required this.onSelectionChanged});
 
   @override
-  // ignore: library_private_types_in_public_api
   _TourSelectionModalState createState() => _TourSelectionModalState();
 }
 
 class _TourSelectionModalState extends State<TourSelectionModal> {
-  Map<int, bool> isExpanded = {};
+  Map<int, bool> isExpanded = {}; // Track which inclusion are expanded
 
   @override
   Widget build(BuildContext context) {
@@ -86,10 +85,10 @@ class _TourSelectionModalState extends State<TourSelectionModal> {
                           fit: BoxFit.cover,
                           errorBuilder: (context, error, stackTrace) {
                             return Image.asset(
-                              "img/fb.jpg",
+                              "img/splashLogo.png",
                               height: 150,
                               width: double.infinity,
-                              fit: BoxFit.cover,
+                              fit: BoxFit.contain,
                             );
                           },
                         ),

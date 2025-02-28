@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:holdidaymakers/home_page.dart';
+import 'package:holdidaymakers/extras/home_page.dart';
 
 class WebAdmin extends StatefulWidget {
   @override

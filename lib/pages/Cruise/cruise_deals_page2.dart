@@ -91,7 +91,7 @@ class _CruiseDealsPage2State extends State<CruiseDealsPage2> {
           builder: (context) => BookingSummaryPage(
             selectedCabin: selectedCabin!,
             selectedCruiseData: widget.selectedCruiseData!,
-            totalRoomsdata: totalRoomsdata,
+            totalRoomdata: totalRoomsdata,
           ),
         ),
       );

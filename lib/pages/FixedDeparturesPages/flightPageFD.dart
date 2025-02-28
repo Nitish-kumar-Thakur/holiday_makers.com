@@ -5,20 +5,21 @@ import 'package:holdidaymakers/widgets/responciveButton.dart';
 import 'package:shimmer/shimmer.dart';
 
 class FlightPageFD extends StatefulWidget {
+  final List<dynamic> activityList;
   final Map<String, dynamic> packageData;
   final Map<String, dynamic> selectedHotel;
   // final List<Map<String, dynamic>> flightList;
   final String searchId;
   final List<dynamic> totalRoomsdata;
 
-  const FlightPageFD({
-    super.key,
-    required this.searchId,
-    required this.packageData,
-    required this.selectedHotel,
-    // required this.flightList,
-    required this.totalRoomsdata,
-  });
+  const FlightPageFD(
+      {super.key,
+      required this.searchId,
+      required this.packageData,
+      required this.selectedHotel,
+      // required this.flightList,
+      required this.totalRoomsdata,
+      required this.activityList});
 
   @override
   State<FlightPageFD> createState() => _FlightPageFDState();
@@ -27,6 +28,7 @@ class FlightPageFD extends StatefulWidget {
 class _FlightPageFDState extends State<FlightPageFD> {
   List<Map<String, dynamic>> flightList = [];
   List<Map<String, dynamic>> selectedFlightPackage = [];
+  
   bool isLoading = true;
   @override
   void initState() {
@@ -50,8 +52,9 @@ class _FlightPageFDState extends State<FlightPageFD> {
 
       setState(() {
         flightList = (response['data']['group_by_flight_details'] as List)
-                .map((e) => e as Map<String, dynamic>)
-                .toList();
+            .map((e) => e as Map<String, dynamic>)
+            .toList();
+        
         isLoading = false;
       });
     } catch (e) {
@@ -117,10 +120,12 @@ class _FlightPageFDState extends State<FlightPageFD> {
                       return FlightPackageCard(
                         optionKey:
                             flightData["option_type"], // "Option_1", "Option_2"
+                        amount: flightData["total"].toString(),
                         onwardFlights: List<Map<String, dynamic>>.from(
                             flightData["Onward"] ?? []),
                         returnFlights: List<Map<String, dynamic>>.from(
                             flightData["Return"] ?? []),
+
                         isSelected: selectedFlightIndex == index,
                         onTap: () {
                           setState(() {
@@ -183,8 +188,8 @@ class _FlightPageFDState extends State<FlightPageFD> {
                           ["Return"] // Add all return flights
                     ];
 
-                    String search_id = widget.searchId;
-                    String flight_id =
+                    String searchId = widget.searchId;
+                    String flightId =
                         '${selectedFlightPackage[0]['flight_details_id']}_${selectedFlightPackage[1]['flight_details_id']}';
 
                     // print('########################################################');
@@ -193,7 +198,7 @@ class _FlightPageFDState extends State<FlightPageFD> {
                     // print(flight_id);
                     // print(flight_id.runtimeType);
                     // print('########################################################');
-                    _updateFlightDetails(search_id, flight_id);
+                    _updateFlightDetails(searchId, flightId);
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -202,7 +207,8 @@ class _FlightPageFDState extends State<FlightPageFD> {
                             selectedHotel: widget.selectedHotel,
                             packageDetails: widget.packageData,
                             totalRoomsdata: widget.totalRoomsdata,
-                            searchId: widget.searchId),
+                            searchId: widget.searchId,
+                            fixedActivities: widget.activityList),
                       ),
                     );
                   }
@@ -219,14 +225,17 @@ class _FlightPageFDState extends State<FlightPageFD> {
 
 class FlightPackageCard extends StatefulWidget {
   final String optionKey;
+  final String amount;
   final List<Map<String, dynamic>> onwardFlights;
   final List<Map<String, dynamic>> returnFlights;
+
   final bool isSelected;
   final VoidCallback onTap; // Add this
 
   const FlightPackageCard({
     super.key,
     required this.optionKey,
+    required this.amount,
     required this.onwardFlights,
     required this.returnFlights,
     required this.isSelected,
@@ -268,6 +277,43 @@ class _FlightPackageCardState extends State<FlightPackageCard> {
             _flightSection("Onward Flight", widget.onwardFlights),
             Divider(),
             _flightSection("Return Flight", widget.returnFlights),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "Total Amount",
+                  style: TextStyle(
+                    color: Colors.red,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
+                Row(
+                  children: [
+                    Text(
+                      "AED ${widget.amount}",
+                      style: TextStyle(
+                        color: Colors.red,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                    SizedBox(width: 8),
+                    // Container(
+                    //   height: 10,
+                    //   width: 10,
+                    //   decoration: BoxDecoration(
+                    //     shape: BoxShape.circle,
+                    //     color: widget.isSelected
+                    //         ? Colors.pinkAccent
+                    //         : Colors.transparent,
+                    //     border: Border.all(color: Colors.pinkAccent),
+                    //   ),
+                    // ),
+                  ],
+                ),
+              ],
+            ),
             const SizedBox(height: 15),
             Align(
               alignment: Alignment.center,
@@ -309,41 +355,10 @@ class _FlightPackageCardState extends State<FlightPackageCard> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              title,
-              style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87),
-            ),
-            Row(
-              children: [
-                Text(
-                  "AED N/A",
-                  style: TextStyle(
-                    color: Colors.red,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
-                ),
-                SizedBox(width: 8),
-                // Container(
-                //   height: 10,
-                //   width: 10,
-                //   decoration: BoxDecoration(
-                //     shape: BoxShape.circle,
-                //     color: widget.isSelected
-                //         ? Colors.pinkAccent
-                //         : Colors.transparent,
-                //     border: Border.all(color: Colors.pinkAccent),
-                //   ),
-                // ),
-              ],
-            ),
-          ],
+        Text(
+          title,
+          style: const TextStyle(
+              fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black87),
         ),
         const SizedBox(height: 10),
         Column(

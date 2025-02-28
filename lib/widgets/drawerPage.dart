@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:holdidaymakers/widgets/help_center_page.dart';
-import 'package:holdidaymakers/pages/introPage.dart';
+import 'package:holdidaymakers/pages/homePages/introPage.dart';
 import 'package:holdidaymakers/widgets/terms_and_conditions_page.dart';
 import 'package:holdidaymakers/widgets/testimonials_page.dart';
 import 'package:holdidaymakers/utils/shared_preferences_handler.dart';

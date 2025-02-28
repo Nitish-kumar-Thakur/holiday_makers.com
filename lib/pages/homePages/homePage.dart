@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:holdidaymakers/pages/FullyIndependentTraveler/homePage2.dart';
+import 'package:holdidaymakers/pages/homePages/homePage2.dart';
 import 'package:holdidaymakers/utils/api_handler.dart';
 import 'package:holdidaymakers/widgets/appText.dart';
 import 'package:holdidaymakers/widgets/drawerPage.dart';

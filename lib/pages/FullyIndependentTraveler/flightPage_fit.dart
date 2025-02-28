@@ -6,6 +6,7 @@ import 'package:holdidaymakers/widgets/responciveButton.dart';
 import 'package:shimmer/shimmer.dart';
 
 class FlightPageFIT extends StatefulWidget {
+  final String numberOfNights;
   final Map<dynamic, dynamic>? responceData;
   final Map<dynamic, dynamic>? hotel;
   final List<dynamic> roomArray;
@@ -14,7 +15,8 @@ class FlightPageFIT extends StatefulWidget {
       {super.key,
       required this.hotel,
       required this.responceData,
-      required this.roomArray});
+      required this.roomArray,
+      required this.numberOfNights});
 
   @override
   State<FlightPageFIT> createState() => _FlightPageFITState();
@@ -23,10 +25,10 @@ class FlightPageFIT extends StatefulWidget {
 class _FlightPageFITState extends State<FlightPageFIT> {
   Map<dynamic, dynamic>? flightList;
   bool isLoading = true;
+  int hotelAndTransferFare = 0;
   int selectedFlightIndex = 0;
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     fitFlightList();
   }
@@ -48,9 +50,10 @@ class _FlightPageFITState extends State<FlightPageFIT> {
       if (response["message"] == "success") {
         setState(() {
           flightList = response["data"];
+          // hotelAndTransferFare = response['data']["hotel_and_transfer_fare"];
           isLoading = false;
-    });
-       
+        });
+
         // print("Update Hotel Data Updated: ${fitUpdateHotelData}");
       } else {
         print("API Error: ${response["message"]}");
@@ -75,7 +78,6 @@ class _FlightPageFITState extends State<FlightPageFIT> {
       print("Flight Response: ${response}");
 
       if (response["message"] == "success") {
-        
         // print("Update Hotel Data Updated: ${fitUpdateHotelData}");
       } else {
         print("API Error: ${response["message"]}");
@@ -92,6 +94,7 @@ class _FlightPageFITState extends State<FlightPageFIT> {
       context,
       MaterialPageRoute(
         builder: (context) => TourBookingPageFIT(
+            numberOfNights: widget.numberOfNights,
             searchId: (widget.responceData?["data"]["search_id"]).toString(),
             totalRoomsdata: widget.roomArray),
       ),
@@ -162,7 +165,7 @@ class _FlightPageFITState extends State<FlightPageFIT> {
                   children: [FlightPackageShimmer(), FlightPackageShimmer()],
                 ),
               )
-            :groupedFlights.isEmpty
+            : groupedFlights.isEmpty
                 ? const Center(
                     child: Text(
                       "Flights not available",
@@ -173,48 +176,52 @@ class _FlightPageFITState extends State<FlightPageFIT> {
                     ),
                   )
                 : ListView.builder(
-                itemCount: groupedFlights.length,
-                itemBuilder: (context, index) {
-                  String flightName = groupedFlights.keys.elementAt(index);
-                  Map<String, dynamic> flightData = groupedFlights[flightName]!;
+                    itemCount: groupedFlights.length,
+                    itemBuilder: (context, index) {
+                      String flightName = groupedFlights.keys.elementAt(index);
+                      Map<String, dynamic> flightData =
+                          groupedFlights[flightName]!;
 
-                  return FlightPackageCard(
-                    onwardFlights: List<Map<String, dynamic>>.from(
-                        flightData["onward"] ?? []),
-                    returnFlights: List<Map<String, dynamic>>.from(
-                        flightData["return"] ?? []),
-                    isSelected: selectedFlightIndex == index,
-                    onTap: () {
-                      setState(() {
-                        selectedFlightIndex = index;
-                      });
+                      return FlightPackageCard(
+                        hotelAndTransferFare: flightList?["hotel_and_transfer_fare"],
+                        onwardFlights: List<Map<String, dynamic>>.from(
+                            flightData["onward"] ?? []),
+                        returnFlights: List<Map<String, dynamic>>.from(
+                            flightData["return"] ?? []),
+                        isSelected: selectedFlightIndex == index,
+                        onTap: () {
+                          setState(() {
+                            selectedFlightIndex = index;
+                          });
+                        },
+                      );
                     },
-                  );
+                  ),
+      ),
+      bottomNavigationBar: isLoading
+          ? null
+          : Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              child: GestureDetector(
+                onTap: () {
+                  if (groupedFlights.isNotEmpty && selectedFlightIndex >= 0) {
+                    String selectedFlightName =
+                        groupedFlights.keys.elementAt(selectedFlightIndex);
+                    Map<String, dynamic> selectedFlightPackage =
+                        groupedFlights[selectedFlightName]!;
+                    print("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
+                    print(
+                        "${selectedFlightPackage["onward"][0]["flight_fare_id"]}_${selectedFlightPackage["return"][0]["flight_fare_id"]}");
+                    print("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
+                    _selectButton(selectedFlightPackage);
+                  }
                 },
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 20.0),
+                  child: responciveButton(text: "Book Now"),
+                ),
               ),
-      ),
-      bottomNavigationBar: isLoading?null: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-        child:  GestureDetector(
-          onTap: () {
-            if (groupedFlights.isNotEmpty && selectedFlightIndex >= 0) {
-              String selectedFlightName =
-                  groupedFlights.keys.elementAt(selectedFlightIndex);
-              Map<String, dynamic> selectedFlightPackage =
-                  groupedFlights[selectedFlightName]!;
-              print("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
-              print(
-                  "${selectedFlightPackage["onward"][0]["flight_fare_id"]}_${selectedFlightPackage["return"][0]["flight_fare_id"]}");
-              print("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
-              _selectButton(selectedFlightPackage);
-            }
-          },
-          child: Padding(
-            padding: const EdgeInsets.only(bottom: 20.0),
-            child: responciveButton(text: "Book Now"),
-          ),
-        ),
-      ),
+            ),
     );
   }
 }
@@ -222,6 +229,7 @@ class _FlightPageFITState extends State<FlightPageFIT> {
 class FlightPackageCard extends StatefulWidget {
   final List<Map<String, dynamic>> onwardFlights;
   final List<Map<String, dynamic>> returnFlights;
+  final int hotelAndTransferFare;
   final bool isSelected;
   final VoidCallback onTap; // Add this
 
@@ -231,6 +239,7 @@ class FlightPackageCard extends StatefulWidget {
     required this.returnFlights,
     required this.isSelected,
     required this.onTap,
+    required this.hotelAndTransferFare
   });
 
   @override
@@ -268,6 +277,43 @@ class _FlightPackageCardState extends State<FlightPackageCard> {
             _flightSection("Onward Flight", widget.onwardFlights),
             Divider(),
             _flightSection("Return Flight", widget.returnFlights),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "Total Amount",
+                  style: TextStyle(
+                    color: Colors.red,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
+                Row(
+                  children: [
+                    Text(
+                      "AED ${(widget.onwardFlights[0]["Per_totalAmount"] + widget.returnFlights[0]["Per_totalAmount"]+ widget.hotelAndTransferFare).toString()}",
+                      style: TextStyle(
+                        color: Colors.red,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                    SizedBox(width: 8),
+                    // Container(
+                    //   height: 10,
+                    //   width: 10,
+                    //   decoration: BoxDecoration(
+                    //     shape: BoxShape.circle,
+                    //     color: widget.isSelected
+                    //         ? Colors.pinkAccent
+                    //         : Colors.transparent,
+                    //     border: Border.all(color: Colors.pinkAccent),
+                    //   ),
+                    // ),
+                  ],
+                ),
+              ],
+            ),
             const SizedBox(height: 15),
             Align(
               alignment: Alignment.center,
@@ -479,7 +525,8 @@ class FlightPackageShimmer extends StatelessWidget {
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [ // Onward Flight Title
+          children: [
+            // Onward Flight Title
             const SizedBox(height: 15),
             _shimmerFlightDetails(),
             const Divider(), // Return Flight Title
@@ -560,4 +607,3 @@ class FlightPackageShimmer extends StatelessWidget {
     );
   }
 }
-
