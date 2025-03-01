@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:holdidaymakers/pages/FullyIndependentTraveler/travelers_details.dart';
+import 'package:holdidaymakers/pages/FullyIndependentTraveler/travelers_details_fit.dart';
 import 'package:holdidaymakers/utils/api_handler.dart';
 import 'package:holdidaymakers/widgets/responciveButton.dart';
 import 'package:shimmer/shimmer.dart';
@@ -27,6 +27,7 @@ class _BookingSummaryFITState extends State<BookingSummaryFIT> {
   List<Map<String, dynamic>> priceDetails = [];
   List<Map<String, dynamic>> flightDetails = [];
   List<Map<String, dynamic>> insuranceDetails = [];
+  List<Map<String, dynamic>> tourList = [];
 
   Map<String, dynamic> bookingApiData = {};
   Map<dynamic, dynamic> bookingSummreyData = {};
@@ -38,10 +39,15 @@ class _BookingSummaryFITState extends State<BookingSummaryFIT> {
     super.initState();
     bookingApiDataIntlize();
     bookingSummaryFIT();
-    // print("================================================");
-    // print(widget.searchId);
-    // print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-    // print("================================================");
+    print("================================================");
+    print({
+        "search_id": widget.searchId,
+        "activity_list": [
+          {"destination": widget.destination, "activity": widget.activityList}
+        ]
+      });
+    print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+    print("================================================");
   }
 
   void bookingApiDataIntlize() {
@@ -57,14 +63,11 @@ class _BookingSummaryFITState extends State<BookingSummaryFIT> {
       bookingApiData = {
         "search_id": searchId,
         "activity_list": [
-          {
-            "destination": widget.destination,
-            "activity": widget.activityList
-          }
+          {"destination": widget.destination, "activity": widget.activityList}
         ]
       };
     });
-  } 
+  }
 
   Future<void> bookingSummaryFIT() async {
     try {
@@ -72,7 +75,7 @@ class _BookingSummaryFITState extends State<BookingSummaryFIT> {
       Map<dynamic, dynamic> response =
           await APIHandler.fitBookingSummary(bookingApiData);
 
-      // print("API Response: ${response["data"]["result"]["activity"]}");
+      // print("API Response: ${response["data"]["result"]["activity"]["activity_list"]}");
 
       if (response["message"] == "success") {
         setState(() {
@@ -80,7 +83,7 @@ class _BookingSummaryFITState extends State<BookingSummaryFIT> {
           packagedetails();
           isLoading = false;
         });
-        // print("Booking Summary Data Updated: ${bookingSummreyData["data"]}");
+        // print("Booking Summary Data Updated: ${bookingSummreyData["data"]["result"]["activity"]["activity_list"]}");
       } else {
         // print("API Error: ${response["message"]}");
       }
@@ -98,6 +101,11 @@ class _BookingSummaryFITState extends State<BookingSummaryFIT> {
         bookingSummreyData["data"]["result"]["flight"]["onward"] ?? [];
     final returnFlight =
         bookingSummreyData["data"]["result"]["flight"]["return"] ?? [];
+    final activityList = bookingSummreyData["data"]["result"]["activity"]["activity_list"] ??
+        [];
+    // print("@@@@@@@@@@@@@@@@@@!@#%^&*!@#%^&*()@@@@@@@@@@@@@@@@");
+    // print(activityList);
+    // print("@@@@@@@@@@@@@@@@@@!@#%^&*!@#%^&*()@@@@@@@@@@@@@@@@");
     // final airportToHotel =
     //     bookingSummreyData["data"]["result"]["transfer"]["airport_to_hotel"];
 
@@ -182,9 +190,26 @@ class _BookingSummaryFITState extends State<BookingSummaryFIT> {
           },
           {
             "title": "Total",
-            "value": "AED \ ${amount["total_amount"].toString()}"
+            "value": "AED  ${amount["total_amount"].toString()}"
           },
         ];
+        tourList = (activityList as List).map((activity) {
+          // Extract duration in hours from the "duration" string
+          RegExp regExp = RegExp(r'(\d+) Hours'); // Regex to extract hours
+          var match = regExp.firstMatch(activity["duration"] ?? "");
+
+          // Default to 0 if no match is found
+          int hours =
+              match != null ? int.tryParse(match.group(1) ?? "0") ?? 0 : 0;
+
+          // Return the mapped result
+          return {
+            "day": activity["day"] ?? "",
+            "title": activity["service"] ?? "",
+            "duration":
+                "$hours Hours", // You can adjust this if you want a different format
+          };
+        }).toList();
       });
     }
   }
@@ -256,6 +281,10 @@ class _BookingSummaryFITState extends State<BookingSummaryFIT> {
                     // _buildSection('PACKAGE DETAILS', packageDetails, fontSize),
                     _buildFlightDetailsSection(
                         'FLIGHT DETAILS', flightDetails, fontSize),
+                    tourList.isEmpty
+                        ? SizedBox()
+                        : _buildtourDetailsSection(
+                            "TOUR DETAILS", tourList, fontSize),
                     _buildSection('HOTEL DETAILS', hotelDetails, fontSize),
                     _buildSection(
                         'TRANSFER DETAILS', transferDetails, fontSize),
@@ -643,6 +672,62 @@ class _BookingSummaryFITState extends State<BookingSummaryFIT> {
               fontSize: fontSize * 0.95,
               fontWeight: FontWeight.normal,
               color: Colors.black,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildtourDetailsSection(
+      String title, List<Map<String, dynamic>> tour, double fontSize) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: TextStyle(
+            fontSize: fontSize * 1.3,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
+        ),
+        const SizedBox(height: 10),
+        Column(
+          children: tour.map((tour) {
+            return _buildTourCard(tour, fontSize);
+          }).toList(),
+        ),
+        const SizedBox(height: 10),
+      ],
+    );
+  }
+
+  Widget _buildTourCard(Map<dynamic, dynamic> tour, double fontSize) {
+    return Container(
+      padding: EdgeInsets.all(fontSize * 0.7),
+      margin: const EdgeInsets.only(bottom: 10),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade200,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          SizedBox(
+            width:
+                MediaQuery.of(context).size.width * 0.4, // 40% of screen width
+            child: Text(
+              "Day ${tour['day'] ?? 'N/A'}: ${tour['title'] ?? 'N/A'}",
+              style: TextStyle(
+                fontSize: fontSize,
+              ),
+            ),
+          ),
+          Text(
+            "Duration ${tour['duration'] ?? "N/A"}",
+            style: TextStyle(
+              fontSize: fontSize,
             ),
           ),
         ],

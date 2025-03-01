@@ -27,7 +27,7 @@ class _CruisePackageDetailsState extends State<CruisePackageDetails> {
     _fetchPackageDetails();
   }
 
-  Future<void> _fetchPackageDetails() async {
+  Future<void> _fetchPackageDetails() async { 
     try {
       final response = await APIHandler.getCruiseDeal(package_id);
       setState(() {
@@ -173,18 +173,18 @@ class _CruisePackageDetailsState extends State<CruisePackageDetails> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               _InfoChip(
-                                icon: Icons.star,
-                                label: packageData['rating']?.toString() ??
-                                    "4.8/5.0",
+                                icon: Icons.flight_takeoff,
+                                label: packageData['cruise_details']['dep_date']?.toString() ??
+                                    "N/A",
                               ),
-                              _InfoChip(
-                                icon: Icons.location_on,
-                                label: "${packageData['distance'] ?? '0'} km",
-                              ),
+                              // _InfoChip(
+                              //   icon: Icons.location_on,
+                              //   label: "${packageData['distance'] ?? '0'} km",
+                              // ),
                               _InfoChip(
                                 icon: Icons.access_time,
                                 label:
-                                    "${packageData['availability'] ?? 'N/A'} avail.",
+                                    "${packageData['cruise_details']['duration'] ?? 'N/A'} avail.",
                               ),
                             ],
                           ),

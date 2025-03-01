@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:holdidaymakers/pages/FixedDeparturesPages/booking_summary_fd.dart';
 import 'package:holdidaymakers/utils/api_handler.dart';
 import 'package:holdidaymakers/widgets/responciveButton.dart';
+import 'package:intl_phone_field/intl_phone_field.dart';
 
 class TravelersDetailsFD extends StatefulWidget {
   final Map<String, dynamic> packageDetails;
@@ -25,7 +25,16 @@ class _TravelersDetailsFD extends State<TravelersDetailsFD> {
   late List<Map<String, String>> _travelerDetails;
   List<String> cityList = [];
   final _formKey = GlobalKey<FormState>(); // Form key for validation
-  TextEditingController dobController = TextEditingController();
+  final TextEditingController phoneController = TextEditingController();
+  List<dynamic> countryData = [];
+  bool isCodeSelected = false;
+  Map<String, String> contactDetails = {
+    "title": "",
+    "contactName": "",
+    "email": "",
+    "countryCode": "+971", // Default
+    "phoneNumber": "",
+  };
 
   @override
   void initState() {
@@ -84,13 +93,6 @@ class _TravelersDetailsFD extends State<TravelersDetailsFD> {
     return generatedTravelers;
   }
 
-  final List<Map<String, String>> contactFields = [
-    {"label": "Title", "type": "dropdown", "options": "Mr,Ms,Miss,Mrs"},
-    {"label": "Contact Name", "type": "text"},
-    {"label": "E-mail", "type": "text"},
-    {"label": "Phone Number", "type": "text"},
-  ];
-
   @override
   Widget build(BuildContext context) {
     final double screenWidth = MediaQuery.of(context).size.width;
@@ -136,8 +138,11 @@ class _TravelersDetailsFD extends State<TravelersDetailsFD> {
                 children: [
                   Expanded(
                     child: DropdownButtonFormField<String>(
-                      // value: selectedTitle,
-                      onChanged: (value) {},
+                      onChanged: (value) {
+                        setState(() {
+                          contactDetails["title"] = value!;
+                        });
+                      },
                       decoration: InputDecoration(
                         filled: true,
                         fillColor: Colors.grey.shade200,
@@ -159,6 +164,9 @@ class _TravelersDetailsFD extends State<TravelersDetailsFD> {
                   const SizedBox(width: 10),
                   Expanded(
                     child: TextFormField(
+                      onChanged: (value) {
+                        contactDetails["contactName"] = value;
+                      },
                       decoration: InputDecoration(
                         filled: true,
                         fillColor: Colors.grey.shade200,
@@ -167,8 +175,15 @@ class _TravelersDetailsFD extends State<TravelersDetailsFD> {
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
-                      validator: (value) =>
-                      value!.isEmpty ? 'Contact Name is required' : null,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Contact Name is required';
+                        }
+                        if (!RegExp(r'^[a-zA-Z]+$').hasMatch(value)) {
+                          return 'Only alphabets are allowed';
+                        }
+                        return null;
+                      },
                     ),
                   ),
                 ],
@@ -178,6 +193,9 @@ class _TravelersDetailsFD extends State<TravelersDetailsFD> {
                 children: [
                   Expanded(
                     child: TextFormField(
+                      onChanged: (value) {
+                        contactDetails["email"] = value ;
+                      },
                       decoration: InputDecoration(
                         filled: true,
                         fillColor: Colors.grey.shade200,
@@ -196,23 +214,36 @@ class _TravelersDetailsFD extends State<TravelersDetailsFD> {
                       },
                     ),
                   ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: TextFormField(
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: Colors.grey.shade200,
-                        labelText: 'Phone Number',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      validator: (value) =>
-                      value!.isEmpty ? 'Phone Number is required' : null,
-                    ),
-                  ),
                 ],
               ),
+              const SizedBox(height: 10),
+              IntlPhoneField(
+                decoration: InputDecoration(
+                  labelText: 'Phone Number',
+                  border: OutlineInputBorder(
+                    borderSide: BorderSide(),
+                  ),
+                ),
+                initialCountryCode: 'AE',
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                onChanged: (phone) {
+                  setState(() {
+                    contactDetails["countryCode"] = phone.countryCode;
+                    contactDetails["phoneNumber"] = phone.number;
+                  });
+                },
+                validator: (phone) {
+                  if (phone == null || phone.number.isEmpty) {
+                    return 'Phone number is required';
+                  }
+                  if (!RegExp(r'^\d+$').hasMatch(phone.number)) {
+                    return 'Enter only numbers';
+                  }
+                  return null;
+                },
+                controller: phoneController,
+              ),
+              const SizedBox(width: 10),
               ListView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
@@ -269,8 +300,15 @@ class _TravelersDetailsFD extends State<TravelersDetailsFD> {
                                   _travelerDetails[index]["firstName"] = value;
                                 });
                               },
-                              validator: (value) =>
-                                value!.isEmpty ? 'First Name is required' : null,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'First Name is required';
+                                }
+                                if (!RegExp(r'^[a-zA-Z]+$').hasMatch(value)) {
+                                  return 'Only alphabets are allowed';
+                                }
+                                return null;
+                              },
                               decoration: InputDecoration(
                                 filled: true,
                                 fillColor: Colors.grey.shade200,
@@ -293,8 +331,15 @@ class _TravelersDetailsFD extends State<TravelersDetailsFD> {
                                   _travelerDetails[index]["lastName"] = value;
                                 });
                               },
-                              validator: (value) =>
-                                value!.isEmpty ? 'Last Name is required' : null,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Last Name is required';
+                                }
+                                if (!RegExp(r'^[a-zA-Z]+$').hasMatch(value)) {
+                                  return 'Only alphabets are allowed';
+                                }
+                                return null;
+                              },
                               decoration: InputDecoration(
                                 filled: true,
                                 fillColor: Colors.grey.shade200,
@@ -461,28 +506,34 @@ class _TravelersDetailsFD extends State<TravelersDetailsFD> {
         ),),
       ),
       bottomNavigationBar: Padding(
-          padding: EdgeInsets.all(20.0),
-          child: GestureDetector(
-            onTap: () {
-              if (_formKey.currentState!.validate()) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => BookingSummaryFD(
-                      packageDetails: widget.packageDetails,
-                      selectedHotel: widget.selectedHotel,
-                      flightDetails: widget.flightDetails,
-                      totalRoomsdata: widget.totalRoomsdata,
-                      searchId: widget.searchId,
-                      activityList: widget.activityList,
-                      destination: widget.destination
-                  )),
-                );
-              } else {
-                print("Form is not valid");
-              }
-            },
-            child: responciveButton(text: 'Pay Now'),
-          )
+        padding: EdgeInsets.all(20.0),
+        child: GestureDetector(
+          onTap: () {
+            if (_formKey.currentState != null && _formKey.currentState!.validate()) {
+              _formKey.currentState!.save(); // Save form data before navigation
+              // Navigator.push(
+              //   context,
+              //   MaterialPageRoute(
+              //     builder: (context) => BookingSummaryFD(
+              //       packageDetails: widget.packageDetails,
+              //       selectedHotel: widget.selectedHotel,
+              //       flightDetails: widget.flightDetails,
+              //       totalRoomsdata: widget.totalRoomsdata,
+              //       searchId: widget.searchId,
+              //       activityList: widget.activityList,
+              //       destination: widget.destination,
+              //     ),
+              //   ),
+              // );
+            } else {
+              print("⚠️ Form is not valid");
+              print("Travelers Data: $travelers");
+              print("Traveler Details: $_travelerDetails");
+              print("Contact Details: $contactDetails");
+            }
+          },
+          child: responciveButton(text: 'Pay Now'),
+        ),
       ),
     );
   }

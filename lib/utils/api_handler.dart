@@ -988,4 +988,14 @@ class APIHandler {
       throw Exception('Error fetching inclusion list: $e');
     }
   }
+  Future<List<dynamic>> fetchCountries() async {
+    final response = await http.get(Uri.parse('https://b2cuat.tikipopi.com/index.php/holiday_api/country_list'));
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      return data['data'];
+    } else {
+      throw Exception('Failed to load countries');
+    }
+  }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:holdidaymakers/utils/api_handler.dart';
 import 'package:holdidaymakers/widgets/responciveButton.dart';
+import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 
@@ -16,9 +17,16 @@ class BookingSummaryPage extends StatefulWidget {
 
 class _BookingSummaryPageState extends State<BookingSummaryPage> {
   bool isLoading = true;
-  final _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   Map<String, dynamic> packageDetails = {};
   Map<String, dynamic> priceDetails = {};
+  Map<String, String> contactDetails = {
+    "title": "",
+    "contactName": "",
+    "email": "",
+    "countryCode": "+971", // Default
+    "phoneNumber": "",
+  };
 
   @override
   void initState() {
@@ -132,8 +140,9 @@ class _BookingSummaryPageState extends State<BookingSummaryPage> {
           child: IconButton(
             onPressed: () {
               if (_formKey.currentState!.validate()) {
-                // Perform the next action like navigating to another page
+                print(contactDetails);
               }
+
             },
             icon: responciveButton(text: 'Pay Now'),
           ),
@@ -251,6 +260,7 @@ class _BookingSummaryPageState extends State<BookingSummaryPage> {
                   onChanged: (value) {
                     setState(() {
                       selectedTitle = value;
+                      contactDetails["title"] = value ?? "";
                     });
                   },
                   decoration: InputDecoration(
@@ -282,7 +292,18 @@ class _BookingSummaryPageState extends State<BookingSummaryPage> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  validator: (value) => value!.isEmpty ? 'Enter your name' : null,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Contact Name is required';
+                    }
+                    if (!RegExp(r'^[a-zA-Z\s]+$').hasMatch(value)) {
+                      return 'Only alphabets are allowed';
+                    }
+                    return null;
+                  },
+                  onChanged: (value) {
+                    contactDetails["contactName"] = value;
+                  },
                 ),
               ),
             ],
@@ -299,41 +320,45 @@ class _BookingSummaryPageState extends State<BookingSummaryPage> {
                 borderRadius: BorderRadius.circular(8),
               ),
             ),
-            validator: (value) => value!.contains('@') ? null : 'Enter a valid email',
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'E-mail is required';
+              } else if (!RegExp(r'\S+@\S+\.\S+').hasMatch(value)) {
+                return 'Enter a valid email';
+              }
+              return null;
+            },
+            onChanged: (value) {
+              contactDetails["email"] = value;
+            },
           ),
           const SizedBox(height: 10),
-
-          // Phone Number input with reduced width for the country code dropdown
-          InternationalPhoneNumberInput(
-  onInputChanged: (PhoneNumber number) {
-    setState(() {
-      this.number = number;
-    });
-  },
-  onInputValidated: (bool value) {
-    print(value ? 'Valid' : 'Invalid');
-  },
-  selectorConfig: SelectorConfig(
-    selectorType: PhoneInputSelectorType.DROPDOWN,
-    trailingSpace: false,
-  ),
-  hintText: 'Enter phone number',
-  initialValue: number,
-  textFieldController: phoneController,
-  onSaved: (PhoneNumber number) {
-    setState(() {
-      this.number = number;
-    });
-  },
-  inputDecoration: InputDecoration(
-    filled: true,
-    fillColor: Colors.grey.shade200,
-    labelText: 'Phone Number',
-    border: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(8),
-    ),
-  ),
-),
+          IntlPhoneField(
+            decoration: InputDecoration(
+              labelText: 'Phone Number',
+              border: OutlineInputBorder(
+                borderSide: BorderSide(),
+              ),
+            ),
+            initialCountryCode: 'AE',
+            autovalidateMode: AutovalidateMode.onUserInteraction,
+            onChanged: (phone) {
+              setState(() {
+                contactDetails["countryCode"] = phone.countryCode;
+                contactDetails["phoneNumber"] = phone.number;
+              });
+            },
+            validator: (phone) {
+              if (phone == null || phone.number.isEmpty) {
+                return 'Phone number is required';
+              }
+              if (!RegExp(r'^\d+$').hasMatch(phone.number)) {
+                return 'Enter only numbers';
+              }
+              return null;
+            },
+            controller: phoneController,
+          ),
 
           const SizedBox(height: 20),
         ],

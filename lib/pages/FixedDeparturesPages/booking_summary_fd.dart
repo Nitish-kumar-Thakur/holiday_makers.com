@@ -601,7 +601,7 @@ class _BookingSummaryFDState extends State<BookingSummaryFD> {
               ),
             ),
           ),
-          Text(
+          Text( 
             "Duration ${tour['duration'] ?? "N/A"}",
             style: TextStyle(
               fontSize: fontSize,

@@ -20,7 +20,8 @@ class IndependentTravelerPage extends StatefulWidget {
       _IndependentTravelerPageState();
 }
 
-class _IndependentTravelerPageState extends State<IndependentTravelerPage> {
+
+class _IndependentTravelerPageState extends State<IndependentTravelerPage> with TickerProviderStateMixin{
   List<DateTime> blockedDates = [];
   bool destinationLoading = true;
   String? selectedCity;
@@ -41,13 +42,44 @@ class _IndependentTravelerPageState extends State<IndependentTravelerPage> {
 
   String dropdownValue = '1 night';
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+   late AnimationController _errorController;
+  late Animation<double> _fadeAnimation;
 
-  @override
-  void initState() {
-    super.initState();
-    fetchCities();
-    // print(selectedRoom);
+@override
+void initState() {
+  super.initState();
+  // resetData(); // Reset all fields when page is loaded
+  fetchCities();
+  // Initialize AnimationController for smooth fading
+    _errorController = AnimationController(
+      duration: const Duration(seconds: 1), // Duration for the fade effect
+      vsync: this,
+    );
+
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(_errorController);
+}
+
+void resetData() {
+    setState(() {
+      selectedCity = null;
+      selectedDestination = null;
+      fromDate = null;
+      stayingDay = null;
+      selectedRoom = "1";
+      selectedAdult = "2";
+      selectedChild = "0";
+      childrenAge = [];
+      totalRoomsdata = [
+        {"adults": "2", "children": "0", "childrenAges": []}
+      ];
+      destinations = [];
+      destinationLoading = true;
+      blockedDates = [];
+    });
   }
+
+
+
 
   Future<void> fetchCities() async {
     print(totalRoomsdata);
@@ -101,13 +133,22 @@ class _IndependentTravelerPageState extends State<IndependentTravelerPage> {
       setState(() {
         errorMessage = "Please fill all the required fields";
       });
+      _errorController.forward();
+
+      // Fade out the error message after 3 seconds
+      Future.delayed(Duration(seconds: 3), () {
+        _errorController.reverse();
+        setState(() {
+          errorMessage = null;
+        });
+      });
       return;
     }
 
     try {
-       print("====================");
+      print("====================");
       print(stayingDay!.split(' ')[0]);
-       print("====================");
+      print("====================");
       var response = await APIHandler.fitSearch(
           sourceId: selectedCity!,
           destinationId: selectedDestination!,
@@ -139,12 +180,35 @@ class _IndependentTravelerPageState extends State<IndependentTravelerPage> {
         setState(() {
           errorMessage = response["message"];
         });
+        _errorController.forward();
+
+      // Fade out the error message after 3 seconds
+      Future.delayed(Duration(seconds: 3), () {
+        _errorController.reverse();
+        setState(() {
+          errorMessage = null;
+        });
+      });
       }
     } catch (error) {
       setState(() {
         errorMessage = "Error fetching hotels: $error";
       });
+      _errorController.forward();
+
+      // Fade out the error message after 3 seconds
+      Future.delayed(Duration(seconds: 3), () {
+        _errorController.reverse();
+        setState(() {
+          errorMessage = null;
+        });
+      });
     }
+  }
+  @override
+  void dispose() {
+    _errorController.dispose(); // Dispose the animation controller
+    super.dispose();
   }
 
   @override
@@ -258,27 +322,33 @@ class _IndependentTravelerPageState extends State<IndependentTravelerPage> {
                             borderRadius: BorderRadius.circular(20),
                             border: Border.all(width: 1, color: Colors.grey),
                           ),
-                          child: DropdownButton<String>(
-                            value: stayingDay, // Allow null values
-                            hint: Center(
+                          child: DropdownButtonHideUnderline(
+                            child: DropdownButton<String>(
+                              value: stayingDay, // Allow null values
+                              hint: Center(
                                 child: AppText(
-                              text: "Select",
-                              color: Colors.black,
-                            )), // Default hint text
-                            items: ['1', '2', '3', '4'].map((String item) {
-                              return DropdownMenuItem<String>(
-                                value: "$item night",
-                                child: Center(child: Text("$item night")),
-                              );
-                            }).toList(),
-                            onChanged: (String? newValue) {
-                              setState(() {
-                                stayingDay = newValue; // Assign value directly
-                              });
-                            },
-                            icon: SizedBox.shrink(),
-                            isExpanded: true,
-                            borderRadius: BorderRadius.circular(20),
+                                  text: "Select",
+                                  color: Colors.black,
+                                ),
+                              ), // Default hint text
+                              items: List.generate(60, (index) {
+                                String item = (index + 1)
+                                    .toString(); // Generate numbers from 1 to 90
+                                return DropdownMenuItem<String>(
+                                  value: "$item night",
+                                  child: Center(child: Text("$item night")),
+                                );
+                              }),
+                              onChanged: (String? newValue) {
+                                setState(() {
+                                  stayingDay =
+                                      newValue; // Assign value directly
+                                });
+                              },
+                              icon: SizedBox.shrink(),
+                              isExpanded: true,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
                           ),
                         ),
 
@@ -313,11 +383,14 @@ class _IndependentTravelerPageState extends State<IndependentTravelerPage> {
                       child: responciveButton(text: 'SEARCH')),
                 ),
                 const SizedBox(height: 20),
-                if (errorMessage != null)
-                  Center(
-                    child: Text(
-                      errorMessage!,
-                      style: TextStyle(color: Colors.red, fontSize: 16),
+                 if (errorMessage != null)
+                  FadeTransition(
+                    opacity: _fadeAnimation,
+                    child: Center(
+                      child: Text(
+                        errorMessage!,
+                        style: TextStyle(color: Colors.red, fontSize: 16),
+                      ),
                     ),
                   ),
               ],
@@ -327,4 +400,6 @@ class _IndependentTravelerPageState extends State<IndependentTravelerPage> {
       ),
     );
   }
+ 
+
 }
