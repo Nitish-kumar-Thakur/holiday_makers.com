@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:holdidaymakers/pages/FixedDeparturesPages/booking_summary_fd.dart';
-import 'package:holdidaymakers/pages/FixedDeparturesPages/tour_selection_modal_fd.dart';
-import 'package:holdidaymakers/utils/api_handler.dart';
-import 'package:holdidaymakers/widgets/appText.dart';
-import 'package:holdidaymakers/widgets/responciveButton.dart';
+import 'package:HolidayMakers/pages/FixedDeparturesPages/booking_summary_fd.dart';
+import 'package:HolidayMakers/pages/FixedDeparturesPages/tour_selection_modal_fd.dart';
+import 'package:HolidayMakers/utils/api_handler.dart';
+import 'package:HolidayMakers/widgets/appText.dart';
+import 'package:HolidayMakers/widgets/responciveButton.dart';
 
 class TourBookingPage extends StatefulWidget {
   final Map<String, dynamic> packageDetails;
@@ -13,13 +13,21 @@ class TourBookingPage extends StatefulWidget {
   final List<dynamic> fixedActivities;
   final String searchId;
 
-  const TourBookingPage({super.key, required this.packageDetails, required this.selectedHotel, required this.flightDetails, required this.totalRoomsdata, required this.searchId, required this.fixedActivities});
+  const TourBookingPage(
+      {super.key,
+      required this.packageDetails,
+      required this.selectedHotel,
+      required this.flightDetails,
+      required this.totalRoomsdata,
+      required this.searchId,
+      required this.fixedActivities});
 
   @override
   _TourBookingPageState createState() => _TourBookingPageState();
 }
 
-class _TourBookingPageState extends State<TourBookingPage> with SingleTickerProviderStateMixin {
+class _TourBookingPageState extends State<TourBookingPage>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
   List<Map<String, dynamic>> selectedTours = [];
   List<Map<String, dynamic>> allTours = [];
@@ -28,7 +36,8 @@ class _TourBookingPageState extends State<TourBookingPage> with SingleTickerProv
   String destination = "";
   List<Map<String, dynamic>> activityList = [];
   Map<int, int> totalMinutesPerDay = {};
-  Set<int> unselectableDays = {}; // Tracks days that are blocked due to multi-day tours
+  Set<int> unselectableDays =
+      {}; // Tracks days that are blocked due to multi-day tours
 
   @override
   void initState() {
@@ -40,7 +49,8 @@ class _TourBookingPageState extends State<TourBookingPage> with SingleTickerProv
     // Extract number of days from package details
     List<String> parts = widget.packageDetails['duration'].split("|");
     String daysPart = parts[1].trim(); // "5 Days"
-    numberOfDays = int.parse(daysPart.split(" ")[0]); // Extracting only the number
+    numberOfDays =
+        int.parse(daysPart.split(" ")[0]); // Extracting only the number
 
     // Initialize tab controller
     _tabController = TabController(length: numberOfDays, vsync: this);
@@ -57,7 +67,8 @@ class _TourBookingPageState extends State<TourBookingPage> with SingleTickerProv
           // Show warning
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text("This day is part of a multi-day tour and cannot be selected."),
+              content: Text(
+                  "This day is part of a multi-day tour and cannot be selected."),
               backgroundColor: Colors.red,
             ),
           );
@@ -70,7 +81,8 @@ class _TourBookingPageState extends State<TourBookingPage> with SingleTickerProv
     // **Prepopulate selectedTours with fixedActivities & track total duration**
     for (var fixedActivity in widget.fixedActivities[0]['activity']) {
       int day = int.parse(fixedActivity['day']);
-      int fixedActivityDuration = _extractDurationInMinutes(fixedActivity['duration']);
+      int fixedActivityDuration =
+          _extractDurationInMinutes(fixedActivity['duration']);
       int durationInDays = fixedActivity['duration_in_days'] ?? 0;
 
       selectedTours.add({
@@ -89,7 +101,8 @@ class _TourBookingPageState extends State<TourBookingPage> with SingleTickerProv
       });
 
       // Add the fixed tour duration to totalMinutesPerDay
-      totalMinutesPerDay[day] = (totalMinutesPerDay[day] ?? 0) + fixedActivityDuration;
+      totalMinutesPerDay[day] =
+          (totalMinutesPerDay[day] ?? 0) + fixedActivityDuration;
 
       // Mark the additional days as unavailable
       for (int i = 1; i < durationInDays; i++) {
@@ -103,7 +116,8 @@ class _TourBookingPageState extends State<TourBookingPage> with SingleTickerProv
       final response = await APIHandler.getFDTourList(widget.searchId ?? "");
       // final response = await APIHandler.getFDTourList('3649' ?? "");
       setState(() {
-        allTours = List<Map<String, dynamic>>.from(response['data']['activity_list'] ?? []);
+        allTours = List<Map<String, dynamic>>.from(
+            response['data']['activity_list'] ?? []);
         destination = response['data']['destination'] ?? "";
       });
       // print('##########################################################');
@@ -150,7 +164,8 @@ class _TourBookingPageState extends State<TourBookingPage> with SingleTickerProv
 
     for (var match in matches) {
       if (match.group(1) != null) {
-        totalMinutes += int.parse(match.group(1)!) * 60; // Convert hours to minutes
+        totalMinutes +=
+            int.parse(match.group(1)!) * 60; // Convert hours to minutes
       }
       if (match.group(2) != null) {
         totalMinutes += int.parse(match.group(2)!); // Add minutes directly
@@ -164,7 +179,8 @@ class _TourBookingPageState extends State<TourBookingPage> with SingleTickerProv
     if (unselectableDays.contains(dayIndex + 1)) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text("You cannot add tours on this day as it is part of a multi-day tour."),
+          content: Text(
+              "You cannot add tours on this day as it is part of a multi-day tour."),
           backgroundColor: Colors.red,
         ),
       );
@@ -180,19 +196,22 @@ class _TourBookingPageState extends State<TourBookingPage> with SingleTickerProv
       backgroundColor: Colors.transparent,
       builder: (context) {
         List<Map<String, dynamic>> availableTours = allTours.where((tour) {
-          return !selectedTours.any((selected) => selected['activity_id'] == tour['activity_id']);
+          return !selectedTours.any(
+              (selected) => selected['activity_id'] == tour['activity_id']);
         }).toList();
 
         return TourSelectionModal(
           tours: availableTours,
           onSelectionChanged: (selectedTour) {
-            int newTourDurationMinutes = _extractDurationInMinutes(selectedTour['duration']);
+            int newTourDurationMinutes =
+                _extractDurationInMinutes(selectedTour['duration']);
             int currentTotalMinutes = totalMinutesPerDay[dayIndex + 1] ?? 0;
 
             if (currentTotalMinutes + newTourDurationMinutes > 480) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text("Cannot add more than 8 hours of tours per day."),
+                  content:
+                      Text("Cannot add more than 8 hours of tours per day."),
                   backgroundColor: Colors.red,
                 ),
               );
@@ -204,7 +223,8 @@ class _TourBookingPageState extends State<TourBookingPage> with SingleTickerProv
                 'day': dayIndex + 1,
                 ...selectedTour,
               });
-              totalMinutesPerDay[dayIndex + 1] = currentTotalMinutes + newTourDurationMinutes;
+              totalMinutesPerDay[dayIndex + 1] =
+                  currentTotalMinutes + newTourDurationMinutes;
             });
           },
         );
@@ -221,22 +241,26 @@ class _TourBookingPageState extends State<TourBookingPage> with SingleTickerProv
   void _removeSelectedTour(int dayIndex, String activityId) {
     setState(() {
       var tourToRemove = selectedTours.firstWhere(
-            (tour) => tour['day'] == dayIndex + 1 && tour['activity_id'] == activityId,
+        (tour) =>
+            tour['day'] == dayIndex + 1 && tour['activity_id'] == activityId,
         orElse: () => {},
       );
 
       if (tourToRemove.isNotEmpty) {
-        int removedTourDurationMinutes = _extractDurationInMinutes(tourToRemove['duration']);
+        int removedTourDurationMinutes =
+            _extractDurationInMinutes(tourToRemove['duration']);
 
         // Subtract tour duration from total minutes
-        totalMinutesPerDay[dayIndex + 1] = (totalMinutesPerDay[dayIndex + 1] ?? 0) - removedTourDurationMinutes;
+        totalMinutesPerDay[dayIndex + 1] =
+            (totalMinutesPerDay[dayIndex + 1] ?? 0) -
+                removedTourDurationMinutes;
 
         // Remove tour from list
-        selectedTours.removeWhere((tour) => tour['day'] == dayIndex + 1 && tour['activity_id'] == activityId);
+        selectedTours.removeWhere((tour) =>
+            tour['day'] == dayIndex + 1 && tour['activity_id'] == activityId);
       }
     });
   }
-
 
   List<Map<String, dynamic>> _generateActivityList() {
     return selectedTours.map((tour) {
@@ -258,7 +282,6 @@ class _TourBookingPageState extends State<TourBookingPage> with SingleTickerProv
           children: [
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
-
               child: Row(
                 children: List.generate(numberOfDays, (index) {
                   bool isDisabled = unselectableDays.contains(index + 1);
@@ -268,12 +291,16 @@ class _TourBookingPageState extends State<TourBookingPage> with SingleTickerProv
                         ? null
                         : () => setState(() => _tabController.index = index),
                     child: Container(
-                      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-                      margin: EdgeInsets.only(left: 4, right: 4, top: 12, bottom: 6),
+                      padding:
+                          EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+                      margin: EdgeInsets.only(
+                          left: 4, right: 4, top: 12, bottom: 6),
                       decoration: BoxDecoration(
                         color: isDisabled
                             ? Colors.grey // Grey out the unselectable days
-                            : (_tabController.index == index ? Colors.blue : Colors.white),
+                            : (_tabController.index == index
+                                ? Colors.blue
+                                : Colors.white),
                         border: Border.all(color: Colors.blue),
                         borderRadius: BorderRadius.circular(20),
                       ),
@@ -294,8 +321,9 @@ class _TourBookingPageState extends State<TourBookingPage> with SingleTickerProv
                 controller: _tabController,
                 physics: NeverScrollableScrollPhysics(),
                 children: List.generate(numberOfDays, (index) {
-                  List<Map<String, dynamic>> toursForDay = selectedTours.where(
-                          (tour) => tour['day'] == index + 1).toList();
+                  List<Map<String, dynamic>> toursForDay = selectedTours
+                      .where((tour) => tour['day'] == index + 1)
+                      .toList();
 
                   return SingleChildScrollView(
                     child: Padding(
@@ -303,112 +331,145 @@ class _TourBookingPageState extends State<TourBookingPage> with SingleTickerProv
                       child: Column(
                         children: [
                           ...toursForDay.map((tourForDay) => Container(
-                            margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: Colors.blue,
-                              borderRadius: BorderRadius.circular(15),
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(10),
-                                  child: Image.network(
-                                    tourForDay['images'] ?? "",
-                                    height: 150,
-                                    width: double.infinity,
-                                    fit: BoxFit.cover,
-                                    errorBuilder: (context, error, stackTrace) {
-                                      return Image.asset(
-                                        "img/splashLogo.png",
+                                margin: const EdgeInsets.symmetric(
+                                    horizontal: 8, vertical: 12),
+                                padding: const EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  color: Colors.blue,
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(10),
+                                      child: Image.network(
+                                        tourForDay['images'] ?? "",
                                         height: 150,
                                         width: double.infinity,
-                                        fit: BoxFit.contain,
-                                      );
-                                    },
-                                  ),
-                                ),
-                                const SizedBox(height: 10),
-                                Text(
-                                  tourForDay['service'] ?? '',
-                                  style: const TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                                Text(
-                                  tourForDay['city_name'] ?? '',
-                                  style: const TextStyle(fontSize: 14, color: Colors.white),
-                                ),
-                                Text(
-                                  "Vendor: ${tourForDay['vendor_name'] ?? ''}",
-                                  style: const TextStyle(fontSize: 14, color: Colors.white70),
-                                ),
-                                Text(
-                                  "Duration: ${tourForDay['duration'] ?? ''}",
-                                  style: const TextStyle(fontSize: 14, color: Colors.white),
-                                ),
-                                Text(
-                                  "Timings: ${tourForDay['timings'] ?? ''}",
-                                  style: const TextStyle(fontSize: 14, color: Colors.white70),
-                                ),
-                                const SizedBox(height: 5),
-                                StatefulBuilder(
-                                  builder: (context, setInnerState) {
-                                    bool expanded = isExpanded[index] ?? false;
-                                    String inclusion = tourForDay['inclusion'] ?? '';
-                                    int maxLength = 100;
-
-                                    return Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          expanded ? inclusion : (inclusion.length > maxLength ? inclusion.substring(0, maxLength) + "..." : inclusion),
-                                          style: const TextStyle(fontSize: 12, color: Colors.white70),
-                                          textAlign: TextAlign.justify,
-                                        ),
-                                        if (inclusion.length > maxLength)
-                                          GestureDetector(
-                                            onTap: () {
-                                              setInnerState(() {
-                                                isExpanded[index] = !expanded;
-                                              });
-                                            },
-                                            child: Text(
-                                              expanded ? "Read Less" : "Read More",
-                                              style: TextStyle(color: Colors.yellow, fontWeight: FontWeight.bold),
-                                              textAlign: TextAlign.justify,
-                                            ),
-                                          ),
-                                      ],
-                                    );
-                                  },
-                                ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
+                                        fit: BoxFit.cover,
+                                        errorBuilder:
+                                            (context, error, stackTrace) {
+                                          return Image.asset(
+                                            "img/splashLogo.png",
+                                            height: 150,
+                                            width: double.infinity,
+                                            fit: BoxFit.contain,
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                    const SizedBox(height: 10),
                                     Text(
-                                      "AED ${tourForDay['totalAmount'] ?? ''}",
+                                      tourForDay['service'] ?? '',
                                       style: const TextStyle(
-                                        fontSize: 20,
+                                        fontSize: 18,
                                         fontWeight: FontWeight.bold,
                                         color: Colors.white,
                                       ),
                                     ),
-                                    tourForDay['fixed_tour'] == "No"
-                                        ? ElevatedButton(
-                                      style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                                      onPressed: () => _removeSelectedTour(index, tourForDay['activity_id']),
-                                      child: AppText(text: 'Remove', color: Colors.white),
-                                    )
-                                    : const SizedBox(height: 0),
+                                    Text(
+                                      tourForDay['city_name'] ?? '',
+                                      style: const TextStyle(
+                                          fontSize: 14, color: Colors.white),
+                                    ),
+                                    Text(
+                                      "Vendor: ${tourForDay['vendor_name'] ?? ''}",
+                                      style: const TextStyle(
+                                          fontSize: 14, color: Colors.white70),
+                                    ),
+                                    Text(
+                                      "Duration: ${tourForDay['duration'] ?? ''}",
+                                      style: const TextStyle(
+                                          fontSize: 14, color: Colors.white),
+                                    ),
+                                    Text(
+                                      "Timings: ${tourForDay['timings'] ?? ''}",
+                                      style: const TextStyle(
+                                          fontSize: 14, color: Colors.white70),
+                                    ),
+                                    const SizedBox(height: 5),
+                                    StatefulBuilder(
+                                      builder: (context, setInnerState) {
+                                        bool expanded =
+                                            isExpanded[index] ?? false;
+                                        String inclusion =
+                                            tourForDay['inclusion'] ?? '';
+                                        int maxLength = 100;
+
+                                        return Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              expanded
+                                                  ? inclusion
+                                                  : (inclusion.length >
+                                                          maxLength
+                                                      ? inclusion.substring(
+                                                              0, maxLength) +
+                                                          "..."
+                                                      : inclusion),
+                                              style: const TextStyle(
+                                                  fontSize: 12,
+                                                  color: Colors.white70),
+                                              textAlign: TextAlign.justify,
+                                            ),
+                                            if (inclusion.length > maxLength)
+                                              GestureDetector(
+                                                onTap: () {
+                                                  setInnerState(() {
+                                                    isExpanded[index] =
+                                                        !expanded;
+                                                  });
+                                                },
+                                                child: Text(
+                                                  expanded
+                                                      ? "Read Less"
+                                                      : "Read More",
+                                                  style: TextStyle(
+                                                      color: Colors.yellow,
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                  textAlign: TextAlign.justify,
+                                                ),
+                                              ),
+                                          ],
+                                        );
+                                      },
+                                    ),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          "AED ${tourForDay['totalAmount'] ?? ''}",
+                                          style: const TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                        tourForDay['fixed_tour'] == "No"
+                                            ? ElevatedButton(
+                                                style: ElevatedButton.styleFrom(
+                                                    backgroundColor:
+                                                        Colors.red),
+                                                onPressed: () =>
+                                                    _removeSelectedTour(
+                                                        index,
+                                                        tourForDay[
+                                                            'activity_id']),
+                                                child: AppText(
+                                                    text: 'Remove',
+                                                    color: Colors.white),
+                                              )
+                                            : const SizedBox(height: 0),
+                                      ],
+                                    ),
                                   ],
                                 ),
-                              ],
-                            ),
-                          )),
+                              )),
                           SizedBox(height: 10),
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 50),
@@ -420,11 +481,13 @@ class _TourBookingPageState extends State<TourBookingPage> with SingleTickerProv
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 padding: EdgeInsets.symmetric(vertical: 16),
-                                minimumSize: Size(double.infinity, 50), // Full width button
+                                minimumSize: Size(
+                                    double.infinity, 50), // Full width button
                               ),
                               child: Text(
                                 "+ Add Tour",
-                                style: TextStyle(color: Colors.white, fontSize: 18),
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 18),
                                 textAlign: TextAlign.center,
                               ),
                             ),
@@ -439,8 +502,7 @@ class _TourBookingPageState extends State<TourBookingPage> with SingleTickerProv
           ],
         ),
       ),
-      bottomNavigationBar:
-      Padding(
+      bottomNavigationBar: Padding(
           padding: EdgeInsets.only(bottom: 24.0, left: 20, right: 20),
           child: GestureDetector(
             onTap: () {
@@ -454,18 +516,19 @@ class _TourBookingPageState extends State<TourBookingPage> with SingleTickerProv
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => BookingSummaryFD(packageDetails: widget.packageDetails,
-                   selectedHotel: widget.selectedHotel,
-                    flightDetails: widget.flightDetails,
-                    totalRoomsdata: widget.totalRoomsdata, searchId: widget.searchId,
-                    activityList: activityList,
-                    destination: destination)
-                ),
+                    builder: (context) => BookingSummaryFD(
+                        packageDetails: widget.packageDetails,
+                        selectedHotel: widget.selectedHotel,
+                        flightDetails: widget.flightDetails,
+                        totalRoomsdata: widget.totalRoomsdata,
+                        searchId: widget.searchId,
+                        activityList: activityList,
+                        destination: destination)),
               );
             },
-            child: responciveButton(text: selectedTours.isEmpty ? 'Skip': 'Book Now'),
-          )
-      ),
+            child: responciveButton(
+                text: selectedTours.isEmpty ? 'Skip' : 'Book Now'),
+          )),
     );
   }
 }

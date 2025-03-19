@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:holdidaymakers/widgets/appLargetext.dart';
+import 'package:HolidayMakers/widgets/appLargetext.dart';
 
 class LoginButton extends StatelessWidget {
   final bool? isResponcive;
@@ -13,7 +13,7 @@ class LoginButton extends StatelessWidget {
   LoginButton(
       {super.key,
       this.isResponcive,
-      this.padding=0,
+      this.padding = 0,
       required this.text,
       this.border = 50,
       this.color = const Color(0xFF3498DB),
@@ -23,7 +23,8 @@ class LoginButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container( padding: EdgeInsets.only(left: padding),
+    return Container(
+      padding: EdgeInsets.only(left: padding),
       decoration: BoxDecoration(
           color: color,
           borderRadius: BorderRadius.circular(border),
@@ -43,8 +44,8 @@ class LoginButton extends StatelessWidget {
           Container(
             child: Image.asset(image),
           ),
-          Container( 
-            padding: EdgeInsets.only(right: (35-padding)),
+          Container(
+            padding: EdgeInsets.only(right: (35 - padding)),
             child: AppLargeText(
               text: text,
               color: textColor,

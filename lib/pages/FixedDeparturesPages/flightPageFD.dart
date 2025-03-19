@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:holdidaymakers/pages/FixedDeparturesPages/add_tour_fd.dart';
-import 'package:holdidaymakers/utils/api_handler.dart';
-import 'package:holdidaymakers/widgets/responciveButton.dart';
+import 'package:HolidayMakers/pages/FixedDeparturesPages/add_tour_fd.dart';
+import 'package:HolidayMakers/utils/api_handler.dart';
+import 'package:HolidayMakers/widgets/responciveButton.dart';
 import 'package:shimmer/shimmer.dart';
 
 class FlightPageFD extends StatefulWidget {
@@ -28,7 +28,7 @@ class FlightPageFD extends StatefulWidget {
 class _FlightPageFDState extends State<FlightPageFD> {
   List<Map<String, dynamic>> flightList = [];
   List<Map<String, dynamic>> selectedFlightPackage = [];
-  
+
   bool isLoading = true;
   @override
   void initState() {
@@ -54,7 +54,7 @@ class _FlightPageFDState extends State<FlightPageFD> {
         flightList = (response['data']['group_by_flight_details'] as List)
             .map((e) => e as Map<String, dynamic>)
             .toList();
-        
+
         isLoading = false;
       });
     } catch (e) {

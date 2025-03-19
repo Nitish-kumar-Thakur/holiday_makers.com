@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:holdidaymakers/pages/homePages/homePage2.dart';
-import 'package:holdidaymakers/utils/api_handler.dart';
-import 'package:holdidaymakers/widgets/appText.dart';
-import 'package:holdidaymakers/widgets/drawerPage.dart';
-import 'package:holdidaymakers/widgets/mainCarousel.dart';
-import 'package:holdidaymakers/widgets/subCarousel.dart';
+import 'package:HolidayMakers/pages/homePages/homePage2.dart';
+import 'package:HolidayMakers/utils/api_handler.dart';
+import 'package:HolidayMakers/widgets/appText.dart';
+import 'package:HolidayMakers/widgets/drawerPage.dart';
+import 'package:HolidayMakers/widgets/mainCarousel.dart';
+import 'package:HolidayMakers/widgets/subCarousel.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:shimmer/shimmer.dart'; 
+import 'package:shimmer/shimmer.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -40,7 +40,7 @@ class _HomePageState extends State<HomePage> {
   Future<void> _fetchHomePageData() async {
     try {
       final data = await APIHandler.HomePageData();
-      
+
       setState(() {
         bannerList = List<Map<String, dynamic>>.from(
           data['data']['banner_list'].map((item) => {
@@ -67,23 +67,21 @@ class _HomePageState extends State<HomePage> {
                     category['package_list'].map((package) => {
                           'image': package['package_homepage_image'],
                           'name': package['package_name'],
-                          'price': package['discounted_price'] ?? package['starting_price'],
-                          'tempPrice': package['starting_price'] ?? package['discounted_price'],
+                          'price': package['discounted_price'] ??
+                              package['starting_price'],
+                          'tempPrice': package['starting_price'] ??
+                              package['discounted_price'],
                           'currency': package['currency'],
                           'country': package['country_name'],
                           "id": package["package_type"],
                           "packageId": package["package_id"],
                           "dep_date": package["dep_date"]
-                          
-
                         })),
               })
           .toList();
 
       setState(() {
         sections = fetchedSections;
-        
-        
       });
     } catch (e) {
       setState(() {

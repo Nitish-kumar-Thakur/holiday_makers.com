@@ -1,14 +1,14 @@
 // import 'package:flutter/material.dart';
-// import 'package:holdidaymakers/widgets/learn.dart';
-// import 'package:holdidaymakers/pages/Cruise/CurisesPackage.dart';
-// import 'package:holdidaymakers/pages/Cruise/cruisePackagedetails.dart';
-// import 'package:holdidaymakers/utils/api_handler.dart';
-// import 'package:holdidaymakers/widgets/appLargetext.dart';
-// import 'package:holdidaymakers/widgets/appText.dart';
-// import 'package:holdidaymakers/widgets/drawerPage.dart';
-// import 'package:holdidaymakers/widgets/dropdownWidget.dart';
-// import 'package:holdidaymakers/widgets/mainCarousel.dart';
-// import 'package:holdidaymakers/widgets/subCarousel.dart';
+// import 'package:HolidayMakers/widgets/learn.dart';
+// import 'package:HolidayMakers/pages/Cruise/CurisesPackage.dart';
+// import 'package:HolidayMakers/pages/Cruise/cruisePackagedetails.dart';
+// import 'package:HolidayMakers/utils/api_handler.dart';
+// import 'package:HolidayMakers/widgets/appLargetext.dart';
+// import 'package:HolidayMakers/widgets/appText.dart';
+// import 'package:HolidayMakers/widgets/drawerPage.dart';
+// import 'package:HolidayMakers/widgets/dropdownWidget.dart';
+// import 'package:HolidayMakers/widgets/mainCarousel.dart';
+// import 'package:HolidayMakers/widgets/subCarousel.dart';
 // import 'package:shared_preferences/shared_preferences.dart'; // For date formatting
 
 // class CurisesHome1 extends StatefulWidget {

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:holdidaymakers/utils/api_handler.dart';
-import 'package:holdidaymakers/widgets/appLargetext.dart';
-import 'package:holdidaymakers/widgets/appText.dart';
-import 'package:holdidaymakers/widgets/calendarWidget.dart';
-import 'package:holdidaymakers/widgets/drawerPage.dart';
-import 'package:holdidaymakers/widgets/dropdownWidget.dart';
-import 'package:holdidaymakers/widgets/responciveButton.dart';
-import 'package:holdidaymakers/widgets/travelerDrawer.dart';
-import 'package:holdidaymakers/pages/FullyIndependentTraveler/travelerhotels.dart';
+import 'package:HolidayMakers/utils/api_handler.dart';
+import 'package:HolidayMakers/widgets/appLargetext.dart';
+import 'package:HolidayMakers/widgets/appText.dart';
+import 'package:HolidayMakers/widgets/calendarWidget.dart';
+import 'package:HolidayMakers/widgets/drawerPage.dart';
+import 'package:HolidayMakers/widgets/dropdownWidget.dart';
+import 'package:HolidayMakers/widgets/responciveButton.dart';
+import 'package:HolidayMakers/widgets/travelerDrawer.dart';
+import 'package:HolidayMakers/pages/FullyIndependentTraveler/travelerhotels.dart';
 import 'package:intl/intl.dart';
 
 class IndependentTravelerPage extends StatefulWidget {
@@ -20,8 +20,8 @@ class IndependentTravelerPage extends StatefulWidget {
       _IndependentTravelerPageState();
 }
 
-
-class _IndependentTravelerPageState extends State<IndependentTravelerPage> with TickerProviderStateMixin{
+class _IndependentTravelerPageState extends State<IndependentTravelerPage>
+    with TickerProviderStateMixin {
   List<DateTime> blockedDates = [];
   bool destinationLoading = true;
   String? selectedCity;
@@ -42,24 +42,25 @@ class _IndependentTravelerPageState extends State<IndependentTravelerPage> with 
 
   String dropdownValue = '1 night';
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-   late AnimationController _errorController;
+  late AnimationController _errorController;
   late Animation<double> _fadeAnimation;
 
-@override
-void initState() {
-  super.initState();
-  // resetData(); // Reset all fields when page is loaded
-  fetchCities();
-  // Initialize AnimationController for smooth fading
+  @override
+  void initState() {
+    super.initState();
+    // resetData(); // Reset all fields when page is loaded
+    fetchCities();
+    // Initialize AnimationController for smooth fading
     _errorController = AnimationController(
       duration: const Duration(seconds: 1), // Duration for the fade effect
       vsync: this,
     );
 
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(_errorController);
-}
+    _fadeAnimation =
+        Tween<double>(begin: 0.0, end: 1.0).animate(_errorController);
+  }
 
-void resetData() {
+  void resetData() {
     setState(() {
       selectedCity = null;
       selectedDestination = null;
@@ -77,9 +78,6 @@ void resetData() {
       blockedDates = [];
     });
   }
-
-
-
 
   Future<void> fetchCities() async {
     print(totalRoomsdata);
@@ -182,13 +180,13 @@ void resetData() {
         });
         _errorController.forward();
 
-      // Fade out the error message after 3 seconds
-      Future.delayed(Duration(seconds: 3), () {
-        _errorController.reverse();
-        setState(() {
-          errorMessage = null;
+        // Fade out the error message after 3 seconds
+        Future.delayed(Duration(seconds: 3), () {
+          _errorController.reverse();
+          setState(() {
+            errorMessage = null;
+          });
         });
-      });
       }
     } catch (error) {
       setState(() {
@@ -205,6 +203,7 @@ void resetData() {
       });
     }
   }
+
   @override
   void dispose() {
     _errorController.dispose(); // Dispose the animation controller
@@ -383,7 +382,7 @@ void resetData() {
                       child: responciveButton(text: 'SEARCH')),
                 ),
                 const SizedBox(height: 20),
-                 if (errorMessage != null)
+                if (errorMessage != null)
                   FadeTransition(
                     opacity: _fadeAnimation,
                     child: Center(
@@ -400,6 +399,4 @@ void resetData() {
       ),
     );
   }
- 
-
 }

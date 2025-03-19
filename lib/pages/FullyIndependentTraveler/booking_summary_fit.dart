@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:holdidaymakers/pages/FullyIndependentTraveler/travelers_details_fit.dart';
-import 'package:holdidaymakers/utils/api_handler.dart';
-import 'package:holdidaymakers/widgets/responciveButton.dart';
+import 'package:HolidayMakers/pages/FullyIndependentTraveler/travelers_details_fit.dart';
+import 'package:HolidayMakers/utils/api_handler.dart';
+import 'package:HolidayMakers/widgets/responciveButton.dart';
 import 'package:shimmer/shimmer.dart';
 
 class BookingSummaryFIT extends StatefulWidget {
@@ -41,11 +41,11 @@ class _BookingSummaryFITState extends State<BookingSummaryFIT> {
     bookingSummaryFIT();
     print("================================================");
     print({
-        "search_id": widget.searchId,
-        "activity_list": [
-          {"destination": widget.destination, "activity": widget.activityList}
-        ]
-      });
+      "search_id": widget.searchId,
+      "activity_list": [
+        {"destination": widget.destination, "activity": widget.activityList}
+      ]
+    });
     print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
     print("================================================");
   }
@@ -101,8 +101,8 @@ class _BookingSummaryFITState extends State<BookingSummaryFIT> {
         bookingSummreyData["data"]["result"]["flight"]["onward"] ?? [];
     final returnFlight =
         bookingSummreyData["data"]["result"]["flight"]["return"] ?? [];
-    final activityList = bookingSummreyData["data"]["result"]["activity"]["activity_list"] ??
-        [];
+    final activityList =
+        bookingSummreyData["data"]["result"]["activity"]["activity_list"] ?? [];
     // print("@@@@@@@@@@@@@@@@@@!@#%^&*!@#%^&*()@@@@@@@@@@@@@@@@");
     // print(activityList);
     // print("@@@@@@@@@@@@@@@@@@!@#%^&*!@#%^&*()@@@@@@@@@@@@@@@@");

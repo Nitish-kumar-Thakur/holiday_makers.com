@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:holdidaymakers/pages/homePages/mainPage.dart';
-import 'package:holdidaymakers/pages/homePages/introPage.dart';
-import 'package:holdidaymakers/pages/homePages/onboardPage.dart';
+import 'package:HolidayMakers/pages/homePages/mainPage.dart';
+import 'package:HolidayMakers/pages/homePages/introPage.dart';
+import 'package:HolidayMakers/pages/homePages/onboardPage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Splashscreen extends StatefulWidget {
@@ -13,12 +13,12 @@ class Splashscreen extends StatefulWidget {
 }
 
 class _SplashscreenState extends State<Splashscreen> {
-_checkFirstLaunch() async {
+  _checkFirstLaunch() async {
     final prefs = await SharedPreferences.getInstance();
     bool? isOnboardingComplete = prefs.getBool('isOnboardingComplete') ?? false;
     bool? isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
 
-    if (isOnboardingComplete && isLoggedIn) {
+    if (isOnboardingComplete) { //isOnboardingComplete && isLoggedIn)
       // Navigate to Home Page if onboarding is done and user is logged in
       Navigator.pushReplacement(
         context,
@@ -38,6 +38,7 @@ _checkFirstLaunch() async {
       );
     }
   }
+
   @override
   void initState() {
     // TODO: implement initState
@@ -47,7 +48,9 @@ _checkFirstLaunch() async {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: Center(child: Image.asset("img/splashLogo.png"),)
-    );
+    return Scaffold(
+        body: Center(
+      child: Image.asset("img/splashLogo.png"),
+    ));
   }
 }

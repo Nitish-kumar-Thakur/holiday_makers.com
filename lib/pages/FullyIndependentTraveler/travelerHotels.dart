@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:holdidaymakers/pages/FullyIndependentTraveler/flightPage_fit.dart';
-import 'package:holdidaymakers/utils/api_handler.dart';
-import 'package:holdidaymakers/widgets/appLargetext.dart';
-import 'package:holdidaymakers/widgets/appText.dart';
+import 'package:HolidayMakers/pages/FullyIndependentTraveler/flightPage_fit.dart';
+import 'package:HolidayMakers/utils/api_handler.dart';
+import 'package:HolidayMakers/widgets/appLargetext.dart';
+import 'package:HolidayMakers/widgets/appText.dart';
 import 'package:shimmer/shimmer.dart';
 
 class Travelerhotels extends StatefulWidget {
@@ -11,7 +11,10 @@ class Travelerhotels extends StatefulWidget {
   final Map<String, dynamic> responceData;
   final List<dynamic> roomArray;
   const Travelerhotels(
-      {super.key, required this.responceData, required this.roomArray, required this.numberOfNights});
+      {super.key,
+      required this.responceData,
+      required this.roomArray,
+      required this.numberOfNights});
 
   @override
   State<Travelerhotels> createState() => _TravelerhotelsState();
@@ -168,7 +171,7 @@ class _TravelerhotelsState extends State<Travelerhotels> {
                                   padding: EdgeInsets.only(
                                       bottom: screenHeight * 0.04),
                                   child: HotelCard(
-                                    numberOfNights:widget.numberOfNights,
+                                    numberOfNights: widget.numberOfNights,
                                     hotel: hotelList[index],
                                     responceData: widget.responceData,
                                     roomArray: widget.roomArray,

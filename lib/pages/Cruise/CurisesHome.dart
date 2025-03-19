@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:holdidaymakers/pages/Cruise/cruisePackagedetails.dart';
-import 'package:holdidaymakers/utils/api_handler.dart';
-import 'package:holdidaymakers/widgets/appLargetext.dart';
-import 'package:holdidaymakers/widgets/drawerPage.dart';
-import 'package:holdidaymakers/widgets/dropdownWidget.dart';
-import 'package:holdidaymakers/widgets/responcive_card.dart';
+import 'package:HolidayMakers/pages/Cruise/cruisePackagedetails.dart';
+import 'package:HolidayMakers/utils/api_handler.dart';
+import 'package:HolidayMakers/widgets/appLargetext.dart';
+import 'package:HolidayMakers/widgets/drawerPage.dart';
+import 'package:HolidayMakers/widgets/dropdownWidget.dart';
+import 'package:HolidayMakers/widgets/responcive_card.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -36,17 +36,16 @@ class _CurisesHomeState extends State<CurisesHome> {
     _fetchCruisePackages('', ''); // Fetch cruise package data.
   }
 
-Future<void> _loadProfileDetails() async {
-  try {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      profileImg = prefs.getString("profileImg") ?? "";
-    });
-  } catch (error) {
-    print("Error loading profile details: $error");
+  Future<void> _loadProfileDetails() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      setState(() {
+        profileImg = prefs.getString("profileImg") ?? "";
+      });
+    } catch (error) {
+      print("Error loading profile details: $error");
+    }
   }
-}
-
 
   Future<void> _fetchCountryAndMonthLists() async {
     try {
@@ -69,37 +68,37 @@ Future<void> _loadProfileDetails() async {
     }
   }
 
-Future<void> _fetchCruisePackages(String country, String month) async {
-  print(country);
-  print(month);
-  try {
-    final data = await APIHandler.getNewPackagesData("cruise", country, month);
-    setState(() {
-      if (data['status'] == true) {
-        cruisePackages = (data['data']['package_list'] as List)
-            .map<Map<String, dynamic>>((package) => {
-                  'image': package['package_homepage_image'],
-                  'name': package['package_name'],
-                  'price': package['discounted_price'],
-                  'currency': package['currency'],
-                  'country': package['country_name'],
-                  "packageid": package["package_id"]
-                })
-            .toList();
-      } else {
-        cruisePackages = []; // Empty list if no packages are found
-      }
-      isLoading = false;
-    });
-  } catch (error) {
-    debugPrint('Error fetching cruise packages: $error');
-    setState(() {
-      isLoading = false;
-      cruisePackages = []; // Empty list in case of error
-    });
+  Future<void> _fetchCruisePackages(String country, String month) async {
+    print(country);
+    print(month);
+    try {
+      final data =
+          await APIHandler.getNewPackagesData("cruise", country, month);
+      setState(() {
+        if (data['status'] == true) {
+          cruisePackages = (data['data']['package_list'] as List)
+              .map<Map<String, dynamic>>((package) => {
+                    'image': package['package_homepage_image'],
+                    'name': package['package_name'],
+                    'price': package['discounted_price'],
+                    'currency': package['currency'],
+                    'country': package['country_name'],
+                    "packageid": package["package_id"]
+                  })
+              .toList();
+        } else {
+          cruisePackages = []; // Empty list if no packages are found
+        }
+        isLoading = false;
+      });
+    } catch (error) {
+      debugPrint('Error fetching cruise packages: $error');
+      setState(() {
+        isLoading = false;
+        cruisePackages = []; // Empty list in case of error
+      });
+    }
   }
-}
-
 
   @override
   Widget build(BuildContext context) {
@@ -375,47 +374,51 @@ Future<void> _fetchCruisePackages(String country, String month) async {
 
   // Normal Package Grid
   Widget _buildPackageGrid(double screenWidth) {
-  return Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 15),
-    child: cruisePackages.isEmpty
-        ? Center(
-            child: Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Text(
-                'No Compatible Packages Available',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-            ),
-          )
-        : GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: cruisePackages.length,
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              // childAspectRatio: 0.75,
-              crossAxisSpacing: 10,
-              mainAxisSpacing: 10,
-            ),
-            itemBuilder: (context, index) {
-              final package = cruisePackages[index];
-              return GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => CruisePackageDetails(packageId: package["packageid"],)),
-                  ); 
-                },
-                child: ResponsiveCard(
-                  image: package['image'] ?? 'img/placeholder.png',
-                  title: package['name'] ?? 'Package Name',
-                  subtitle: package['country'] ?? 'Location',
-                  price: "${package['currency']} ${package['price'] ?? 'N/A'}",
-                  screenWidth: screenWidth,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 15),
+      child: cruisePackages.isEmpty
+          ? Center(
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Text(
+                  'No Compatible Packages Available',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
-              );
-            },
-          ),
-  );
-}
+              ),
+            )
+          : GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: cruisePackages.length,
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                // childAspectRatio: 0.75,
+                crossAxisSpacing: 10,
+                mainAxisSpacing: 10,
+              ),
+              itemBuilder: (context, index) {
+                final package = cruisePackages[index];
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => CruisePackageDetails(
+                                packageId: package["packageid"],
+                              )),
+                    );
+                  },
+                  child: ResponsiveCard(
+                    image: package['image'] ?? 'img/placeholder.png',
+                    title: package['name'] ?? 'Package Name',
+                    subtitle: package['country'] ?? 'Location',
+                    price:
+                        "${package['currency']} ${package['price'] ?? 'N/A'}",
+                    screenWidth: screenWidth,
+                  ),
+                );
+              },
+            ),
+    );
+  }
 }

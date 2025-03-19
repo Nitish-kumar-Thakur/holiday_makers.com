@@ -1,6 +1,6 @@
+import 'package:HolidayMakers/utils/api_handler.dart';
+import 'package:HolidayMakers/widgets/responciveButton.dart';
 import 'package:flutter/material.dart';
-import 'package:holdidaymakers/utils/api_handler.dart';
-import 'package:holdidaymakers/widgets/responciveButton.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 
 class TravelersDetailsFD extends StatefulWidget {
@@ -35,6 +35,7 @@ class _TravelersDetailsFD extends State<TravelersDetailsFD> {
     "countryCode": "+971", // Default
     "phoneNumber": "",
   };
+  Map<String, dynamic> apiResponse = {};
 
   @override
   void initState() {
@@ -74,6 +75,20 @@ class _TravelersDetailsFD extends State<TravelersDetailsFD> {
         setState(() {
           cityList = List<String>.from(response["data"].map((city) => city["city_name"]));
         });
+      }
+    } catch (e) {
+      print("Error fetching cities: $e");
+    }
+  }
+
+  Future<void> _saveBooking(Map<String, dynamic> body) async {
+    try {
+      final response = await APIHandler.fdSaveBooking(body);
+      if (response["status"] == true) {
+        setState(() {
+          apiResponse = response['data'];
+        });
+        print(apiResponse);
       }
     } catch (e) {
       print("Error fetching cities: $e");
@@ -414,7 +429,7 @@ class _TravelersDetailsFD extends State<TravelersDetailsFD> {
                               ),
                               items: countryList
                                   .map((country) => DropdownMenuItem<String>(
-                                value: country["name"] as String,
+                                value: country["origin"] as String,
                                 child: Text(country["name"] as String),
                               ))
                                   .toList(),
@@ -433,8 +448,8 @@ class _TravelersDetailsFD extends State<TravelersDetailsFD> {
                                 });
 
                                 // Fetch cities based on the selected country
-                                String countryId = countryList.firstWhere((country) => country["name"] == value)["origin"]!;
-                                _fetchCity(countryId);
+                                // String countryId = countryList.firstWhere((country) => country["name"] == value)["origin"]!;
+                                _fetchCity(value!.toString());
                               },
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
@@ -452,7 +467,7 @@ class _TravelersDetailsFD extends State<TravelersDetailsFD> {
                               ),
                               items: countryList
                                   .map((country) => DropdownMenuItem<String>(
-                                value: country["name"],
+                                value: country["origin"] as String,
                                 child: Text(country["name"]!),
                               ))
                                   .toList(),
@@ -511,6 +526,31 @@ class _TravelersDetailsFD extends State<TravelersDetailsFD> {
           onTap: () {
             if (_formKey.currentState != null && _formKey.currentState!.validate()) {
               _formKey.currentState!.save(); // Save form data before navigation
+              // print("Travelers Data: $travelers");
+              // print("Traveler Details: $_travelerDetails");
+              // print("Contact Details: $contactDetails");
+              Map<String, dynamic> body = {
+                'search_id': widget.searchId.toString(),
+                'voucher_code': '',
+                'title': contactDetails['title'],
+                'name': contactDetails['contactName'],
+                'email': contactDetails['email'],
+                'country_code': contactDetails['countryCode'],
+                'phone': contactDetails['phoneNumber'].toString(),
+                'payment_type': 'telr',
+                "passenger_title": _travelerDetails.map((t) => t["title"]).toList(),
+                "passenger_first_name": _travelerDetails.map((t) => t["firstName"]).toList(),
+                "passenger_last_name": _travelerDetails.map((t) => t["lastName"]).toList(),
+                "passenger_dob": _travelerDetails.map((t) => t["dob"]).toList(),
+                "passenger_nationality": _travelerDetails.map((t) => t["nationality"]).toList(),
+                "passenger_country": _travelerDetails.map((t) => t["residentCountry"]).toList(),
+                "passenger_city": _travelerDetails.map((t) => t["residentCity"]).toList(),
+                "passenger_type": travelers
+              };
+
+              // print(body);
+
+              _saveBooking(body);
               // Navigator.push(
               //   context,
               //   MaterialPageRoute(

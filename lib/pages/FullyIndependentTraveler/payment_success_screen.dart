@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:holdidaymakers/pages/homePages/mainPage.dart';
+import 'package:HolidayMakers/pages/homePages/mainPage.dart';
 
 class PaymentSuccessScreen extends StatefulWidget {
   const PaymentSuccessScreen({super.key});
@@ -20,14 +20,17 @@ class _PaymentSuccessScreenState extends State<PaymentSuccessScreen>
       duration: const Duration(milliseconds: 700),
       vsync: this,
     );
-    _scaleAnimation = CurvedAnimation(parent: _controller, curve: Curves.easeOut);
+    _scaleAnimation =
+        CurvedAnimation(parent: _controller, curve: Curves.easeOut);
     _controller.forward();
 
     // Redirect after 900 milliseconds
     Future.delayed(const Duration(milliseconds: 2500), () {
-       Navigator.pushReplacement(
+      Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const Mainpage()), // Replace `HomePage` with your actual home page widget.
+        MaterialPageRoute(
+            builder: (context) =>
+                const Mainpage()), // Replace `HomePage` with your actual home page widget.
       ); // Replace '/home' with the actual route for your home page.
     });
   }

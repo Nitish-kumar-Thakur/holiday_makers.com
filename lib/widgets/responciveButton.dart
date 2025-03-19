@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:holdidaymakers/widgets/appLargetext.dart';
+import 'package:HolidayMakers/widgets/appLargetext.dart';
 
 class responciveButton extends StatelessWidget {
   final bool? isResponcive;
@@ -8,15 +8,15 @@ class responciveButton extends StatelessWidget {
   final Color color;
   final Color textColor;
   final double buttonShadow;
-  responciveButton(
-      {super.key,
-      this.isResponcive,
-      required this.text,
-      this.border = 20,
-      this.color = Colors.red,
-      this.textColor = Colors.white,
-      this.buttonShadow = 0.4,
-      });
+  responciveButton({
+    super.key,
+    this.isResponcive,
+    required this.text,
+    this.border = 20,
+    this.color = Colors.red,
+    this.textColor = Colors.white,
+    this.buttonShadow = 0.4,
+  });
 
   @override
   Widget build(BuildContext context) {

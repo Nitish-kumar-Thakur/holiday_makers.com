@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:holdidaymakers/pages/homePages/mainPage.dart';
-import 'package:holdidaymakers/pages/homePages/introPage.dart';
-import 'package:holdidaymakers/pages/login&signup/loginPage.dart';
-import 'package:holdidaymakers/utils/api_handler.dart';
-import 'package:holdidaymakers/widgets/appLargetext.dart';
-import 'package:holdidaymakers/widgets/appText.dart';
-import 'package:holdidaymakers/widgets/loginButton.dart';
-import 'package:holdidaymakers/widgets/responciveButton.dart';
+import 'package:HolidayMakers/pages/homePages/mainPage.dart';
+import 'package:HolidayMakers/pages/homePages/introPage.dart';
+import 'package:HolidayMakers/pages/login&signup/loginPage.dart';
+import 'package:HolidayMakers/utils/api_handler.dart';
+import 'package:HolidayMakers/widgets/appLargetext.dart';
+import 'package:HolidayMakers/widgets/appText.dart';
+import 'package:HolidayMakers/widgets/loginButton.dart';
+import 'package:HolidayMakers/widgets/responciveButton.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class Signuppage extends StatefulWidget {
   const Signuppage({super.key});
@@ -45,19 +46,22 @@ class _SignuppageState extends State<Signuppage> {
         email.isEmpty ||
         password.isEmpty ||
         phone.isEmpty) {
-      setState(() => _errorMessage = 'All fields are required');
+      // setState(() => _errorMessage = 'All fields are required');
+      Fluttertoast.showToast(msg: 'All fields are required');
       setState(() => _isLoading = false);
       return;
     }
 
     if (!RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$').hasMatch(email)) {
-      setState(() => _errorMessage = 'Invalid email format');
+      // setState(() => _errorMessage = 'Invalid email format');
+      Fluttertoast.showToast(msg: 'Invalid email format');
       setState(() => _isLoading = false);
       return;
     }
 
     if (password.length < 6) {
-      setState(() => _errorMessage = 'Password must be at least 6 characters');
+      // setState(() => _errorMessage = 'Password must be at least 6 characters');
+      Fluttertoast.showToast(msg: 'Password must be at least 6 characters');
       setState(() => _isLoading = false);
       return;
     }
@@ -73,29 +77,30 @@ class _SignuppageState extends State<Signuppage> {
       );
 
       if (result['status'] == true) {
-      // final responseData = await APIHandler.login(email, password);
-      // if (responseData['status'] == true) {
-      //   _completeLogin(responseData);
-      // } else {
-      //   Navigator.pushReplacement(
-      //     context,
-      //     MaterialPageRoute(builder: (context) => const Mainpage()),
-      //   );
-      // }
+        // final responseData = await APIHandler.login(email, password);
+        // if (responseData['status'] == true) {
+        //   _completeLogin(responseData);
+        // } else {
+        //   Navigator.pushReplacement(
+        //     context,
+        //     MaterialPageRoute(builder: (context) => const Mainpage()),
+        //   );
+        // }
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => const Mainpage()),
         );
-        
       } else {
+        Fluttertoast.showToast(msg: result['message'] ?? 'Registration failed');
         setState(() {
-          _errorMessage = result['message'] ?? 'Registration failed';
+          // _errorMessage = result['message'] ?? 'Registration failed';
           _isLoading = false;
         });
       }
     } catch (e) {
+      Fluttertoast.showToast(msg: 'Error: $e');
       setState(() {
-        _errorMessage = 'Error: $e';
+        // _errorMessage = 'Error: $e';
         _isLoading = false;
       });
     }

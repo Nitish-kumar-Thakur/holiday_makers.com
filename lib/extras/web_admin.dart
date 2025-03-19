@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:holdidaymakers/extras/home_page.dart';
+import 'package:HolidayMakers/extras/home_page.dart';
 
 class WebAdmin extends StatefulWidget {
   @override
@@ -62,30 +62,32 @@ class NavigationBar extends StatelessWidget {
           bottomRight: Radius.circular(16),
         ),
       ),
-      child: Column( mainAxisSize: MainAxisSize.min,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          SizedBox( height: 220,
+          SizedBox(
+            height: 220,
             child: DrawerHeader(
-            decoration: BoxDecoration(border: null),
-            child: Column(
-              
-              children: [
-                Icon(Icons.admin_panel_settings, size: 30, color: Colors.black),
-                SizedBox(height: 10),
-                Divider(),
-                CircleAvatar(
-                  maxRadius: 30,
-                ),
-                SizedBox(height: 10),
-                Text("Nitish Thakur",
-                    style: TextStyle(color: Colors.black, fontSize: 13)),
-                    SizedBox(height: 5),
-                    Text("Admin",
-                    style: TextStyle(color: Colors.black, fontSize: 13)),
-                    
-              ],
+              decoration: BoxDecoration(border: null),
+              child: Column(
+                children: [
+                  Icon(Icons.admin_panel_settings,
+                      size: 30, color: Colors.black),
+                  SizedBox(height: 10),
+                  Divider(),
+                  CircleAvatar(
+                    maxRadius: 30,
+                  ),
+                  SizedBox(height: 10),
+                  Text("Nitish Thakur",
+                      style: TextStyle(color: Colors.black, fontSize: 13)),
+                  SizedBox(height: 5),
+                  Text("Admin",
+                      style: TextStyle(color: Colors.black, fontSize: 13)),
+                ],
+              ),
             ),
-          ),),
+          ),
           Expanded(
             child: ListView(
               children: [
@@ -109,28 +111,35 @@ class NavigationBar extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(left: 10),
       child: Material(
-        color: selectedIndex == index ? Colors.blue.withOpacity(0.2) : Colors.transparent,
-        borderRadius: BorderRadius.only(topLeft: Radius.circular(12), bottomLeft:  Radius.circular(12)),
+        color: selectedIndex == index
+            ? Colors.blue.withOpacity(0.2)
+            : Colors.transparent,
+        borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(12), bottomLeft: Radius.circular(12)),
         child: InkWell(
           onTap: () => onItemSelected(index),
-          borderRadius: BorderRadius.only(topLeft: Radius.circular(12), bottomLeft:  Radius.circular(12)),
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(12), bottomLeft: Radius.circular(12)),
           child: Container(
             padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.only(topLeft: Radius.circular(12), bottomLeft:  Radius.circular(12)),
-              color: selectedIndex == index
-                  ? Colors.grey.shade200
-                  : null,
+              borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(12),
+                  bottomLeft: Radius.circular(12)),
+              color: selectedIndex == index ? Colors.grey.shade200 : null,
             ),
             child: Row(
               children: [
-                Icon(icon, color: selectedIndex == index ? Colors.black : Colors.grey),
+                Icon(icon,
+                    color: selectedIndex == index ? Colors.black : Colors.grey),
                 SizedBox(width: 10),
                 Text(
                   title,
                   style: TextStyle(
                     color: selectedIndex == index ? Colors.black : Colors.grey,
-                    fontWeight: selectedIndex == index ? FontWeight.bold : FontWeight.normal,
+                    fontWeight: selectedIndex == index
+                        ? FontWeight.bold
+                        : FontWeight.normal,
                   ),
                 ),
               ],
@@ -142,61 +151,81 @@ class NavigationBar extends StatelessWidget {
   }
 }
 
-
 // Placeholder pages for each section
 
 class EmployeesPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Container( decoration: BoxDecoration(color: Colors.grey.shade200),
-      child: Center(child: Text("Employees Page", style: TextStyle(fontSize: 24))),);
+    return Container(
+      decoration: BoxDecoration(color: Colors.grey.shade200),
+      child:
+          Center(child: Text("Employees Page", style: TextStyle(fontSize: 24))),
+    );
   }
 }
 
 class AttendancePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Container( decoration: BoxDecoration(color: Colors.grey.shade200),
-      child: Center(child: Text("Employees Page", style: TextStyle(fontSize: 24))),);
+    return Container(
+      decoration: BoxDecoration(color: Colors.grey.shade200),
+      child:
+          Center(child: Text("Employees Page", style: TextStyle(fontSize: 24))),
+    );
   }
 }
 
 class SummaryPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Container( decoration: BoxDecoration(color: Colors.grey.shade200),
-      child: Center(child: Text("Employees Page", style: TextStyle(fontSize: 24))),);
+    return Container(
+      decoration: BoxDecoration(color: Colors.grey.shade200),
+      child:
+          Center(child: Text("Employees Page", style: TextStyle(fontSize: 24))),
+    );
   }
 }
 
 class InformationPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Container( decoration: BoxDecoration(color: Colors.grey.shade200),
-      child: Center(child: Text("Employees Page", style: TextStyle(fontSize: 24))),);
+    return Container(
+      decoration: BoxDecoration(color: Colors.grey.shade200),
+      child:
+          Center(child: Text("Employees Page", style: TextStyle(fontSize: 24))),
+    );
   }
 }
 
 class WorkspacesPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Container( decoration: BoxDecoration(color: Colors.grey.shade200),
-      child: Center(child: Text("Employees Page", style: TextStyle(fontSize: 24))),);
+    return Container(
+      decoration: BoxDecoration(color: Colors.grey.shade200),
+      child:
+          Center(child: Text("Employees Page", style: TextStyle(fontSize: 24))),
+    );
   }
 }
 
 class FinancePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Container( decoration: BoxDecoration(color: Colors.grey.shade200),
-      child: Center(child: Text("Employees Page", style: TextStyle(fontSize: 24))),);
+    return Container(
+      decoration: BoxDecoration(color: Colors.grey.shade200),
+      child:
+          Center(child: Text("Employees Page", style: TextStyle(fontSize: 24))),
+    );
   }
 }
 
 class SettingsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Container( decoration: BoxDecoration(color: Colors.grey.shade200),
-      child: Center(child: Text("Employees Page", style: TextStyle(fontSize: 24))),);
+    return Container(
+      decoration: BoxDecoration(color: Colors.grey.shade200),
+      child:
+          Center(child: Text("Employees Page", style: TextStyle(fontSize: 24))),
+    );
   }
 }

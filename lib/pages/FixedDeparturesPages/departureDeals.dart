@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:holdidaymakers/pages/FixedDeparturesPages/hotelsAccommodation.dart';
-import 'package:holdidaymakers/utils/api_handler.dart';
-import 'package:holdidaymakers/widgets/responciveButton.dart';
-import 'package:holdidaymakers/widgets/travelerDrawer.dart';
+import 'package:HolidayMakers/pages/FixedDeparturesPages/hotelsAccommodation.dart';
+import 'package:HolidayMakers/utils/api_handler.dart';
+import 'package:HolidayMakers/widgets/responciveButton.dart';
+import 'package:HolidayMakers/widgets/travelerDrawer.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -227,12 +227,9 @@ class _DepartureDealsState extends State<DepartureDeals> {
                     Travelerdrawer(
                       onSelectionChanged: (Map<String, dynamic> selection) {
                         setState(() {
-                          selectedRoom =
-                              selection['totalRooms'].toString();
-                          selectedAdult =
-                              selection['totalAdults'].toString();
-                          selectedChild =
-                              selection['totalChildren'].toString();
+                          selectedRoom = selection['totalRooms'].toString();
+                          selectedAdult = selection['totalAdults'].toString();
+                          selectedChild = selection['totalChildren'].toString();
                           childrenAge = selection['childrenAges'];
                           totalRoomsdata = selection["totalData"];
                           // print("@@@@@@@@@@@@@@@@@@@@@@@@");
@@ -262,10 +259,9 @@ class _DepartureDealsState extends State<DepartureDeals> {
                       context,
                       MaterialPageRoute(
                         builder: (context) => HotelsAccommodation(
-                          activityList: activityList,
+                            activityList: activityList,
                             packageData: selectedPackageData!,
                             totalRoomsdata: totalRoomsdata),
-                            
                       ),
                     );
                   }

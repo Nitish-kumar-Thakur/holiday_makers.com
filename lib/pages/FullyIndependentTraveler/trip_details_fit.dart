@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:holdidaymakers/pages/FullyIndependentTraveler/independentTravelerPage.dart';
+import 'package:HolidayMakers/pages/FullyIndependentTraveler/independentTravelerPage.dart';
 
 class TripDetailsPage extends StatelessWidget {
   const TripDetailsPage({super.key});
@@ -14,7 +14,8 @@ class TripDetailsPage extends StatelessWidget {
             height: 300,
             decoration: BoxDecoration(
               image: DecorationImage(
-                image: AssetImage('img/tent_lake.jpg'), // Replace with your image
+                image:
+                    AssetImage('img/tent_lake.jpg'), // Replace with your image
                 fit: BoxFit.cover,
               ),
             ),
@@ -95,7 +96,7 @@ class TripDetailsPage extends StatelessWidget {
                         controller: scrollController,
                         child: Text(
                           "Nestled in the azure waters of the Indian Ocean, Nusa Penida is a pristine gem just a short boat ride from Bali, Indonesia, offering an unforgettable escape into paradise. This stunning island is renowned for its dramatic coastal cliffs, crystal-clear waters, and vibrant marine life, making it a haven for nature lovers and adventure seekers alike.\n\nExplore iconic spots like Kelingking Beach, often dubbed \"T-Rex Bay\" for its unique rock formation, where turquoise waves crash against white sandy shores. Dive into the underwater wonderland at Crystal Bay or Manta Point to swim alongside majestic manta rays and vibrant coral reefs. Take a hike to the breathtaking Angel's Billabong and Broken Beach, where natural rock formations create picture-perfect lagoons. For those seeking serenity, the island's lush hills and traditional villages offer a glimpse into the timeless Balinese culture."
-                              "Nestled in the azure waters of the Indian Ocean, Nusa Penida is a pristine gem just a short boat ride from Bali, Indonesia, offering an unforgettable escape into paradise. This stunning island is renowned for its dramatic coastal cliffs, crystal-clear waters, and vibrant marine life, making it a haven for nature lovers and adventure seekers alike.\n\nExplore iconic spots like Kelingking Beach, often dubbed \"T-Rex Bay\" for its unique rock formation, where turquoise waves crash against white sandy shores. Dive into the underwater wonderland at Crystal Bay or Manta Point to swim alongside majestic manta rays and vibrant coral reefs. Take a hike to the breathtaking Angel's Billabong and Broken Beach, where natural rock formations create picture-perfect lagoons. For those seeking serenity, the island's lush hills and traditional villages offer a glimpse into the timeless Balinese culture.",
+                          "Nestled in the azure waters of the Indian Ocean, Nusa Penida is a pristine gem just a short boat ride from Bali, Indonesia, offering an unforgettable escape into paradise. This stunning island is renowned for its dramatic coastal cliffs, crystal-clear waters, and vibrant marine life, making it a haven for nature lovers and adventure seekers alike.\n\nExplore iconic spots like Kelingking Beach, often dubbed \"T-Rex Bay\" for its unique rock formation, where turquoise waves crash against white sandy shores. Dive into the underwater wonderland at Crystal Bay or Manta Point to swim alongside majestic manta rays and vibrant coral reefs. Take a hike to the breathtaking Angel's Billabong and Broken Beach, where natural rock formations create picture-perfect lagoons. For those seeking serenity, the island's lush hills and traditional villages offer a glimpse into the timeless Balinese culture.",
                           style: TextStyle(
                             fontSize: 14,
                             color: Colors.grey[700],
@@ -116,7 +117,13 @@ class TripDetailsPage extends StatelessWidget {
                             borderRadius: BorderRadius.circular(8),
                           ),
                         ),
-                        onPressed: () {Navigator.push(context, MaterialPageRoute(builder: (context) => IndependentTravelerPage()));},
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      IndependentTravelerPage()));
+                        },
                         child: Text(
                           "Book A Trip",
                           style: TextStyle(fontSize: 22, color: Colors.white),

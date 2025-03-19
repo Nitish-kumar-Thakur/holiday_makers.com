@@ -1,4 +1,4 @@
-# holdidaymakers
+# HolidayMakers
 
 A new Flutter project.
 

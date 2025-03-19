@@ -1,5 +1,5 @@
 // import 'package:flutter/material.dart';
-// import 'package:holdidaymakers/widgets/appLargetext.dart';
+// import 'package:HolidayMakers/widgets/appLargetext.dart';
 // import 'package:shimmer/shimmer.dart';
 
 // class HotelsAccommodation extends StatefulWidget {

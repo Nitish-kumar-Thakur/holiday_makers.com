@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:holdidaymakers/pages/FixedDeparturesPages/departuresPackages.dart';
-import 'package:holdidaymakers/utils/api_handler.dart';
-import 'package:holdidaymakers/widgets/appLargetext.dart';
-import 'package:holdidaymakers/widgets/appText.dart';
-import 'package:holdidaymakers/widgets/drawerPage.dart';
-import 'package:holdidaymakers/widgets/mainCarousel.dart';
+import 'package:HolidayMakers/pages/FixedDeparturesPages/departuresPackages.dart';
+import 'package:HolidayMakers/utils/api_handler.dart';
+import 'package:HolidayMakers/widgets/appLargetext.dart';
+import 'package:HolidayMakers/widgets/appText.dart';
+import 'package:HolidayMakers/widgets/drawerPage.dart';
+import 'package:HolidayMakers/widgets/mainCarousel.dart';
 import 'package:shared_preferences/shared_preferences.dart'; // For date formatting
 
 class DeparturesHome1 extends StatefulWidget {
@@ -15,16 +15,16 @@ class DeparturesHome1 extends StatefulWidget {
 }
 
 class _DeparturesHome1State extends State<DeparturesHome1> {
-    final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-    String profileImg = '';
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  String profileImg = '';
   bool isLoading = true; // Loading flag
   List<Map<String, dynamic>> banner_list = [];
   DateTime? selectedDate; // For storing the selected date
-  int selectedOption = 0; 
-    final TextEditingController countryController = TextEditingController();
+  int selectedOption = 0;
+  final TextEditingController countryController = TextEditingController();
   final TextEditingController monthController = TextEditingController();
 
-    @override
+  @override
   void initState() {
     super.initState();
     _loadProfileDetails();
@@ -59,7 +59,7 @@ class _DeparturesHome1State extends State<DeparturesHome1> {
       print('Error: $e');
     }
   }
-  
+
   // Function to select date with customizations
   // Future<void> _selectDate(BuildContext context) async {
   //   final DateTime? picked = await showDatePicker(
@@ -85,12 +85,15 @@ class _DeparturesHome1State extends State<DeparturesHome1> {
   //   }
   // }
 
-  
   // List of dynamic sections
   final List<Map<String, dynamic>> sections = [
     {
       'title': 'Recommended',
-      'list': ['img/recomended1.png', 'img/recomended2.png', 'img/recomended3.png'],
+      'list': [
+        'img/recomended1.png',
+        'img/recomended2.png',
+        'img/recomended3.png'
+      ],
     },
     {
       'title': 'Winter Holidays',
@@ -103,7 +106,8 @@ class _DeparturesHome1State extends State<DeparturesHome1> {
   ];
 
   void navigateToSeeAll() {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => const Departurespackages()));
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) => const Departurespackages()));
   }
 
   @override
@@ -113,50 +117,52 @@ class _DeparturesHome1State extends State<DeparturesHome1> {
       resizeToAvoidBottomInset: true,
       backgroundColor: Colors.white,
       drawer: Drawerpage(),
-      body:  isLoading
+      body: isLoading
           ? Center(
-              child: CircularProgressIndicator(color: Colors.red,), // Show loader until data is fetched
+              child: CircularProgressIndicator(
+                color: Colors.red,
+              ), // Show loader until data is fetched
             )
-          :SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header Section
-            Container(
-              width: double.infinity,
-              height: 120,
-              decoration: const BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage('img/homeBg.png'),
-                  fit: BoxFit.cover,
-                ),
-              ),
+          : SingleChildScrollView(
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Header Section
                   Container(
-                    height: 45,
                     width: double.infinity,
+                    height: 120,
                     decoration: const BoxDecoration(
-                      color: Colors.white70,
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(100),
-                        topRight: Radius.circular(100),
+                      image: DecorationImage(
+                        image: AssetImage('img/homeBg.png'),
+                        fit: BoxFit.cover,
                       ),
                     ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Container(
+                          height: 45,
+                          width: double.infinity,
+                          decoration: const BoxDecoration(
+                            color: Colors.white70,
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(100),
+                              topRight: Radius.circular(100),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ],
-              ),
-            ),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    _scaffoldKey.currentState?.openDrawer();
-                  },
-                  child: Padding(
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          _scaffoldKey.currentState?.openDrawer();
+                        },
+                        child: Padding(
                           padding: const EdgeInsets.only(left: 20),
                           child: CircleAvatar(
                             backgroundImage: profileImg.isNotEmpty
@@ -167,119 +173,126 @@ class _DeparturesHome1State extends State<DeparturesHome1> {
                             maxRadius: 22,
                           ),
                         ),
-                ),
-                Container(
-                  height: 40,
-                  width: 200,
-                  margin: const EdgeInsets.all(15),
-                  decoration: const BoxDecoration(
-                    image: DecorationImage(
-                      image: AssetImage('img/brandLogo.png'),
+                      ),
+                      Container(
+                        height: 40,
+                        width: 200,
+                        margin: const EdgeInsets.all(15),
+                        decoration: const BoxDecoration(
+                          image: DecorationImage(
+                            image: AssetImage('img/brandLogo.png'),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Padding(
+                    padding: EdgeInsets.all(10),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        AppLargeText(
+                            text: 'Fixed Departure Deals',
+                            color: Colors.black,
+                            size: 20),
+                        SizedBox(height: 10),
+                        // Dropdownwidget(selectedValue: "selectedValue", items: [], hintText: "Select Country", onChanged: (value) => {},),
+                        SizedBox(height: 10),
+                        // Dropdownwidget(selectedValue: "selectedValue", items: [], hintText: "Select Month", onChanged: (value) => {},),
+                        // GestureDetector(
+                        //   onTap: () => _selectDate(context),
+                        //   child: Container(
+                        //     padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                        //     decoration: BoxDecoration(
+                        //       borderRadius: BorderRadius.circular(8),
+                        //       color: Colors.grey[200],
+                        //     ),
+                        //     child: Row(
+                        //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        //       children: [
+                        //         Row(
+                        //           children: [
+                        //             Icon(Icons.calendar_today_outlined, color: Colors.black54),
+                        //             SizedBox(width: 8),
+                        //             Text(
+                        //               selectedDate != null
+                        //                   ? DateFormat('dd MMM yyyy').format(selectedDate!)
+                        //                   : '',
+                        //               style: TextStyle(
+                        //                 fontSize: 16,
+                        //                 fontWeight: FontWeight.w500,
+                        //               ),
+                        //             ),
+                        //           ],
+                        //         ),
+                        //         Icon(Icons.arrow_drop_down, color: Colors.black54),
+                        //       ],
+                        //     ),
+                        //   ),
+                        // ),
+                      ],
                     ),
                   ),
-                ),
-              ],
-            ),
-            Padding(
-              padding: EdgeInsets.all(10),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  AppLargeText(text: 'Fixed Departure Deals', color: Colors.black, size: 20),
-                  SizedBox(height: 10),
-                  // Dropdownwidget(selectedValue: "selectedValue", items: [], hintText: "Select Country", onChanged: (value) => {},),
-                  SizedBox(height: 10),
-                  // Dropdownwidget(selectedValue: "selectedValue", items: [], hintText: "Select Month", onChanged: (value) => {},),
-                  // GestureDetector(
-                  //   onTap: () => _selectDate(context),
-                  //   child: Container(
-                  //     padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  //     decoration: BoxDecoration(
-                  //       borderRadius: BorderRadius.circular(8),
-                  //       color: Colors.grey[200],
-                  //     ),
-                  //     child: Row(
-                  //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  //       children: [
-                  //         Row(
-                  //           children: [
-                  //             Icon(Icons.calendar_today_outlined, color: Colors.black54),
-                  //             SizedBox(width: 8),
-                  //             Text(
-                  //               selectedDate != null
-                  //                   ? DateFormat('dd MMM yyyy').format(selectedDate!)
-                  //                   : '',
-                  //               style: TextStyle(
-                  //                 fontSize: 16,
-                  //                 fontWeight: FontWeight.w500,
-                  //               ),
-                  //             ),
-                  //           ],
-                  //         ),
-                  //         Icon(Icons.arrow_drop_down, color: Colors.black54),
-                  //       ],
-                  //     ),
-                  //   ),
-                  // ),
+
+                  // Main Carousel
+                  Maincarousel(banner_list: banner_list),
+
+                  // Dynamic Sections using ListView.builder
+                  ListView.builder(
+                    physics: const NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    itemCount: sections.length,
+                    itemBuilder: (context, index) {
+                      final section = sections[index];
+                      return Column(
+                        children: [
+                          Container(
+                            margin: const EdgeInsets.only(left: 15),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                AppText(
+                                  text: section['title'],
+                                  color: Colors.black,
+                                  size: 16,
+                                ),
+                                GestureDetector(
+                                    onTap: navigateToSeeAll,
+                                    child: Padding(
+                                      padding: EdgeInsets.only(right: 5),
+                                      child: Row(
+                                        children: [
+                                          AppText(
+                                            text: 'See All',
+                                            color: const Color(0xFF0775BD),
+                                            size: 15,
+                                          ),
+                                          const SizedBox(width: 1),
+                                          Image.asset('img/seeAll.png',
+                                              height: 16),
+                                        ],
+                                      ),
+                                    )),
+                              ],
+                            ),
+                          ),
+                          Padding(
+                              padding: const EdgeInsets.only(left: 15),
+                              child: const Divider(color: Colors.grey)),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 15),
+                            //   child: IconButton(onPressed: (){
+                            //   Navigator.push(context, MaterialPageRoute(builder: (context) => const DeparturePackageDetails()));
+                            // }, icon: Subcarousel2(lists: section['list'])),
+                          ),
+                          const SizedBox(height: 20),
+                        ],
+                      );
+                    },
+                  ),
                 ],
               ),
             ),
-
-            // Main Carousel
-            Maincarousel(banner_list: banner_list),
-
-            // Dynamic Sections using ListView.builder
-            ListView.builder(
-              physics: const NeverScrollableScrollPhysics(),
-              shrinkWrap: true,
-              itemCount: sections.length,
-              itemBuilder: (context, index) {
-                final section = sections[index];
-                return Column(
-                  children: [
-                    Container(
-                      margin: const EdgeInsets.only(left: 15),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          AppText(
-                            text: section['title'],
-                            color: Colors.black,
-                            size: 16,
-                          ),
-                          GestureDetector(
-                            onTap: navigateToSeeAll,
-                            child: Padding(padding: EdgeInsets.only(right: 5),
-                            child: Row(
-                              children: [
-                                AppText(
-                                  text: 'See All',
-                                  color: const Color(0xFF0775BD),
-                                  size: 15,
-                                ),
-                                const SizedBox(width: 1),
-                                Image.asset('img/seeAll.png', height: 16),
-                              ],
-                            ),)
-                          ),
-                        ],
-                      ),
-                    ),
-                    Padding(padding: const EdgeInsets.only(left: 15), child: const Divider(color: Colors.grey)),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 15),
-                    //   child: IconButton(onPressed: (){
-                    //   Navigator.push(context, MaterialPageRoute(builder: (context) => const DeparturePackageDetails()));
-                    // }, icon: Subcarousel2(lists: section['list'])),
-                    ),
-                    const SizedBox(height: 20),
-                  ],
-                );
-              },
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

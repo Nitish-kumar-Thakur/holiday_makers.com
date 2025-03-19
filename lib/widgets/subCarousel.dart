@@ -1,7 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:holdidaymakers/pages/Cruise/cruisePackagedetails.dart';
-import 'package:holdidaymakers/pages/FixedDeparturesPages/departurePackagedetails.dart';
+import 'package:HolidayMakers/pages/Cruise/cruisePackagedetails.dart';
+import 'package:HolidayMakers/pages/FixedDeparturesPages/departurePackagedetails.dart';
 import 'package:intl/intl.dart';
 
 class Subcarousel extends StatefulWidget {
@@ -45,7 +45,6 @@ class _SubcarouselState extends State<Subcarousel>
     super.dispose();
   }
 
-
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -58,25 +57,42 @@ class _SubcarouselState extends State<Subcarousel>
             final item = widget.lists[index];
             print(item);
             return GestureDetector(
-              onTap: () {  
+              onTap: () {
                 print(item["id"].toString());
                 if (item["id"] == "cruise") {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => CruisePackageDetails(packageId: item["packageId"],)),
+                    MaterialPageRoute(
+                        builder: (context) => CruisePackageDetails(
+                              packageId: item["packageId"],
+                            )),
                   );
                 } else if (item["id"] == "FD") {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => DeparturePackageDetails(packageId: item["packageId"])),
+                    MaterialPageRoute(
+                        builder: (context) => DeparturePackageDetails(
+                            packageId: item["packageId"])),
                   );
                 }
               },
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 child: widget.title == "Winter Holidays"
-                    ? _buildWinterHolidayImage(item['image'], item['country'], item['currency'], item['price'].toString(), item['tempPrice'].toString(), item['dep_date'])
-                    : _buildStandardImage(item['image'], item['country'], item['currency'], item['price'].toString(), item['tempPrice'].toString(), item['dep_date']),
+                    ? _buildWinterHolidayImage(
+                        item['image'],
+                        item['country'],
+                        item['currency'],
+                        item['price'].toString(),
+                        item['tempPrice'].toString(),
+                        item['dep_date'])
+                    : _buildStandardImage(
+                        item['image'],
+                        item['country'],
+                        item['currency'],
+                        item['price'].toString(),
+                        item['tempPrice'].toString(),
+                        item['dep_date']),
               ),
             );
           },
@@ -86,7 +102,8 @@ class _SubcarouselState extends State<Subcarousel>
   }
 
   // Widget for regular images
-  Widget _buildStandardImage(String imageUrl, String countryName, String currency, String price, String tempPrice, String date) {
+  Widget _buildStandardImage(String imageUrl, String countryName,
+      String currency, String price, String tempPrice, String date) {
     return Container(
       width: widget.width,
       decoration: BoxDecoration(
@@ -131,7 +148,8 @@ class _SubcarouselState extends State<Subcarousel>
                 padding: EdgeInsets.symmetric(horizontal: 7, vertical: 3),
                 decoration: BoxDecoration(
                   color: Colors.blue,
-                  borderRadius: BorderRadius.only(topRight: Radius.circular(20)),
+                  borderRadius:
+                      BorderRadius.only(topRight: Radius.circular(20)),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black.withOpacity(0.1),
@@ -217,11 +235,9 @@ class _SubcarouselState extends State<Subcarousel>
     );
   }
 
-
-
   // Widget for images with animated snowflakes
-  Widget _buildWinterHolidayImage(
-      String imageUrl, String countryName, String currency, String price, String tempPrice, String date) {
+  Widget _buildWinterHolidayImage(String imageUrl, String countryName,
+      String currency, String price, String tempPrice, String date) {
     return Stack(
       children: [
         // Background image
@@ -414,6 +430,7 @@ class SnowPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
 }
+
 String formatDate(String dateString) {
   DateTime parsedDate = DateTime.parse(dateString);
   return DateFormat("d MMM yyyy").format(parsedDate);

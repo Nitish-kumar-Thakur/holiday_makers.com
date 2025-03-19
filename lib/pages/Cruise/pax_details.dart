@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:holdidaymakers/widgets/appLargetext.dart';
-import 'package:holdidaymakers/widgets/responciveButton.dart';
+import 'package:HolidayMakers/widgets/appLargetext.dart';
+import 'package:HolidayMakers/widgets/responciveButton.dart';
 
 class PaxDetails extends StatefulWidget {
   final ValueChanged<Map<String, dynamic>> onSelectionChanged;
 
-  const PaxDetails({super.key, required this.onSelectionChanged});        //required this.onSelectionChanged
+  const PaxDetails(
+      {super.key,
+      required this.onSelectionChanged}); //required this.onSelectionChanged
 
   @override
   _PaxDetailsState createState() => _PaxDetailsState();
@@ -18,8 +20,8 @@ class _PaxDetailsState extends State<PaxDetails> {
       // Check if paxAges is a list, otherwise initialize it as an empty list
       List<String> paxAges = [];
       if (item['paxAges'] is List) {
-        paxAges = List<String>.from(
-            item['paxAges'].map((age) => age.toString()));
+        paxAges =
+            List<String>.from(item['paxAges'].map((age) => age.toString()));
       }
 
       return {
@@ -32,15 +34,23 @@ class _PaxDetailsState extends State<PaxDetails> {
   bool update = false;
   String? errorMessage;
   List<Map<String, dynamic>> roomDetails = [
-    {"paxCount": 2, "paxAges": <String>["21", "21"]}
+    {
+      "paxCount": 2,
+      "paxAges": <String>["21", "21"]
+    }
   ];
   final ScrollController _scrollController = ScrollController();
 
   Map<String, dynamic> totalSummary = {
     "totalPaxCount": 2,
-    "totalRooms": 1, 
-    "paxAges": <String>["21","21"],
-    "totalData": [{"paxCount": "2", "paxAges": ["21", "21"]}],
+    "totalRooms": 1,
+    "paxAges": <String>["21", "21"],
+    "totalData": [
+      {
+        "paxCount": "2",
+        "paxAges": ["21", "21"]
+      }
+    ],
   };
 
   bool _validateRooms() {
@@ -65,7 +75,9 @@ class _PaxDetailsState extends State<PaxDetails> {
     bool isValid = _validateRooms();
 
     setState(() {
-      errorMessage = isValid ? null : "Atleast one 21 year old pax should be there in each room";
+      errorMessage = isValid
+          ? null
+          : "Atleast one 21 year old pax should be there in each room";
       totalSummary = {
         "totalPaxCount": totalPaxCount,
         "totalRooms": roomDetails.length,
@@ -79,10 +91,11 @@ class _PaxDetailsState extends State<PaxDetails> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      isDismissible: false,  // Prevents dismissing by tapping outside
-      enableDrag: false,      // Prevents swipe-down dismissal
+      isDismissible: false, // Prevents dismissing by tapping outside
+      enableDrag: false, // Prevents swipe-down dismissal
       backgroundColor: Colors.white,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(50))),
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(50))),
       builder: (context) {
         return StatefulBuilder(
           builder: (context, setState) {
@@ -94,7 +107,9 @@ class _PaxDetailsState extends State<PaxDetails> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Center(child: AppLargeText(text: 'Select Occupancy', size: 24)),
+                    Center(
+                        child:
+                            AppLargeText(text: 'Select Occupancy', size: 24)),
                     const SizedBox(height: 10),
 
                     // Show error message if validation fails
@@ -103,7 +118,10 @@ class _PaxDetailsState extends State<PaxDetails> {
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
                           errorMessage!,
-                          style: TextStyle(color: Colors.red, fontSize: 16, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                              color: Colors.red,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold),
                         ),
                       ),
 
@@ -116,9 +134,12 @@ class _PaxDetailsState extends State<PaxDetails> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
-                                  AppLargeText(text: 'State Room ${index + 1}', size: 20),
+                                  AppLargeText(
+                                      text: 'State Room ${index + 1}',
+                                      size: 20),
                                   if (roomDetails.length > 1)
                                     GestureDetector(
                                       onTap: () {
@@ -134,7 +155,8 @@ class _PaxDetailsState extends State<PaxDetails> {
                                           color: Colors.red,
                                           shape: BoxShape.circle,
                                         ),
-                                        child: Icon(Icons.remove, color: Colors.white, size: 18),
+                                        child: Icon(Icons.remove,
+                                            color: Colors.white, size: 18),
                                       ),
                                     ),
                                 ],
@@ -146,11 +168,13 @@ class _PaxDetailsState extends State<PaxDetails> {
                                 'No. of Pax',
                                 roomDetails[index]["paxCount"].toString(),
                                 List.generate(4, (i) => (i + 1).toString()),
-                                    (value) {
+                                (value) {
                                   setState(() {
-                                    roomDetails[index]["paxCount"] = int.parse(value);
+                                    roomDetails[index]["paxCount"] =
+                                        int.parse(value);
                                     roomDetails[index]["paxAges"] =
-                                        List.generate(int.parse(value), (i) => (21 + i).toString());
+                                        List.generate(int.parse(value),
+                                            (i) => (21 + i).toString());
                                     _updateTotalSummary();
                                   });
                                 },
@@ -160,17 +184,21 @@ class _PaxDetailsState extends State<PaxDetails> {
                               Column(
                                 children: List.generate(
                                   roomDetails[index]["paxCount"],
-                                      (childIndex) => Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                  (childIndex) => Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       const SizedBox(height: 5),
                                       _buildDropdownRow(
                                         'Pax ${childIndex + 1} Age',
-                                        roomDetails[index]["paxAges"][childIndex],
-                                        List.generate(100, (i) => (i + 1).toString()),
-                                            (value) {
+                                        roomDetails[index]["paxAges"]
+                                            [childIndex],
+                                        List.generate(
+                                            100, (i) => (i + 1).toString()),
+                                        (value) {
                                           setState(() {
-                                            roomDetails[index]["paxAges"][childIndex] = value;
+                                            roomDetails[index]["paxAges"]
+                                                [childIndex] = value;
                                             _updateTotalSummary();
                                           });
                                         },
@@ -180,7 +208,8 @@ class _PaxDetailsState extends State<PaxDetails> {
                                 ),
                               ),
                               const SizedBox(height: 10),
-                              Divider(thickness: 1, color: Colors.grey.shade300),
+                              Divider(
+                                  thickness: 1, color: Colors.grey.shade300),
                               const SizedBox(height: 10),
                             ],
                           );
@@ -224,7 +253,8 @@ class _PaxDetailsState extends State<PaxDetails> {
                           print('======================');
                         } else {
                           setState(() {
-                            errorMessage = "At least one 21-year-old pax should be there in each room";
+                            errorMessage =
+                                "At least one 21-year-old pax should be there in each room";
                           });
                         }
                       },
@@ -310,7 +340,8 @@ class _PaxDetailsState extends State<PaxDetails> {
             children: [
               Icon(FontAwesomeIcons.users, size: 20),
               const SizedBox(width: 13),
-              Text('${totalSummary['totalPaxCount']} Pax,${totalSummary['totalRooms']} State Room'),
+              Text(
+                  '${totalSummary['totalPaxCount']} Pax,${totalSummary['totalRooms']} State Room'),
             ],
           ),
         ),

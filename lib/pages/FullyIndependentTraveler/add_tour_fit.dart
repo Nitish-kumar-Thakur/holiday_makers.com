@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
-import 'package:holdidaymakers/pages/FullyIndependentTraveler/booking_summary_fit.dart';
-import 'package:holdidaymakers/pages/FullyIndependentTraveler/tour_selection_modal_fit.dart';
-import 'package:holdidaymakers/utils/api_handler.dart';
-import 'package:holdidaymakers/widgets/appText.dart';
-import 'package:holdidaymakers/widgets/responciveButton.dart';
+import 'package:HolidayMakers/pages/FullyIndependentTraveler/booking_summary_fit.dart';
+import 'package:HolidayMakers/pages/FullyIndependentTraveler/tour_selection_modal_fit.dart';
+import 'package:HolidayMakers/utils/api_handler.dart';
+import 'package:HolidayMakers/widgets/appText.dart';
+import 'package:HolidayMakers/widgets/responciveButton.dart';
 
 class TourBookingPageFIT extends StatefulWidget {
   // final Map<String, dynamic> packageDetails;
@@ -43,13 +43,12 @@ class _TourBookingPageFITState extends State<TourBookingPageFIT>
     super.initState();
     List<String> parts = widget.numberOfNights.split(" ");
     // String daysPart = parts[1].trim(); // "5 Days"
-    numberOfDays = int.parse(parts[0])+1; // Extracting only the number
+    numberOfDays = int.parse(parts[0]) + 1; // Extracting only the number
 
     // numberOfDays = int.parse(widget.numberOfNights) + 1;
     _fetchFITTourList();
     // print(widget.packageDetails['duration']);
 
-    
     _tabController = TabController(length: numberOfDays, vsync: this);
     // Add listener to update the UI when tab changes
     _tabController.addListener(() {

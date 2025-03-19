@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:holdidaymakers/pages/homePages/introPage.dart';
-import 'package:holdidaymakers/widgets/appText.dart';
-import 'package:holdidaymakers/widgets/responciveButton.dart';
+import 'package:HolidayMakers/pages/homePages/introPage.dart';
+import 'package:HolidayMakers/widgets/appText.dart';
+import 'package:HolidayMakers/widgets/responciveButton.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class OnboardPage extends StatefulWidget {
@@ -112,7 +112,8 @@ class _OnboardPageState extends State<OnboardPage> {
                                 textAlign: TextAlign.center,
                                 text: TextSpan(
                                   style: TextStyle(
-                                    fontSize: screenHeight * 0.030, // Dynamic font size
+                                    fontSize: screenHeight *
+                                        0.030, // Dynamic font size
                                     fontWeight: FontWeight.bold,
                                     color: Colors.black,
                                   ),
@@ -147,7 +148,8 @@ class _OnboardPageState extends State<OnboardPage> {
           ),
           // Fixed Button at the bottom
           Positioned(
-            bottom: screenHeight * 0.04, // Dynamic position based on screen height
+            bottom:
+                screenHeight * 0.04, // Dynamic position based on screen height
             left: 0,
             right: 0,
             child: Center(
@@ -162,7 +164,9 @@ class _OnboardPageState extends State<OnboardPage> {
                           duration: Duration(milliseconds: 300),
                           curve: Curves.easeInOut,
                           margin: EdgeInsets.only(right: 5),
-                          width: currentPage == indexDots ? screenWidth * 0.06 : screenWidth * 0.02,
+                          width: currentPage == indexDots
+                              ? screenWidth * 0.06
+                              : screenWidth * 0.02,
                           height: screenHeight * 0.01,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(8),
@@ -189,7 +193,8 @@ class _OnboardPageState extends State<OnboardPage> {
                     },
                     child: responciveButton(
                       text: onboardingData[currentPage]["button"]!,
-                      border: screenHeight * 0.03, // Dynamic button border radius
+                      border:
+                          screenHeight * 0.03, // Dynamic button border radius
                     ),
                   ),
                 ],

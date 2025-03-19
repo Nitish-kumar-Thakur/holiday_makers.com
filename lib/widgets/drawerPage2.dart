@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:holdidaymakers/pages/Cruise/CurisesHome.dart';
-import 'package:holdidaymakers/pages/FixedDeparturesPages/departuresHome.dart';
-import 'package:holdidaymakers/pages/homePages/mainPage.dart';
-import 'package:holdidaymakers/widgets/ChangePasswordScreen.dart';
-import 'package:holdidaymakers/widgets/ManageAccount.dart';
-import 'package:holdidaymakers/widgets/appLargetext.dart';
-import 'package:holdidaymakers/widgets/appText.dart';
-import 'package:holdidaymakers/widgets/profile_page.dart';
+import 'package:HolidayMakers/pages/Cruise/CurisesHome.dart';
+import 'package:HolidayMakers/pages/FixedDeparturesPages/departuresHome.dart';
+import 'package:HolidayMakers/pages/homePages/mainPage.dart';
+import 'package:HolidayMakers/widgets/ChangePasswordScreen.dart';
+import 'package:HolidayMakers/widgets/ManageAccount.dart';
+import 'package:HolidayMakers/widgets/appLargetext.dart';
+import 'package:HolidayMakers/widgets/appText.dart';
+import 'package:HolidayMakers/widgets/profile_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Drawerpage2 extends StatefulWidget {
@@ -19,7 +19,6 @@ class Drawerpage2 extends StatefulWidget {
 class _Drawerpage2State extends State<Drawerpage2> {
   String profileImg = "";
   String firstName = "";
-  
 
   @override
   void initState() {
@@ -32,8 +31,9 @@ class _Drawerpage2State extends State<Drawerpage2> {
     setState(() {
       profileImg = prefs.getString("profileImg") ?? "";
       firstName = prefs.getString("first_name") ?? "";
-      firstName = firstName.isNotEmpty ? firstName[0].toUpperCase() + firstName.substring(1) : firstName;
-
+      firstName = firstName.isNotEmpty
+          ? firstName[0].toUpperCase() + firstName.substring(1)
+          : firstName;
     });
   }
 
@@ -93,8 +93,8 @@ class _Drawerpage2State extends State<Drawerpage2> {
                   child: Row(
                     children: [
                       CircleAvatar(
-                        backgroundImage: NetworkImage(
-                            profileImg), // Placeholder image
+                        backgroundImage:
+                            NetworkImage(profileImg), // Placeholder image
                       ),
                       SizedBox(
                         width: 10,

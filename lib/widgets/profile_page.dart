@@ -1,3 +1,5 @@
+import 'package:HolidayMakers/pages/homePages/introPage.dart';
+import 'package:HolidayMakers/widgets/appText.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
@@ -20,6 +22,7 @@ class _ProfilePageState extends State<ProfilePage> {
   String countryCode = "";
   String fullName = "";
   String phone = '';
+  bool isProfileEmpty = false;
 
   bool _isEditing = false;
   File? _profileImage;
@@ -54,6 +57,7 @@ class _ProfilePageState extends State<ProfilePage> {
       fullName = "$firstname $lastname";
       phone = "$countryCode $mobileNum";
       _addressController.text = address;
+      isProfileEmpty = email.trim().isEmpty;
     });
   }
 
@@ -63,135 +67,161 @@ class _ProfilePageState extends State<ProfilePage> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Title Container
-            Container(
-              width: screenWidth,
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "My Profile",
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+        child: isProfileEmpty
+            ? Center(
+                child: ElevatedButton(
+                  onPressed: () {
+                    // Navigate to Login or Signup screen
+
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const IntroPage()),
+                    ); // Change this to your login route
+                  },
+                  child: AppText(
+                    text: "Login / Signup",
+                    color: Colors.white,
                   ),
-                  GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        _isEditing = !_isEditing;
-                      });
-                    },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
+                    padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                    textStyle: TextStyle(fontSize: 18, color: Colors.white),
+                  ),
+                ),
+              )
+            : Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Title Container
+                  Container(
+                    width: screenWidth,
+                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                     child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          _isEditing ? 'Save' : 'Edit Profile',
-                          style: TextStyle(color: Colors.red, fontSize: 16),
+                          "My Profile",
+                          style: TextStyle(
+                              fontSize: 24, fontWeight: FontWeight.bold),
                         ),
-                        SizedBox(width: 4),
-                        Icon(
-                          _isEditing ? Icons.check : Icons.edit,
-                          color: Colors.red,
-                          size: 18,
+                        GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _isEditing = !_isEditing;
+                            });
+                          },
+                          child: Row(
+                            children: [
+                              Text(
+                                _isEditing ? 'Save' : 'Edit Profile',
+                                style:
+                                    TextStyle(color: Colors.red, fontSize: 16),
+                              ),
+                              SizedBox(width: 4),
+                              Icon(
+                                _isEditing ? Icons.check : Icons.edit,
+                                color: Colors.red,
+                                size: 18,
+                              ),
+                            ],
+                          ),
                         ),
                       ],
+                    ),
+                  ),
+
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: ListView(
+                        children: [
+                          // Profile Picture
+                          Center(
+                            child: Stack(
+                              alignment: Alignment.bottomRight,
+                              children: [
+                                CircleAvatar(
+                                  radius: 70,
+                                  backgroundImage: _profileImage != null
+                                      ? FileImage(_profileImage!)
+                                      : NetworkImage(profileImg)
+                                          as ImageProvider,
+                                ),
+                                if (_isEditing)
+                                  GestureDetector(
+                                    onTap: _pickImage,
+                                    child: CircleAvatar(
+                                      radius: 15,
+                                      backgroundColor: Colors.red,
+                                      child: Icon(
+                                        Icons.camera_alt,
+                                        size: 16,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ),
+                          SizedBox(height: 20),
+
+                          // Name TextField
+                          ProfileField(
+                            label: "Name",
+                            hintText: fullName,
+                            isPassword: false,
+                            isEditable: _isEditing,
+                          ),
+
+                          // Email TextField
+                          ProfileField(
+                            label: "Email",
+                            hintText: email,
+                            isPassword: false,
+                            isEditable: _isEditing,
+                          ),
+
+                          // Mobile Number TextField
+                          ProfileField(
+                            label: "Mobile Number",
+                            hintText: phone,
+                            isPassword: false,
+                            isEditable: _isEditing,
+                          ),
+
+                          // Address Text Field
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SizedBox(height: 16),
+                              Text(
+                                "Address",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              SizedBox(height: 8),
+                              TextField(
+                                controller: _addressController,
+                                enabled: _isEditing,
+                                decoration: InputDecoration(
+                                  hintText: "Enter address",
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                    borderSide: BorderSide(color: Colors.grey),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ],
               ),
-            ),
-
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: ListView(
-                  children: [
-                    // Profile Picture
-                    Center(
-                      child: Stack(
-                        alignment: Alignment.bottomRight,
-                        children: [
-                          CircleAvatar(
-                            radius: 70,
-                            backgroundImage: _profileImage != null
-                                ? FileImage(_profileImage!)
-                                : NetworkImage(profileImg) as ImageProvider,
-                          ),
-                          if (_isEditing)
-                            GestureDetector(
-                              onTap: _pickImage,
-                              child: CircleAvatar(
-                                radius: 15,
-                                backgroundColor: Colors.red,
-                                child: Icon(
-                                  Icons.camera_alt,
-                                  size: 16,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: 20),
-
-                    // Name TextField
-                    ProfileField(
-                      label: "Name",
-                      hintText: fullName,
-                      isPassword: false,
-                      isEditable: _isEditing,
-                    ),
-
-                    // Email TextField
-                    ProfileField(
-                      label: "Email",
-                      hintText: email,
-                      isPassword: false,
-                      isEditable: _isEditing,
-                    ),
-
-                    // Mobile Number TextField
-                    ProfileField(
-                      label: "Mobile Number",
-                      hintText: phone,
-                      isPassword: false,
-                      isEditable: _isEditing,
-                    ),
-
-                    // Address Text Field
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(height: 16),
-                        Text(
-                          "Address",
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        SizedBox(height: 8),
-                        TextField(
-                          controller: _addressController,
-                          enabled: _isEditing,
-                          decoration: InputDecoration(
-                            hintText: "Enter address",
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(color: Colors.grey),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }

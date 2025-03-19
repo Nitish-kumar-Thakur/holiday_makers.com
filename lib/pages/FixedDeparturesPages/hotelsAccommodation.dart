@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:holdidaymakers/pages/FixedDeparturesPages/flightPageFD.dart';
-import 'package:holdidaymakers/utils/api_handler.dart';
-import 'package:holdidaymakers/widgets/appLargetext.dart';
-import 'package:holdidaymakers/widgets/responciveButton.dart';
+import 'package:HolidayMakers/pages/FixedDeparturesPages/flightPageFD.dart';
+import 'package:HolidayMakers/utils/api_handler.dart';
+import 'package:HolidayMakers/widgets/appLargetext.dart';
+import 'package:HolidayMakers/widgets/responciveButton.dart';
 import 'package:shimmer/shimmer.dart';
 
 class HotelsAccommodation extends StatefulWidget {
@@ -10,7 +10,9 @@ class HotelsAccommodation extends StatefulWidget {
   final Map<String, dynamic> packageData;
   final List<dynamic> totalRoomsdata;
   const HotelsAccommodation(
-      {super.key, required this.packageData, required this.totalRoomsdata,
+      {super.key,
+      required this.packageData,
+      required this.totalRoomsdata,
       required this.activityList});
 
   @override

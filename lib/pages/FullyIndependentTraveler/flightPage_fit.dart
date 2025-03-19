@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:holdidaymakers/pages/FullyIndependentTraveler/add_tour_fit.dart';
-import 'package:holdidaymakers/utils/api_handler.dart';
-import 'package:holdidaymakers/widgets/responciveButton.dart';
+import 'package:HolidayMakers/pages/FullyIndependentTraveler/add_tour_fit.dart';
+import 'package:HolidayMakers/utils/api_handler.dart';
+import 'package:HolidayMakers/widgets/responciveButton.dart';
 
 import 'package:shimmer/shimmer.dart';
 
@@ -183,7 +183,8 @@ class _FlightPageFITState extends State<FlightPageFIT> {
                           groupedFlights[flightName]!;
 
                       return FlightPackageCard(
-                        hotelAndTransferFare: flightList?["hotel_and_transfer_fare"],
+                        hotelAndTransferFare:
+                            flightList?["hotel_and_transfer_fare"]?? 0,
                         onwardFlights: List<Map<String, dynamic>>.from(
                             flightData["onward"] ?? []),
                         returnFlights: List<Map<String, dynamic>>.from(
@@ -233,14 +234,13 @@ class FlightPackageCard extends StatefulWidget {
   final bool isSelected;
   final VoidCallback onTap; // Add this
 
-  const FlightPackageCard({
-    super.key,
-    required this.onwardFlights,
-    required this.returnFlights,
-    required this.isSelected,
-    required this.onTap,
-    required this.hotelAndTransferFare
-  });
+  const FlightPackageCard(
+      {super.key,
+      required this.onwardFlights,
+      required this.returnFlights,
+      required this.isSelected,
+      required this.onTap,
+      required this.hotelAndTransferFare});
 
   @override
   _FlightPackageCardState createState() => _FlightPackageCardState();
@@ -291,13 +291,15 @@ class _FlightPackageCardState extends State<FlightPackageCard> {
                 Row(
                   children: [
                     Text(
-                      "AED ${(widget.onwardFlights[0]["Per_totalAmount"] + widget.returnFlights[0]["Per_totalAmount"]+ widget.hotelAndTransferFare).toString()}",
-                      style: TextStyle(
-                        color: Colors.red,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
-                    ),
+  "AED ${(widget.onwardFlights.isNotEmpty && widget.returnFlights.isNotEmpty 
+      ? widget.onwardFlights[0]["Per_totalAmount"] + widget.returnFlights[0]["Per_totalAmount"] + widget.hotelAndTransferFare
+      : 0).toString()}",
+  style: const TextStyle(
+    color: Colors.red,
+    fontWeight: FontWeight.bold,
+    fontSize: 16,
+  ),
+),
                     SizedBox(width: 8),
                     // Container(
                     //   height: 10,

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:holdidaymakers/pages/Cruise/booking_summary.dart';
-import 'package:holdidaymakers/pages/Cruise/pax_details.dart';
-import 'package:holdidaymakers/utils/api_handler.dart';
-import 'package:holdidaymakers/widgets/dropdownwidget.dart';
-import 'package:holdidaymakers/widgets/responciveButton.dart';
+import 'package:HolidayMakers/pages/Cruise/booking_summary.dart';
+import 'package:HolidayMakers/pages/Cruise/pax_details.dart';
+import 'package:HolidayMakers/utils/api_handler.dart';
+import 'package:HolidayMakers/widgets/dropdownwidget.dart';
+import 'package:HolidayMakers/widgets/responciveButton.dart';
 
 class CruiseDealsPage2 extends StatefulWidget {
   final Map<String, dynamic>? selectedCruiseData;

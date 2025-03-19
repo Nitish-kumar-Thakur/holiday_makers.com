@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:holdidaymakers/pages/homePages/introPage.dart';
-import 'package:holdidaymakers/utils/api_handler.dart';
-import 'package:holdidaymakers/utils/shared_preferences_handler.dart';
-import 'package:holdidaymakers/widgets/appText.dart';
+import 'package:HolidayMakers/pages/homePages/introPage.dart';
+import 'package:HolidayMakers/utils/api_handler.dart';
+import 'package:HolidayMakers/utils/shared_preferences_handler.dart';
+import 'package:HolidayMakers/widgets/appText.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
   @override
@@ -75,20 +75,19 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
           _message = ""; // Clear the message after 3 seconds
         });
       });
-      
 
       if (response["status"] == true) {
         _oldPasswordController.clear();
-      _newPasswordController.clear();
-      _confirmPasswordController.clear();
+        _newPasswordController.clear();
+        _confirmPasswordController.clear();
 
-      // Redirect to login page after successful password change
-      Future.delayed(Duration(seconds: 2), () {
-        SharedPreferencesHandler.signOut(); // Close the dialog
-        Navigator.of(context).pushReplacement(MaterialPageRoute(
-            builder: (context) =>
-                IntroPage())); // Replace with your login screen route
-      });
+        // Redirect to login page after successful password change
+        Future.delayed(Duration(seconds: 2), () {
+          SharedPreferencesHandler.signOut(); // Close the dialog
+          Navigator.of(context).pushReplacement(MaterialPageRoute(
+              builder: (context) =>
+                  IntroPage())); // Replace with your login screen route
+        });
         print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
         print("chl raha h");
         print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");

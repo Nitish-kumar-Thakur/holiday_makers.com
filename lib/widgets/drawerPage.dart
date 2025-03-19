@@ -1,15 +1,20 @@
+import 'package:HolidayMakers/pages/homePages/mainPage.dart';
+import 'package:HolidayMakers/pages/login&signup/loginPage.dart';
+import 'package:HolidayMakers/widgets/Blogs.dart';
+import 'package:HolidayMakers/widgets/MyBookings.dart';
+import 'package:HolidayMakers/widgets/responciveButton.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:holdidaymakers/widgets/help_center_page.dart';
-import 'package:holdidaymakers/pages/homePages/introPage.dart';
-import 'package:holdidaymakers/widgets/terms_and_conditions_page.dart';
-import 'package:holdidaymakers/widgets/testimonials_page.dart';
-import 'package:holdidaymakers/utils/shared_preferences_handler.dart';
-import 'package:holdidaymakers/widgets/ChangePasswordScreen.dart';
-import 'package:holdidaymakers/widgets/ManageAccount.dart';
-import 'package:holdidaymakers/widgets/appLargetext.dart';
-import 'package:holdidaymakers/widgets/appText.dart';
-import 'package:holdidaymakers/widgets/profile_page.dart';
+import 'package:HolidayMakers/widgets/help_center_page.dart';
+import 'package:HolidayMakers/pages/homePages/introPage.dart';
+import 'package:HolidayMakers/widgets/terms_and_conditions_page.dart';
+import 'package:HolidayMakers/widgets/testimonials_page.dart';
+import 'package:HolidayMakers/utils/shared_preferences_handler.dart';
+import 'package:HolidayMakers/widgets/ChangePasswordScreen.dart';
+import 'package:HolidayMakers/widgets/ManageAccount.dart';
+import 'package:HolidayMakers/widgets/appLargetext.dart';
+import 'package:HolidayMakers/widgets/appText.dart';
+import 'package:HolidayMakers/widgets/profile_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Drawerpage extends StatefulWidget {
@@ -22,6 +27,7 @@ class Drawerpage extends StatefulWidget {
 class _DrawerpageState extends State<Drawerpage> {
   String profileImg = "";
   String firstName = "";
+  bool isProfileEmpty = false;
 
   @override
   void initState() {
@@ -37,42 +43,80 @@ class _DrawerpageState extends State<Drawerpage> {
       firstName = firstName.isNotEmpty
           ? firstName[0].toUpperCase() + firstName.substring(1)
           : firstName;
+      isProfileEmpty = firstName.trim().isEmpty;
     });
   }
 
   void _showSignOutDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(
-            "Sign Out",
-            style: TextStyle(fontWeight: FontWeight.bold),
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text(
+          "Sign Out",
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        content: Text("Are you sure you want to sign out?"),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(); // Close the dialog
+            },
+            child: Text("Cancel"),
           ),
-          content: Text("Are you sure you want to sign out?"),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
-              },
-              child: Text("Cancel"),
-            ),
-            TextButton(
-              onPressed: () {
-                // Perform sign-out logic here
-                Navigator.of(context).pop();
-                SharedPreferencesHandler.signOut(); // Close the dialog
-                Navigator.of(context).pushReplacement(MaterialPageRoute(
-                    builder: (context) =>
-                        IntroPage())); // Redirect to login screen or relevant page
-              },
-              child: Text("Yes"),
-            ),
-          ],
-        );
-      },
-    );
-  }
+          TextButton(
+            onPressed: () async {
+              Navigator.of(context).pop(); // Close the dialog
+
+              await SharedPreferencesHandler.signOut(); // Clear stored user data
+
+              // Navigate to Mainpage and clear all previous routes
+              Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (context) => Mainpage()), 
+                (Route<dynamic> route) => false, // Remove all previous screens
+              );
+            },
+            child: Text("Yes"),
+          ),
+        ],
+      );
+    },
+  );
+}
+
+void _showLoginDialog(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text(
+          "Login",
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        content: Text("You need to log in to access your account."),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(); // Close the dialog
+            },
+            child: Text("Cancel"),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(); // Close the dialog
+
+              // Navigate to the login screen
+              Navigator.of(context).pushReplacement(MaterialPageRoute(
+                  builder: (context) => LoginPage())); // Replace with Login page
+            },
+            child: Text("Login"),
+          ),
+        ],
+      );
+    },
+  );
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -129,11 +173,15 @@ class _DrawerpageState extends State<Drawerpage> {
                   child: Row(
                     children: [
                       CircleAvatar(
-                        backgroundImage: NetworkImage(profileImg),
-                      ),
+                          backgroundImage: profileImg.trim().isNotEmpty
+                              ? NetworkImage(profileImg)
+                              : AssetImage(
+                                  "img/placeholder.png") // Show icon only if no profile image
+                          ),
                       SizedBox(width: 10),
                       AppLargeText(
-                        text: firstName,
+                        text:
+                            firstName.trim().isEmpty ? "Hi, There" : firstName,
                         color: Colors.white,
                         size: 24,
                       ),
@@ -283,7 +331,14 @@ class _DrawerpageState extends State<Drawerpage> {
                         text: "My Trip", size: 24, color: Colors.white),
                     SizedBox(height: 3),
                     ChildContainer(
-                        icon: FontAwesomeIcons.newspaper, text: "My Booking"),
+                        icon: FontAwesomeIcons.newspaper, text: "My Booking",
+                        onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => MyBookings()),
+                        );
+                      },),
                     SizedBox(height: 3),
                     ChildContainer(
                         icon: FontAwesomeIcons.wallet, text: 'Wallet'),
@@ -302,7 +357,13 @@ class _DrawerpageState extends State<Drawerpage> {
                     ChildContainer(
                         icon: FontAwesomeIcons.filePen,
                         text: "Blogs",
-                        onTap: () {}),
+                        onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => BlogsPage()),
+                        );
+                      },),
                     SizedBox(height: 3),
                     ChildContainer(
                       icon: FontAwesomeIcons.users,
@@ -346,8 +407,8 @@ class _DrawerpageState extends State<Drawerpage> {
                     SizedBox(height: 3),
                     ChildContainer(
                         icon: FontAwesomeIcons.signOut,
-                        text: "Sign Out",
-                        onTap: () => _showSignOutDialog(context)),
+                        text: profileImg.trim().isEmpty?"Log In":"Sign Out",
+                        onTap: () => profileImg.trim().isEmpty? _showLoginDialog(context):_showSignOutDialog(context)),
                   ],
                 ),
               ),

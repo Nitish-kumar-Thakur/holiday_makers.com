@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:holdidaymakers/pages/Cruise/cruise_deals_page.dart';
-import 'package:holdidaymakers/pages/FixedDeparturesPages/departureDeals.dart';
-import 'package:holdidaymakers/widgets/responcive_card.dart';
+import 'package:HolidayMakers/pages/Cruise/cruise_deals_page.dart';
+import 'package:HolidayMakers/pages/FixedDeparturesPages/departureDeals.dart';
+import 'package:HolidayMakers/widgets/responcive_card.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:holdidaymakers/utils/api_handler.dart';
-import 'package:holdidaymakers/widgets/drawerPage.dart';
-import 'package:holdidaymakers/widgets/mainCarousel.dart';
+import 'package:HolidayMakers/utils/api_handler.dart';
+import 'package:HolidayMakers/widgets/drawerPage.dart';
+import 'package:HolidayMakers/widgets/mainCarousel.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Homepage2 extends StatefulWidget {
@@ -69,7 +69,6 @@ class _Homepage2State extends State<Homepage2> {
                   _buildHeader(),
                   _buildProfileSection(),
                   Maincarousel(banner_list: banner_list),
-                  
                   _buildPackageSection(screenWidth),
                 ],
               ),
@@ -142,42 +141,46 @@ class _Homepage2State extends State<Homepage2> {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 15),
       child: GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: widget.packageList.length,
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              // childAspectRatio: 0.75,
-              crossAxisSpacing: 10,
-              mainAxisSpacing: 10,
-            ),
-            itemBuilder: (context, index) {
-              final package = widget.packageList[index];
-              return GestureDetector(
-                onTap: () {
-                print(package["id"].toString());
-                if (package["id"] == "cruise") {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => CruiseDealsPage(packageid: package["packageId"])),
-                  );
-                } else {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => DepartureDeals(packageId: package["packageId"])),
-                  );
-                } 
-              },
-                child: ResponsiveCard(
-                  image: package['image'] ?? 'img/placeholder.png',
-                  title: package['name'] ?? 'Package Name',
-                  subtitle: package['country'] ?? 'Location',
-                  price: "${package['currency']} ${package['price'] ?? 'N/A'}",
-                  screenWidth: screenWidth,
-                ),
-              );
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        itemCount: widget.packageList.length,
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          // childAspectRatio: 0.75,
+          crossAxisSpacing: 10,
+          mainAxisSpacing: 10,
+        ),
+        itemBuilder: (context, index) {
+          final package = widget.packageList[index];
+          return GestureDetector(
+            onTap: () {
+              print(package["id"].toString());
+              if (package["id"] == "cruise") {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          CruiseDealsPage(packageid: package["packageId"])),
+                );
+              } else {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          DepartureDeals(packageId: package["packageId"])),
+                );
+              }
             },
-          ),
+            child: ResponsiveCard(
+              image: package['image'] ?? 'img/placeholder.png',
+              title: package['name'] ?? 'Package Name',
+              subtitle: package['country'] ?? 'Location',
+              price: "${package['currency']} ${package['price'] ?? 'N/A'}",
+              screenWidth: screenWidth,
+            ),
+          );
+        },
+      ),
     );
   }
 

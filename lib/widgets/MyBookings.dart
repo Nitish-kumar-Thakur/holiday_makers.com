@@ -1,482 +1,203 @@
 import 'package:flutter/material.dart';
-import 'package:holdidaymakers/widgets/Blogs.dart';
+
 class MyBookings extends StatefulWidget {
+  const MyBookings({super.key});
+
   @override
   _MyBookingsState createState() => _MyBookingsState();
 }
 
-class _MyBookingsState extends State<MyBookings> {
-  Color holidaysColor = Colors.white;
-  Color cruiseColor = Colors.white;
-  bool isUnderline = false;
+class _MyBookingsState extends State<MyBookings> with SingleTickerProviderStateMixin {
+  late TabController _tabController;
 
-  void _changeColor(String type) {
-    setState(() {
-      if (type == 'holidays') {
-        holidaysColor = holidaysColor == Colors.white
-            ? Colors.blueAccent.withOpacity(0.6)
-            : Colors.white;
-      } else if (type == 'cruise') {
-        cruiseColor = cruiseColor == Colors.white
-            ? Colors.blueAccent.withOpacity(0.6)
-            : Colors.white;
-      }
-    });
+  final List<Map<String, String>> bookings = [
+    {
+      "image": "img/aus1.jpg",
+      "title": "Lucknow - Delhi",
+      "date": "10 Jan - 13 Jan",
+      "train": "Lucknow Mail",
+      "passenger": "Melissa Peters",
+      "from": "New Delhi (NDLS)",
+      "fromTime": "22:00 - Fri, 10 Jan 25",
+      "to": "Lucknow (LKO)",
+      "toTime": "06:40 - Sat, 11 Jan 25"
+    },
+    {
+      "image": "img/can1.jpg",
+      "title": "Mumbai - Pune",
+      "date": "15 Feb - 18 Feb",
+      "train": "Deccan Express",
+      "passenger": "John Doe",
+      "from": "Mumbai (CST)",
+      "fromTime": "07:00 - Sat, 15 Feb 25",
+      "to": "Pune (PUNE)",
+      "toTime": "10:30 - Sat, 15 Feb 25"
+    },
+    {
+      "image": "img/cyp1.jpg",
+      "title": "Chennai - Bangalore",
+      "date": "20 Mar - 25 Mar",
+      "train": "Shatabdi Express",
+      "passenger": "Alice Smith",
+      "from": "Chennai (MAS)",
+      "fromTime": "06:00 - Wed, 20 Mar 25",
+      "to": "Bangalore (SBC)",
+      "toTime": "09:45 - Wed, 20 Mar 25"
+    }
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 3, vsync: this);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Container(
-            color : Colors.white,
-          child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Back Arrow
-            Padding(
-              padding: const EdgeInsets.only(top: 40, left: 10),
-              child: GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => MakeBlog()),
-                  );
-                },
-                child: Icon(Icons.arrow_back, size: 30),
+      appBar: AppBar(
+        title: const Text(
+          'My Bookings',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        centerTitle: true,
+        backgroundColor: Colors.blueAccent,
+        foregroundColor: Colors.white,
+      ),
+      body: Column(
+        children: [
+          // Padding(
+          //   padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+          //   child: Row(
+          //     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          //     children: [
+          //       _bookingCategory(Icons.beach_access, "Holiday", "2 bookings"),
+          //       _bookingCategory(Icons.directions_boat, "Cruise", "3 bookings"),
+          //     ],
+          //   ),
+          // ),
+          const SizedBox(height: 10),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: TabBar(
+              controller: _tabController,
+              labelColor: Colors.white,
+              unselectedLabelColor: Colors.blueAccent,
+              indicator: BoxDecoration(
+                color: Colors.blueAccent,
+                borderRadius: BorderRadius.circular(12.0),
               ),
-            ),
-            // Title Section
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "My Bookings",
-                    style: TextStyle(fontSize: 30, color: Colors.grey),
-                  ),
-                  Text(
-                    "View and manage all your bookings",
-                    style: TextStyle(fontSize: 20, color: Colors.grey),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(height: 40),
-            // Holidays and Cruise Section
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                // Holidays Column
-                _buildBookingCard(
-                  type: 'holidays',
-                  color: holidaysColor,
-                  imagePath: 'assets/images/holidaystree.png',
-                  title: 'Holidays',
-                  bookings: '2 booking(s)',
+              tabs: const [
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Tab(text: "Upcoming"),
                 ),
-                // Cruise Column
-                _buildBookingCard(
-                  type: 'cruise',
-                  color: cruiseColor,
-                  imagePath: 'assets/images/cruise-ship.png',
-                  title: 'Cruise',
-                  bookings: '2 booking(s)',
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Tab(text: "Completed"),
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Tab(text: "Cancelled"),
                 ),
               ],
             ),
-            // Tabs Section
-            Container(
-              margin: EdgeInsets.only(top: 20,bottom: 10),
-              height: 60,
-              color: Colors.blueAccent,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  _buildTab("Upcoming"),
-                  _buildTab("Completed"),
-                  _buildTab("Cancelled"),
-                ],
-              ),
+          ),
+          Expanded(
+            child: TabBarView(
+              controller: _tabController,
+              children: [
+                _buildBookingList(),
+                Center(child: Text("No Completed Bookings")),
+                Center(child: Text("No Cancelled Bookings")),
+              ],
             ),
-            // Featured Booking Section
-            _buildFeaturedBooking(),
-            _buildProfileSection('assets/images/GroupTree.png', 'Lucknow'),
-            // Detailed Booking Section
-            _buildDetailedBooking(),
-          ],
-        ),
-        ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildBookingCard({
-    required String type,
-    required Color color,
-    required String imagePath,
-    required String title,
-    required String bookings,
-  }) {
+  Widget _bookingCategory(IconData icon, String title, String count) {
     return Column(
       children: [
-        GestureDetector(
-          onTap: () {
-            _changeColor(type);
-          },
-          child: Container(
-            margin: const EdgeInsets.symmetric(horizontal: 20),
-            height: 80,
-            width: 100,
-            decoration: BoxDecoration(
-              color: color,
-              border: Border.all(color: Colors.blue.withOpacity(0.5), width: 2),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: Image.asset(
-                imagePath,
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
+        CircleAvatar(
+          backgroundColor: Colors.blueAccent,
+          radius: 25,
+          child: Icon(icon, color: Colors.white, size: 30),
         ),
-        SizedBox(height: 8),
-        Text(
-          title,
-          style: TextStyle(fontSize: 16, color: Colors.grey[600], fontWeight: FontWeight.w600),
-        ),
-        Text(
-          bookings,
-          style: TextStyle(fontSize: 14, color: Colors.grey),
-        ),
+        const SizedBox(height: 5),
+        Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+        Text(count, style: TextStyle(color: Colors.grey[600])),
       ],
     );
   }
 
-  Widget _buildTab(String label) {
-    return GestureDetector(
-      onTap: () {
-        print(label);
-      },
-      child: Text(
-        label,
-        style: TextStyle(
-          color: Colors.white,
-          fontSize: 25,
-          fontWeight: FontWeight.w700,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildFeaturedBooking() {
-    return Container(
-      // margin: EdgeInsets.only(le),
-      height: 230,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(25),
-      ),
-      child: Stack(
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(25),
-            child: Image.asset(
-              'assets/images/GroupTree.png',
-              fit: BoxFit.cover,
-              width: double.infinity,
-            ),
-          ),
-          Positioned(
-            top: 100,
-            left: 20,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Lucknow & Delhi",
-                  style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w700),
-                ),
-                Text(
-                  "10 Jan - 13 Jan",
-                  style: TextStyle(color: Colors.white, fontSize: 20),
-                ),
-                Text(
-                  "2 Flights",
-                  style: TextStyle(color: Colors.white, fontSize: 20),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-  Widget _buildProfileSection(String imagePath, String title) {
-    return Container(
-      margin: EdgeInsets.only(left: 15,top: 20),
-      child: Row(
-        children: [
-          Container(
-            height: 60,
-            width: 60,
-            margin: EdgeInsets.only(right: 15),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(40),
-            ),
-            child: ClipOval(
-              child: Image.asset(
-                imagePath,
-                height: 60,
-                width: 60,
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
-          Text(
-            title,
-            style: TextStyle(
-              fontWeight: FontWeight.w700,
-              fontSize: 22,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDetailedBooking() {
-    return Row(
-      children: [
-        Container(
-          margin: EdgeInsets.only(left: 43),
-          height: 390,
-          width: 2,
-          color: Colors.grey[600],
-        ),
-        Container(
-          margin: EdgeInsets.only(left: 15),
-          height: 380,
-          width: 440,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.3),
-                offset: Offset(0, 4),
-                blurRadius: 6,
-                spreadRadius: 2,
-              ),
-            ],
-            borderRadius: BorderRadius.circular(10),
-          ),
+  Widget _buildBookingList() {
+    return ListView.builder(
+      padding: const EdgeInsets.all(16.0),
+      itemCount: bookings.length,
+      itemBuilder: (context, index) {
+        final booking = bookings[index];
+        return Card(
+          color: Colors.white70,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          elevation: 4,
+          margin: const EdgeInsets.only(bottom: 30),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildBookingDetails(),
-              _buildStatusSection(),
-              Container(
-                margin: EdgeInsets.only(left: 10,right: 10),
-                height: 2,
-                decoration: BoxDecoration(
-                  color: Colors.grey[500]
+              ClipRRect(
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+                child: Image.asset(booking["image"]!, fit: BoxFit.cover, height: 150, width: double.infinity),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(booking["title"]!, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 4),
+                    Text(booking["date"]!, style: TextStyle(color: Colors.grey[600])),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        Icon(Icons.train, color: Colors.blueAccent),
+                        const SizedBox(width: 8),
+                        Text(booking["train"]!),
+                        const Spacer(),
+                        Text(booking["passenger"]!),
+                      ],
+                    ),
+                    const Divider(height: 20, thickness: 1),
+                    Row(
+                      children: [
+                        Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(booking["from"]!, style: TextStyle(fontWeight: FontWeight.bold)), Text(booking["fromTime"]!)]),
+                        const Spacer(),
+                        Column(crossAxisAlignment: CrossAxisAlignment.end, children: [Text(booking["to"]!, style: TextStyle(fontWeight: FontWeight.bold)), Text(booking["toTime"]!)]),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        ElevatedButton(onPressed: () {}, style: ElevatedButton.styleFrom(backgroundColor: Colors.red), child: const Text("Download Ticket", style: TextStyle(color: Colors.white))),
+                        ElevatedButton(onPressed: () {}, style: ElevatedButton.styleFrom(backgroundColor: Colors.orange), child: const Text("Modify Booking", style: TextStyle(color: Colors.white))),
+                      ],
+                    ),
+                  ],
                 ),
               ),
-              _buildActionButtons(),
             ],
           ),
-        ),
-      ],
+        );
+      },
     );
   }
 
-  Widget _buildBookingDetails() {
-    return Column(
-      children: [
-      Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Row(
-          children: [
-            Container(
-              margin: EdgeInsets.symmetric(horizontal: 10,vertical: 10),
-              height: 60,
-              width: 60,
-              decoration: BoxDecoration(
-                color: Colors.blueAccent.withOpacity(0.5),
-                borderRadius: BorderRadius.circular(5),
-              ),
-              child: Image.asset('assets/images/airoplane.png', fit: BoxFit.cover),
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "12230",
-                  style: TextStyle(fontSize: 20, color: Colors.grey[600]),
-                ),
-                Text(
-                  "LUCKNOW MAIL",
-                  style: TextStyle(fontSize: 20, color: Colors.grey[600]),
-                ),
-              ],
-            ),
-          ],
-        ),
-        Container(
-          margin: EdgeInsets.only(right: 10),
-          child: Text(
-            "Melissa Peters",
-            style: TextStyle(fontSize: 20, color: Colors.grey[600]),
-          ),
-        )
-      ]),
-
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            Column(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text("New Delhi (NDLS)",
-                  style: TextStyle(
-                      color: Colors.grey[600],
-                      fontSize: 20,
-                      fontWeight: FontWeight.w800
-                  ),),
-                Text("22:00",
-                  style: TextStyle(
-                      fontSize: 20,
-                      color: Colors.grey[500]
-
-                  ),),
-                Text("Fri ,10 Jan 25",
-                  style: TextStyle(
-                      fontSize: 20,
-                      color: Colors.grey[500]
-
-                  ),),
-              ],
-            ),
-            Icon(
-              Icons.arrow_forward,
-              size: 40,
-            ),
-
-            Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text("Lucknow (LKO)",
-                  style: TextStyle(
-                      color: Colors.grey[600],
-                      fontSize: 20,
-                      fontWeight: FontWeight.w800
-                  ),),
-                Text("06:40",
-                  style: TextStyle(
-                      fontSize: 20,
-                      color: Colors.grey[500]
-
-                  ),),
-                Text("Sat ,11 Jan 25",
-                  style: TextStyle(
-                      fontSize: 20,
-                      color: Colors.grey[500]
-                  ),),
-              ],
-            )
-          ],
-        ),
-      ]
-    );
-  }
-
-  Widget _buildStatusSection() {
-    return Container(
-      margin: EdgeInsets.all(10),
-      height: 60,
-      decoration: BoxDecoration(
-        color: Colors.blueAccent.withOpacity(0.2),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          Container(
-            width: 150,
-            child: Text(
-              "Check your ticket current status",
-              style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500, fontSize: 18),
-            ),
-          ),
-          InkWell(
-            onTap: () {
-              setState(() {
-                isUnderline = !isUnderline;
-              });
-              print("Check Status Clicked");
-            },
-            child: Text(
-              "Check Status",
-              style: TextStyle(
-                color: Colors.redAccent,
-                fontSize: 25,
-                fontWeight: FontWeight.w700,
-                decoration: isUnderline ? TextDecoration.underline : TextDecoration.none,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildActionButtons() {
-    return Container(
-      margin: EdgeInsets.all(10),
-      height: 50,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          OutlinedButton(
-            onPressed: () {},
-            style: OutlinedButton.styleFrom(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-              side: BorderSide(color: Colors.redAccent, width: 2),
-            ),
-            child: Text(
-              "Download Ticket",
-              style: TextStyle(color: Colors.redAccent, fontSize: 15, fontWeight: FontWeight.w900),
-            ),
-          ),
-          Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(colors: [Colors.orange, Colors.redAccent]),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: ElevatedButton(
-              onPressed: () {},
-              style: ElevatedButton.styleFrom(
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                backgroundColor: Colors.transparent,
-                shadowColor: Colors.transparent,
-                foregroundColor: Colors.white,
-              ),
-              child: Text(
-                "Modify Ticket",
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
   }
 }
-
-

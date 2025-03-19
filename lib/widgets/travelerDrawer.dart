@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:holdidaymakers/widgets/appLargetext.dart';
-import 'package:holdidaymakers/widgets/responciveButton.dart';
+import 'package:HolidayMakers/widgets/appLargetext.dart';
+import 'package:HolidayMakers/widgets/responciveButton.dart';
 
 class Travelerdrawer extends StatefulWidget {
   final ValueChanged<Map<String, dynamic>> onSelectionChanged;
@@ -13,7 +13,6 @@ class Travelerdrawer extends StatefulWidget {
 }
 
 class _TravelerdrawerState extends State<Travelerdrawer> {
-
   List<Map<String, dynamic>> mapData(List<Map<String, dynamic>> originalData) {
     return originalData.map((item) {
       // Check if childrenAges is a list, otherwise initialize it as an empty list
@@ -24,7 +23,7 @@ class _TravelerdrawerState extends State<Travelerdrawer> {
       }
 
       return {
-        "adults":  item['adults'].toString(),
+        "adults": item['adults'].toString(),
         "children": item['children'].toString(),
         "childrenAges": childrenAges,
       };
@@ -40,11 +39,11 @@ class _TravelerdrawerState extends State<Travelerdrawer> {
   Map<String, dynamic> totalSummary = {
     "totalAdults": 2,
     "totalChildren": 0,
-    "totalRooms": 1, 
+    "totalRooms": 1,
     "childrenAges": <String>[],
     "totalData": [
-    {"adults": 2, "children": 0, "childrenAges": <String>[]}
-  ]
+      {"adults": 2, "children": 0, "childrenAges": <String>[]}
+    ]
   };
 
   void _updateTotalSummary() {
@@ -310,7 +309,8 @@ class _TravelerdrawerState extends State<Travelerdrawer> {
             children: [
               Icon(FontAwesomeIcons.users, size: 20),
               const SizedBox(width: 13),
-              Text('${totalSummary['totalAdults']} Adults, ${totalSummary['totalRooms']} Rooms, ${totalSummary['totalChildren']} Child'),
+              Text(
+                  '${totalSummary['totalAdults']} Adults, ${totalSummary['totalRooms']} Rooms, ${totalSummary['totalChildren']} Child'),
             ],
           ),
         ),

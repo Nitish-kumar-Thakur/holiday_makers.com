@@ -1,15 +1,16 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:holdidaymakers/pages/homePages/introPage.dart';
-import 'package:holdidaymakers/pages/login&signup/signupPage.dart';
-import 'package:holdidaymakers/pages/homePages/mainPage.dart';
-import 'package:holdidaymakers/utils/api_handler.dart';
-import 'package:holdidaymakers/utils/shared_preferences_handler.dart';
-import 'package:holdidaymakers/widgets/appLargetext.dart';
-import 'package:holdidaymakers/widgets/appText.dart';
-import 'package:holdidaymakers/widgets/loginButton.dart';
-import 'package:holdidaymakers/widgets/responciveButton.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:HolidayMakers/pages/homePages/introPage.dart';
+import 'package:HolidayMakers/pages/login&signup/signupPage.dart';
+import 'package:HolidayMakers/pages/homePages/mainPage.dart';
+import 'package:HolidayMakers/utils/api_handler.dart';
+import 'package:HolidayMakers/utils/shared_preferences_handler.dart';
+import 'package:HolidayMakers/widgets/appLargetext.dart';
+import 'package:HolidayMakers/widgets/appText.dart';
+import 'package:HolidayMakers/widgets/loginButton.dart';
+import 'package:HolidayMakers/widgets/responciveButton.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -45,11 +46,24 @@ class _LoginPageState extends State<LoginPage> {
     });
 
     if (email.isEmpty || password.isEmpty) {
+      Fluttertoast.showToast(msg: 'Both fields are required');
       setState(() {
-        
-        _errorMessage = 'Both fields are required';
+        // _errorMessage = 'Both fields are required';
         _isLoading = false;
       });
+      return;
+    }
+    if (!RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$').hasMatch(email)) {
+      // setState(() => _errorMessage = 'Invalid email format');
+      Fluttertoast.showToast(msg: 'Invalid email format');
+      setState(() => _isLoading = false);
+      return;
+    }
+
+    if (password.length < 6) {
+      // setState(() => _errorMessage = 'Password must be at least 6 characters');
+      Fluttertoast.showToast(msg: 'Password must be at least 6 characters');
+      setState(() => _isLoading = false);
       return;
     }
 
@@ -58,11 +72,10 @@ class _LoginPageState extends State<LoginPage> {
       if (responseData['status'] == true) {
         _completeLogin(responseData);
       } else {
-        setState(
-            () => _errorMessage = responseData['message'] ?? 'Login failed');
+        Fluttertoast.showToast(msg: responseData['message'] ?? 'Login failed');
       }
     } catch (e) {
-      setState(() => _errorMessage = 'An error occurred. Please try again.');
+      Fluttertoast.showToast(msg: 'An error occurred. Please try again.');
     } finally {
       setState(() => _isLoading = false);
     }
@@ -99,6 +112,7 @@ class _LoginPageState extends State<LoginPage> {
     final double paddingValue = screenSize.width * 0.06;
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -107,8 +121,9 @@ class _LoginPageState extends State<LoginPage> {
             MaterialPageRoute(builder: (context) => const IntroPage()),
           ),
         ),
+        backgroundColor: Colors.white,
       ),
-      resizeToAvoidBottomInset: true,
+      // resizeToAvoidBottomInset: true,
       body: SingleChildScrollView(
         child: Container(
           height: screenSize.height,

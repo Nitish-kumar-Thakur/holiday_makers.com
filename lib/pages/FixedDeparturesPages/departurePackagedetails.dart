@@ -2,9 +2,9 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:holdidaymakers/pages/FixedDeparturesPages/departureDeals.dart';
-import 'package:holdidaymakers/utils/api_handler.dart';
-import 'package:holdidaymakers/widgets/appLargetext.dart';
+import 'package:HolidayMakers/pages/FixedDeparturesPages/departureDeals.dart';
+import 'package:HolidayMakers/utils/api_handler.dart';
+import 'package:HolidayMakers/widgets/appLargetext.dart';
 import 'package:shimmer/shimmer.dart';
 
 class DeparturePackageDetails extends StatefulWidget {
@@ -24,7 +24,7 @@ class _DeparturePackageDetailsState extends State<DeparturePackageDetails> {
   String countryName = "";
   String cityName = "";
   List<Map<String, dynamic>> image = [];
-  
+
   bool isLoading = true;
   String packageId = "";
   @override
@@ -42,7 +42,6 @@ class _DeparturePackageDetailsState extends State<DeparturePackageDetails> {
         inclusionList = response["inclusion_list"];
         countryName = response["country_name"];
         cityName = response["city_name"];
-        
 
         image = List<Map<String, dynamic>>.from(response['package_gallery'].map(
             (item) => {'image': item['image'], 'alt_text': item['alt_text']}));

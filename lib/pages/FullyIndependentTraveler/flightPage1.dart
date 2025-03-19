@@ -1,5 +1,5 @@
 // import 'package:flutter/material.dart';
-// import 'package:holdidaymakers/pages/FullyIndependentTraveler/offersDiscount.dart';
+// import 'package:HolidayMakers/pages/FullyIndependentTraveler/offersDiscount.dart';
 
 // class FlightPage1 extends StatefulWidget {
 //   final Map<String, dynamic> responceData;

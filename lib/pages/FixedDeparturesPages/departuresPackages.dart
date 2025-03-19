@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:holdidaymakers/pages/FixedDeparturesPages/departurePackagedetails.dart';
-import 'package:holdidaymakers/utils/api_handler.dart';
-import 'package:holdidaymakers/widgets/appText.dart';
-import 'package:holdidaymakers/widgets/drawerPage.dart';
-import 'package:holdidaymakers/widgets/mainCarousel.dart';
-import 'package:holdidaymakers/widgets/responcive_card.dart';
+import 'package:HolidayMakers/pages/FixedDeparturesPages/departurePackagedetails.dart';
+import 'package:HolidayMakers/utils/api_handler.dart';
+import 'package:HolidayMakers/widgets/appText.dart';
+import 'package:HolidayMakers/widgets/drawerPage.dart';
+import 'package:HolidayMakers/widgets/mainCarousel.dart';
+import 'package:HolidayMakers/widgets/responcive_card.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Departurespackages extends StatefulWidget {
@@ -27,27 +27,27 @@ class _DeparturespackagesState extends State<Departurespackages> {
     {'image': 'img/picture8.png'},
   ];
 
- List<Map<String, dynamic>> banner_list = [];
-     @override
+  List<Map<String, dynamic>> banner_list = [];
+  @override
   void initState() {
     super.initState();
     _loadProfileDetails();
     _fetchHomePageData(); // Fetch data on initialization
   }
-    String profileImg = '';
-  bool isLoading = true; 
+
+  String profileImg = '';
+  bool isLoading = true;
 
   Future<void> _loadProfileDetails() async {
-  try {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      profileImg = prefs.getString("profileImg") ?? "";
-    });
-  } catch (error) {
-    print("Error loading profile details: $error");
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      setState(() {
+        profileImg = prefs.getString("profileImg") ?? "";
+      });
+    } catch (error) {
+      print("Error loading profile details: $error");
+    }
   }
-}
-
 
   Future<void> _fetchHomePageData() async {
     try {
@@ -71,7 +71,6 @@ class _DeparturespackagesState extends State<Departurespackages> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -79,50 +78,52 @@ class _DeparturespackagesState extends State<Departurespackages> {
       key: _scaffoldKey,
       backgroundColor: Colors.white,
       drawer: Drawerpage(),
-      body:  isLoading
+      body: isLoading
           ? Center(
-              child: CircularProgressIndicator(color: Colors.red,), // Show loader until data is fetched
+              child: CircularProgressIndicator(
+                color: Colors.red,
+              ), // Show loader until data is fetched
             )
-          :SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header Section
-            Container(
-              width: double.infinity,
-              height: 120,
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage('img/homeBg.png'),
-                  fit: BoxFit.cover,
-                ),
-              ),
+          : SingleChildScrollView(
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Header Section
                   Container(
-                    height: 45,
                     width: double.infinity,
+                    height: 120,
                     decoration: BoxDecoration(
-                      color: Colors.white70,
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(100),
-                        topRight: Radius.circular(100),
+                      image: DecorationImage(
+                        image: AssetImage('img/homeBg.png'),
+                        fit: BoxFit.cover,
                       ),
                     ),
-                  )
-                ],
-              ),
-            ),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    _scaffoldKey.currentState?.openDrawer();
-                  },
-                  child: Padding(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Container(
+                          height: 45,
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            color: Colors.white70,
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(100),
+                              topRight: Radius.circular(100),
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          _scaffoldKey.currentState?.openDrawer();
+                        },
+                        child: Padding(
                           padding: const EdgeInsets.only(left: 20),
                           child: CircleAvatar(
                             backgroundImage: profileImg.isNotEmpty
@@ -133,72 +134,72 @@ class _DeparturespackagesState extends State<Departurespackages> {
                             maxRadius: 22,
                           ),
                         ),
-                ),
-                Container(
-                  height: 40,
-                  width: 200,
-                  margin: EdgeInsets.all(15),
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: AssetImage('img/brandLogo.png'),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            Maincarousel(banner_list: banner_list),
-            Container(
-              margin: EdgeInsets.only(left: 15),
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      AppText(
-                        text: 'Packages',
-                        color: Colors.black,
-                        size: 16,
+                      ),
+                      Container(
+                        height: 40,
+                        width: 200,
+                        margin: EdgeInsets.all(15),
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                            image: AssetImage('img/brandLogo.png'),
+                          ),
+                        ),
                       ),
                     ],
                   ),
+                  Maincarousel(banner_list: banner_list),
                   Container(
-                    width: double.infinity,
-                    height: 1,
-                    color: Colors.grey,
-                  )
+                    margin: EdgeInsets.only(left: 15),
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            AppText(
+                              text: 'Packages',
+                              color: Colors.black,
+                              size: 16,
+                            ),
+                          ],
+                        ),
+                        Container(
+                          width: double.infinity,
+                          height: 1,
+                          color: Colors.grey,
+                        )
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 15),
+                    child: GridView.count(
+                      crossAxisCount: 2,
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      children: picture.map((pic) {
+                        return GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => DeparturePackageDetails(),
+                              ),
+                            );
+                          },
+                          child: ResponsiveCard2(
+                            image: pic['image']!,
+                            title: 'North East India Tour Packages',
+                            subtitle: 'HOLIDAY • 6D 5N',
+                            price: '700 onwards',
+                            screenWidth: screenWidth,
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ),
                 ],
               ),
             ),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 15),
-              child: GridView.count(
-                crossAxisCount: 2,
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                children: picture.map((pic) {
-                  return GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => DeparturePackageDetails(),
-                        ),
-                      );
-                    },
-                    child: ResponsiveCard2(
-                      image: pic['image']!,
-                      title: 'North East India Tour Packages',
-                      subtitle: 'HOLIDAY • 6D 5N',
-                      price: '700 onwards',
-                      screenWidth: screenWidth,
-                    ),
-                  );
-                }).toList(),
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

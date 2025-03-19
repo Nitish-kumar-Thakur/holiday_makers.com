@@ -998,4 +998,102 @@ class APIHandler {
       throw Exception('Failed to load countries');
     }
   }
+  static Future<Map<String, dynamic>> fdSaveBooking(Map<String, dynamic> body) async {
+    final Uri url = Uri.parse('https://b2cuat.tikipopi.com/index.php/holiday_api/save_fd_package');
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(body),
+      );
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = jsonDecode(response.body);
+        if (data["status"] == true) {
+          return data;
+        } else {
+          return {
+            "status": false,
+            "message": "No tour details found",
+            "data": {}
+          };
+        }
+      } else {
+        print(response.statusCode);
+        throw Exception("Server error: ${response.statusCode}");
+      }
+    } catch (e) {
+      return {
+        "status": false,
+        "message": "Error fetching tour details",
+        "data": {}
+      };
+    }
+  }
+
+  static Future<Map<String, dynamic>> fitSaveBooking(Map<String, dynamic> body) async {
+    final Uri url = Uri.parse('https://b2cuat.tikipopi.com/index.php/holiday_api/save_fit_package');
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(body),
+      );
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = jsonDecode(response.body);
+        if (data["status"] == true) {
+          return data;
+        } else {
+          return {
+            "status": false,
+            "message": "No tour details found",
+            "data": {}
+          };
+        }
+      } else {
+        print(response.body);
+        throw Exception("Server error: ${response.statusCode}");
+      }
+    } catch (e) {
+      return {
+        "status": false,
+        "message": "Error fetching tour details",
+        "data": {}
+      };
+    }
+  }
+
+  static Future<Map<String, dynamic>> cruiseSaveBooking(Map<String, dynamic> body) async {
+    final Uri url = Uri.parse('https://b2cuat.tikipopi.com/index.php/holiday_api/save_cruise_package');
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(body),
+      );
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = jsonDecode(response.body);
+        if (data["status"] == true) {
+          print('&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&');
+          print(data);
+          print('&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&');
+          return data;
+        } else {
+          return {
+            "status": false,
+            "message": "No tour details found",
+            "data": {}
+          };
+        }
+      } else {
+        print(response.statusCode);
+        throw Exception("Server error: ${response.statusCode}");
+      }
+    } catch (e) {
+      return {
+        "status": false,
+        "message": "Error fetching tour details",
+        "data": {}
+      };
+    }
+  }
 }

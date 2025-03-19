@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:holdidaymakers/pages/login&signup/loginPage.dart';
-import 'package:holdidaymakers/pages/login&signup/signupPage.dart';
-import 'package:holdidaymakers/widgets/appLargetext.dart';
-import 'package:holdidaymakers/widgets/appText.dart';
-import 'package:holdidaymakers/widgets/responciveButton.dart';
+import 'package:HolidayMakers/pages/login&signup/loginPage.dart';
+import 'package:HolidayMakers/pages/login&signup/signupPage.dart';
+import 'package:HolidayMakers/widgets/appLargetext.dart';
+import 'package:HolidayMakers/widgets/appText.dart';
+import 'package:HolidayMakers/widgets/responciveButton.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'dart:async';
 
@@ -87,14 +87,12 @@ class _IntroPageState extends State<IntroPage> {
                   controller: _pageController,
                   count: 3,
                   effect: WormEffect(
-                    dotHeight: 13,
-                    dotWidth: 13,
-                    spacing: 8,
-                    activeDotColor: Color(0xFF00CEC9),
-                    dotColor: Color(0xFF00CEC9).withOpacity(0.5),
-                    type: WormType.thin
-                    
-                  ),
+                      dotHeight: 13,
+                      dotWidth: 13,
+                      spacing: 8,
+                      activeDotColor: Color(0xFF00CEC9),
+                      dotColor: Color(0xFF00CEC9).withOpacity(0.5),
+                      type: WormType.thin),
                 ),
                 SizedBox(height: screenHeight * 0.02),
 

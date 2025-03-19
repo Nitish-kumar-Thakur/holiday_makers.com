@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:holdidaymakers/pages/homePages/introPage.dart';
-import 'package:holdidaymakers/widgets/appText.dart';
-import 'package:holdidaymakers/widgets/responciveButton.dart';
+import 'package:HolidayMakers/pages/homePages/introPage.dart';
+import 'package:HolidayMakers/widgets/appText.dart';
+import 'package:HolidayMakers/widgets/responciveButton.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Onboardpage2 extends StatefulWidget {
@@ -90,7 +90,8 @@ class _Onboardpage2State extends State<Onboardpage2> {
                           child: Image.asset(
                             onboardingData[index]["image"]!,
                             width: screenWidth,
-                            height: screenHeight * 0.55,  // Adjusted for better fit
+                            height:
+                                screenHeight * 0.55, // Adjusted for better fit
                             fit: BoxFit.cover,
                           ),
                         ),
@@ -101,7 +102,8 @@ class _Onboardpage2State extends State<Onboardpage2> {
                           child: Column(
                             children: [
                               SizedBox(
-                                width: screenWidth * 0.8, // Slightly reduced width for better balance
+                                width: screenWidth *
+                                    0.8, // Slightly reduced width for better balance
                                 child: Column(
                                   children: [
                                     RichText(
@@ -128,7 +130,8 @@ class _Onboardpage2State extends State<Onboardpage2> {
                                     ),
                                     SizedBox(height: screenHeight * 0.02),
                                     AppText(
-                                      text: onboardingData[index]["description"]!,
+                                      text: onboardingData[index]
+                                          ["description"]!,
                                       size: screenHeight * 0.02,
                                     ),
                                   ],
@@ -150,7 +153,9 @@ class _Onboardpage2State extends State<Onboardpage2> {
                     duration: const Duration(milliseconds: 300),
                     curve: Curves.easeInOut,
                     margin: const EdgeInsets.only(right: 5),
-                    width: currentPage == indexDots ? screenWidth * 0.07 : screenWidth * 0.02,
+                    width: currentPage == indexDots
+                        ? screenWidth * 0.07
+                        : screenWidth * 0.02,
                     height: screenHeight * 0.01,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(8),

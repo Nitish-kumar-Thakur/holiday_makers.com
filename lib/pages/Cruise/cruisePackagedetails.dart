@@ -1,8 +1,8 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
-import 'package:holdidaymakers/pages/Cruise/cruise_deals_page.dart';
-import 'package:holdidaymakers/utils/api_handler.dart';
+import 'package:HolidayMakers/pages/Cruise/cruise_deals_page.dart';
+import 'package:HolidayMakers/utils/api_handler.dart';
 import 'package:shimmer/shimmer.dart';
 
 class CruisePackageDetails extends StatefulWidget {
@@ -27,11 +27,11 @@ class _CruisePackageDetailsState extends State<CruisePackageDetails> {
     _fetchPackageDetails();
   }
 
-  Future<void> _fetchPackageDetails() async { 
+  Future<void> _fetchPackageDetails() async {
     try {
       final response = await APIHandler.getCruiseDeal(package_id);
       setState(() {
-        packageData = response ;
+        packageData = response;
 
         image = List<Map<String, dynamic>>.from(response['cruise_gallery'].map(
             (item) => {'image': item['image'], 'alt_text': item['alt_text']}));
@@ -174,7 +174,8 @@ class _CruisePackageDetailsState extends State<CruisePackageDetails> {
                             children: [
                               _InfoChip(
                                 icon: Icons.flight_takeoff,
-                                label: packageData['cruise_details']['dep_date']?.toString() ??
+                                label: packageData['cruise_details']['dep_date']
+                                        ?.toString() ??
                                     "N/A",
                               ),
                               // _InfoChip(

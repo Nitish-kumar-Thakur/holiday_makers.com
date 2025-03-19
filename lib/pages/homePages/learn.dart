@@ -41,11 +41,8 @@ class _PaymentMethodState extends State<PaymentMethod> {
           Expanded(
             child: ListView(
               children: [
-                buildPaymentOption(context, 'img/visa.png', 'Visa'),
-                buildPaymentOption(context, 'img/mastercard.png', 'MasterCard'),
-                buildPaymentOption(context, 'img/amex.png', 'American Express'),
-                buildPaymentOption(context, 'img/paypal.png', 'PayPal'),
-                buildPaymentOption(context, 'img/diners.png', 'Diners'),
+                buildPaymentOption(context, 'img/telr.png', 'Telr'),
+                buildPaymentOption(context, 'img/tabby.png', 'Tabby')
               ],
             ),
           ),
@@ -58,8 +55,13 @@ class _PaymentMethodState extends State<PaymentMethod> {
   Widget buildPaymentOption(BuildContext context, String iconPath, String title) {
     return GestureDetector(
       onTap: () async {
+      if (title == "Telr") {
         await initiateTelrPayment();
-      },
+      } else if (title == "Tabby") {
+        await initiateTabbyPayment();
+    }
+},
+
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 10),
         child: Container(
@@ -106,6 +108,7 @@ class _PaymentMethodState extends State<PaymentMethod> {
     );
   }
 
+
   /// Initiates payment with Telr API and redirects the user to the payment page.
   Future<void> initiateTelrPayment() async {
     var storeID = 'YOUR_STORE_ID';
@@ -136,7 +139,14 @@ class _PaymentMethodState extends State<PaymentMethod> {
           String paymentUrl = responseData["order"]["url"];
           await launchPaymentUrl(paymentUrl);
         } else {
-          Fluttertoast.showToast(msg: "Failed to get payment URL");
+          Fluttertoast.showToast(
+  msg: responseData["order"]?["url"] ?? "Payment URL not found for Telr",
+  toastLength: Toast.LENGTH_SHORT,
+  gravity: ToastGravity.BOTTOM,
+  backgroundColor: Colors.black,
+  textColor: Colors.white,
+);
+
         }
       } else {
         Fluttertoast.showToast(msg: "Payment request failed: ${response.body}");
@@ -155,4 +165,53 @@ class _PaymentMethodState extends State<PaymentMethod> {
     Fluttertoast.showToast(msg: "Could not launch payment URL");
   }
 }
+
+Future<void> initiateTabbyPayment() async {
+  var url = Uri.parse('https://api.tabby.ai/api/v2/checkout');
+  var headers = {
+    "Authorization": "Bearer YOUR_TABBY_SECRET_KEY",
+    "Content-Type": "application/json"
+  };
+
+  var body = jsonEncode({
+    "payment": {
+      "amount": "100", // Make dynamic
+      "currency": "AED",
+      "description": "Test Installment Payment",
+      "buyer": {"email": "customer@example.com"},
+      "order": {
+        "reference_id": DateTime.now().millisecondsSinceEpoch.toString(),
+        "items": [
+          {"title": "Test Item", "quantity": 1, "unit_price": "100"}
+        ]
+      },
+      "installments": true,
+      "lang": "en"
+    },
+    "merchant_code": "YOUR_MERCHANT_CODE",
+    "merchant_urls": {
+      "success": "https://yourwebsite.com/success",
+      "failure": "https://yourwebsite.com/failure"
+    }
+  });
+
+  try {
+    var response = await http.post(url, headers: headers, body: body);
+
+    if (response.statusCode == 200) {
+      var responseData = jsonDecode(response.body);
+      if (responseData["checkout"] != null && responseData["checkout"]["web_url"] != null) {
+        String paymentUrl = responseData["checkout"]["web_url"];
+        await launchPaymentUrl(paymentUrl);
+      } else {
+        Fluttertoast.showToast(msg: responseData["order"]?["url"] ?? "Payment URL not found for Tabby");
+      }
+    } else {
+      Fluttertoast.showToast(msg: "Tabby payment request failed: ${response.body}");
+    }
+  } catch (e) {
+    Fluttertoast.showToast(msg: "Tabby Payment Error: $e");
+  }
+}
+
 }

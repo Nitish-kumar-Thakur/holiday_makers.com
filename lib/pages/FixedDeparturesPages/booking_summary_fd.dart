@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:holdidaymakers/pages/FixedDeparturesPages/traveler_details_fd.dart';
-import 'package:holdidaymakers/utils/api_handler.dart';
-import 'package:holdidaymakers/widgets/responciveButton.dart';
+import 'package:HolidayMakers/pages/FixedDeparturesPages/traveler_details_fd.dart';
+import 'package:HolidayMakers/utils/api_handler.dart';
+import 'package:HolidayMakers/widgets/responciveButton.dart';
 import 'package:shimmer/shimmer.dart';
 
 class BookingSummaryFD extends StatefulWidget {
@@ -276,18 +276,23 @@ class _BookingSummaryFDState extends State<BookingSummaryFD> {
                     _buildSection('PACKAGE DETAILS', packageDetails, fontSize),
                     _buildFlightDetailsSection(
                         'FLIGHT DETAILS', flightDetails, fontSize),
-                    tourList.isEmpty? SizedBox():_buildtourDetailsSection(
-                        "TOUR DETAILS", tourList, fontSize),
+                    tourList.isEmpty
+                        ? SizedBox()
+                        : _buildtourDetailsSection(
+                            "TOUR DETAILS", tourList, fontSize),
                     _buildSection('HOTEL DETAILS', hotelDetails, fontSize),
-                    _buildSection('TRANSFER DETAILS', transferDetails, fontSize),
-                    _buildSection('TRAVEL INSURANCE DETAILS', insuranceDetails, fontSize),
+                    _buildSection(
+                        'TRANSFER DETAILS', transferDetails, fontSize),
+                    _buildSection(
+                        'TRAVEL INSURANCE DETAILS', insuranceDetails, fontSize),
                     _buildPriceSection('PRICE DETAILS', priceDetails, fontSize),
                   ],
                 ),
               ),
       ),
       bottomNavigationBar: Padding(
-        padding: const EdgeInsets.only(left: 16.0,right: 16.0,bottom: 16.0,top: 7),
+        padding: const EdgeInsets.only(
+            left: 16.0, right: 16.0, bottom: 16.0, top: 7),
         child: SizedBox(
           width: double.infinity,
           child: IconButton(
@@ -601,7 +606,7 @@ class _BookingSummaryFDState extends State<BookingSummaryFD> {
               ),
             ),
           ),
-          Text( 
+          Text(
             "Duration ${tour['duration'] ?? "N/A"}",
             style: TextStyle(
               fontSize: fontSize,

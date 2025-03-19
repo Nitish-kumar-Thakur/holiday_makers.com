@@ -1,6 +1,6 @@
+import 'package:HolidayMakers/utils/api_handler.dart';
+import 'package:HolidayMakers/widgets/responciveButton.dart';
 import 'package:flutter/material.dart';
-import 'package:holdidaymakers/utils/api_handler.dart';
-import 'package:holdidaymakers/widgets/responciveButton.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
@@ -27,6 +27,8 @@ class _BookingSummaryPageState extends State<BookingSummaryPage> {
     "countryCode": "+971", // Default
     "phoneNumber": "",
   };
+  String searchId = "";
+  Map<String, dynamic> apiResponse = {};
 
   @override
   void initState() {
@@ -81,6 +83,7 @@ class _BookingSummaryPageState extends State<BookingSummaryPage> {
           'TOTAL': '${data['cruise_price']?['currency'] ?? 'AED'} ${data['cruise_price']?['total'] ?? 'N/A'}',
         };
 
+        searchId = response['data']['search_id'].toString();
         isLoading = false;
       });
     } catch (e) {
@@ -88,6 +91,23 @@ class _BookingSummaryPageState extends State<BookingSummaryPage> {
       setState(() {
         isLoading = false;
       });
+    }
+  }
+
+  Future<void> _saveBooking(Map<String, dynamic> body) async {
+    print(body);
+    try {
+      final response = await APIHandler.cruiseSaveBooking(body);
+      if (response["status"] == true) {
+        setState(() {
+          apiResponse = response['data'];
+        });
+        print('==================================');
+        print('Final API Response: $apiResponse');
+        print('==================================');
+      }
+    } catch (e) {
+      print("Error fetching cities: $e");
     }
   }
 
@@ -140,7 +160,19 @@ class _BookingSummaryPageState extends State<BookingSummaryPage> {
           child: IconButton(
             onPressed: () {
               if (_formKey.currentState!.validate()) {
-                print(contactDetails);
+                // print(contactDetails);
+                // print(searchId);
+                Map <String, dynamic> body = {
+                  "search_id": searchId.toString(),
+                  "voucher_code":"",
+                  "title": contactDetails['title'].toString(),
+                  "name": contactDetails['contactName'].toString(),
+                  "email": contactDetails['email'].toString(),
+                  "country_code": contactDetails['countryCode'].toString(),
+                  "phone": contactDetails['phoneNumber'].toString(),
+                  "payment_type": "telr"
+                };
+                _saveBooking(body);
               }
 
             },

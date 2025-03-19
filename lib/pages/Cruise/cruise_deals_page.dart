@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:holdidaymakers/pages/Cruise/cruise_deals_page2.dart';
-import 'package:holdidaymakers/utils/api_handler.dart';
-import 'package:holdidaymakers/widgets/appLargetext.dart';
-import 'package:holdidaymakers/widgets/responciveButton.dart';
+import 'package:HolidayMakers/pages/Cruise/cruise_deals_page2.dart';
+import 'package:HolidayMakers/utils/api_handler.dart';
+import 'package:HolidayMakers/widgets/appLargetext.dart';
+import 'package:HolidayMakers/widgets/responciveButton.dart';
 import 'package:shimmer/shimmer.dart';
 
 class CruiseDealsPage extends StatefulWidget {
@@ -29,43 +29,42 @@ class _CruiseDealsPageState extends State<CruiseDealsPage> {
     _fetchPackageDetails();
   }
 
-Future<void> _fetchPackageDetails() async {
-  try {
-    final response = await APIHandler.getCruiseDeal(widget.packageid);
-    setState(() {
-      packageData = response;
-    });
+  Future<void> _fetchPackageDetails() async {
+    try {
+      final response = await APIHandler.getCruiseDeal(widget.packageid);
+      setState(() {
+        packageData = response;
+      });
 
-    if (packageData['cruise_details']?['cruise_id'] != null) {
-      cruiseId = packageData['cruise_details']['cruise_id'];
-      await _fetchCruiseCards();
-    }
-  } catch (error) {
-    print("Error fetching package details: $error");
-    setState(() {
-      isLoading = false;
-    });
-  }
-}
-
-Future<void> _fetchCruiseCards() async {
-  try {
-    final response = await APIHandler.getCruiseCards(cruiseId);
-    setState(() {
-      cruiseCards = response;
-      if (cruiseCards['data'] != null && cruiseCards['data'].isNotEmpty) {
-        selectedCruiseData = cruiseCards['data'][0];
+      if (packageData['cruise_details']?['cruise_id'] != null) {
+        cruiseId = packageData['cruise_details']['cruise_id'];
+        await _fetchCruiseCards();
       }
-      isLoading = false;
-    });
-  } catch (error) {
-    print("Error fetching cruise cards: $error");
-    setState(() {
-      isLoading = false;
-    });
+    } catch (error) {
+      print("Error fetching package details: $error");
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
-}
 
+  Future<void> _fetchCruiseCards() async {
+    try {
+      final response = await APIHandler.getCruiseCards(cruiseId);
+      setState(() {
+        cruiseCards = response;
+        if (cruiseCards['data'] != null && cruiseCards['data'].isNotEmpty) {
+          selectedCruiseData = cruiseCards['data'][0];
+        }
+        isLoading = false;
+      });
+    } catch (error) {
+      print("Error fetching cruise cards: $error");
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
 
   Widget buildInclusionCard(String iconClass, String label) {
     // Default icon in case no match is found
@@ -134,99 +133,102 @@ Future<void> _fetchCruiseCards() async {
           child: isLoading
               ? _buildShimmerEffect()
               : Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Cruise Deals',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-              ),
-              SizedBox(height: 10),
-              Column(
-                children: [
-                  ...(cruiseCards['data'] as List<dynamic>? ?? [])
-                      .asMap()
-                      .entries
-                      .map((entry) {
-                    int index = entry.key;
-                    var cruise = entry.value;
-
-                    return Column(
-                      children: [
-                        CruiseOption(
-                          title: cruise['cruise_name'] ?? '',
-                          checkIn: "${cruise['dep_date'] ?? '00'}",
-                          checkOut: "${cruise['arrival_date'] ?? '00'}",
-                          duration: '${cruise['duration']}',
-                          price: '${cruise['currency']} ${cruise['price']}',
-                          isSelected: selectedOption == index,
-                          onSelect: () {
-                            setState(() {
-                              selectedOption = index;
-                              selectedCruiseData = cruise;
-                            });
-                          },
-                        ),
-                        SizedBox(height: 10),
-                      ],
-                    );
-                  }).toList(),
-                ],
-              ),
-              SizedBox(height: 12),
-              Container(
-                width: double.infinity,
-                decoration: BoxDecoration(color: Colors.grey.shade200),
-                padding: const EdgeInsets.all(10),
-                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    AppLargeText(
-                      text: 'INCLUSION',
-                      size: 25,
-                    ),
-                    const SizedBox(height: 10),
-                    Center(
-                      child: Wrap(
-                        spacing: 10,
-                        runSpacing: 10,
-                        alignment: WrapAlignment.spaceEvenly,
-                        children: inclusionList.map<Widget>((inclusion) {
-                          return buildInclusionCard(
-                              inclusion['class'], inclusion['name']);
-                        }).toList(),
+                    Text(
+                      'Cruise Deals',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
                       ),
                     ),
-                    const SizedBox(height: 10),
+                    SizedBox(height: 10),
+                    Column(
+                      children: [
+                        ...(cruiseCards['data'] as List<dynamic>? ?? [])
+                            .asMap()
+                            .entries
+                            .map((entry) {
+                          int index = entry.key;
+                          var cruise = entry.value;
+
+                          return Column(
+                            children: [
+                              CruiseOption(
+                                title: cruise['cruise_name'] ?? '',
+                                checkIn: "${cruise['dep_date'] ?? '00'}",
+                                checkOut: "${cruise['arrival_date'] ?? '00'}",
+                                duration: '${cruise['duration']}',
+                                price:
+                                    '${cruise['currency']} ${cruise['price']}',
+                                isSelected: selectedOption == index,
+                                onSelect: () {
+                                  setState(() {
+                                    selectedOption = index;
+                                    selectedCruiseData = cruise;
+                                  });
+                                },
+                              ),
+                              SizedBox(height: 10),
+                            ],
+                          );
+                        }).toList(),
+                      ],
+                    ),
+                    SizedBox(height: 12),
+                    Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(color: Colors.grey.shade200),
+                      padding: const EdgeInsets.all(10),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          AppLargeText(
+                            text: 'INCLUSION',
+                            size: 25,
+                          ),
+                          const SizedBox(height: 10),
+                          Center(
+                            child: Wrap(
+                              spacing: 10,
+                              runSpacing: 10,
+                              alignment: WrapAlignment.spaceEvenly,
+                              children: inclusionList.map<Widget>((inclusion) {
+                                return buildInclusionCard(
+                                    inclusion['class'], inclusion['name']);
+                              }).toList(),
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
-              ),
-            ],
-          ),
         ),
       ),
 
       // Placing the button at the bottom using bottomNavigationBar
-      bottomNavigationBar: isLoading? null: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: SizedBox(
-          width: double.infinity,
-          child: IconButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => CruiseDealsPage2(
-                        selectedCruiseData: selectedCruiseData)),
-              );
-            },
-            icon: responciveButton(text: 'SELECT'),
-          ),
-        ),
-      ),
+      bottomNavigationBar: isLoading
+          ? null
+          : Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: SizedBox(
+                width: double.infinity,
+                child: IconButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => CruiseDealsPage2(
+                              selectedCruiseData: selectedCruiseData)),
+                    );
+                  },
+                  icon: responciveButton(text: 'SELECT'),
+                ),
+              ),
+            ),
     );
   }
 
@@ -347,14 +349,15 @@ class CruiseOption extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                SizedBox( width: MediaQuery.of(context).size.width * 0.5,
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.5,
                   child: Text(
-                  title,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
+                    title,
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
                   ),
-                ),
                 ),
                 Row(
                   children: [

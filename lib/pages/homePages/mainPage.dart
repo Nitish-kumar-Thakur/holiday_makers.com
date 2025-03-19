@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:holdidaymakers/pages/Cruise/CurisesHome.dart';
-import 'package:holdidaymakers/pages/FixedDeparturesPages/departuresHome.dart';
-import 'package:holdidaymakers/pages/homePages/homePage.dart';
-import 'package:holdidaymakers/pages/FullyIndependentTraveler/independentTravelerPage.dart';
-import 'package:holdidaymakers/widgets/bottomNavigationBar.dart';
-import 'package:holdidaymakers/widgets/profile_page.dart';
+import 'package:HolidayMakers/pages/Cruise/CurisesHome.dart';
+import 'package:HolidayMakers/pages/FixedDeparturesPages/departuresHome.dart';
+import 'package:HolidayMakers/pages/homePages/homePage.dart';
+import 'package:HolidayMakers/pages/FullyIndependentTraveler/independentTravelerPage.dart';
+import 'package:HolidayMakers/widgets/bottomNavigationBar.dart';
+import 'package:HolidayMakers/widgets/profile_page.dart';
 
 class Mainpage extends StatefulWidget {
   const Mainpage({super.key});
