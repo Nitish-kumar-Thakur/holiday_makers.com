@@ -42,26 +42,36 @@ class _TravelerhotelsState extends State<Travelerhotels> {
     }
   }
 
-  Widget buildInclusionCard(IconData icon, String label) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    return Container(
-      width: screenWidth * 0.17,
-      height: screenWidth * 0.15,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(icon),
-          const SizedBox(height: 4),
-          AppText(
-            text: label,
-            size: screenWidth * 0.02,
-            color: Colors.black,
-          ),
-        ],
+  // Widget buildInclusionCard(IconData icon, String label) {
+  //   final screenWidth = MediaQuery.of(context).size.width;
+  //   return Container(
+  //     width: screenWidth * 0.17,
+  //     height: screenWidth * 0.15,
+  //     decoration: BoxDecoration(
+  //       color: Colors.white,
+  //       borderRadius: BorderRadius.circular(10),
+  //     ),
+  //     child: Column(
+  //       mainAxisAlignment: MainAxisAlignment.center,
+  //       children: [
+  //         Icon(icon),
+  //         const SizedBox(height: 4),
+  //         AppText(
+  //           text: label,
+  //           size: screenWidth * 0.02,
+  //           color: Colors.black,
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
+
+  Widget _buildTopCurve() {
+    return Padding(
+      padding: const EdgeInsets.only(top: 50), // 20% of the screen height
+      child: CustomPaint(
+        size: Size(double.infinity, 0), // Height of the curved area
+        painter: CirclePainter(radius: 200),
       ),
     );
   }
@@ -94,97 +104,142 @@ class _TravelerhotelsState extends State<Travelerhotels> {
       backgroundColor: Colors.white,
       body: Column(
         children: [
-          // Header Image with Back Button
-          isLoading
-              ? HotelImageShimmer(screenHeight: screenHeight)
-              : Container(
-                  height: screenHeight * 0.3,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: NetworkImage(hotelList[0]["hotel_image"]),
-                      fit: BoxFit.cover,
+          _buildTopCurve(),
+          const SizedBox(height: 30),
+          Row(
+            children: [
+              IconButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                icon: CircleAvatar(
+                  backgroundColor: Colors.grey.withOpacity(0.6),  // Transparent grey background
+                  child: Text(
+                    '<',  // Use "<" symbol
+                    style: TextStyle(
+                      color: Colors.white,  // White text color
+                      fontSize: 24,  // Adjust font size as needed
+                      fontWeight: FontWeight.bold,  // Make the "<" bold if needed
                     ),
                   ),
-                  child: Padding(
-                    padding: EdgeInsets.only(top: screenHeight * 0.05),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        IconButton(
-                          icon: const Icon(
-                            Icons.arrow_back,
-                            color: Colors.white,
-                          ),
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-
-          // Container with Inclusion & Hotel List
-          Expanded(
-            child: Container(
-              width: double.infinity,
-              decoration: BoxDecoration(color: Colors.grey.shade200),
-              child: Padding(
-                padding: EdgeInsets.all(screenWidth * 0.03),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    if (inclusionList.isNotEmpty) ...[
-                      AppLargeText(
-                        text: 'INCLUSION',
-                        size: screenWidth * 0.06,
-                      ),
-                      SizedBox(height: screenHeight * 0.01),
-                      SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Row(
-                          children: inclusionList.map<Widget>((inclusion) {
-                            return Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 4), // Add spacing
-                              child: buildInclusionCard(
-                                getFontAwesomeIcon(inclusion['class']),
-                                inclusion['name'],
-                              ),
-                            );
-                          }).toList(),
-                        ),
-                      ),
-                      SizedBox(height: screenHeight * 0.02),
-                    ],
-
-                    // Expanded ListView to avoid overflow
-                    Expanded(
-                      child: isLoading
-                          ? _buildShimmerGrid(screenWidth)
-                          : ListView.builder(
-                              itemCount: hotelList.length,
-                              itemBuilder: (_, index) {
-                                return Padding(
-                                  padding: EdgeInsets.only(
-                                      bottom: screenHeight * 0.04),
-                                  child: HotelCard(
-                                    numberOfNights: widget.numberOfNights,
-                                    hotel: hotelList[index],
-                                    responceData: widget.responceData,
-                                    roomArray: widget.roomArray,
-                                  ),
-                                );
-                              },
-                            ),
-                    ),
-                  ],
                 ),
               ),
+              const SizedBox(width: 10),
+              Text('HOTELS',
+                  style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Colors.white)
+              )
+            ],
+          ),
+          // Header Image with Back Button
+          // isLoading
+          //     ? HotelImageShimmer(screenHeight: screenHeight)
+          //     : Container(
+          //         height: screenHeight * 0.3,
+          //         width: double.infinity,
+          //         decoration: BoxDecoration(
+          //           image: DecorationImage(
+          //             image: NetworkImage(hotelList[0]["hotel_image"]),
+          //             fit: BoxFit.cover,
+          //           ),
+          //         ),
+          //         child: Padding(
+          //           padding: EdgeInsets.only(top: screenHeight * 0.05),
+          //           child: Column(
+          //             crossAxisAlignment: CrossAxisAlignment.start,
+          //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          //             children: [
+          //               IconButton(
+          //                 icon: const Icon(
+          //                   Icons.arrow_back,
+          //                   color: Colors.white,
+          //                 ),
+          //                 onPressed: () {
+          //                   Navigator.pop(context);
+          //                 },
+          //               ),
+          //             ],
+          //           ),
+          //         ),
+          //       ),
+
+          Expanded(
+            child: isLoading
+                ? _buildShimmerGrid(screenWidth)
+                : ListView.builder(
+              itemCount: hotelList.length,
+              itemBuilder: (_, index) {
+                return Padding(
+                  // padding: EdgeInsets.only(bottom: screenHeight * 0.04),
+                  padding: EdgeInsets.only(bottom: screenHeight * 0.015, left: screenHeight * 0.015, right: screenHeight * 0.015),
+                  child: HotelCard(
+                    numberOfNights: widget.numberOfNights,
+                    hotel: hotelList[index],
+                    responceData: widget.responceData,
+                    roomArray: widget.roomArray,
+                  ),
+                );
+              },
             ),
           ),
+          // Container with Inclusion & Hotel List
+          // Expanded(
+          //   child: Container(
+          //     width: double.infinity,
+          //     decoration: BoxDecoration(color: Colors.white),
+          //     child: Padding(
+          //       padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.03),
+          //       child: Column(
+          //         crossAxisAlignment: CrossAxisAlignment.start,
+          //         children: [
+          //           // if (inclusionList.isNotEmpty) ...[
+          //           //   AppLargeText(
+          //           //     text: 'INCLUSION',
+          //           //     size: screenWidth * 0.06,
+          //           //   ),
+          //           //   SizedBox(height: screenHeight * 0.01),
+          //           //   SingleChildScrollView(
+          //           //     scrollDirection: Axis.horizontal,
+          //           //     child: Row(
+          //           //       children: inclusionList.map<Widget>((inclusion) {
+          //           //         return Padding(
+          //           //           padding: const EdgeInsets.symmetric(
+          //           //               horizontal: 4), // Add spacing
+          //           //           child: buildInclusionCard(
+          //           //             getFontAwesomeIcon(inclusion['class']),
+          //           //             inclusion['name'],
+          //           //           ),
+          //           //         );
+          //           //       }).toList(),
+          //           //     ),
+          //           //   ),
+          //           //   SizedBox(height: screenHeight * 0.02),
+          //           // ],
+          //
+          //           // Expanded ListView to avoid overflow
+          //           Expanded(
+          //             child: isLoading
+          //                 ? _buildShimmerGrid(screenWidth)
+          //                 : ListView.builder(
+          //                     itemCount: hotelList.length,
+          //                     itemBuilder: (_, index) {
+          //                       return Padding(
+          //                         padding: EdgeInsets.only(
+          //                             bottom: screenHeight * 0.04),
+          //                         child: HotelCard(
+          //                           numberOfNights: widget.numberOfNights,
+          //                           hotel: hotelList[index],
+          //                           responceData: widget.responceData,
+          //                           roomArray: widget.roomArray,
+          //                         ),
+          //                       );
+          //                     },
+          //                   ),
+          //           ),
+          //         ],
+          //       ),
+          //     ),
+          //   ),
+          // ),
         ],
       ),
     );
@@ -333,96 +388,166 @@ class _HotelCardState extends State<HotelCard> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final String roomType = widget.hotel["room_category_name"];
-    final String mealType = widget.hotel["meal_type_name"];
+    final String roomType = widget.hotel["room_category_name"] ?? 'N/A';
+    final String mealType = widget.hotel["meal_type_name"] ?? 'N/A';
+    final String occupancy = widget.hotel["occupacy"] ?? 'N/A';
     final String price = widget.hotel["price_per_person"].toString();
     final int star = int.parse(widget.hotel["rating"]);
 
     return Card(
+      color: Colors.white,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       elevation: 8,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          ClipRRect(
-            borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
-            child: Image.network(
-              widget.hotel["hotel_image"],
-              fit: BoxFit.cover,
-              width: screenWidth,
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.all(screenWidth * 0.04),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          Stack(
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
+                child: Image.network(
+                  widget.hotel["hotel_image"],
+                  fit: BoxFit.cover,
+                  width: screenWidth,
+                  height: screenWidth * 0.5, // Set a fixed height for the image
+                ),
+              ),
+              Positioned(
+                bottom: 10,
+                left: 10,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(
-                          width: 200,
-                          child: Text(
-                            widget.hotel["hotel_name"],
-                            style: TextStyle(
-                              fontSize: screenWidth * 0.035,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: 4),
-                        Text(
-                          widget.hotel["destination"],
-                          style: TextStyle(
-                            color: Colors.grey[600],
-                            fontSize: screenWidth * 0.035,
-                          ),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      children: List.generate(star, (index) {
-                        return Icon(
-                          Icons.star,
-                          color: Colors.amber,
-                          size: screenWidth * 0.035,
-                        );
-                      }),
+                    Text(
+                      widget.hotel["hotel_name"],
+                      style: TextStyle(
+                        fontSize: screenWidth * 0.05,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
                     ),
                   ],
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          '• Room Type: $roomType',
-                          style: TextStyle(
-                              fontSize: screenWidth * 0.03, height: 1.5),
+              ),
+              Positioned(
+                bottom: 10,
+                right: 10,
+                child: Row(
+                  children: List.generate(star, (index) {
+                    return Icon(
+                      Icons.star,
+                      color: Colors.amber,
+                      size: screenWidth * 0.05,
+                    );
+                  }),
+                ),
+              ),
+            ],
+          ),
+          Padding(
+            padding: EdgeInsets.all(screenWidth * 0.04),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                // Left side: City and Room Details
+                Expanded(
+                  flex: 2,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // City
+                      Text(
+                        widget.hotel["destination"] ?? "N/A",
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: screenWidth * 0.04,
+                          fontWeight: FontWeight.bold,
                         ),
-                        Text(
-                          '• Room Occupancy: Double or Twin',
-                          style: TextStyle(
-                              fontSize: screenWidth * 0.03, height: 1.5),
-                        ),
-                        Text(
-                          '• Meals Plan: $mealType',
-                          style: TextStyle(
-                              fontSize: screenWidth * 0.03, height: 1.5),
-                        ),
-                      ],
-                    ),
-                    Align(
-                      alignment: Alignment.topLeft,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
+                      ),
+                      SizedBox(height: screenWidth * 0.02),
+                      // Room Details
+                      Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Room Type
+                          Row(
+                            children: [
+                              Text(
+                                '•', // Dot
+                                style: TextStyle(
+                                  color: Colors.red, // Red dot color
+                                  fontSize: screenWidth * 0.035,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              SizedBox(width: 5),
+                              Text(
+                                'Room Type: $roomType',
+                                style: TextStyle(
+                                  fontSize: screenWidth * 0.03,
+                                  height: 1.5,
+                                ),
+                              ),
+                            ],
+                          ),
+                          // Room Occupancy
+                          Row(
+                            children: [
+                              Text(
+                                '•', // Dot
+                                style: TextStyle(
+                                  color: Colors.red, // Red dot color
+                                  fontSize: screenWidth * 0.035,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              SizedBox(width: 5),
+                              Text(
+                                'Room Occupancy: $occupancy',
+                                style: TextStyle(
+                                  fontSize: screenWidth * 0.03,
+                                  height: 1.5,
+                                ),
+                              ),
+                            ],
+                          ),
+                          // Meals Plan
+                          Row(
+                            children: [
+                              Text(
+                                '•', // Dot
+                                style: TextStyle(
+                                  color: Colors.red, // Red dot color
+                                  fontSize: screenWidth * 0.035,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              SizedBox(width: 5),
+                              Text(
+                                'Meals Plan: $mealType',
+                                style: TextStyle(
+                                  fontSize: screenWidth * 0.03,
+                                  height: 1.5,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+
+                // Right side: Price and Select Button
+                Expanded(
+                  flex: 1,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      // Price
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           Text(
                             'AED $price',
@@ -436,92 +561,55 @@ class _HotelCardState extends State<HotelCard> {
                             'Price Per Person',
                             style: TextStyle(
                               fontSize: screenWidth * 0.03,
-                              color: Colors.grey[600],
+                              color: Colors.black,
                             ),
                           ),
                         ],
                       ),
-                    )
-                  ],
-                ),
-                SizedBox(height: screenWidth * 0.03),
-                Row(
-                  children: [
-                    Container(
-                      width: screenWidth * 0.25,
-                      height: screenWidth * 0.12,
-                      decoration: BoxDecoration(
-                        border: Border.all(width: 1, color: Colors.grey),
-                        borderRadius: BorderRadius.circular(5),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(3),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'CHECK IN',
-                              style: TextStyle(
-                                  color: Colors.grey[600],
-                                  fontSize: screenWidth * 0.03),
+                      SizedBox(height: screenWidth * 0.005),
+                      // Select Button
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: SizedBox(
+                          width: screenWidth * 0.3,
+                          child: ElevatedButton(
+                            onPressed: _selectButton,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor:Color(0xFF0071BC),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              side: BorderSide(color: Color(0xFF0071BC)),
                             ),
-                            Text(
-                              widget.hotel["checkin_time"],
+                            child: Text(
+                              'SELECT',
                               style: TextStyle(
-                                  fontSize: screenWidth * 0.035,
-                                  fontWeight: FontWeight.bold),
+                                color: Colors.white,
+                                fontSize: screenWidth * 0.035,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-                          ],
+                          ),
                         ),
                       ),
-                    ),
-                    SizedBox(width: screenWidth * 0.03),
-                    Container(
-                      width: screenWidth * 0.25,
-                      height: screenWidth * 0.12,
-                      decoration: BoxDecoration(
-                        border: Border.all(width: 1, color: Colors.grey),
-                        borderRadius: BorderRadius.circular(5),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(3),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'CHECK OUT',
-                              style: TextStyle(
-                                  color: Colors.grey[600],
-                                  fontSize: screenWidth * 0.03),
-                            ),
-                            Text(
-                              widget.hotel["checkout_time"],
-                              style: TextStyle(
-                                  fontSize: screenWidth * 0.035,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ],
-                        ),
-                      ),
-                    )
-                  ],
-                ),
-                SizedBox(height: screenWidth * 0.03),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: _selectButton,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    child: Text(
-                      'SELECT',
-                      style: TextStyle(
-                          color: Colors.white, fontSize: screenWidth * 0.04),
-                    ),
+                      // SizedBox(
+                      //   width: double.infinity,
+                      //   child: ElevatedButton(
+                      //     onPressed: _selectButton,
+                      //     style: ElevatedButton.styleFrom(
+                      //       backgroundColor: Colors.red,
+                      //       shape: RoundedRectangleBorder(
+                      //         borderRadius: BorderRadius.circular(10),
+                      //       ),
+                      //     ),
+                      //     child: Text(
+                      //       'SELECT',
+                      //       style: TextStyle(
+                      //           color: Colors.white, fontSize: screenWidth * 0.04),
+                      //     ),
+                      //   ),
+                      // ),
+                    ],
                   ),
                 ),
               ],
@@ -530,6 +618,7 @@ class _HotelCardState extends State<HotelCard> {
         ],
       ),
     );
+
   }
 }
 
@@ -555,5 +644,29 @@ class HotelImageShimmer extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+
+class CirclePainter extends CustomPainter {
+  final double radius;
+
+  CirclePainter({required this.radius});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    Paint paint = Paint()..style = PaintingStyle.fill;
+
+    // We can use FontAwesome icon positioning logic here.
+    double centerX = size.width / 2;
+
+    // Draw the largest circle (dark blue)
+    paint.color = Color(0xFF0D939E); // Dark blue
+    canvas.drawCircle(Offset(centerX, radius - 600), radius + 400, paint);
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) {
+    return false;
   }
 }

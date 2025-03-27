@@ -1,3 +1,4 @@
+import 'package:HolidayMakers/widgets/mainCarousel.dart';
 import 'package:flutter/material.dart';
 import 'package:HolidayMakers/pages/Cruise/cruisePackagedetails.dart';
 import 'package:HolidayMakers/pages/FixedDeparturesPages/departurePackagedetails.dart';
@@ -29,6 +30,7 @@ class _DeparturesHomeState extends State<DeparturesHome> {
   String profileImg = '';
   bool isLoading = true; // Loading flag
   List<Map<String, dynamic>> fdPackages = [];
+  List<Map<String, dynamic>> bannerList = [];
 
   @override
   void initState() {
@@ -36,6 +38,7 @@ class _DeparturesHomeState extends State<DeparturesHome> {
     _loadProfileDetails();
     _fetchCountryAndMonthLists(); // Fetch dropdown data.
     _fetchFDPackages('', ''); // Fetch cruise package data.
+    _fetchHomePageData();
   }
 
   Future<void> _loadProfileDetails() async {
@@ -46,6 +49,25 @@ class _DeparturesHomeState extends State<DeparturesHome> {
       });
     } catch (error) {
       print("Error loading profile details: $error");
+    }
+  }
+
+  Future<void> _fetchHomePageData() async {
+    try {
+      final data = await APIHandler.HomePageData();
+
+      setState(() {
+        bannerList = List<Map<String, dynamic>>.from(
+          data['data']['banner_list'].map((item) => {
+            'img': item['img'],
+            'mobile_img': item['mobile_img'],
+            'link': item['link'],
+          }),
+        );
+        isLoading = false;
+      });
+    } catch (e) {
+      print('Error fetching homepage data: $e');
     }
   }
 
@@ -118,8 +140,8 @@ class _DeparturesHomeState extends State<DeparturesHome> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildHeaderShimmer(),
-                  _buildProfileSectionShimmer(),
+                  // _buildHeaderShimmer(),
+                  // _buildProfileSectionShimmer(),
                   _buildDropdownSectionShimmer(),
                   _buildPackageGridShimmer(screenWidth),
                 ],
@@ -129,8 +151,13 @@ class _DeparturesHomeState extends State<DeparturesHome> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildHeader(),
-                  _buildProfileSection(),
+                  // _buildHeader(),
+                  // _buildProfileSection(),
+                  CustomPaint(
+                    size: Size(double.infinity, 80),
+                    painter: CirclePainter(radius: 200),
+                  ),
+                  Maincarousel(banner_list: bannerList),
                   _buildDropdownSection(),
                   _buildPackageGrid(screenWidth),
                 ],
@@ -140,52 +167,52 @@ class _DeparturesHomeState extends State<DeparturesHome> {
   }
 
   // Shimmer for Header
-  Widget _buildHeaderShimmer() {
-    return Shimmer.fromColors(
-      baseColor: Colors.grey[300]!,
-      highlightColor: Colors.grey[100]!,
-      child: Container(
-        width: double.infinity,
-        height: 120,
-        color: Colors.white,
-      ),
-    );
-  }
+  // Widget _buildHeaderShimmer() {
+  //   return Shimmer.fromColors(
+  //     baseColor: Colors.grey[300]!,
+  //     highlightColor: Colors.grey[100]!,
+  //     child: Container(
+  //       width: double.infinity,
+  //       height: 120,
+  //       color: Colors.white,
+  //     ),
+  //   );
+  // }
 
   // Profile Section with Shimmer
-  Widget _buildProfileSectionShimmer() {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 20),
-          child: Shimmer.fromColors(
-            baseColor: Colors.grey[300]!,
-            highlightColor: Colors.grey[100]!,
-            child: CircleAvatar(
-              backgroundColor: Colors.white,
-              minRadius: 22,
-              maxRadius: 22,
-            ),
-          ),
-        ),
-        Container(
-          height: 40,
-          width: 200,
-          margin: const EdgeInsets.all(15),
-          decoration: const BoxDecoration(
-            color: Colors.white,
-          ),
-          child: Shimmer.fromColors(
-            baseColor: Colors.grey[300]!,
-            highlightColor: Colors.grey[100]!,
-            child: Container(color: Colors.white),
-          ),
-        ),
-      ],
-    );
-  }
+  // Widget _buildProfileSectionShimmer() {
+  //   return Row(
+  //     crossAxisAlignment: CrossAxisAlignment.center,
+  //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //     children: [
+  //       Padding(
+  //         padding: const EdgeInsets.only(left: 20),
+  //         child: Shimmer.fromColors(
+  //           baseColor: Colors.grey[300]!,
+  //           highlightColor: Colors.grey[100]!,
+  //           child: CircleAvatar(
+  //             backgroundColor: Colors.white,
+  //             minRadius: 22,
+  //             maxRadius: 22,
+  //           ),
+  //         ),
+  //       ),
+  //       Container(
+  //         height: 40,
+  //         width: 200,
+  //         margin: const EdgeInsets.all(15),
+  //         decoration: const BoxDecoration(
+  //           color: Colors.white,
+  //         ),
+  //         child: Shimmer.fromColors(
+  //           baseColor: Colors.grey[300]!,
+  //           highlightColor: Colors.grey[100]!,
+  //           child: Container(color: Colors.white),
+  //         ),
+  //       ),
+  //     ],
+  //   );
+  // }
 
   // Shimmer for Dropdown Section
   Widget _buildDropdownSectionShimmer() {
@@ -258,67 +285,34 @@ class _DeparturesHomeState extends State<DeparturesHome> {
   }
 
   // Normal Header
-  Widget _buildHeader() {
-    return Container(
-      width: double.infinity,
-      height: 120,
-      decoration: const BoxDecoration(
-        image: DecorationImage(
-          image: AssetImage('img/homeBg.png'),
-          fit: BoxFit.cover,
-        ),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          Container(
-            height: 45,
-            width: double.infinity,
-            decoration: const BoxDecoration(
-              color: Colors.white70,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(100),
-                topRight: Radius.circular(100),
-              ),
-            ),
-          )
-        ],
-      ),
-    );
-  }
-
-  // Normal Profile Section
-  Widget _buildProfileSection() {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        GestureDetector(
-          onTap: () => _scaffoldKey.currentState?.openDrawer(),
-          child: Padding(
-            padding: const EdgeInsets.only(left: 20),
-            child: CircleAvatar(
-              backgroundImage: profileImg.isNotEmpty
-                  ? NetworkImage(profileImg)
-                  : const AssetImage('img/placeholder.png') as ImageProvider,
-              minRadius: 22,
-              maxRadius: 22,
-            ),
-          ),
-        ),
-        Container(
-          height: 40,
-          width: 200,
-          margin: const EdgeInsets.all(15),
-          decoration: const BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage('img/brandLogo.png'),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
+  // Widget _buildHeader() {
+  //   return Container(
+  //     width: double.infinity,
+  //     height: 120,
+  //     decoration: const BoxDecoration(
+  //       image: DecorationImage(
+  //         image: AssetImage('img/homeBg.png'),
+  //         fit: BoxFit.cover,
+  //       ),
+  //     ),
+  //     child: Column(
+  //       mainAxisAlignment: MainAxisAlignment.end,
+  //       children: [
+  //         Container(
+  //           height: 45,
+  //           width: double.infinity,
+  //           decoration: const BoxDecoration(
+  //             color: Colors.white70,
+  //             borderRadius: BorderRadius.only(
+  //               topLeft: Radius.circular(100),
+  //               topRight: Radius.circular(100),
+  //             ),
+  //           ),
+  //         )
+  //       ],
+  //     ),
+  //   );
+  // }
 
   // Normal Dropdown Section
   Widget _buildDropdownSection() {
@@ -327,9 +321,10 @@ class _DeparturesHomeState extends State<DeparturesHome> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          const SizedBox(height: 10),
           AppLargeText(
             text: 'Fixed Departure Deals',
-            color: Colors.black,
+            color: Color(0xFF009EE2),
             size: 24,
           ),
           const SizedBox(height: 20),
@@ -357,15 +352,6 @@ class _DeparturesHomeState extends State<DeparturesHome> {
             },
           ),
           const SizedBox(height: 30),
-          AppLargeText(
-            text: 'Packages',
-            color: Colors.black,
-            size: 18,
-          ),
-          const Divider(
-            color: Colors.black38,
-            thickness: 1,
-          ),
         ],
       ),
     );
@@ -385,49 +371,94 @@ class _DeparturesHomeState extends State<DeparturesHome> {
                 ),
               ),
             )
-          : GridView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: fdPackages.length,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                // childAspectRatio: 0.75,
-                crossAxisSpacing: 10,
-                mainAxisSpacing: 10,
+          : Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              AppLargeText(
+                text: 'Packages',
+                color: Color(0xFF009EE2),
+                size: 24,
               ),
-              itemBuilder: (context, index) {
-                final package = fdPackages[index];
-                return GestureDetector(
-                  onTap: () {
-                    print(package["id"].toString());
-                    if (package["id"] == "cruise") {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => CruisePackageDetails(
-                                  packageId: package["packageId"],
-                                )),
-                      );
-                    } else if (package["id"] == "") {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => DeparturePackageDetails(
-                                packageId: package["packageId"])),
-                      );
-                    }
-                  },
-                  child: ResponsiveCard(
-                    image: package['image'] ?? 'img/placeholder.png',
-                    title: package['name'] ?? 'Package Name',
-                    subtitle: package['country'] ?? 'Location',
-                    price:
-                        "${package['currency']} ${package['price'] ?? 'N/A'}",
-                    screenWidth: screenWidth,
+              const Divider(
+                color: Color(0xFF007A8C),
+                thickness: 1,
+              ),
+              GridView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: fdPackages.length,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    // childAspectRatio: 0.75,
+                    crossAxisSpacing: 10,
+                    mainAxisSpacing: 10,
                   ),
-                );
-              },
-            ),
+                  itemBuilder: (context, index) {
+                    final package = fdPackages[index];
+                    return GestureDetector(
+                      onTap: () {
+                        print(package["id"].toString());
+                        if (package["id"] == "cruise") {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => CruisePackageDetails(
+                                      packageId: package["packageId"],
+                                    )),
+                          );
+                        } else if (package["id"] == "") {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => DeparturePackageDetails(
+                                    packageId: package["packageId"])),
+                          );
+                        }
+                      },
+                      child: ResponsiveCard(
+                        image: package['image'] ?? 'img/placeholder.png',
+                        title: package['name'] ?? 'Package Name',
+                        subtitle: package['country'] ?? 'Location',
+                        price:
+                            "${package['currency']} ${package['price'] ?? 'N/A'}",
+                        screenWidth: screenWidth,
+                      ),
+                    );
+                  },
+                ),
+            ],
+          ),
     );
+  }
+}
+
+class CirclePainter extends CustomPainter {
+  final double radius;
+
+  CirclePainter({required this.radius});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    Paint paint = Paint()..style = PaintingStyle.fill;
+
+    // We can use FontAwesome icon positioning logic here.
+    double centerX = size.width / 2;
+
+    // Draw the smallest circle (light blue)
+    paint.color = Color(0xFFEDF2F4); // Light blue
+    canvas.drawCircle(Offset(centerX, radius - 230), radius + 100, paint);
+
+    // Draw the medium circle (medium blue)
+    paint.color = Color(0xFF4AA9BC); // Medium blue
+    canvas.drawCircle(Offset(centerX, radius - 400), radius + 200, paint);
+
+    // Draw the largest circle (dark blue)
+    paint.color = Color(0xFF007A8C); // Dark blue
+    canvas.drawCircle(Offset(centerX, radius - 600), radius + 300, paint);
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) {
+    return false;
   }
 }

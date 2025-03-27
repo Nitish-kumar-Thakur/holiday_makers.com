@@ -1,12 +1,10 @@
 import 'package:HolidayMakers/pages/homePages/mainPage.dart';
-import 'package:HolidayMakers/pages/login&signup/loginPage.dart';
+import 'package:HolidayMakers/pages/login&signup/Test.dart';
 import 'package:HolidayMakers/widgets/Blogs.dart';
 import 'package:HolidayMakers/widgets/MyBookings.dart';
-import 'package:HolidayMakers/widgets/responciveButton.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:HolidayMakers/widgets/help_center_page.dart';
-import 'package:HolidayMakers/pages/homePages/introPage.dart';
 import 'package:HolidayMakers/widgets/terms_and_conditions_page.dart';
 import 'package:HolidayMakers/widgets/testimonials_page.dart';
 import 'package:HolidayMakers/utils/shared_preferences_handler.dart';
@@ -47,7 +45,7 @@ class _DrawerpageState extends State<Drawerpage> {
     });
   }
 
-  void _showSignOutDialog(BuildContext context) {
+  void _showSignOutDialog(BuildContext context) { 
   showDialog(
     context: context,
     builder: (BuildContext context) {
@@ -122,294 +120,117 @@ void _showLoginDialog(BuildContext context) {
   Widget build(BuildContext context) {
     return Drawer(
       child: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              Color(0xFF0B77BF), // Hex color #0B77BF
-              Color(0xFF0A64A0), // Hex color #0A64A0
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.2),
-              offset: Offset(0, 4),
-              blurRadius: 4,
-              spreadRadius: 0,
-            ),
-          ],
-        ),
+        color: Colors.white, // Background color
         child: Padding(
           padding: EdgeInsets.only(top: 40, left: 0, right: 15),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start, // Align items to the left
             children: [
+              // Profile Header
               Container(
                 height: 80,
                 decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      Color(0xFF308BDC),
-                      Color(0xFF0B70B4),
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
+                  color: Colors.grey.shade300, // Background of the whole list container
                   borderRadius: BorderRadius.only(
                     topRight: Radius.circular(20),
                     bottomRight: Radius.circular(20),
                   ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.2),
-                      offset: Offset(0, 4),
-                      blurRadius: 4,
-                      spreadRadius: 0,
-                    ),
-                  ],
                 ),
                 child: Padding(
                   padding: EdgeInsets.only(left: 15),
                   child: Row(
                     children: [
                       CircleAvatar(
-                          backgroundImage: profileImg.trim().isNotEmpty
-                              ? NetworkImage(profileImg)
-                              : AssetImage(
-                                  "img/placeholder.png") // Show icon only if no profile image
-                          ),
+                        backgroundImage: profileImg.trim().isNotEmpty
+                            ? NetworkImage(profileImg)
+                            : AssetImage("img/placeholder.png"),
+                      ),
                       SizedBox(width: 10),
                       AppLargeText(
-                        text:
-                            firstName.trim().isEmpty ? "Hi, There" : firstName,
-                        color: Colors.white,
+                        text: firstName.trim().isEmpty ? "Hi, There" : firstName,
+                        color: Colors.black, // Text color changed to black
                         size: 24,
                       ),
                     ],
                   ),
                 ),
               ),
+
               SizedBox(height: 20),
-              Padding(
-                padding: EdgeInsets.only(left: 5),
+
+              // Quick Actions Section
+              Container(
+                padding: EdgeInsets.symmetric(vertical: 10),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    IconButton(
-                      onPressed: () {
-                        Navigator.push(
+                    _iconButton(FontAwesomeIcons.user, "My Profile",
+                            () => Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => ProfilePage()),
-                        );
-                      },
-                      icon: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            FontAwesomeIcons.user,
-                            color: Colors.white,
-                            size: 27,
-                          ),
-                          SizedBox(
-                            height: 8,
-                          ),
-                          AppLargeText(
-                            text: 'My Profile',
-                            size: 10,
-                            color: Colors.white,
-                          ),
-                        ],
-                      ),
-                    ),
-                    IconButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => ManageAccount()),
-                        );
-                      },
-                      icon: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            FontAwesomeIcons.userPen,
-                            color: Colors.white,
-                            size: 27,
-                          ),
-                          SizedBox(
-                            height: 8,
-                          ),
-                          AppLargeText(
-                            text: 'Manage Account',
-                            size: 10,
-                            color: Colors.white,
-                          ),
-                        ],
-                      ),
-                    ),
-                    IconButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => ChangePasswordScreen()),
-                        );
-                      },
-                      icon: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            FontAwesomeIcons.unlock,
-                            color: Colors.white,
-                            size: 27,
-                          ),
-                          SizedBox(
-                            height: 8,
-                          ),
-                          AppLargeText(
-                            text: 'Change Password',
-                            size: 10,
-                            color: Colors.white,
-                          ),
-                        ],
-                      ),
-                    ),
+                              builder: (context) => firstName.trim().isEmpty? LoginPage():ProfilePage()),
+                        ),
+                        textColor: Colors.blue), // Blue text, black icon
+                    _iconButton(FontAwesomeIcons.userPen, "Manage Account",
+                            () => Navigator.push(context, MaterialPageRoute(builder: (context) => ManageAccount())),
+                        textColor: Colors.blue),
+                    _iconButton(FontAwesomeIcons.unlock, "Change Password",
+                            () => Navigator.push(context, MaterialPageRoute(builder: (context) => ChangePasswordScreen())),
+                        textColor: Colors.blue),
                   ],
                 ),
               ),
+
               SizedBox(height: 20),
-              // Divider(color: Colors.white),
-              // Padding(
-              //   padding: EdgeInsets.only(left: 15),
-              //   child: Column(
-              //     crossAxisAlignment: CrossAxisAlignment.start,
-              //     children: [
-              //       AppLargeText(text: "Deals", size: 24, color: Colors.white),
-              //       SizedBox(height: 3),
-              //       GestureDetector(
-              //         onTap: () {
-              //           Navigator.push(
-              //             context,
-              //             MaterialPageRoute(builder: (context) => Mainpage()),
-              //           );
-              //         },
-              //         child: ChildContainer(image: "img/traveler.png", text: "Fully Independent Traveler"),
-              //       ),
-              //       SizedBox(height: 3),
-              //       GestureDetector(
-              //         onTap: () {
-              //           Navigator.push(
-              //             context,
-              //             MaterialPageRoute(builder: (context) => DeparturesHome()),
-              //           );
-              //         },
-              //         child: ChildContainer(image: "img/traveler.png", text: 'Fixed Departures'),
-              //       ),
-              //       SizedBox(height: 3),
-              //       GestureDetector(
-              //         onTap: () {
-              //           Navigator.push(
-              //             context,
-              //             MaterialPageRoute(builder: (context) => CurisesHome()),
-              //           );
-              //         },
-              //         child: ChildContainer(image: "img/cruise.png", text: "Cruise"),
-              //       ),
-              //     ],
-              //   ),
-              // ),
-              // SizedBox(height: 20),
-              Divider(color: Colors.white),
-              Padding(
-                padding: EdgeInsets.only(left: 15),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    AppLargeText(
-                        text: "My Trip", size: 24, color: Colors.white),
-                    SizedBox(height: 3),
-                    ChildContainer(
-                        icon: FontAwesomeIcons.newspaper, text: "My Booking",
-                        onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => MyBookings()),
-                        );
-                      },),
-                    SizedBox(height: 3),
-                    ChildContainer(
-                        icon: FontAwesomeIcons.wallet, text: 'Wallet'),
-                  ],
+
+              // My Trip Section
+              _sectionTitle("My Trips"),
+              Center( // Center aligning the container
+                child: Container(
+                  width: MediaQuery.of(context).size.width * 0.85, // Responsive width
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade100, // Gray background
+                    borderRadius: BorderRadius.only(
+                      topRight: Radius.circular(20),
+                      bottomRight: Radius.circular(20),
+                    ),
+                  ),
+                  padding: EdgeInsets.symmetric(vertical: 10),
+                  child: Column(
+                    children: [
+                      _listItem(FontAwesomeIcons.newspaper, "My Booking", () => Navigator.push(context, MaterialPageRoute(builder: (context) => MyBookings()))),
+                      _listItem(FontAwesomeIcons.wallet, "Wallet", () {}),
+                    ],
+                  ),
                 ),
               ),
+
               SizedBox(height: 20),
-              Divider(color: Colors.white),
-              Padding(
-                padding: EdgeInsets.only(left: 15),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    AppLargeText(text: "About", size: 24, color: Colors.white),
-                    SizedBox(height: 3),
-                    ChildContainer(
-                        icon: FontAwesomeIcons.filePen,
-                        text: "Blogs",
-                        onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => BlogsPage()),
-                        );
-                      },),
-                    SizedBox(height: 3),
-                    ChildContainer(
-                      icon: FontAwesomeIcons.users,
-                      text: "Testimonials",
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => TestimonialsPage()),
-                        );
-                      },
+
+              // About Section
+              _sectionTitle("About"),
+              Center( // Center aligning the container
+                child: Container(
+                  width: MediaQuery.of(context).size.width * 0.85, // Responsive width
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade100, // Gray background
+                    borderRadius: BorderRadius.only(
+                      topRight: Radius.circular(20),
+                      bottomRight: Radius.circular(20),
                     ),
-                    SizedBox(height: 3),
-                    ChildContainer(
-                        icon: FontAwesomeIcons.buildingUser,
-                        text: "Company Profile"),
-                    SizedBox(height: 3),
-                    ChildContainer(
-                      icon: FontAwesomeIcons.fileLines,
-                      text: "Terms & Conditions",
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => TermsAndConditionsPage()),
-                        );
-                      },
-                    ),
-                    SizedBox(height: 3),
-                    ChildContainer(
-                      icon: FontAwesomeIcons.computer,
-                      text: "Help Center",
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => HelpCenterPage()),
-                        );
-                      },
-                    ),
-                    SizedBox(height: 3),
-                    ChildContainer(
-                        icon: FontAwesomeIcons.signOut,
-                        text: profileImg.trim().isEmpty?"Log In":"Sign Out",
-                        onTap: () => profileImg.trim().isEmpty? _showLoginDialog(context):_showSignOutDialog(context)),
-                  ],
+                  ),
+                  padding: EdgeInsets.symmetric(vertical: 10),
+                  child: Column(
+                    children: [
+                      _listItem(FontAwesomeIcons.filePen, "Blogs", () => Navigator.push(context, MaterialPageRoute(builder: (context) => BlogsPage()))),
+                      _listItem(FontAwesomeIcons.users, "Testimonials", () => Navigator.push(context, MaterialPageRoute(builder: (context) => TestimonialsPage()))),
+                      _listItem(FontAwesomeIcons.buildingUser, "Company Profile", () {}),
+                      _listItem(FontAwesomeIcons.fileLines, "Terms & Conditions", () => Navigator.push(context, MaterialPageRoute(builder: (context) => TermsAndConditionsPage()))),
+                      _listItem(FontAwesomeIcons.computer, "Help Center", () => Navigator.push(context, MaterialPageRoute(builder: (context) => HelpCenterPage()))),
+                      _listItem(FontAwesomeIcons.signOut, profileImg.trim().isEmpty ? "Log In" : "Sign Out",
+                              () => profileImg.trim().isEmpty ? _showLoginDialog(context) : _showSignOutDialog(context)),
+                    ],
+                  ),
                 ),
               ),
             ],
@@ -418,6 +239,53 @@ void _showLoginDialog(BuildContext context) {
       ),
     );
   }
+
+
+// Helper Widget for Section Titles
+  Widget _sectionTitle(String title) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+      child: AppLargeText(
+        text: title,
+        size: 24,
+        color: Colors.blue, // Text color changed to blue
+      ),
+    );
+  }
+
+// Helper Widget for List Items
+  Widget _listItem(IconData icon, String text, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+        child: Row(
+          children: [
+            Icon(icon, color: Colors.black, size: 20), // Icon color changed to black
+            SizedBox(width: 10),
+            AppLargeText(text: text, size: 16, color: Colors.black), // Text color changed to black
+          ],
+        ),
+      ),
+    );
+  }
+
+// Helper Widget for Icon Buttons (For Profile Section)
+  Widget _iconButton(IconData icon, String label, VoidCallback onTap, {Color textColor = Colors.black}) {
+    return IconButton(
+      onPressed: onTap,
+      icon: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(icon, color: Colors.black, size: 27), // Icon color changed to black
+          SizedBox(height: 8),
+          AppLargeText(text: label, size: 10, color: textColor), // Text color is customizable
+        ],
+      ),
+    );
+  }
+
 }
 
 class ChildContainer extends StatelessWidget {

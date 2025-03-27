@@ -245,50 +245,94 @@ class _BookingSummaryFDState extends State<BookingSummaryFD> {
     });
   }
 
+  Widget _buildTopCurve() {
+    return Padding(
+      padding: const EdgeInsets.only(top: 50), // 20% of the screen height
+      child: CustomPaint(
+        size: Size(double.infinity, 0), // Height of the curved area
+        painter: CirclePainter(radius: 200),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final double screenWidth = MediaQuery.of(context).size.width;
     final double fontSize = screenWidth * 0.035;
 
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.pop(context),
-        ),
-        backgroundColor: Colors.white,
-        elevation: 0,
-        title: const Text(
-          'Booking Summary',
-          style: TextStyle(color: Colors.black),
-        ),
-        centerTitle: true,
-      ),
+      // appBar: AppBar(
+      //   leading: IconButton(
+      //     icon: const Icon(Icons.arrow_back, color: Colors.black),
+      //     onPressed: () => Navigator.pop(context),
+      //   ),
+      //   backgroundColor: Colors.white,
+      //   elevation: 0,
+      //   title: const Text(
+      //     'Booking Summary',
+      //     style: TextStyle(color: Colors.black),
+      //   ),
+      //   centerTitle: true,
+      // ),
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: isLoading
             ? _buildShimmerEffect()
-            : Padding(
-                padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.04),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+            : Column(
+              children: [
+                _buildTopCurve(),
+                const SizedBox(height: 10),
+                Row(
                   children: [
-                    _buildSection('PACKAGE DETAILS', packageDetails, fontSize),
-                    _buildFlightDetailsSection(
-                        'FLIGHT DETAILS', flightDetails, fontSize),
-                    tourList.isEmpty
-                        ? SizedBox()
-                        : _buildtourDetailsSection(
-                            "TOUR DETAILS", tourList, fontSize),
-                    _buildSection('HOTEL DETAILS', hotelDetails, fontSize),
-                    _buildSection(
-                        'TRANSFER DETAILS', transferDetails, fontSize),
-                    _buildSection(
-                        'TRAVEL INSURANCE DETAILS', insuranceDetails, fontSize),
-                    _buildPriceSection('PRICE DETAILS', priceDetails, fontSize),
+                    IconButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      icon: CircleAvatar(
+                        backgroundColor: Colors.grey.withOpacity(0.6),  // Transparent grey background
+                        child: Text(
+                          '<',  // Use "<" symbol
+                          style: TextStyle(
+                            color: Colors.white,  // White text color
+                            fontSize: 24,  // Adjust font size as needed
+                            fontWeight: FontWeight.bold,  // Make the "<" bold if needed
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Text('BOOKING SUMMARY',
+                        style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Colors.white)
+                    )
                   ],
                 ),
-              ),
+                Padding(
+                    padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.04),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 40),
+                        _buildSection('PACKAGE DETAILS', packageDetails, fontSize),
+                        const SizedBox(height: 20),
+                        _buildFlightDetailsSection(
+                            'FLIGHT DETAILS', flightDetails, fontSize),
+                        tourList.isEmpty
+                            ? SizedBox()
+                            : _buildtourDetailsSection("TOUR DETAILS", tourList, fontSize),
+                        const SizedBox(height: 20),
+                        _buildSection('HOTEL DETAILS', hotelDetails, fontSize),
+                        const SizedBox(height: 20),
+                        _buildSection('TRANSFER DETAILS', transferDetails, fontSize),
+                        const SizedBox(height: 20),
+                        _buildSection('TRAVEL INSURANCE DETAILS', insuranceDetails, fontSize),
+                        const SizedBox(height: 20),
+                        _buildPriceSection('PRICE DETAILS', priceDetails, fontSize),
+                        const SizedBox(height: 20),
+                      ],
+                    ),
+                  ),
+              ],
+            ),
       ),
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.only(
@@ -307,7 +351,9 @@ class _BookingSummaryFDState extends State<BookingSummaryFD> {
                         totalRoomsdata: widget.totalRoomsdata,
                         searchId: widget.searchId,
                         activityList: widget.activityList,
-                        destination: widget.destination),
+                        destination: widget.destination,
+                        BSData: BSData
+                    ),
                   ));
             },
             icon: responciveButton(text: 'SELECT'),
@@ -317,84 +363,105 @@ class _BookingSummaryFDState extends State<BookingSummaryFD> {
     );
   }
 
-  Widget _buildSection(
-      String title, List<Map<String, String>> details, double fontSize) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: TextStyle(
-            fontSize: fontSize * 1.3,
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-          ),
-        ),
-        const SizedBox(height: 10),
-        Column(
-          children: List.generate(
-            (details.length / 2).ceil(), // Divide into rows
-            (index) {
-              bool isLastOdd =
-                  details.length % 2 != 0 && index == details.length ~/ 2;
-              return Column(
-                children: [
-                  IntrinsicHeight(
-                    // This ensures both boxes in the row will have equal height
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: _buildPriceDetailBox(
-                            details[index * 2]['title']!,
-                            details[index * 2]['value']!,
-                            fontSize,
-                          ),
-                        ),
-                        if (!isLastOdd) ...[
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: _buildPriceDetailBox(
-                              details[index * 2 + 1]['title']!,
-                              details[index * 2 + 1]['value']!,
-                              fontSize,
+  Widget _buildSection(String title, List<Map<String, String>> details, double fontSize) {
+    return Card(
+      color: Colors.white, // White background
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8), // Rounded corners for the card
+      ),
+      elevation: 4, // Add some elevation for shadow effect
+      child: Padding(
+        padding: const EdgeInsets.all(16.0), // Padding around the content
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: fontSize * 1.3,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+            ),
+            Column(
+              children: List.generate(
+                (details.length / 2).ceil(), // Divide into rows
+                    (index) {
+                  bool isLastOdd =
+                      details.length % 2 != 0 && index == details.length ~/ 2;
+                  return Column(
+                    children: [
+                      const Divider(color: Colors.grey),
+                      const SizedBox(height: 15),
+                      IntrinsicHeight(
+                        // This ensures both boxes in the row will have equal height
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: _buildPriceDetailBox(
+                                details[index * 2]['title']!,
+                                details[index * 2]['value']!,
+                                fontSize,
+                              ),
                             ),
-                          ),
-                        ],
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 10), // Space after each row
-                ],
-              );
-            },
-          ),
+                            if (!isLastOdd) ...[
+                              const VerticalDivider(width: 10, color: Colors.grey),
+                              Expanded(
+                                child: _buildPriceDetailBox(
+                                  details[index * 2 + 1]['title']!,
+                                  details[index * 2 + 1]['value']!,
+                                  fontSize,
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              ),
+            ),
+          ],
         ),
-        const SizedBox(height: 10),
-      ],
+      ),
     );
   }
 
-  Widget _buildFlightDetailsSection(
-      String title, List<Map<String, String>> details, double fontSize) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: TextStyle(
-            fontSize: fontSize * 1.3,
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-          ),
+  Widget _buildFlightDetailsSection(String title, List<Map<String, String>> details, double fontSize) {
+    return Card(
+      color: Colors.white, // White background for the card
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8), // Rounded corners for the card
+      ),
+      elevation: 4, // Shadow effect for the card
+      child: Padding(
+        padding: const EdgeInsets.all(16.0), // Padding around the content
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: fontSize * 1.3,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+            ),
+            Column(
+              children: details.map((flight) {
+                return Column(
+                  children: [
+                    const Divider(color: Colors.grey),
+                    const SizedBox(height: 10),
+                    _buildFlightCard(flight, fontSize),
+                  ],
+                );
+              }).toList(),
+            ),
+          ],
         ),
-        const SizedBox(height: 10),
-        Column(
-          children: details.map((flight) {
-            return _buildFlightCard(flight, fontSize);
-          }).toList(),
-        ),
-        const SizedBox(height: 10),
-      ],
+      ),
     );
   }
 
@@ -403,8 +470,8 @@ class _BookingSummaryFDState extends State<BookingSummaryFD> {
       padding: EdgeInsets.all(fontSize * 0.7),
       margin: const EdgeInsets.only(bottom: 10),
       decoration: BoxDecoration(
-        color: Colors.grey.shade200,
-        borderRadius: BorderRadius.circular(10),
+        color: Colors.grey.shade50,
+        borderRadius: BorderRadius.circular(10), // Rounded corners
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -412,16 +479,13 @@ class _BookingSummaryFDState extends State<BookingSummaryFD> {
           Row(
             children: [
               Icon(
-                flight['type'] == 'Departure'
-                    ? Icons.flight_takeoff
-                    : Icons.flight_land,
+                flight['type'] == 'Departure' ? Icons.flight_takeoff : Icons.flight_land,
                 color: Colors.black54,
               ),
               const SizedBox(width: 5),
               Text(
                 flight['type']!,
-                style: TextStyle(
-                    fontSize: fontSize * 1.2, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: fontSize * 1.2, fontWeight: FontWeight.bold),
               ),
             ],
           ),
@@ -452,8 +516,7 @@ class _BookingSummaryFDState extends State<BookingSummaryFD> {
             children: [
               const Icon(Icons.date_range, color: Colors.black54),
               const SizedBox(width: 5),
-              Text("Date: ${flight['date']}",
-                  style: TextStyle(fontSize: fontSize)),
+              Text("${flight['date']}", style: TextStyle(fontSize: fontSize)),
             ],
           ),
           const SizedBox(height: 5),
@@ -463,8 +526,7 @@ class _BookingSummaryFDState extends State<BookingSummaryFD> {
             children: [
               const Icon(Icons.directions_transit, color: Colors.black54),
               const SizedBox(width: 5),
-              Text("Terminal: ${flight['terminal']}",
-                  style: TextStyle(fontSize: fontSize)),
+              Text("${flight['terminal']}", style: TextStyle(fontSize: fontSize)),
             ],
           ),
         ],
@@ -472,60 +534,72 @@ class _BookingSummaryFDState extends State<BookingSummaryFD> {
     );
   }
 
-  Widget _buildPriceSection(
-      String title, List<Map<String, dynamic>> details, double fontSize) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: TextStyle(
-            fontSize: fontSize * 1.3,
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-          ),
-        ),
-        const SizedBox(height: 10),
-        Column(
-          children: List.generate(
-            (details.length / 2).ceil(), // Divide into rows
-            (index) {
-              bool isLastOdd =
-                  details.length % 2 != 0 && index == details.length ~/ 2;
-              return Column(
-                children: [
-                  IntrinsicHeight(
-                    // This ensures both boxes in the row will have equal height
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: _buildPriceDetailBox(
-                            details[index * 2]['title']!,
-                            details[index * 2]['value']!,
-                            fontSize,
-                          ),
-                        ),
-                        if (!isLastOdd) ...[
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: _buildPriceDetailBox(
-                              details[index * 2 + 1]['title']!,
-                              details[index * 2 + 1]['value']!,
-                              fontSize,
+  Widget _buildPriceSection(String title, List<Map<String, dynamic>> details, double fontSize) {
+    return Card(
+      color: Colors.white, // White background for the card
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8), // Rounded corners for the card
+      ),
+      elevation: 4, // Shadow effect for the card
+      child: Padding(
+        padding: const EdgeInsets.all(16.0), // Padding around the content
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: fontSize * 1.3,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+            ),
+            // const SizedBox(height: 10),
+            Column(
+              children: List.generate(
+                (details.length / 2).ceil(), // Divide into rows
+                    (index) {
+                  bool isLastOdd =
+                      details.length % 2 != 0 && index == details.length ~/ 2;
+                  return Column(
+                    children: [
+                      const Divider(color: Colors.grey),
+                      const SizedBox(height: 10),
+                      IntrinsicHeight(
+                        // This ensures both boxes in the row will have equal height
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: _buildPriceDetailBox(
+                                details[index * 2]['title']!,
+                                details[index * 2]['value']!,
+                                fontSize,
+                              ),
                             ),
-                          ),
-                        ],
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 10), // Space after each row
-                ],
-              );
-            },
-          ),
+                            if (!isLastOdd) ...[
+                              const SizedBox(width: 10),
+                              // Vertical divider between the two items in the row
+                              const VerticalDivider(color: Colors.grey, thickness: 1),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: _buildPriceDetailBox(
+                                  details[index * 2 + 1]['title']!,
+                                  details[index * 2 + 1]['value']!,
+                                  fontSize,
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              ),
+            ),
+          ],
         ),
-        const SizedBox(height: 10),
-      ],
+      ),
     );
   }
 
@@ -533,8 +607,8 @@ class _BookingSummaryFDState extends State<BookingSummaryFD> {
     return Container(
       padding: EdgeInsets.all(fontSize * 0.7),
       decoration: BoxDecoration(
-        color: Colors.grey.shade200,
-        borderRadius: BorderRadius.circular(8),
+        color: Colors.grey.shade50,
+        borderRadius: BorderRadius.circular(8), // Rounded corners
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -561,44 +635,57 @@ class _BookingSummaryFDState extends State<BookingSummaryFD> {
     );
   }
 
-  Widget _buildtourDetailsSection(
-      String title, List<Map<String, dynamic>> tour, double fontSize) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: TextStyle(
-            fontSize: fontSize * 1.3,
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-          ),
+  Widget _buildtourDetailsSection(String title, List<Map<String, dynamic>> tour, double fontSize) {
+    return Card(
+      color: Colors.white, // White background for the card
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8), // Rounded corners for the card
+      ),
+      elevation: 4, // Shadow effect for the card
+      child: Padding(
+        padding: const EdgeInsets.all(16.0), // Padding around the content
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: fontSize * 1.3,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+            ),
+            Column(
+              children: tour.map((tour) {
+                return Column(
+                  children: [
+                    const Divider(color: Colors.grey),
+                    const SizedBox(height: 20),
+                    _buildTourCard(tour, fontSize),
+                  ],
+                );
+              }).toList(),
+            ),
+          ],
         ),
-        const SizedBox(height: 10),
-        Column(
-          children: tour.map((tour) {
-            return _buildTourCard(tour, fontSize);
-          }).toList(),
-        ),
-        const SizedBox(height: 10),
-      ],
+      ),
     );
   }
 
   Widget _buildTourCard(Map<dynamic, dynamic> tour, double fontSize) {
     return Container(
-      padding: EdgeInsets.all(fontSize * 0.7),
-      margin: const EdgeInsets.only(bottom: 10),
+      // padding: EdgeInsets.all(fontSize * 0.7),
+      padding: EdgeInsets.symmetric(horizontal: fontSize * 0.7, vertical: fontSize * 0.5),
+      margin: const EdgeInsets.only(bottom: 2),
       decoration: BoxDecoration(
-        color: Colors.grey.shade200,
-        borderRadius: BorderRadius.circular(10),
+        color: Colors.grey.shade50,
+        borderRadius: BorderRadius.circular(10), // Rounded corners for the card
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           SizedBox(
-            width:
-                MediaQuery.of(context).size.width * 0.4, // 40% of screen width
+            width: MediaQuery.of(context).size.width * 0.4, // 40% of screen width
             child: Text(
               "Day ${tour['day'] ?? 'N/A'}: ${tour['title'] ?? 'N/A'}",
               style: TextStyle(
@@ -739,5 +826,28 @@ class _BookingSummaryFDState extends State<BookingSummaryFD> {
         ),
       ),
     );
+  }
+}
+
+class CirclePainter extends CustomPainter {
+  final double radius;
+
+  CirclePainter({required this.radius});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    Paint paint = Paint()..style = PaintingStyle.fill;
+
+    // We can use FontAwesome icon positioning logic here.
+    double centerX = size.width / 2;
+
+    // Draw the largest circle (dark blue)
+    paint.color = Color(0xFF0D939E);
+    canvas.drawCircle(Offset(centerX, radius - 600), radius + 400, paint);
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) {
+    return false;
   }
 }

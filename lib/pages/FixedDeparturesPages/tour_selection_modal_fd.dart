@@ -21,7 +21,7 @@ class _TourSelectionModalState extends State<TourSelectionModal> {
     return Container(
       height: MediaQuery.of(context).size.height * 0.75,
       decoration: BoxDecoration(
-        color: Colors.blue.shade900,
+        color: Colors.white,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
       ),
       child: Column(
@@ -38,11 +38,11 @@ class _TourSelectionModalState extends State<TourSelectionModal> {
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: Colors.yellow,
+                    color: Colors.black,
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.close, color: Colors.white),
+                  icon: const Icon(Icons.close, color: Colors.black),
                   onPressed: () => Navigator.pop(context),
                 )
               ],
@@ -55,7 +55,7 @@ class _TourSelectionModalState extends State<TourSelectionModal> {
                 ? Center(
               child: Text(
                 "No tours available",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
               ),
             )
                 : ListView.builder(
@@ -70,7 +70,7 @@ class _TourSelectionModalState extends State<TourSelectionModal> {
                   margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: Colors.blue,
+                    color: Colors.grey.shade300,
                     borderRadius: BorderRadius.circular(15),
                   ),
                   child: Column(
@@ -96,19 +96,19 @@ class _TourSelectionModalState extends State<TourSelectionModal> {
                       const SizedBox(height: 10),
                       Text(
                         tour['service'],
-                        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+                        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
                       ),
                       Text(
                         tour['city_name'],
-                        style: const TextStyle(fontSize: 14, color: Colors.white70),
+                        style: const TextStyle(fontSize: 14, color: Colors.black54),
                       ),
                       Text(
                         "Duration: ${tour['duration']}",
-                        style: const TextStyle(fontSize: 14, color: Colors.white),
+                        style: const TextStyle(fontSize: 14, color: Colors.black),
                       ),
                       Text(
                         "Timings: ${tour['timings']}",
-                        style: const TextStyle(fontSize: 14, color: Colors.white70),
+                        style: const TextStyle(fontSize: 14, color: Colors.black54),
                       ),
                       const SizedBox(height: 5),
 
@@ -118,7 +118,7 @@ class _TourSelectionModalState extends State<TourSelectionModal> {
                         children: [
                           Text(
                             expanded ? inclusion : (inclusion.length > maxLength ? inclusion.substring(0, maxLength) + "..." : inclusion),
-                            style: const TextStyle(fontSize: 12, color: Colors.white70),
+                            style: const TextStyle(fontSize: 12, color: Colors.black),
                           ),
                           if (inclusion.length > maxLength) // Show Read More only if text is long
                             GestureDetector(
@@ -129,7 +129,7 @@ class _TourSelectionModalState extends State<TourSelectionModal> {
                               },
                               child: Text(
                                 expanded ? "Read Less" : "Read More",
-                                style: TextStyle(color: Colors.yellow, fontWeight: FontWeight.bold),
+                                style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
                               ),
                             ),
                         ],
@@ -141,17 +141,17 @@ class _TourSelectionModalState extends State<TourSelectionModal> {
                         children: [
                           Text(
                             "AED ${tour['totalAmount']}",
-                            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+                            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.red),
                           ),
                           ElevatedButton(
-                            style: ElevatedButton.styleFrom(backgroundColor: Colors.yellow),
+                            style: ElevatedButton.styleFrom(backgroundColor: Color(0xFF0071BC)),
                             onPressed: () {
                               widget.onSelectionChanged(tour);
                               Navigator.pop(context);
                               // print(tour.runtimeType);
 
                             },
-                            child: const Text("SELECT", style: TextStyle(color: Colors.black)),
+                            child: const Text("SELECT", style: TextStyle(color: Colors.white)),
                           )
                         ],
                       )

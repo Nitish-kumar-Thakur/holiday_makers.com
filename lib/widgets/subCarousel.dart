@@ -13,7 +13,7 @@ class Subcarousel extends StatefulWidget {
     super.key,
     required this.lists,
     required this.title,
-    this.width = 130,
+    this.width = 250,
   });
 
   @override
@@ -172,8 +172,8 @@ class _SubcarouselState extends State<Subcarousel>
 
           // Country Name and Pricing Positioned at the Bottom
           Positioned(
-            bottom: 18,
-            left: 5,
+            bottom: 40,
+            right: 10,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -181,7 +181,7 @@ class _SubcarouselState extends State<Subcarousel>
                   countryName,
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 12,
+                    fontSize: 24,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -189,46 +189,55 @@ class _SubcarouselState extends State<Subcarousel>
             ),
           ),
           Positioned(
-            bottom: 5,
-            left: 5,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text.rich(
-                  TextSpan(
-                    children: [
+            bottom: 10,
+            right: 10,
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.yellow.shade700,
+                borderRadius: BorderRadius.circular(2)
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(5.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text.rich(
                       TextSpan(
-                        text: '$currency ',
-                        style: TextStyle(
-                          color: Colors.yellow,
-                          fontSize: 10,
-                          fontWeight: FontWeight.w500,
-                        ),
+                        children: [
+                          TextSpan(
+                            text: '$currency ',
+                            style: TextStyle(
+                              color: Colors.grey.shade900,
+                              fontSize: 8,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          TextSpan(
+                            text: '$tempPrice',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                              decoration: TextDecoration.lineThrough,
+                              decorationColor: Colors.red,
+                              decorationThickness: 3,
+                            ),
+                          ),
+                          TextSpan(
+                            text: ' $price',
+                            style: TextStyle(
+                              color: Colors.grey.shade900,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
                       ),
-                      TextSpan(
-                        text: '$tempPrice',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 8,
-                          fontWeight: FontWeight.w500,
-                          decoration: TextDecoration.lineThrough,
-                          decorationColor: Colors.yellow,
-                          decorationThickness: 3,
-                        ),
-                      ),
-                      TextSpan(
-                        text: ' $price',
-                        style: TextStyle(
-                          color: Colors.yellow,
-                          fontSize: 10,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+            )
           ),
         ],
       ),
@@ -310,8 +319,8 @@ class _SubcarouselState extends State<Subcarousel>
 
         // Country Name and Pricing Positioned at the Bottom
         Positioned(
-          bottom: 18,
-          left: 5,
+          bottom: 40,
+          right: 10,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -319,7 +328,7 @@ class _SubcarouselState extends State<Subcarousel>
                 countryName,
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 12,
+                  fontSize: 24,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -327,46 +336,55 @@ class _SubcarouselState extends State<Subcarousel>
           ),
         ),
         Positioned(
-          bottom: 5,
-          left: 5,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text.rich(
-                TextSpan(
+            bottom: 10,
+            right: 10,
+            child: Container(
+              decoration: BoxDecoration(
+                  color: Colors.yellow.shade700,
+                  borderRadius: BorderRadius.circular(2)
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(5.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    TextSpan(
-                      text: '$currency ',
-                      style: TextStyle(
-                        color: Colors.yellow,
-                        fontSize: 10,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    TextSpan(
-                      text: '$tempPrice',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 8,
-                        fontWeight: FontWeight.w500,
-                        decoration: TextDecoration.lineThrough,
-                        decorationColor: Colors.yellow,
-                        decorationThickness: 3,
-                      ),
-                    ),
-                    TextSpan(
-                      text: ' $price',
-                      style: TextStyle(
-                        color: Colors.yellow,
-                        fontSize: 10,
-                        fontWeight: FontWeight.w500,
+                    Text.rich(
+                      TextSpan(
+                        children: [
+                          TextSpan(
+                            text: '$currency ',
+                            style: TextStyle(
+                              color: Colors.grey.shade900,
+                              fontSize: 8,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          TextSpan(
+                            text: '$tempPrice',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                              decoration: TextDecoration.lineThrough,
+                              decorationColor: Colors.red,
+                              decorationThickness: 3,
+                            ),
+                          ),
+                          TextSpan(
+                            text: ' $price',
+                            style: TextStyle(
+                              color: Colors.grey.shade900,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
                 ),
               ),
-            ],
-          ),
+            )
         ),
       ],
     );

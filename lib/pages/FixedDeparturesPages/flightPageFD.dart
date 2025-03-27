@@ -76,65 +76,117 @@ class _FlightPageFDState extends State<FlightPageFD> {
     }
   }
 
+  Widget _buildTopCurve() {
+    return Padding(
+      padding: const EdgeInsets.only(top: 30), // 20% of the screen height
+      child: CustomPaint(
+        size: Size(double.infinity, 0), // Height of the curved area
+        painter: CirclePainter(radius: 200),
+      ),
+    );
+  }
+
   int selectedFlightIndex = 0;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[100],
-      appBar: AppBar(
-        backgroundColor: Colors.grey[100],
-        leading: IconButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-        ),
-        title: const Text(
-          "Select Your Flight Package",
-          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
-        ),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: isLoading == true
-            ? SingleChildScrollView(
-                child: Column(
-                  children: [FlightPackageShimmer(), FlightPackageShimmer()],
+      // appBar: AppBar(
+      //   backgroundColor: Colors.grey[100],
+      //   leading: IconButton(
+      //     onPressed: () {
+      //       Navigator.pop(context);
+      //     },
+      //     icon: const Icon(Icons.arrow_back, color: Colors.black),
+      //   ),
+      //   title: const Text(
+      //     "Select Your Flight Package",
+      //     style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
+      //   ),
+      // ),
+      body: Column(
+        children: [
+          _buildTopCurve(),
+          const SizedBox(height: 30),
+          Row(
+            children: [
+              IconButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                icon: CircleAvatar(
+                  backgroundColor: Colors.grey
+                      .withOpacity(0.6), // Transparent grey background
+                  child: Text(
+                    '<', // Use "<" symbol
+                    style: TextStyle(
+                      color: Colors.white, // White text color
+                      fontSize: 24, // Adjust font size as needed
+                      fontWeight:
+                          FontWeight.bold, // Make the "<" bold if needed
+                    ),
+                  ),
                 ),
-              )
-            : flightList.isEmpty
-                ? const Center(
-                    child: Text(
-                      "Flights not available",
-                      style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black54),
+              ),
+              const SizedBox(width: 10),
+              Text('SELECT YOUR FLIGHT',
+                  style: TextStyle(
+                      fontSize: 26,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white))
+            ],
+          ),
+          Expanded(
+            child: isLoading == true
+                ? Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          FlightPackageShimmer(),
+                          FlightPackageShimmer()
+                        ],
+                      ),
                     ),
                   )
-                : ListView.builder(
-                    itemCount: flightList.length,
-                    itemBuilder: (context, index) {
-                      final flightData = flightList[index];
+                : flightList.isEmpty
+                    ? const Center(
+                        child: Text(
+                          "Flights not available",
+                          style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black54),
+                        ),
+                      )
+                    : Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: ListView.builder(
+                          itemCount: flightList.length,
+                          itemBuilder: (context, index) {
+                            final flightData = flightList[index];
 
-                      return FlightPackageCard(
-                        optionKey:
-                            flightData["option_type"], // "Option_1", "Option_2"
-                        amount: flightData["total"].toString(),
-                        onwardFlights: List<Map<String, dynamic>>.from(
-                            flightData["Onward"] ?? []),
-                        returnFlights: List<Map<String, dynamic>>.from(
-                            flightData["Return"] ?? []),
+                            return FlightPackageCard(
+                              optionKey: flightData[
+                                  "option_type"], // "Option_1", "Option_2"
+                              amount: flightData["total"].toString(),
+                              onwardFlights: List<Map<String, dynamic>>.from(
+                                  flightData["Onward"] ?? []),
+                              returnFlights: List<Map<String, dynamic>>.from(
+                                  flightData["Return"] ?? []),
 
-                        isSelected: selectedFlightIndex == index,
-                        onTap: () {
-                          setState(() {
-                            selectedFlightIndex = index;
-                          });
-                        },
-                      );
-                    },
-                  ),
+                              isSelected: selectedFlightIndex == index,
+                              onTap: () {
+                                setState(() {
+                                  selectedFlightIndex = index;
+                                });
+                              },
+                            );
+                          },
+                        ),
+                      ),
+          ),
+        ],
       ),
       // body: Container(
       //   color: Colors.white, // Set background color to white
@@ -264,8 +316,12 @@ class _FlightPackageCardState extends State<FlightPackageCard> {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      color: Colors.white,
+    print(widget.onwardFlights);
+    return GestureDetector(
+     onTap: widget.onTap,
+     child: Card(
+      // color: Colors.grey.shade300,
+      color: Color(0xFFEEEEEE),
       margin: const EdgeInsets.only(bottom: 20),
       elevation: 6,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
@@ -274,8 +330,22 @@ class _FlightPackageCardState extends State<FlightPackageCard> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Align( alignment: Alignment.bottomRight,
+              child: Container(
+                      height: 10,
+                      width: 10,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: widget.isSelected
+                            ? Color(0xFF0071BC)
+                            : Colors.transparent,
+                        border: Border.all(color: Color(0xFF0071BC)),
+                      ),
+                    ),
+            ),
+            
             _flightSection("Onward Flight", widget.onwardFlights),
-            Divider(),
+            // Divider(),
             _flightSection("Return Flight", widget.returnFlights),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -283,7 +353,7 @@ class _FlightPackageCardState extends State<FlightPackageCard> {
                 Text(
                   "Total Amount",
                   style: TextStyle(
-                    color: Colors.red,
+                    color: Color(0xFF0071BC),
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
                   ),
@@ -293,73 +363,60 @@ class _FlightPackageCardState extends State<FlightPackageCard> {
                     Text(
                       "AED ${widget.amount}",
                       style: TextStyle(
-                        color: Colors.red,
+                        color: Color(0xFF0071BC),
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
                       ),
                     ),
                     SizedBox(width: 8),
-                    // Container(
-                    //   height: 10,
-                    //   width: 10,
-                    //   decoration: BoxDecoration(
-                    //     shape: BoxShape.circle,
-                    //     color: widget.isSelected
-                    //         ? Colors.pinkAccent
-                    //         : Colors.transparent,
-                    //     border: Border.all(color: Colors.pinkAccent),
-                    //   ),
-                    // ),
+                    
                   ],
                 ),
               ],
             ),
-            const SizedBox(height: 15),
-            Align(
-              alignment: Alignment.center,
-              child: SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: widget.onTap,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                        widget.isSelected ? Colors.red : Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    side: BorderSide(
-                        color: Colors.red), // Add a border for visibility
-                  ),
-                  child: Text(
-                    widget.isSelected ? 'SELECTED' : 'SELECT',
-                    style: TextStyle(
-                      color: widget.isSelected
-                          ? Colors.white
-                          : Colors.red, // Fix text color
-                      fontSize: 16.0, // Set proper font size
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
-            ),
+            // const SizedBox(height: 15),
+            // Align(
+            //   alignment: Alignment.center,
+            //   child: SizedBox(
+            //     width: double.infinity,
+            //     child: ElevatedButton(
+            //       onPressed: widget.onTap,
+            //       style: ElevatedButton.styleFrom(
+            //         backgroundColor:
+            //             widget.isSelected ? Color(0xFF0071BC) : Colors.white,
+            //         shape: RoundedRectangleBorder(
+            //           borderRadius: BorderRadius.circular(10),
+            //         ),
+            //         side: BorderSide(
+            //             color:
+            //                 Color(0xFF0071BC)), // Add a border for visibility
+            //       ),
+            //       child: Text(
+            //         widget.isSelected ? 'SELECTED' : 'SELECT',
+            //         style: TextStyle(
+            //           color: widget.isSelected
+            //               ? Colors.white
+            //               : Color(0xFF0071BC), // Fix text color
+            //           fontSize: 16.0, // Set proper font size
+            //           fontWeight: FontWeight.bold,
+            //         ),
+            //       ),
+            //     ),
+            //   ),
+            // ),
           ],
         ),
       ),
+    ),
     );
   }
 
   Widget _flightSection(String title, List<Map<String, dynamic>> flights) {
     if (flights.isEmpty) return const SizedBox();
-
+    bool show = title == 'Onward Flight' ? true : false;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          title,
-          style: const TextStyle(
-              fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black87),
-        ),
         const SizedBox(height: 10),
         Column(
           children: flights.map((flight) {
@@ -368,20 +425,20 @@ class _FlightPackageCardState extends State<FlightPackageCard> {
             return Column(
               children: [
                 _flightSegment(
-                  title,
-                  flightKey,
-                  flight["airline_name"] ?? "Unknown Airline",
-                  flight["dep_time"] ?? "--:--",
-                  flight["from_airport_name"] ?? "Unknown",
-                  flight["depart_terminal"] ?? "N/A",
-                  flight["flight_duration"] ?? "--h --m",
-                  flight["arr_time"] ?? "--:--",
-                  flight["to_airport_name"] ?? "Unknown",
-                  flight["arrival_terminal"] ?? "N/A",
-                  flight["flight_no"] ?? "",
-                  flight["cabin_baggage"] ?? "0",
-                  flight["checkin_baggage"] ?? "0",
-                ),
+                    title,
+                    flightKey,
+                    flight["airline_name"] ?? "Unknown Airline",
+                    flight["dep_time"] ?? "--:--",
+                    flight["from_airport_name"] ?? "Unknown",
+                    flight["depart_terminal"] ?? "N/A",
+                    flight["flight_duration"] ?? "--h --m",
+                    flight["arr_time"] ?? "--:--",
+                    flight["to_airport_name"] ?? "Unknown",
+                    flight["arrival_terminal"] ?? "N/A",
+                    flight["flight_no"] ?? "",
+                    flight["cabin_baggage"] ?? "0",
+                    flight["checkin_baggage"] ?? "0",
+                    show),
               ],
             );
           }).toList(),
@@ -392,45 +449,54 @@ class _FlightPackageCardState extends State<FlightPackageCard> {
   }
 
   Widget _flightSegment(
-    String title,
-    String flightKey,
-    String flightName,
-    String depTime,
-    String depFrom,
-    String depTerminal,
-    String duration,
-    String arrTime,
-    String arrTo,
-    String arrTerminal,
-    String flightNo,
-    String cabinBaggage,
-    String checkinBaggage,
-  ) {
+      String title,
+      String flightKey,
+      String flightName,
+      String depTime,
+      String depFrom,
+      String depTerminal,
+      String duration,
+      String arrTime,
+      String arrTo,
+      String arrTerminal,
+      String flightNo,
+      String cabinBaggage,
+      String checkinBaggage,
+      bool show) {
     bool isExpanded = _expandedFlights.contains(flightKey);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SizedBox(height: 12),
-        Row(
-          children: [
-            Expanded(
-              child: Text(
-                flightName,
-                style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87),
-              ),
+        // const SizedBox(height: 12),
+        // Row(
+        //   children: [
+        //     Expanded(
+        //       child: Text(
+        //         flightName,
+        //         style: const TextStyle(
+        //             fontSize: 14,
+        //             fontWeight: FontWeight.bold,
+        //             color: Colors.black87),
+        //       ),
+        //     ),
+        //     Text(
+        //       "Flight No: $flightNo",
+        //       style: const TextStyle(fontSize: 14, color: Colors.black54),
+        //     ),
+        //   ],
+        // ),
+        // const SizedBox(height: 10),
+        if (show)
+          Text(
+            flightName,
+            style: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
             ),
-            Text(
-              "Flight No: $flightNo",
-              style: const TextStyle(fontSize: 14, color: Colors.black54),
-            ),
-          ],
-        ),
+          ),
         const SizedBox(height: 10),
-
         Row(
           children: [
             Column(
@@ -442,8 +508,8 @@ class _FlightPackageCardState extends State<FlightPackageCard> {
                 const SizedBox(height: 4),
                 Text(depFrom,
                     style: const TextStyle(fontSize: 14, color: Colors.black)),
-                Text(depTerminal,
-                    style: const TextStyle(fontSize: 12, color: Colors.black)),
+                // Text(depTerminal,
+                //     style: const TextStyle(fontSize: 12, color: Colors.black)),
               ],
             ),
             const Spacer(),
@@ -469,29 +535,32 @@ class _FlightPackageCardState extends State<FlightPackageCard> {
                 const SizedBox(height: 4),
                 Text(arrTo,
                     style: const TextStyle(fontSize: 14, color: Colors.black)),
-                Text(arrTerminal,
-                    style: const TextStyle(fontSize: 12, color: Colors.black)),
+                // Text(arrTerminal,
+                //     style: const TextStyle(fontSize: 12, color: Colors.black)),
               ],
             ),
           ],
         ),
-        const SizedBox(height: 8),
 
         // Additional flight details (baggage info, etc.)
-        InkWell(
-          onTap: () => _toggleExpand(flightKey),
-          child: Row(
-            children: [
-              const Icon(Icons.info_outline,
-                  size: 16, color: Colors.blueAccent),
-              const SizedBox(width: 5),
-              Text(
-                isExpanded ? "Hide Info" : "Show More",
-                style: const TextStyle(fontSize: 12, color: Colors.blueAccent),
-              ),
-            ],
+        if (!show) const SizedBox(height: 8),
+
+        if (!show)
+          InkWell(
+            onTap: () => _toggleExpand(flightKey),
+            child: Row(
+              children: [
+                const Icon(Icons.info_outline,
+                    size: 16, color: Colors.blueAccent),
+                const SizedBox(width: 5),
+                Text(
+                  isExpanded ? "Hide Info" : "Show More",
+                  style:
+                      const TextStyle(fontSize: 12, color: Colors.blueAccent),
+                ),
+              ],
+            ),
           ),
-        ),
         AnimatedCrossFade(
           firstChild: const SizedBox.shrink(),
           secondChild: Column(
@@ -605,5 +674,28 @@ class FlightPackageShimmer extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class CirclePainter extends CustomPainter {
+  final double radius;
+
+  CirclePainter({required this.radius});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    Paint paint = Paint()..style = PaintingStyle.fill;
+
+    // We can use FontAwesome icon positioning logic here.
+    double centerX = size.width / 2;
+
+    // Draw the largest circle (dark blue)
+    paint.color = Color(0xFF0D939E); // Dark blue
+    canvas.drawCircle(Offset(centerX, radius - 600), radius + 400, paint);
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) {
+    return false;
   }
 }

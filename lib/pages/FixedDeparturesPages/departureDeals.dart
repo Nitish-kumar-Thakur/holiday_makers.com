@@ -116,25 +116,28 @@ class _DepartureDealsState extends State<DepartureDeals> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        title: Text(
-          'Fixed Departures',
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-          ),
-        ),
-      ),
+    return Container(decoration: BoxDecoration(
+          image: DecorationImage(
+              image: AssetImage('img/departureDealsBG.png'), fit: BoxFit.fill)),
+      child: Scaffold(
+      backgroundColor: Colors.transparent,
+      // appBar: AppBar(
+      //   backgroundColor: Colors.white,
+      //   leading: IconButton(
+      //     icon: Icon(Icons.arrow_back, color: Colors.black),
+      //     onPressed: () {
+      //       Navigator.pop(context);
+      //     },
+      //   ),
+      //   title: Text(
+      //     'Fixed Departures',
+      //     style: TextStyle(
+      //       fontSize: 24,
+      //       fontWeight: FontWeight.bold,
+      //       color: Colors.black,
+      //     ),
+      //   ),
+      // ),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -143,13 +146,42 @@ class _DepartureDealsState extends State<DepartureDeals> {
               : Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    const SizedBox(height: 50),
+                    Row(
+                      children: [
+                        IconButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          icon: CircleAvatar(
+                            backgroundColor: Colors.grey.withOpacity(0.6), // Transparent grey background
+                            child: Text(
+                              '<', // Use "<" symbol
+                              style: TextStyle(
+                                color: Colors.white, // White text color
+                                fontSize: 24, // Adjust font size as needed
+                                fontWeight: FontWeight
+                                    .bold, // Make the "<" bold if needed
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Text('Fixed Departures'.toUpperCase(),
+                            style: TextStyle(
+                                fontSize: 26,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white))
+                      ],
+                    ),
+                    SizedBox(height: 30),
                     // Package Selection Section
                     Text(
                       'Select Departure',
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
-                        color: Colors.black,
+                        color: Colors.white,
                       ),
                     ),
                     SizedBox(height: 10),
@@ -220,7 +252,7 @@ class _DepartureDealsState extends State<DepartureDeals> {
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
-                        color: Colors.black,
+                        color: Colors.white,
                       ),
                     ),
                     SizedBox(height: 10),
@@ -269,6 +301,7 @@ class _DepartureDealsState extends State<DepartureDeals> {
                 icon: responciveButton(text: 'SELECT'),
               ),
             ),
+    ),
     );
   }
 
@@ -276,6 +309,7 @@ class _DepartureDealsState extends State<DepartureDeals> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        SizedBox(height: 70,),
         Shimmer.fromColors(
           baseColor: Colors.grey[300]!,
           highlightColor: Colors.grey[100]!,
@@ -383,12 +417,14 @@ class _PackageCardState extends State<PackageCard> {
     return GestureDetector(
       onTap: widget.onSelect,
       child: Container(
-        padding: EdgeInsets.all(16),
+        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 25),
         decoration: BoxDecoration(
           color: Colors.grey[200]!,
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(20),
           border: Border.all(
-              color: widget.isSelected ? Colors.pinkAccent : Colors.grey[300]!),
+              color: widget.isSelected ? Color(0xFF0071BC) : Colors.grey.shade200,
+            width: 2
+          ),
         ),
         child: Column(
           children: [
@@ -399,7 +435,7 @@ class _PackageCardState extends State<PackageCard> {
                   width: MediaQuery.of(context).size.width *
                       0.5, // 50% of screen width
                   child: Text(
-                    widget.title,
+                    widget.title.toUpperCase(),
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
@@ -423,31 +459,47 @@ class _PackageCardState extends State<PackageCard> {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         color: widget.isSelected
-                            ? Colors.pinkAccent
+                            ? Colors.blue
                             : Colors.transparent,
-                        border: Border.all(color: Colors.pinkAccent),
+                        border: Border.all(color: Colors.blue),
                       ),
                     ),
                   ],
                 ),
               ],
             ),
-            SizedBox(height: 8),
+            SizedBox(height: 10),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start, // Align items properly
               children: [
-                Text(
-                  widget.departureDate,
-                  style: TextStyle(
-                    color: Colors.grey[600],
-                    fontSize: 14,
-                  ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Travel Details",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                        color: Colors.black,
+                      ),
+                    ),
+                    SizedBox(height: 4),
+                    Text(
+                      '${widget.departureDate} - ${widget.arrivalDate}',
+                      style: TextStyle(
+                        color: Colors.grey[600],
+                        fontSize: 14,
+                      ),
+                    ),
+                  ],
                 ),
                 Container(
                   decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(50),
-                      border: Border.all(width: 1, color: Colors.grey)),
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(50),
+                    border: Border.all(width: 1, color: Colors.grey),
+                  ),
                   child: Center(
                     child: Padding(
                       padding: EdgeInsets.all(5),
@@ -461,15 +513,8 @@ class _PackageCardState extends State<PackageCard> {
                     ),
                   ),
                 ),
-                Text(
-                  widget.arrivalDate,
-                  style: TextStyle(
-                    color: Colors.grey[600],
-                    fontSize: 14,
-                  ),
-                ),
               ],
-            ),
+            )
           ],
         ),
       ),

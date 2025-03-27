@@ -1,3 +1,5 @@
+import 'package:HolidayMakers/pages/Cruise/cruisePackagedetails.dart';
+import 'package:HolidayMakers/pages/FixedDeparturesPages/departurePackagedetails.dart';
 import 'package:flutter/material.dart';
 import 'package:HolidayMakers/pages/Cruise/cruise_deals_page.dart';
 import 'package:HolidayMakers/pages/FixedDeparturesPages/departureDeals.dart';
@@ -10,8 +12,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class Homepage2 extends StatefulWidget {
   final List<Map<String, dynamic>> packageList;
+  final String title;
 
-  const Homepage2({Key? key, required this.packageList}) : super(key: key);
+  const Homepage2({Key? key, required this.packageList, required this.title}) : super(key: key);
 
   @override
   State<Homepage2> createState() => _Homepage2State();
@@ -57,50 +60,54 @@ class _Homepage2State extends State<Homepage2> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
-      key: _scaffoldKey,
-      backgroundColor: Colors.white,
-      drawer: Drawerpage(),
-      body: isLoading
-          ? _buildLoadingSkeleton(screenWidth)
-          : SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+        key: _scaffoldKey,
+        backgroundColor: Colors.white,
+        drawer: Drawerpage(),
+        body: isLoading
+            ? _buildLoadingSkeleton(screenWidth)
+            : Column(
                 children: [
-                  _buildHeader(),
-                  _buildProfileSection(),
-                  Maincarousel(banner_list: banner_list),
-                  _buildPackageSection(screenWidth),
-                ],
-              ),
+                  _buildTopCurve(),
+                  Row(
+              children: [
+                IconButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  icon: CircleAvatar(
+                    backgroundColor: Colors.grey.withOpacity(0.6),  // Transparent grey background
+                    child: Text(
+                      '<',  // Use "<" symbol
+                      style: TextStyle(
+                        color: Colors.white,  // White text color
+                        fontSize: 24,  // Adjust font size as needed
+                        fontWeight: FontWeight.bold,  // Make the "<" bold if needed
+                      ),
+                    ),
+                  ),
+                ),
+                
+              ],
             ),
-    );
+                  Maincarousel(banner_list: banner_list),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      child: _buildPackageSection(screenWidth),
+                    ),
+                  )
+                ],
+              ));
   }
 
-  Widget _buildHeader() {
-    return Container(
-      width: double.infinity,
-      height: 120,
-      decoration: BoxDecoration(
-        image: DecorationImage(
-          image: AssetImage('img/homeBg.png'),
-          fit: BoxFit.cover,
-        ),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          Container(
-            height: 45,
-            width: double.infinity,
-            decoration: BoxDecoration(
-              color: Colors.white70,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(100),
-                topRight: Radius.circular(100),
-              ),
-            ),
-          )
-        ],
+  Widget _buildTopCurve() {
+    return Padding(
+      padding: const EdgeInsets.only(top: 50), // 20% of the screen height
+      child: CustomPaint(
+        size: Size(double.infinity, 20), // Height of the curved area
+        painter: CirclePainter(radius: 200),
       ),
     );
   }
@@ -123,63 +130,85 @@ class _Homepage2State extends State<Homepage2> {
             ),
           ),
         ),
-        Container(
-          height: 40,
-          width: 200,
-          margin: EdgeInsets.all(15),
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage('img/brandLogo.png'),
-            ),
-          ),
-        ),
+        // Container(
+        //   height: 40,
+        //   width: 200,
+        //   margin: EdgeInsets.all(15),
+        //   decoration: BoxDecoration(
+        //     image: DecorationImage(
+        //       image: AssetImage('img/brandLogo.png'),
+        //     ),
+        //   ),
+        // ),
       ],
     );
   }
 
   Widget _buildPackageSection(double screenWidth) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 15),
-      child: GridView.builder(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        itemCount: widget.packageList.length,
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          // childAspectRatio: 0.75,
-          crossAxisSpacing: 10,
-          mainAxisSpacing: 10,
-        ),
-        itemBuilder: (context, index) {
-          final package = widget.packageList[index];
-          return GestureDetector(
-            onTap: () {
-              print(package["id"].toString());
-              if (package["id"] == "cruise") {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) =>
-                          CruiseDealsPage(packageid: package["packageId"])),
-                );
-              } else {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) =>
-                          DepartureDeals(packageId: package["packageId"])),
-                );
-              }
-            },
-            child: ResponsiveCard(
-              image: package['image'] ?? 'img/placeholder.png',
-              title: package['name'] ?? 'Package Name',
-              subtitle: package['country'] ?? 'Location',
-              price: "${package['currency']} ${package['price'] ?? 'N/A'}",
-              screenWidth: screenWidth,
+      padding: EdgeInsets.symmetric(horizontal: 15, vertical: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start, // Align text to the left
+        children: [
+          // Title above the section
+          Text(
+            (widget.title + ' Packages').toUpperCase(), // Title text
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              color: Colors.blueAccent,
             ),
-          );
-        },
+          ),
+
+          // Divider line
+          Divider(
+            color: Colors.grey, // Divider color
+            thickness: 1, // Divider thickness
+          ),
+
+          // GridView.builder for packages
+          GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: widget.packageList.length,
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              crossAxisSpacing: 10,
+              mainAxisSpacing: 10,
+            ),
+            itemBuilder: (context, index) {
+              final package = widget.packageList[index];
+              return GestureDetector(
+                onTap: () {
+                  print(package["id"].toString());
+                  if (package["id"] == "cruise") {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => CruisePackageDetails(packageId: package["packageId"]),
+                      ),
+                    );
+                  } else {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            DeparturePackageDetails(packageId: package["packageId"])
+                      ),
+                    );
+                  }
+                },
+                child: ResponsiveCard(
+                  image: package['image'] ?? 'img/placeholder.png',
+                  title: package['name'] ?? 'Package Name',
+                  subtitle: package['country'] ?? 'Location',
+                  price: "${package['currency']} ${package['price'] ?? 'N/A'}",
+                  screenWidth: screenWidth,
+                ),
+              );
+            },
+          ),
+        ],
       ),
     );
   }
@@ -189,7 +218,9 @@ class _Homepage2State extends State<Homepage2> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _shimmerContainer(height: 120), // Header Placeholder
+          SizedBox(
+            height: 40,
+          ), // Header Placeholder
           Padding(
             padding: const EdgeInsets.all(15),
             child: Row(
@@ -299,5 +330,36 @@ class _Homepage2State extends State<Homepage2> {
         },
       ),
     );
+  }
+}
+
+class CirclePainter extends CustomPainter {
+  final double radius;
+
+  CirclePainter({required this.radius});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    Paint paint = Paint()..style = PaintingStyle.fill;
+
+    // We can use FontAwesome icon positioning logic here.
+    double centerX = size.width / 2;
+
+    // Draw the smallest circle (light blue)
+    paint.color = Color(0xFFEDF2F4); // Light blue
+    canvas.drawCircle(Offset(centerX, radius - 230), radius + 100, paint);
+
+    // Draw the medium circle (medium blue)
+    paint.color = Color(0xFF4AA9BC); // Medium blue
+    canvas.drawCircle(Offset(centerX, radius - 400), radius + 200, paint);
+
+    // Draw the largest circle (dark blue)
+    paint.color = Color(0xFF007A8C); // Dark blue
+    canvas.drawCircle(Offset(centerX, radius - 600), radius + 300, paint);
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) {
+    return false;
   }
 }

@@ -13,7 +13,7 @@ class responciveButton extends StatelessWidget {
     this.isResponcive,
     required this.text,
     this.border = 20,
-    this.color = Colors.red,
+    this.color = const Color(0xFF0071BC),
     this.textColor = Colors.white,
     this.buttonShadow = 0.4,
   });

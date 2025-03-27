@@ -1,3 +1,4 @@
+import 'package:HolidayMakers/widgets/mainCarousel.dart';
 import 'package:flutter/material.dart';
 import 'package:HolidayMakers/pages/Cruise/cruisePackagedetails.dart';
 import 'package:HolidayMakers/utils/api_handler.dart';
@@ -24,6 +25,7 @@ class _CurisesHomeState extends State<CurisesHome> {
   List<Map<String, String>> countryList = []; // Country list from API.
   List<Map<String, String>> monthList = []; // Month list from API.
   List<Map<String, dynamic>> cruisePackages = []; // Package data for cruises.
+  List<Map<String, dynamic>> bannerList = [];
 
   String profileImg = '';
   bool isLoading = true;
@@ -34,6 +36,7 @@ class _CurisesHomeState extends State<CurisesHome> {
     _loadProfileDetails();
     _fetchCountryAndMonthLists(); // Fetch dropdown data.
     _fetchCruisePackages('', ''); // Fetch cruise package data.
+    _fetchHomePageData();
   }
 
   Future<void> _loadProfileDetails() async {
@@ -65,6 +68,25 @@ class _CurisesHomeState extends State<CurisesHome> {
       });
     } catch (error) {
       debugPrint('Error fetching country and month lists: $error');
+    }
+  }
+
+  Future<void> _fetchHomePageData() async {
+    try {
+      final data = await APIHandler.HomePageData();
+
+      setState(() {
+        bannerList = List<Map<String, dynamic>>.from(
+          data['data']['banner_list'].map((item) => {
+            'img': item['img'],
+            'mobile_img': item['mobile_img'],
+            'link': item['link'],
+          }),
+        );
+        isLoading = false;
+      });
+    } catch (e) {
+      print('Error fetching homepage data: $e');
     }
   }
 
@@ -114,8 +136,13 @@ class _CurisesHomeState extends State<CurisesHome> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildHeader(),
-                  _buildProfileSection(),
+                  // _buildHeader(),
+                  // _buildProfileSection(),
+                  CustomPaint(
+                    size: Size(double.infinity, 80),
+                    painter: CirclePainter(radius: 200),
+                  ),
+                  Maincarousel(banner_list: bannerList),
                   _buildDropdownSection(),
                   _buildPackageGrid(screenWidth),
                 ],
@@ -326,9 +353,10 @@ class _CurisesHomeState extends State<CurisesHome> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          const SizedBox(height: 10),
           AppLargeText(
-            text: 'Cruise Deals',
-            color: Colors.black,
+            text: 'CRUISE DEALS',
+            color: Color(0xFF009EE2),
             size: 24,
           ),
           const SizedBox(height: 20),
@@ -359,12 +387,12 @@ class _CurisesHomeState extends State<CurisesHome> {
           ),
           const SizedBox(height: 30),
           AppLargeText(
-            text: 'Packages',
-            color: Colors.black,
-            size: 18,
+            text: 'PACKAGES',
+            color: Color(0xFF009EE2),
+            size: 24,
           ),
           const Divider(
-            color: Colors.black38,
+            color: Color(0xFF007A8C),
             thickness: 1,
           ),
         ],
@@ -420,5 +448,36 @@ class _CurisesHomeState extends State<CurisesHome> {
               },
             ),
     );
+  }
+}
+
+class CirclePainter extends CustomPainter {
+  final double radius;
+
+  CirclePainter({required this.radius});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    Paint paint = Paint()..style = PaintingStyle.fill;
+
+    // We can use FontAwesome icon positioning logic here.
+    double centerX = size.width / 2;
+
+    // Draw the smallest circle (light blue)
+    paint.color = Color(0xFFEDF2F4); // Light blue
+    canvas.drawCircle(Offset(centerX, radius - 230), radius + 100, paint);
+
+    // Draw the medium circle (medium blue)
+    paint.color = Color(0xFF4AA9BC); // Medium blue
+    canvas.drawCircle(Offset(centerX, radius - 400), radius + 200, paint);
+
+    // Draw the largest circle (dark blue)
+    paint.color = Color(0xFF007A8C); // Dark blue
+    canvas.drawCircle(Offset(centerX, radius - 600), radius + 300, paint);
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) {
+    return false;
   }
 }

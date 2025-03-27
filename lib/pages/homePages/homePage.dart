@@ -91,11 +91,11 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  void navigateToSeeAll(List<Map<String, dynamic>> packageList) {
+  void navigateToSeeAll(List<Map<String, dynamic>> packageList, String title) {
     Navigator.push(
       context,
       MaterialPageRoute(
-          builder: (context) => Homepage2(packageList: packageList)),
+          builder: (context) => Homepage2(packageList: packageList, title: title,)),
     );
   }
 
@@ -115,7 +115,7 @@ class _HomePageState extends State<HomePage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _shimmerContainer(height: 120), // Header Placeholder
+          SizedBox(height: 40,),
           Padding(
             padding: const EdgeInsets.all(15),
             child: Row(
@@ -175,42 +175,27 @@ class _HomePageState extends State<HomePage> {
 
   //  Actual Content UI
   Widget _buildContent() {
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildHeader(),
-          _buildProfileSection(),
-          Maincarousel(banner_list: bannerList),
-          _buildDynamicSections(),
-        ],
-      ),
+    return Column( crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildTopCurve(),
+        _buildProfileSection(),
+        Maincarousel(banner_list: bannerList),
+        SizedBox(height: 10,),
+        Expanded(child: 
+        SingleChildScrollView(
+      child: _buildDynamicSections(),
+    ))
+      ],
     );
   }
 
-  //  Header Section
-  Widget _buildHeader() {
-    return Container(
-      width: double.infinity,
-      height: 120,
-      decoration: const BoxDecoration(
-        image: DecorationImage(
-            image: AssetImage('img/homeBg.png'), fit: BoxFit.cover),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          Container(
-            height: 45,
-            width: double.infinity,
-            decoration: const BoxDecoration(
-              color: Colors.white70,
-              borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(100),
-                  topRight: Radius.circular(100)),
-            ),
-          ),
-        ],
+  // Curved Curtain Shape at the Top (with 20% margin)
+  Widget _buildTopCurve() {
+    return Padding(
+      padding: const EdgeInsets.only(top: 50), // 20% of the screen height
+      child: CustomPaint(
+        size: Size(double.infinity, 20), // Height of the curved area
+        painter: CirclePainter(radius: 200),
       ),
     );
   }
@@ -234,13 +219,13 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
         ),
-        Container(
-          height: 40,
-          width: 200,
-          margin: const EdgeInsets.all(15),
-          decoration: const BoxDecoration(
-              image: DecorationImage(image: AssetImage('img/brandLogo.png'))),
-        ),
+        // Container(
+        //   height: 40,
+        //   width: 200,
+        //   margin: const EdgeInsets.all(15),
+        //   decoration: const BoxDecoration(
+        //       image: DecorationImage(image: AssetImage('img/brandLogo.png'))),
+        // ),
       ],
     );
   }
@@ -260,20 +245,36 @@ class _HomePageState extends State<HomePage> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  AppText(
-                      text: section['title'], color: Colors.black, size: 16),
+                  Text(
+                    section['title'].toString().toUpperCase(),
+                    style: TextStyle(
+                      color: Color(0xFF009EE2),
+                      fontSize: 22,
+                      fontWeight: FontWeight.w900,  // Apply bold style
+                    ),
+                  ),
                   GestureDetector(
-                    onTap: () => navigateToSeeAll(section['list']),
+                    onTap: () => navigateToSeeAll(section['list'], section['title']),
                     child: Padding(
                       padding: const EdgeInsets.only(right: 5),
                       child: Row(
                         children: [
                           AppText(
                               text: 'See All',
-                              color: const Color(0xFF0775BD),
+                              color: Colors.black,
                               size: 15),
                           const SizedBox(width: 1),
-                          Image.asset('img/seeAll.png', height: 16),
+                          ColorFiltered(
+                            colorFilter: ColorFilter.mode(
+                              Colors.black,
+                              BlendMode.srcIn,
+                            ),
+                            child: Image.asset(
+                              'img/seeAll.png',
+                              height: 16,
+                            ),
+                          )
+
                         ],
                       ),
                     ),
@@ -285,20 +286,6 @@ class _HomePageState extends State<HomePage> {
                 padding: EdgeInsets.only(left: 15),
                 child: Divider(color: Colors.grey)),
             GestureDetector(
-              // onTap: () {
-              //   print(section["list"]["package_type"]);
-              //   if (section["list"]["package_type"] == "cruise") {
-              //     Navigator.push(
-              //       context,
-              //       MaterialPageRoute(builder: (context) => CruiseDealsPage()),
-              //     );
-              //   } else {
-              //     Navigator.push(
-              //       context,
-              //       MaterialPageRoute(builder: (context) => DepartureDeals()),
-              //     );
-              //   }
-              // },
               child: Subcarousel(
                 lists: section['list'],
                 title: section['title'],
@@ -309,5 +296,36 @@ class _HomePageState extends State<HomePage> {
         );
       },
     );
+  }
+}
+
+class CirclePainter extends CustomPainter {
+  final double radius;
+
+  CirclePainter({required this.radius});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    Paint paint = Paint()..style = PaintingStyle.fill;
+
+    // We can use FontAwesome icon positioning logic here.
+    double centerX = size.width / 2;
+
+    // Draw the smallest circle (light blue)
+    paint.color = Color(0xFFEDF2F4); // Light blue
+    canvas.drawCircle(Offset(centerX, radius - 230), radius + 100, paint);
+
+    // Draw the medium circle (medium blue)
+    paint.color = Color(0xFF4AA9BC); // Medium blue
+    canvas.drawCircle(Offset(centerX, radius - 400), radius + 200, paint);
+
+    // Draw the largest circle (dark blue)
+    paint.color = Color(0xFF007A8C); // Dark blue
+    canvas.drawCircle(Offset(centerX, radius - 600), radius + 300, paint);
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) {
+    return false;
   }
 }

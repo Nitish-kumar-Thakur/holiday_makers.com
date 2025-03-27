@@ -1,3 +1,4 @@
+import 'package:HolidayMakers/pages/login&signup/Test.dart';
 import 'package:flutter/material.dart';
 import 'package:HolidayMakers/pages/homePages/introPage.dart';
 import 'package:HolidayMakers/utils/api_handler.dart';
@@ -86,7 +87,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
           SharedPreferencesHandler.signOut(); // Close the dialog
           Navigator.of(context).pushReplacement(MaterialPageRoute(
               builder: (context) =>
-                  IntroPage())); // Replace with your login screen route
+                  LoginPage())); // Replace with your login screen route
         });
         print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
         print("chl raha h");
@@ -103,133 +104,192 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     }
   }
 
+  Widget _buildTopCurve() {
+    return Padding(
+      padding: const EdgeInsets.only(top: 50), // 20% of the screen height
+      child: CustomPaint(
+        size: Size(double.infinity, 0), // Height of the curved area
+        painter: CirclePainter(radius: 200),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            icon: Icon(Icons.arrow_back)),
-      ),
+      // appBar: AppBar(
+      //   leading: IconButton(
+      //       onPressed: () {
+      //         Navigator.pop(context);
+      //       },
+      //       icon: Icon(Icons.arrow_back)),
+      // ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
+        // padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Back Navigation Button
-              // Header
-              Container(
-                margin: const EdgeInsets.only(left: 0),
-                child: Text(
-                  "Change Password",
-                  style: TextStyle(
-                    color: Colors.grey[700],
-                    fontSize: 24,
+              _buildTopCurve(),
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    icon: CircleAvatar(
+                      backgroundColor: Colors.grey.withOpacity(0.6),  // Transparent grey background
+                      child: Text(
+                        '<',  // Use "<" symbol
+                        style: TextStyle(
+                          color: Colors.white,  // White text color
+                          fontSize: 24,  // Adjust font size as needed
+                          fontWeight: FontWeight.bold,  // Make the "<" bold if needed
+                        ),
+                      ),
+                    ),
                   ),
-                ),
+                  const SizedBox(width: 10),
+                  Text('CHANGE PASSWORD',
+                      style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Colors.white)
+                  )
+                ],
               ),
               const SizedBox(height: 50),
               // Old Password
-              _buildPasswordField(
-                label: "Existing Password",
-                controller: _oldPasswordController,
-                isObscure: _isOldPasswordObscure,
-                onToggleVisibility: () {
-                  setState(() {
-                    _isOldPasswordObscure = !_isOldPasswordObscure;
-                  });
-                },
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your old password!';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 40),
-              // New Password
-              _buildPasswordField(
-                label: "New Password",
-                controller: _newPasswordController,
-                isObscure: _isNewPasswordObscure,
-                onToggleVisibility: () {
-                  setState(() {
-                    _isNewPasswordObscure = !_isNewPasswordObscure;
-                  });
-                },
-                validator: _validatePassword,
-              ),
-              const SizedBox(height: 40),
-              // Confirm Password
-              _buildPasswordField(
-                label: "Confirm Password",
-                controller: _confirmPasswordController,
-                isObscure: _isConfirmPasswordObscure,
-                onToggleVisibility: () {
-                  setState(() {
-                    _isConfirmPasswordObscure = !_isConfirmPasswordObscure;
-                  });
-                },
-                validator: _validateConfirmPassword,
-              ),
-              const SizedBox(height: 40),
-              // Save Changes Button
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: _isLoading ? null : _changePassword,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 16.0),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Container(
+                  height: 620, // Adjust the height as needed
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage('img/fitFormBG.png'), // Background image
+                      fit: BoxFit.cover, // Ensures the image covers the container
                     ),
+                    borderRadius: BorderRadius.circular(20), // Rounded corners for the container
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.5), // Shadow color
+                        offset: Offset(0, 4), // Shadow offset (vertical displacement)
+                        blurRadius: 20, // Softens the shadow
+                        spreadRadius: 1, // Extends the shadow
+                      ),
+                    ],
                   ),
-                  child: _isLoading
-                      ? CircularProgressIndicator(color: Colors.white)
-                      : const Text(
-                          "Save Changes",
-                          style: TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.bold),
+                  child: Padding(
+                    padding: EdgeInsets.all(15), // Padding around the content
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 10),
+                        // Existing Password Field
+                        _buildPasswordField(
+                          label: "Existing Password",
+                          controller: _oldPasswordController,
+                          isObscure: _isOldPasswordObscure,
+                          onToggleVisibility: () {
+                            setState(() {
+                              _isOldPasswordObscure = !_isOldPasswordObscure;
+                            });
+                          },
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter your old password!';
+                            }
+                            return null;
+                          },
                         ),
-                ),
-              ),
-              const SizedBox(height: 40),
-// Cancel Button
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: _isLoading
-                      ? null
-                      : () {
-                          _oldPasswordController.clear();
-                          _newPasswordController.clear();
-                          _confirmPasswordController.clear();
-                        },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 16.0),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
+                        const SizedBox(height: 40),
+
+                        // New Password Field
+                        _buildPasswordField(
+                          label: "New Password",
+                          controller: _newPasswordController,
+                          isObscure: _isNewPasswordObscure,
+                          onToggleVisibility: () {
+                            setState(() {
+                              _isNewPasswordObscure = !_isNewPasswordObscure;
+                            });
+                          },
+                          validator: _validatePassword,
+                        ),
+                        const SizedBox(height: 40),
+
+                        // Confirm Password Field
+                        _buildPasswordField(
+                          label: "Confirm Password",
+                          controller: _confirmPasswordController,
+                          isObscure: _isConfirmPasswordObscure,
+                          onToggleVisibility: () {
+                            setState(() {
+                              _isConfirmPasswordObscure = !_isConfirmPasswordObscure;
+                            });
+                          },
+                          validator: _validateConfirmPassword,
+                        ),
+                        const SizedBox(height: 40),
+
+                        // Save Changes Button
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: _isLoading ? null : _changePassword,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Color(0xFF0071BC),
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(vertical: 16.0),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(40),
+                              ),
+                            ),
+                            child: _isLoading
+                                ? CircularProgressIndicator(color: Colors.white)
+                                : const Text(
+                              "Save Changes",
+                              style: TextStyle(
+                                  fontSize: 18, fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 40),
+
+                        // Cancel Button
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: _isLoading
+                                ? null
+                                : () {
+                              _oldPasswordController.clear();
+                              _newPasswordController.clear();
+                              _confirmPasswordController.clear();
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.red,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(vertical: 16.0),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(40),
+                              ),
+                            ),
+                            child: const Text(
+                              "Cancel",
+                              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+
+                        // Message Display (e.g., success or error message)
+                        Center(
+                          child: AppText(text: _message),
+                        ),
+                      ],
                     ),
                   ),
-                  child: const Text(
-                    "Cancel",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
                 ),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Center(
-                child: AppText(text: _message),
               )
             ],
           ),
@@ -252,7 +312,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
           children: [
             Text(
               label,
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
             ),
             const Text(
               "*",
@@ -265,7 +325,20 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
           controller: controller,
           obscureText: isObscure,
           decoration: InputDecoration(
-            border: const OutlineInputBorder(),
+            filled: true, // Enable background fill color
+            fillColor: Colors.white, // Set background color to white
+            border: OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.white), // Default border color (white)
+              borderRadius: BorderRadius.circular(10), // Rounded corners
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.blue), // Border color when focused (blue)
+              borderRadius: BorderRadius.circular(10), // Rounded corners
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.white), // Border color when not focused (white)
+              borderRadius: BorderRadius.circular(10), // Rounded corners
+            ),
             suffixIcon: IconButton(
               onPressed: onToggleVisibility,
               icon: Icon(
@@ -274,8 +347,31 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
             ),
           ),
           validator: validator,
-        ),
+        )
       ],
     );
+  }
+}
+
+class CirclePainter extends CustomPainter {
+  final double radius;
+
+  CirclePainter({required this.radius});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    Paint paint = Paint()..style = PaintingStyle.fill;
+
+    // We can use FontAwesome icon positioning logic here.
+    double centerX = size.width / 2;
+
+    // Draw the largest circle (dark blue)
+    paint.color = Color(0xFF0D939E); // Dark blue
+    canvas.drawCircle(Offset(centerX, radius - 600), radius + 400, paint);
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) {
+    return false;
   }
 }

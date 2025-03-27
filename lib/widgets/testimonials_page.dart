@@ -30,22 +30,61 @@ class _TestimonialsPageState extends State<TestimonialsPage> {
       rethrow;
     }
   }
+      Widget _buildTopCurve() {
+    return Padding(
+      padding: const EdgeInsets.only(top: 40), // 20% of the screen height
+      child: CustomPaint(
+        size: Size(double.infinity, 0), // Height of the curved area
+        painter: CirclePainter(radius: 200),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        title: Text('Testimonials'),
-      ),
-      backgroundColor: Colors.white,
-      body: FutureBuilder<List<dynamic>>(
+      // appBar: AppBar(
+      //   backgroundColor: Colors.white,
+      //   leading: IconButton(
+      //     icon: Icon(Icons.arrow_back),
+      //     onPressed: () {
+      //       Navigator.pop(context);
+      //     },
+      //   ),
+      //   title: Text('Testimonials'),
+      // ),
+      // backgroundColor: Colors.white,
+      body: Container( color: Colors.white,
+        child:Column(
+          children: [
+            _buildTopCurve(),
+            const SizedBox(height: 30),
+            Row(
+              children: [
+                IconButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  icon: CircleAvatar(
+                    backgroundColor: Colors.grey.withOpacity(0.6),  // Transparent grey background
+                    child: Text(
+                      '<',  // Use "<" symbol
+                      style: TextStyle(
+                        color: Colors.white,  // White text color
+                        fontSize: 24,  // Adjust font size as needed
+                        fontWeight: FontWeight.bold,  // Make the "<" bold if needed
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Text('TESTIMONIALS' ,
+                style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Colors.white)
+                )
+              ],
+            ),
+            Expanded(child: 
+            FutureBuilder<List<dynamic>>(
         future: _testimonialsFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -95,7 +134,10 @@ class _TestimonialsPageState extends State<TestimonialsPage> {
             );
           }
         },
-      ),
+      ),)
+          ],
+        ),
+      )
     );
   }
 }
@@ -196,5 +238,28 @@ class TestimonialCard extends StatelessWidget {
     } catch (e) {
       return "Invalid date";
     }
+  }
+}
+
+class CirclePainter extends CustomPainter {
+  final double radius;
+
+  CirclePainter({required this.radius});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    Paint paint = Paint()..style = PaintingStyle.fill;
+
+    // We can use FontAwesome icon positioning logic here.
+    double centerX = size.width / 2;
+
+    // Draw the largest circle (dark blue)
+    paint.color = Color(0xFF0D939E); // Dark blue
+    canvas.drawCircle(Offset(centerX, radius - 600), radius + 400, paint);
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) {
+    return false;
   }
 }

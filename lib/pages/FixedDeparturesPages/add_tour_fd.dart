@@ -4,6 +4,7 @@ import 'package:HolidayMakers/pages/FixedDeparturesPages/tour_selection_modal_fd
 import 'package:HolidayMakers/utils/api_handler.dart';
 import 'package:HolidayMakers/widgets/appText.dart';
 import 'package:HolidayMakers/widgets/responciveButton.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class TourBookingPage extends StatefulWidget {
   final Map<String, dynamic> packageDetails;
@@ -63,15 +64,7 @@ class _TourBookingPageState extends State<TourBookingPage>
           Future.delayed(Duration(milliseconds: 100), () {
             _tabController.index = _tabController.previousIndex;
           });
-
-          // Show warning
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                  "This day is part of a multi-day tour and cannot be selected."),
-              backgroundColor: Colors.red,
-            ),
-          );
+          Fluttertoast.showToast(msg: "This day is part of a multi-day tour and cannot be selected.");
         } else {
           setState(() {}); // Ensure UI updates
         }
@@ -177,13 +170,7 @@ class _TourBookingPageState extends State<TourBookingPage>
 
   void _openTourSelectionModal(int dayIndex) {
     if (unselectableDays.contains(dayIndex + 1)) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-              "You cannot add tours on this day as it is part of a multi-day tour."),
-          backgroundColor: Colors.red,
-        ),
-      );
+      Fluttertoast.showToast(msg: "You cannot add tours on this day as it is part of a multi-day tour.");
       return;
     }
 
@@ -208,13 +195,7 @@ class _TourBookingPageState extends State<TourBookingPage>
             int currentTotalMinutes = totalMinutesPerDay[dayIndex + 1] ?? 0;
 
             if (currentTotalMinutes + newTourDurationMinutes > 480) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content:
-                      Text("Cannot add more than 8 hours of tours per day."),
-                  backgroundColor: Colors.red,
-                ),
-              );
+              Fluttertoast.showToast(msg: "Cannot add more than 8 hours of tours per day.");
               return;
             }
 
@@ -267,19 +248,53 @@ class _TourBookingPageState extends State<TourBookingPage>
       return {
         'day': tour['day'],
         'activity_id': tour['activity_id'],
-        'fixed_tour': tour['fixed_tour'],
+        'fixed_tour': tour['fixed_tour'], 
       };
     }).toList();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('Add Tours'), backgroundColor: Colors.blue),
+    return Container( decoration: BoxDecoration(image: DecorationImage(image: AssetImage('img/departureDealsBG.png'), fit: BoxFit.fill)),
+      child: Scaffold( backgroundColor: Colors.transparent,
+      // appBar: AppBar(leading: IconButton(
+      //       icon: Icon(Icons.arrow_back, color: Colors.white),
+      //       onPressed: () {
+      //         Navigator.pop(context);
+      //       },
+      //     ),
+      //   title: Text('ADD TOUR', style: TextStyle(
+      //           // fontSize: MediaQuery.of(context).size.width * 0.02,
+      //           color: Colors.white),), backgroundColor: Colors.transparent),
       body: Container(
-        color: Colors.white,
+        // color: Colors.white,
         child: Column(
           children: [
+            const SizedBox(height: 60),
+            Row(
+              children: [
+                IconButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  icon: CircleAvatar(
+                    backgroundColor: Colors.grey.withOpacity(0.6),  // Transparent grey background
+                    child: Text(
+                      '<',  // Use "<" symbol
+                      style: TextStyle(
+                        color: Colors.white,  // White text color
+                        fontSize: 24,  // Adjust font size as needed
+                        fontWeight: FontWeight.bold,  // Make the "<" bold if needed
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Text('ADD TOUR',
+                style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Colors.white)
+                )
+              ],
+            ),
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
@@ -299,8 +314,8 @@ class _TourBookingPageState extends State<TourBookingPage>
                         color: isDisabled
                             ? Colors.grey // Grey out the unselectable days
                             : (_tabController.index == index
-                                ? Colors.blue
-                                : Colors.white),
+                                ? Colors.white
+                                : Colors.grey.shade300),
                         border: Border.all(color: Colors.blue),
                         borderRadius: BorderRadius.circular(20),
                       ),
@@ -335,7 +350,7 @@ class _TourBookingPageState extends State<TourBookingPage>
                                     horizontal: 8, vertical: 12),
                                 padding: const EdgeInsets.all(12),
                                 decoration: BoxDecoration(
-                                  color: Colors.blue,
+                                  color: Colors.grey.shade200,
                                   borderRadius: BorderRadius.circular(15),
                                 ),
                                 child: Column(
@@ -365,28 +380,28 @@ class _TourBookingPageState extends State<TourBookingPage>
                                       style: const TextStyle(
                                         fontSize: 18,
                                         fontWeight: FontWeight.bold,
-                                        color: Colors.white,
+                                        color: Colors.black,
                                       ),
                                     ),
                                     Text(
                                       tourForDay['city_name'] ?? '',
                                       style: const TextStyle(
-                                          fontSize: 14, color: Colors.white),
+                                          fontSize: 14, color: Colors.black),
                                     ),
                                     Text(
                                       "Vendor: ${tourForDay['vendor_name'] ?? ''}",
                                       style: const TextStyle(
-                                          fontSize: 14, color: Colors.white70),
+                                          fontSize: 14, color: Colors.black54),
                                     ),
                                     Text(
                                       "Duration: ${tourForDay['duration'] ?? ''}",
                                       style: const TextStyle(
-                                          fontSize: 14, color: Colors.white),
+                                          fontSize: 14, color: Colors.black),
                                     ),
                                     Text(
                                       "Timings: ${tourForDay['timings'] ?? ''}",
                                       style: const TextStyle(
-                                          fontSize: 14, color: Colors.white70),
+                                          fontSize: 14, color: Colors.black87),
                                     ),
                                     const SizedBox(height: 5),
                                     StatefulBuilder(
@@ -412,7 +427,7 @@ class _TourBookingPageState extends State<TourBookingPage>
                                                       : inclusion),
                                               style: const TextStyle(
                                                   fontSize: 12,
-                                                  color: Colors.white70),
+                                                  color: Colors.black),
                                               textAlign: TextAlign.justify,
                                             ),
                                             if (inclusion.length > maxLength)
@@ -428,7 +443,7 @@ class _TourBookingPageState extends State<TourBookingPage>
                                                       ? "Read Less"
                                                       : "Read More",
                                                   style: TextStyle(
-                                                      color: Colors.yellow,
+                                                      color: Colors.black,
                                                       fontWeight:
                                                           FontWeight.bold),
                                                   textAlign: TextAlign.justify,
@@ -447,14 +462,14 @@ class _TourBookingPageState extends State<TourBookingPage>
                                           style: const TextStyle(
                                             fontSize: 20,
                                             fontWeight: FontWeight.bold,
-                                            color: Colors.white,
+                                            color: Colors.red,
                                           ),
                                         ),
                                         tourForDay['fixed_tour'] == "No"
                                             ? ElevatedButton(
                                                 style: ElevatedButton.styleFrom(
                                                     backgroundColor:
-                                                        Colors.red),
+                                                        Color(0xFF0071BC)),
                                                 onPressed: () =>
                                                     _removeSelectedTour(
                                                         index,
@@ -476,7 +491,7 @@ class _TourBookingPageState extends State<TourBookingPage>
                             child: ElevatedButton(
                               onPressed: () => _openTourSelectionModal(index),
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.blue,
+                                backgroundColor: Color(0xFF0071BC),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(8),
                                 ),
@@ -485,7 +500,7 @@ class _TourBookingPageState extends State<TourBookingPage>
                                     double.infinity, 50), // Full width button
                               ),
                               child: Text(
-                                "+ Add Tour",
+                                "Add Tour +",
                                 style: TextStyle(
                                     color: Colors.white, fontSize: 18),
                                 textAlign: TextAlign.center,
@@ -527,8 +542,9 @@ class _TourBookingPageState extends State<TourBookingPage>
               );
             },
             child: responciveButton(
-                text: selectedTours.isEmpty ? 'Skip' : 'Book Now'),
+                text: selectedTours.isEmpty ? 'Skip' : 'Book Now', color: Colors.red,),
           )),
+    ),
     );
   }
 }

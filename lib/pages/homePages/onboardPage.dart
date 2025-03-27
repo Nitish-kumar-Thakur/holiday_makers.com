@@ -1,3 +1,4 @@
+import 'package:HolidayMakers/pages/homePages/mainPage.dart';
 import 'package:flutter/material.dart';
 import 'package:HolidayMakers/pages/homePages/introPage.dart';
 import 'package:HolidayMakers/widgets/appText.dart';
@@ -19,7 +20,7 @@ class _OnboardPageState extends State<OnboardPage> {
     // Navigate to Home Page after setting the flag
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => const IntroPage()),
+      MaterialPageRoute(builder: (context) => const Mainpage()),
     );
   }
 

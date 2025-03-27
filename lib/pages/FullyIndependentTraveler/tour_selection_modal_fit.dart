@@ -25,7 +25,7 @@ class _TourSelectionModalFITState extends State<TourSelectionModalFIT> {
     return Container(
       height: MediaQuery.of(context).size.height * 0.75,
       decoration: BoxDecoration(
-        color: Colors.blue.shade900,
+        color: Colors.white,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
       ),
       child: Column(
@@ -42,11 +42,11 @@ class _TourSelectionModalFITState extends State<TourSelectionModalFIT> {
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: Colors.yellow,
+                    color: Colors.black,
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.close, color: Colors.white),
+                  icon: const Icon(Icons.close, color: Colors.black),
                   onPressed: () => Navigator.pop(context),
                 )
               ],
@@ -59,7 +59,7 @@ class _TourSelectionModalFITState extends State<TourSelectionModalFIT> {
                 ? Center(
               child: Text(
                 "No tours available",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
               ),
             )
                 : ListView.builder(
@@ -74,7 +74,7 @@ class _TourSelectionModalFITState extends State<TourSelectionModalFIT> {
                   margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: Colors.blue,
+                    color: Colors.grey.shade300,
                     borderRadius: BorderRadius.circular(15),
                   ),
                   child: Column(
@@ -100,23 +100,23 @@ class _TourSelectionModalFITState extends State<TourSelectionModalFIT> {
                       const SizedBox(height: 10),
                       Text(
                         tour['service'],
-                        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+                        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
                       ),
                       Text(
                         tour['city_name'],
-                        style: const TextStyle(fontSize: 14, color: Colors.white70),
+                        style: const TextStyle(fontSize: 14, color: Colors.black45),
                       ),
                       Text(
                         "Duration: ${tour['duration']}",
-                        style: const TextStyle(fontSize: 14, color: Colors.white),
+                        style: const TextStyle(fontSize: 14, color: Colors.black),
                       ),
                       Text(
                         "Timings: ${tour['timings']}",
-                        style: const TextStyle(fontSize: 14, color: Colors.white70),
+                        style: const TextStyle(fontSize: 14, color: Colors.black45),
                       ),
                       Text(
                         "Tour Category: ${tour['tour_category']}",
-                        style: const TextStyle(fontSize: 14, color: Colors.white),
+                        style: const TextStyle(fontSize: 14, color: Colors.black),
                       ),
                       // const SizedBox(height: 5),
 
@@ -133,7 +133,7 @@ class _TourSelectionModalFITState extends State<TourSelectionModalFIT> {
                             style: {
                               "body": Style(
                                 fontSize: FontSize(12),
-                                color: Colors.white70,
+                                color: Colors.black,
                                 textAlign: TextAlign.justify,  // Justify the text
                                 margin: Margins.zero,  // Removes extra margins
                                 padding: HtmlPaddings.zero, // Removes extra padding
@@ -149,7 +149,7 @@ class _TourSelectionModalFITState extends State<TourSelectionModalFIT> {
                               },
                               child: Text(
                                 expanded ? "Read Less" : "Read More",
-                                style: const TextStyle(color: Colors.yellow, fontWeight: FontWeight.bold),
+                                style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
                               ),
                             ),
                         ],
@@ -161,17 +161,17 @@ class _TourSelectionModalFITState extends State<TourSelectionModalFIT> {
                         children: [
                           Text(
                             "AED ${tour['Per_totalAmount']} per person",
-                            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+                            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.red),
                           ),
                           ElevatedButton(
-                            style: ElevatedButton.styleFrom(backgroundColor: Colors.yellow),
+                            style: ElevatedButton.styleFrom(backgroundColor: Color(0xFF0071BC)),
                             onPressed: () {
                               widget.onSelectionChanged(tour);
                               Navigator.pop(context);
                               // print(tour.runtimeType);
 
                             },
-                            child: const Text("SELECT", style: TextStyle(color: Colors.black)),
+                            child: const Text("SELECT", style: TextStyle(color: Colors.white)),
                           )
                         ],
                       )

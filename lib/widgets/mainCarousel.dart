@@ -19,6 +19,7 @@ class _MaincarouselState extends State<Maincarousel> {
   Widget build(BuildContext context) {
     return Column(
       children: [
+        SizedBox(height: 15,),
         CarouselSlider.builder(
           itemCount: widget.banner_list.length,
           itemBuilder: (context, index, realIndex) {

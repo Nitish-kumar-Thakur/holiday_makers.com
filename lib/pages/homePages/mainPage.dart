@@ -1,3 +1,4 @@
+import 'package:HolidayMakers/pages/login&signup/Test.dart';
 import 'package:flutter/material.dart';
 import 'package:HolidayMakers/pages/Cruise/CurisesHome.dart';
 import 'package:HolidayMakers/pages/FixedDeparturesPages/departuresHome.dart';
@@ -5,6 +6,7 @@ import 'package:HolidayMakers/pages/homePages/homePage.dart';
 import 'package:HolidayMakers/pages/FullyIndependentTraveler/independentTravelerPage.dart';
 import 'package:HolidayMakers/widgets/bottomNavigationBar.dart';
 import 'package:HolidayMakers/widgets/profile_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Mainpage extends StatefulWidget {
   const Mainpage({super.key});
@@ -16,14 +18,28 @@ class Mainpage extends StatefulWidget {
 class _MainpageState extends State<Mainpage> {
   int _selectedIndex = 0;
   final List<int> _historyStack = [];
+  String firstName = "";
+  List<Widget> _pages = [];
 
-  final List<Widget> _pages = [
-    HomePage(),
-    IndependentTravelerPage(),
-    CurisesHome(),
-    DeparturesHome(),
-    ProfilePage(),
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _loadProfileDetails();
+  }
+
+  Future<void> _loadProfileDetails() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      firstName = prefs.getString("first_name") ?? "";
+      _pages = [
+        HomePage(),
+        IndependentTravelerPage(),
+        CurisesHome(),
+        DeparturesHome(),
+        firstName.trim().isEmpty ? LoginPage(backbutton: true,) : ProfilePage(backbutton: true,),
+      ];
+    });
+  }
 
   void _onItemTapped(int index) {
     if (_selectedIndex != index) {
@@ -42,19 +58,21 @@ class _MainpageState extends State<Mainpage> {
           setState(() {
             _selectedIndex = _historyStack.removeLast();
           });
-          return false; // Prevent app from closing
+          return false;
         }
-        return true; // Allow app exit
+        return true;
       },
       child: Scaffold(
         bottomNavigationBar: BottomNavigationBarPage(
           index: _selectedIndex,
           onTapped: _onItemTapped,
         ),
-        body: IndexedStack(
-          index: _selectedIndex,
-          children: _pages,
-        ),
+        body: _pages.isEmpty
+            ? Center(child: CircularProgressIndicator())
+            : IndexedStack(
+                index: _selectedIndex,
+                children: _pages,
+              ),
       ),
     );
   }

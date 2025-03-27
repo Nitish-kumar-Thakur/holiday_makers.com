@@ -123,13 +123,23 @@ class _DeparturePackageDetailsState extends State<DeparturePackageDetails> {
 
           // Back Button
           Positioned(
-            top: 40,
-            left: 16,
+            top: 50,
+            left: 8,
             child: IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.white),
               onPressed: () {
                 Navigator.pop(context);
               },
+              icon: CircleAvatar(
+                backgroundColor: Colors.grey.withOpacity(0.6),  // Transparent grey background
+                child: Text(
+                  '<',  // Use "<" symbol
+                  style: TextStyle(
+                    color: Colors.white,  // White text color
+                    fontSize: 24,  // Adjust font size as needed
+                    fontWeight: FontWeight.bold,  // Make the "<" bold if needed
+                  ),
+                ),
+              ),
             ),
           ),
 
@@ -172,12 +182,24 @@ class _DeparturePackageDetailsState extends State<DeparturePackageDetails> {
                           ),
                           const SizedBox(height: 4),
                           // Location
-                          Text(
-                            "$cityName, $countryName" ?? "Unknown Location",
-                            style: const TextStyle(
-                              fontSize: 16,
-                              color: Colors.grey,
-                            ),
+                          Row(
+                            children: [
+                              // Location icon
+                              Icon(
+                                Icons.location_on,
+                                color: Color(0xFF0071BC), // Change the icon color as needed
+                                size: 18, // Adjust the icon size if needed
+                              ),
+                              // Text with city and country
+                              SizedBox(width: 8), // Adds space between the icon and the text
+                              Text(
+                                "$cityName, $countryName" ?? "Unknown Location",
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            ],
                           ),
                           const SizedBox(height: 16),
                           // Info Chips
@@ -210,14 +232,16 @@ class _DeparturePackageDetailsState extends State<DeparturePackageDetails> {
                                   Container(
                                     width: double.infinity,
                                     decoration: BoxDecoration(
-                                        color: Colors.grey.shade200),
+                                        color: Colors.grey.shade50,
+                                        borderRadius: BorderRadius.circular(15),
+                                    ),
                                     padding: const EdgeInsets.all(10),
                                     child: Column(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
                                         AppLargeText(
-                                          text: 'INCLUSION',
+                                          text: 'INCLUSIONS',
                                           size: 25,
                                         ),
                                         const SizedBox(height: 10),
@@ -386,7 +410,7 @@ class _DeparturePackageDetailsState extends State<DeparturePackageDetails> {
                                 ? null
                                 : ElevatedButton(
                                     style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.red,
+                                      backgroundColor: Color(0xFF0071BC),
                                       padding: const EdgeInsets.symmetric(
                                         vertical: 13,
                                         horizontal: 80,
@@ -424,7 +448,7 @@ class _DeparturePackageDetailsState extends State<DeparturePackageDetails> {
   Widget _InfoChip({required IconData icon, required String label}) {
     return Row(
       children: [
-        Icon(icon, color: Colors.red, size: 20),
+        Icon(icon, color: Color(0xFF0071BC), size: 20),
         const SizedBox(width: 5),
         Text(
           label,
@@ -519,22 +543,28 @@ class _DeparturePackageDetailsState extends State<DeparturePackageDetails> {
       width: 75,
       height: 70,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Color(0xFF009EE2).withOpacity(0.2),
         borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: Color(0xFF009EE2),  // Set border color to #009EE2
+          width: 2,  // You can adjust the width of the border here
+        ),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, size: 30, color: Colors.red),
+          Icon(icon, size: 30, color: Colors.black),  // Change icon color to black
           const SizedBox(height: 2),
           Text(
             label,
             style: TextStyle(
-                fontSize: MediaQuery.of(context).size.width * 0.02,
-                color: Colors.black),
+              fontSize: MediaQuery.of(context).size.width * 0.02,
+              color: Colors.black,  // Change text color to black
+            ),
           ),
         ],
       ),
     );
+
   }
 }

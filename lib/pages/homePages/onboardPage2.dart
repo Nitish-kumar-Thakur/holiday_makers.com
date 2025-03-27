@@ -1,3 +1,4 @@
+import 'package:HolidayMakers/pages/login&signup/Test.dart';
 import 'package:flutter/material.dart';
 import 'package:HolidayMakers/pages/homePages/introPage.dart';
 import 'package:HolidayMakers/widgets/appText.dart';
@@ -18,7 +19,7 @@ class _Onboardpage2State extends State<Onboardpage2> {
 
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => const IntroPage()),
+      MaterialPageRoute(builder: (context) => const LoginPage()),
     );
   }
 

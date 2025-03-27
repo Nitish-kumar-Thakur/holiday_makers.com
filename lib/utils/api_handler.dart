@@ -1096,4 +1096,27 @@ class APIHandler {
       };
     }
   }
+    static Future<Map<String, dynamic>> validateVoucher(Map<String, dynamic> body) async {
+    final Uri url = Uri.parse('https://b2cuat.tikipopi.com/index.php/holiday_api/get_voucher_code_details');
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(body),
+      );
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = jsonDecode(response.body);
+        return data;
+      } else {
+        print(response.statusCode);
+        throw Exception("Server error: ${response.statusCode}");
+      }
+    } catch (e) {
+      return {
+        "status": false,
+        "message": "Error fetching voucher details",
+        "data": {}
+      };
+    }
+  }
 }

@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:HolidayMakers/utils/api_handler.dart';
 import 'package:HolidayMakers/widgets/appLargetext.dart';
@@ -210,6 +211,16 @@ class _IndependentTravelerPageState extends State<IndependentTravelerPage>
     super.dispose();
   }
 
+  Widget _buildTopCurve() {
+    return Padding(
+      padding: const EdgeInsets.only(top: 50), // 20% of the screen height
+      child: CustomPaint(
+        size: Size(double.infinity, 0), // Height of the curved area
+        painter: CirclePainter(radius: 200),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -228,175 +239,242 @@ class _IndependentTravelerPageState extends State<IndependentTravelerPage>
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.all(25),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                AppLargeText(
-                    text: 'Fully Independent Traveler',
-                    size: 24,
-                    color: Colors.black),
-                const SizedBox(height: 20),
-                Dropdownwidget(
-                  selectedValue: selectedCity,
-                  items: cities,
-                  hintText: "Select City",
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      destinationLoading = true;
-                      selectedCity = newValue;
-                      selectedDestination = null;
-                    });
-                    if (newValue != null) {
-                      fetchDestinations(newValue);
-                      selectedCity = newValue;
-                    }
-                  },
-                ),
-                const SizedBox(height: 20),
-                AbsorbPointer(
-                  absorbing:
-                      destinationLoading, // Prevents interaction when loading
-                  child: Dropdownwidget(
-                    selectedValue: selectedDestination,
-                    items: destinations,
-                    hintText: "Select Destination",
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        selectedDestination = newValue;
-                        loadBlockedDates(selectedCity.toString(),
-                            selectedDestination.toString());
-                      });
-                    },
+            // padding: const EdgeInsets.all(25),
+            padding: const EdgeInsets.symmetric(horizontal: 25),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildTopCurve(),
+                  // AppLargeText(
+                  //   text: 'Fully Independent Traveler'.toUpperCase(),
+                  //   size: 24,
+                  //   color: Colors.white,
+                  // ),
+                  Text('Fully Independent Traveler'.toUpperCase(),
+                      style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
+                      textAlign: TextAlign.center,
                   ),
-                ),
-                const SizedBox(height: 25),
-                Container(
-                  height: 58,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade200,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(10),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.calendar_month,
-                              size: 24,
+                  const SizedBox(height: 30),
+                  // Wrap the contents in a container with background image and box shadow
+                  Container(
+                    height: 620, // Increased height of the container (adjust as needed)
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20), // Rounded corners for the container
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(1), // Shadow color
+                          offset: Offset(0, 4), // Shadow offset (vertical displacement)
+                          blurRadius: 20, // Softens the shadow
+                          spreadRadius: 1, // Extends the shadow
+                        ),
+                      ],
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(20), // Ensure the border radius applies to the child as well
+                      child: Stack(
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                              image: DecorationImage(
+                                image: AssetImage('img/fitFormBG.png'), // Path to your image
+                                fit: BoxFit.cover, // This will make the image cover the entire container
+                              ),
                             ),
-                            SizedBox(
-                              width: 20,
-                            ),
-                            Column(
+                          ),
+                          // The rest of the content inside the container
+                          Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                AppLargeText(
-                                  text: 'TRAVEL DATE',
-                                  color: Colors.black,
-                                  size: 14,
-                                ),
-                                Calendarwidget(
-                                  blockedDates: blockedDates,
-                                  onDateSelected: (DateTime? newValue) {
+                                const SizedBox(height: 10),
+                                Dropdownwidget(
+                                  txtcolor: Colors.white,
+                                  bgColor: Colors.white,
+                                  selectedValue: selectedCity,
+                                  items: cities,
+                                  hintText: "Select City".toUpperCase(),
+                                  onChanged: (String? newValue) {
                                     setState(() {
-                                      fromDate = DateFormat('dd-MM-yyyy')
-                                          .format(newValue!);
+                                      destinationLoading = true;
+                                      selectedCity = newValue;
+                                      selectedDestination = null;
+                                    });
+                                    if (newValue != null) {
+                                      fetchDestinations(newValue);
+                                      selectedCity = newValue;
+                                    }
+                                  },
+                                ),
+                                const SizedBox(height: 40),
+                                AbsorbPointer(
+                                  absorbing: destinationLoading, // Prevents interaction when loading
+                                  child: Dropdownwidget(
+                                    txtcolor: Colors.white,
+                                    bgColor: Colors.white,
+                                    selectedValue: selectedDestination,
+                                    items: destinations,
+                                    hintText: "Select Destination".toUpperCase(),
+                                    onChanged: (String? newValue) {
+                                      setState(() {
+                                        selectedDestination = newValue;
+                                        loadBlockedDates(
+                                          selectedCity.toString(),
+                                          selectedDestination.toString(),
+                                        );
+                                      });
+                                    },
+                                  ),
+                                ),
+                                const SizedBox(height: 40),
+                                Container(
+                                  height: 58,
+                                  width: double.infinity,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(10),
+                                    child: Row(
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Icon(
+                                              Icons.calendar_month,
+                                              size: 24,
+                                            ),
+                                            SizedBox(
+                                              width: 20,
+                                            ),
+                                            Column(
+                                              children: [
+                                                AppLargeText(
+                                                  text: 'TRAVEL DATE',
+                                                  color: Colors.black,
+                                                  size: 14,
+                                                ),
+                                                Calendarwidget(
+                                                  blockedDates: blockedDates,
+                                                  onDateSelected: (DateTime? newValue) {
+                                                    setState(() {
+                                                      fromDate = DateFormat('dd-MM-yyyy')
+                                                          .format(newValue!);
+                                                    });
+                                                  },
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                        Container(
+                                          height: 30,
+                                          width: 100,
+                                          decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            borderRadius: BorderRadius.circular(20),
+                                            border: Border.all(width: 1, color: Colors.grey),
+                                          ),
+                                          child: DropdownButtonHideUnderline(
+                                            child: DropdownButton<String>(
+                                              value: stayingDay, // Allow null values
+                                              hint: Center(
+                                                child: AppText(
+                                                  text: "Select",
+                                                  color: Colors.black,
+                                                ),
+                                              ), // Default hint text
+                                              items: List.generate(60, (index) {
+                                                String item = (index + 1)
+                                                    .toString(); // Generate numbers from 1 to 90
+                                                return DropdownMenuItem<String>(
+                                                  value: "$item night",
+                                                  child: Center(child: Text("$item night")),
+                                                );
+                                              }),
+                                              onChanged: (String? newValue) {
+                                                setState(() {
+                                                  stayingDay = newValue; // Assign value directly
+                                                });
+                                              },
+                                              icon: SizedBox.shrink(),
+                                              isExpanded: true,
+                                              borderRadius: BorderRadius.circular(20),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 40),
+                                Travelerdrawer(
+                                  onSelectionChanged: (Map<String, dynamic> selection) {
+                                    setState(() {
+                                      selectedRoom = selection['totalRooms'].toString();
+                                      selectedAdult = selection['totalAdults'].toString();
+                                      selectedChild = selection['totalChildren'].toString();
+                                      childrenAge = selection['childrenAges'];
+                                      totalRoomsdata = selection["totalData"];
                                     });
                                   },
                                 ),
+                                const SizedBox(height: 50),
+                                GestureDetector(
+                                  onTap: searchHotels,
+                                  child: Align(
+                                    alignment: Alignment.center,
+                                    child: responciveButton(text: 'SEARCH'),
+                                  ),
+                                ),
+                                const SizedBox(height: 20),
+                                if (errorMessage != null)
+                                  FadeTransition(
+                                    opacity: _fadeAnimation,
+                                    child: Center(
+                                      child: Text(
+                                        errorMessage!,
+                                        style: TextStyle(color: Colors.red.shade900, fontSize: 20, fontWeight: FontWeight.bold),
+                                      ),
+                                    ),
+                                  ),
                               ],
                             ),
-                          ],
-                        ),
-                        Container(
-                          height: 30,
-                          width: 100,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(width: 1, color: Colors.grey),
                           ),
-                          child: DropdownButtonHideUnderline(
-                            child: DropdownButton<String>(
-                              value: stayingDay, // Allow null values
-                              hint: Center(
-                                child: AppText(
-                                  text: "Select",
-                                  color: Colors.black,
-                                ),
-                              ), // Default hint text
-                              items: List.generate(60, (index) {
-                                String item = (index + 1)
-                                    .toString(); // Generate numbers from 1 to 90
-                                return DropdownMenuItem<String>(
-                                  value: "$item night",
-                                  child: Center(child: Text("$item night")),
-                                );
-                              }),
-                              onChanged: (String? newValue) {
-                                setState(() {
-                                  stayingDay =
-                                      newValue; // Assign value directly
-                                });
-                              },
-                              icon: SizedBox.shrink(),
-                              isExpanded: true,
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                          ),
-                        ),
-
-                        // Calendarwidget(
-                        //   onDateSelected: (selectedDate) {
-                        //     setState(() {
-                        //       returnDate = selectedDate.toString();
-                        //     });
-                        //   },
-                        // ),
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 25),
-                Travelerdrawer(
-                  onSelectionChanged: (Map<String, dynamic> selection) {
-                    setState(() {
-                      selectedRoom = selection['totalRooms'].toString();
-                      selectedAdult = selection['totalAdults'].toString();
-                      selectedChild = selection['totalChildren'].toString();
-                      childrenAge = selection['childrenAges'];
-                      totalRoomsdata = selection["totalData"];
-                    });
-                  },
-                ),
-                const SizedBox(height: 30),
-                GestureDetector(
-                  onTap: searchHotels,
-                  child: Align(
-                      alignment: Alignment.center,
-                      child: responciveButton(text: 'SEARCH')),
-                ),
-                const SizedBox(height: 20),
-                if (errorMessage != null)
-                  FadeTransition(
-                    opacity: _fadeAnimation,
-                    child: Center(
-                      child: Text(
-                        errorMessage!,
-                        style: TextStyle(color: Colors.red, fontSize: 16),
+                        ],
                       ),
                     ),
                   ),
-              ],
-            ),
+                ],
+              ),
           ),
         ),
       ),
     );
+  }
+}
+
+class CirclePainter extends CustomPainter {
+  final double radius;
+
+  CirclePainter({required this.radius});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    Paint paint = Paint()..style = PaintingStyle.fill;
+
+    // We can use FontAwesome icon positioning logic here.
+    double centerX = size.width / 2;
+
+    // Draw the largest circle (dark blue)
+    paint.color = Color(0xFF0D939E); // Dark blue
+    canvas.drawCircle(Offset(centerX, radius - 600), radius + 400, paint);
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) {
+    return false;
   }
 }

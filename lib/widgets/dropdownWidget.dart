@@ -6,7 +6,8 @@ class Dropdownwidget extends StatelessWidget {
   final List<Map<String, String>> items;
   final String hintText;
   final ValueChanged<String?> onChanged;
-  
+  final Color txtcolor;
+  final Color bgColor;
 
   const Dropdownwidget({
     Key? key,
@@ -14,6 +15,8 @@ class Dropdownwidget extends StatelessWidget {
     required this.items,
     required this.hintText,
     required this.onChanged,
+    this.bgColor= const Color(0xFFF2F2F2),
+    this.txtcolor = Colors.black
   }) : super(key: key);
 
   @override
@@ -30,7 +33,7 @@ class Dropdownwidget extends StatelessWidget {
                 child: Text(
                   hintText,
                   style: TextStyle(
-                    color: Colors.black,
+                    color: txtcolor,
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
@@ -50,18 +53,18 @@ class Dropdownwidget extends StatelessWidget {
                     prefixIcon: Icon(Icons.location_on, size: 30),
                     contentPadding: EdgeInsets.symmetric(horizontal: 16),
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(10),
                       borderSide: BorderSide(color: Colors.white, width: 1),
                     ),
                     enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(10),
                       borderSide: BorderSide(color: Colors.white, width: 1),
                     ),
                     focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(10),
                       borderSide: BorderSide(color: Colors.grey, width: 1),
                     ),
-                    fillColor: Colors.grey.shade200,
+                    fillColor: bgColor,
                     filled: true,
                   ),
                 ),

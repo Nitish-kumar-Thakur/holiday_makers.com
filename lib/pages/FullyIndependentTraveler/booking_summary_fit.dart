@@ -248,53 +248,96 @@ class _BookingSummaryFITState extends State<BookingSummaryFIT> {
   //   );
   // }
 
+  Widget _buildTopCurve() {
+    return Padding(
+      padding: const EdgeInsets.only(top: 50), // 20% of the screen height
+      child: CustomPaint(
+        size: Size(double.infinity, 0), // Height of the curved area
+        painter: CirclePainter(radius: 200),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final double screenWidth = MediaQuery.of(context).size.width;
     final double fontSize = screenWidth * 0.035;
 
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        backgroundColor: Colors.white,
-        elevation: 0,
-        title: const Text(
-          'Booking Summary',
-          style: TextStyle(color: Colors.black),
-        ),
-        centerTitle: true,
-      ),
+      // appBar: AppBar(
+      //   leading: IconButton(
+      //     icon: const Icon(Icons.arrow_back, color: Colors.black),
+      //     onPressed: () {
+      //       Navigator.pop(context);
+      //     },
+      //   ),
+      //   backgroundColor: Colors.white,
+      //   elevation: 0,
+      //   title: const Text(
+      //     'Booking Summary',
+      //     style: TextStyle(color: Colors.black),
+      //   ),
+      //   centerTitle: true,
+      // ),
       backgroundColor: Colors.white,
       body: isLoading
           ? _buildShimmerEffect()
           : SingleChildScrollView(
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.04),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+              child: Column(
                   children: [
-                    // _buildSection('PACKAGE DETAILS', packageDetails, fontSize),
-                    _buildFlightDetailsSection(
-                        'FLIGHT DETAILS', flightDetails, fontSize),
-                    tourList.isEmpty
-                        ? SizedBox()
-                        : _buildtourDetailsSection(
-                            "TOUR DETAILS", tourList, fontSize),
-                    _buildSection('HOTEL DETAILS', hotelDetails, fontSize),
-                    _buildSection(
-                        'TRANSFER DETAILS', transferDetails, fontSize),
-                    _buildSection(
-                        'TRAVEL INSURANCE DETAILS', insuranceDetails, fontSize),
-                    _buildPriceSection('PRICE DETAILS', priceDetails, fontSize),
-                  ],
-                ),
+                    _buildTopCurve(),
+                    const SizedBox(height: 10),
+                    Row(
+                      children: [
+                        IconButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          icon: CircleAvatar(
+                            backgroundColor: Colors.grey.withOpacity(0.6),  // Transparent grey background
+                            child: Text(
+                              '<',  // Use "<" symbol
+                              style: TextStyle(
+                                color: Colors.white,  // White text color
+                                fontSize: 24,  // Adjust font size as needed
+                                fontWeight: FontWeight.bold,  // Make the "<" bold if needed
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Text('BOOKING SUMMARY',
+                            style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Colors.white)
+                        )
+                      ],
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.04),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(height: 40),
+                          // _buildSection('PACKAGE DETAILS', packageDetails, fontSize),
+                          _buildFlightDetailsSection('FLIGHT DETAILS', flightDetails, fontSize),
+                          const SizedBox(height: 20),
+                          tourList.isEmpty
+                              ? SizedBox()
+                              : _buildtourDetailsSection("TOUR DETAILS", tourList, fontSize),
+                          const SizedBox(height: 20),
+                          _buildSection('HOTEL DETAILS', hotelDetails, fontSize),
+                          const SizedBox(height: 20),
+                          _buildSection('TRANSFER DETAILS', transferDetails, fontSize),
+                          const SizedBox(height: 20),
+                          _buildSection('TRAVEL INSURANCE DETAILS', insuranceDetails, fontSize),
+                          const SizedBox(height: 20),
+                          _buildPriceSection('PRICE DETAILS', priceDetails, fontSize),
+                          const SizedBox(height: 20),
+                        ],
+                      ),
+                    ),
+                  ]
               ),
-            ),
+          ),
       bottomNavigationBar: isLoading
           ? null
           : Padding(
@@ -315,27 +358,37 @@ class _BookingSummaryFITState extends State<BookingSummaryFIT> {
     );
   }
 
-  Widget _buildFlightDetailsSection(
-      String title, List<Map<String, dynamic>> details, double fontSize) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: TextStyle(
-            fontSize: fontSize * 1.3,
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-          ),
+  Widget _buildFlightDetailsSection(String title, List<Map<String, dynamic>> details, double fontSize) {
+    return Card(
+      color: Colors.white, // White background for the card
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8), // Rounded corners for the card
+      ),
+      elevation: 4, // Shadow effect for the card
+      child: Padding(
+        padding: const EdgeInsets.all(16.0), // Padding around the content
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: fontSize * 1.3,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+            ),
+            const Divider(color: Colors.grey),
+            const SizedBox(height: 15),
+            Column(
+              children: details.map((flight) {
+                return _buildFlightCard(flight, fontSize);
+              }).toList(),
+            ),
+            const SizedBox(height: 10),
+          ],
         ),
-        const SizedBox(height: 10),
-        Column(
-          children: details.map((flight) {
-            return _buildFlightCard(flight, fontSize);
-          }).toList(),
-        ),
-        const SizedBox(height: 10),
-      ],
+      ),
     );
   }
 
@@ -344,12 +397,13 @@ class _BookingSummaryFITState extends State<BookingSummaryFIT> {
       padding: EdgeInsets.all(fontSize * 0.7),
       margin: const EdgeInsets.only(bottom: 10),
       decoration: BoxDecoration(
-        color: Colors.grey.shade200,
+        color: Colors.grey.shade50,
         borderRadius: BorderRadius.circular(10),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Flight type (Departure or Arrival)
           Row(
             children: [
               Icon(
@@ -501,68 +555,76 @@ class _BookingSummaryFITState extends State<BookingSummaryFIT> {
   //   );
   // }
 
-  Widget _buildSection(
-      String title, List<Map<String, dynamic>> details, double fontSize) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: TextStyle(
-            fontSize: fontSize * 1.3,
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-          ),
-        ),
-        const SizedBox(height: 10),
-        Column(
-          children: List.generate(
-            (details.length / 2).ceil(), // Divide into rows
-            (index) {
-              bool isLastOdd =
-                  details.length % 2 != 0 && index == details.length ~/ 2;
-              return Column(
-                children: [
-                  IntrinsicHeight(
-                    // This ensures both boxes in the row will have equal height
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: _buildDetailBox(
-                            details[index * 2]['title']!,
-                            details[index * 2]['value']!,
-                            fontSize,
-                          ),
-                        ),
-                        if (!isLastOdd) ...[
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: _buildDetailBox(
-                              details[index * 2 + 1]['title']!,
-                              details[index * 2 + 1]['value']!,
-                              fontSize,
+  Widget _buildSection(String title, List<Map<String, dynamic>> details, double fontSize) {
+    return Card(
+      color: Colors.white, // White background for the card
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8), // Rounded corners for the card
+      ),
+      elevation: 4, // Shadow effect for the card
+      child: Padding(
+        padding: const EdgeInsets.all(16.0), // Padding around the content
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: fontSize * 1.3,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+            ),
+            Column(
+              children: List.generate(
+                (details.length / 2).ceil(), // Divide into rows
+                    (index) {
+                  bool isLastOdd = details.length % 2 != 0 && index == details.length ~/ 2;
+                  return Column(
+                    children: [
+                      const Divider(color: Colors.grey), // Divider before each row
+                      const SizedBox(height: 10),
+                      IntrinsicHeight(
+                        // This ensures both boxes in the row will have equal height
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: _buildDetailBox(
+                                details[index * 2]['title']!,
+                                details[index * 2]['value']!,
+                                fontSize,
+                              ),
                             ),
-                          ),
-                        ],
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 10), // Space after each row
-                ],
-              );
-            },
-          ),
+                            if (!isLastOdd) ...[
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: _buildDetailBox(
+                                  details[index * 2 + 1]['title']!,
+                                  details[index * 2 + 1]['value']!,
+                                  fontSize,
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 10), // Space after each row
+                    ],
+                  );
+                },
+              ),
+            ),
+          ],
         ),
-        const SizedBox(height: 10),
-      ],
+      ),
     );
   }
 
   Widget _buildDetailBox(String title, String value, double fontSize) {
     return Container(
-      padding: EdgeInsets.all(fontSize * 0.5),
+      padding: EdgeInsets.all(fontSize * 0.7),
       decoration: BoxDecoration(
-        color: Colors.grey.shade200,
+        color: Colors.grey.shade50,
         borderRadius: BorderRadius.circular(8),
       ),
       child: Column(
@@ -590,60 +652,69 @@ class _BookingSummaryFITState extends State<BookingSummaryFIT> {
     );
   }
 
-  Widget _buildPriceSection(
-      String title, List<Map<String, dynamic>> details, double fontSize) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: TextStyle(
-            fontSize: fontSize * 1.3,
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-          ),
-        ),
-        const SizedBox(height: 10),
-        Column(
-          children: List.generate(
-            (details.length / 2).ceil(), // Divide into rows
-            (index) {
-              bool isLastOdd =
-                  details.length % 2 != 0 && index == details.length ~/ 2;
-              return Column(
-                children: [
-                  IntrinsicHeight(
-                    // This ensures both boxes in the row will have equal height
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: _buildPriceDetailBox(
-                            details[index * 2]['title']!,
-                            details[index * 2]['value']!,
-                            fontSize,
-                          ),
-                        ),
-                        if (!isLastOdd) ...[
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: _buildPriceDetailBox(
-                              details[index * 2 + 1]['title']!,
-                              details[index * 2 + 1]['value']!,
-                              fontSize,
+  Widget _buildPriceSection(String title, List<Map<String, dynamic>> details, double fontSize) {
+    return Card(
+      color: Colors.white, // White background for the card
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8), // Rounded corners for the card
+      ),
+      elevation: 4, // Shadow effect for the card
+      child: Padding(
+        padding: const EdgeInsets.all(16.0), // Padding around the content
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: fontSize * 1.3,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+            ),
+            // const SizedBox(height: 10),
+            Column(
+              children: List.generate(
+                (details.length / 2).ceil(), // Divide into rows
+                    (index) {
+                  bool isLastOdd = details.length % 2 != 0 && index == details.length ~/ 2;
+                  return Column(
+                    children: [
+                      const Divider(color: Colors.grey), // Divider before each row
+                      const SizedBox(height: 10),
+                      IntrinsicHeight(
+                        // This ensures both boxes in the row will have equal height
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: _buildPriceDetailBox(
+                                details[index * 2]['title']!,
+                                details[index * 2]['value']!,
+                                fontSize,
+                              ),
                             ),
-                          ),
-                        ],
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 10), // Space after each row
-                ],
-              );
-            },
-          ),
+                            if (!isLastOdd) ...[
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: _buildPriceDetailBox(
+                                  details[index * 2 + 1]['title']!,
+                                  details[index * 2 + 1]['value']!,
+                                  fontSize,
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 10), // Space after each row
+                    ],
+                  );
+                },
+              ),
+            ),
+          ],
         ),
-        const SizedBox(height: 10),
-      ],
+      ),
     );
   }
 
@@ -651,7 +722,7 @@ class _BookingSummaryFITState extends State<BookingSummaryFIT> {
     return Container(
       padding: EdgeInsets.all(fontSize * 0.7),
       decoration: BoxDecoration(
-        color: Colors.grey.shade200,
+        color: Colors.grey.shade50,
         borderRadius: BorderRadius.circular(8),
       ),
       child: Column(
@@ -679,59 +750,72 @@ class _BookingSummaryFITState extends State<BookingSummaryFIT> {
     );
   }
 
-  Widget _buildtourDetailsSection(
-      String title, List<Map<String, dynamic>> tour, double fontSize) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: TextStyle(
-            fontSize: fontSize * 1.3,
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-          ),
+  Widget _buildtourDetailsSection(String title, List<Map<String, dynamic>> tour, double fontSize) {
+    return Card(
+      color: Colors.white, // White background for the card
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8), // Rounded corners for the card
+      ),
+      elevation: 4, // Shadow effect for the card
+      child: Padding(
+        padding: const EdgeInsets.all(16.0), // Padding around the content
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: fontSize * 1.3,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+            ),
+            // const SizedBox(height: 10),
+            Column(
+              children: tour.map((tour) {
+                return _buildTourCard(tour, fontSize);
+              }).toList(),
+            ),
+          ],
         ),
-        const SizedBox(height: 10),
-        Column(
-          children: tour.map((tour) {
-            return _buildTourCard(tour, fontSize);
-          }).toList(),
-        ),
-        const SizedBox(height: 10),
-      ],
+      ),
     );
   }
 
   Widget _buildTourCard(Map<dynamic, dynamic> tour, double fontSize) {
-    return Container(
-      padding: EdgeInsets.all(fontSize * 0.7),
-      margin: const EdgeInsets.only(bottom: 10),
-      decoration: BoxDecoration(
-        color: Colors.grey.shade200,
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          SizedBox(
-            width:
-                MediaQuery.of(context).size.width * 0.4, // 40% of screen width
-            child: Text(
-              "Day ${tour['day'] ?? 'N/A'}: ${tour['title'] ?? 'N/A'}",
-              style: TextStyle(
-                fontSize: fontSize,
+    return Column(
+      children: [
+        const Divider(color: Colors.grey), // Divider between each tour card
+        const SizedBox(height: 15),
+        Container(
+          padding: EdgeInsets.all(fontSize * 0.7),
+          // margin: const EdgeInsets.only(bottom: 2),
+          decoration: BoxDecoration(
+            color: Colors.grey.shade50,
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              SizedBox(
+                width: MediaQuery.of(context).size.width * 0.4, // 40% of screen width
+                child: Text(
+                  "Day ${tour['day'] ?? 'N/A'}: ${tour['title'] ?? 'N/A'}",
+                  style: TextStyle(
+                    fontSize: fontSize,
+                  ),
+                ),
               ),
-            ),
+              Text(
+                "Duration ${tour['duration'] ?? "N/A"}",
+                style: TextStyle(
+                  fontSize: fontSize,
+                ),
+              ),
+            ],
           ),
-          Text(
-            "Duration ${tour['duration'] ?? "N/A"}",
-            style: TextStyle(
-              fontSize: fontSize,
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -858,5 +942,28 @@ class _BookingSummaryFITState extends State<BookingSummaryFIT> {
         ),
       ),
     );
+  }
+}
+
+class CirclePainter extends CustomPainter {
+  final double radius;
+
+  CirclePainter({required this.radius});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    Paint paint = Paint()..style = PaintingStyle.fill;
+
+    // We can use FontAwesome icon positioning logic here.
+    double centerX = size.width / 2;
+
+    // Draw the largest circle (dark blue)
+    paint.color = Color(0xFF0D939E);
+    canvas.drawCircle(Offset(centerX, radius - 600), radius + 400, paint);
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) {
+    return false;
   }
 }

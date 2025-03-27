@@ -29,10 +29,10 @@ class _HotelsAccommodationState extends State<HotelsAccommodation> {
 
   @override
   void initState() {
-    print("@@@@@@@@@@@@@@@@Nitish Thakur@@@@@@@@@@@@@@@@");
-    print(widget.packageData["dep_date"]);
-    print(widget.packageData["package_id"]);
-    print("@@@@@@@@@@@@@@@@Nitish Thakur@@@@@@@@@@@@@@@@");
+    // print("@@@@@@@@@@@@@@@@Nitish Thakur@@@@@@@@@@@@@@@@");
+    // print(widget.packageData["dep_date"]);
+    // print(widget.packageData["package_id"]);
+    // print("@@@@@@@@@@@@@@@@Nitish Thakur@@@@@@@@@@@@@@@@");
 
     super.initState();
     Future.delayed(const Duration(milliseconds: 800), () {
@@ -68,6 +68,16 @@ class _HotelsAccommodationState extends State<HotelsAccommodation> {
     }
   }
 
+  Widget _buildTopCurve() {
+    return Padding(
+      padding: const EdgeInsets.only(top: 30), // 20% of the screen height
+      child: CustomPaint(
+        size: Size(double.infinity, 0), // Height of the curved area
+        painter: CirclePainter(radius: 200),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     List<Map<String, dynamic>> flattenedHotelList = [];
@@ -79,23 +89,49 @@ class _HotelsAccommodationState extends State<HotelsAccommodation> {
     });
 
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        leading: IconButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          icon: Icon(Icons.arrow_back),
-        ),
-        title: AppLargeText(
-          text: 'Accommodation',
-          size: 24,
-        ),
-      ),
+      // appBar: AppBar(
+      //   backgroundColor: Colors.white,
+      //   leading: IconButton(
+      //     onPressed: () {
+      //       Navigator.pop(context);
+      //     },
+      //     icon: Icon(Icons.arrow_back),
+      //   ),
+      //   title: AppLargeText(
+      //     text: 'Accommodation',
+      //     size: 24,
+      //   ),
+      // ),
       body: Container(
         color: Colors.white,
         child: Column(
           children: [
+            _buildTopCurve(),
+            const SizedBox(height: 30),
+            Row(
+              children: [
+                IconButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  icon: CircleAvatar(
+                    backgroundColor: Colors.grey.withOpacity(0.6),  // Transparent grey background
+                    child: Text(
+                      '<',  // Use "<" symbol
+                      style: TextStyle(
+                        color: Colors.white,  // White text color
+                        fontSize: 24,  // Adjust font size as needed
+                        fontWeight: FontWeight.bold,  // Make the "<" bold if needed
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Text('HOTELS',
+                style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Colors.white)
+                )
+              ],
+            ),
             Expanded(
               child: isLoading
                   ? const HotelCardShimmer()
@@ -103,7 +139,7 @@ class _HotelsAccommodationState extends State<HotelsAccommodation> {
                       itemCount: flattenedHotelList.length,
                       itemBuilder: (_, index) {
                         return Padding(
-                          padding: const EdgeInsets.all(8.0),
+                          padding: const EdgeInsets.only(left: 8, right: 8, bottom: 12),
                           child: isLoading
                               ? const HotelCardShimmer()
                               : HotelCard(
@@ -189,8 +225,9 @@ class _HotelCardState extends State<HotelCard> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final String roomType = widget.hotel["room_category"];
-    final String mealType = widget.hotel["meal_plan"];
+    final String roomType = widget.hotel["room_category"] ?? 'N/A';
+    final String mealType = widget.hotel["meal_plan"] ?? 'N/A';
+    final String occupancy = widget.hotel["occupacy"] ?? 'N/A';
     final String price = widget.hotel["total_price"].toString();
     final int star = int.parse(widget.hotel["rating"] ?? 0);
 
@@ -202,84 +239,159 @@ class _HotelCardState extends State<HotelCard> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          ClipRRect(
-            borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
-            child: Image.network(
-              widget.hotel["image"],
-              fit: BoxFit.cover,
-              width: screenWidth,
-            ),
+          // Use Stack to layer the text over the image
+          Stack(
+            children: [
+              // Image widget
+              ClipRRect(
+                borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
+                child: Image.network(
+                  widget.hotel["image"],
+                  fit: BoxFit.cover,
+                  width: screenWidth,
+                  // height: screenWidth * 0.6, // Adjust the height of the image as needed
+                ),
+              ),
+              // Positioned text for hotel name (bottom left)
+              Positioned(
+                bottom: 10,
+                left: 10,
+                child: Text(
+                  widget.hotel["hotel"].toUpperCase(),
+                  style: TextStyle(
+                    fontSize: screenWidth * 0.05, // Adjust size as needed
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white, // White text for visibility on dark backgrounds
+                  ),
+                ),
+              ),
+              // Positioned stars for ratings (bottom right)
+              Positioned(
+                bottom: 10,
+                right: 10,
+                child: Container(
+                  // decoration: BoxDecoration(
+                  //   color: Colors.grey[200],  // Set the background color to grey
+                  //   borderRadius: BorderRadius.circular(12),  // Set the border radius
+                  // ),
+                  padding: EdgeInsets.all(3),  // Optional padding around the stars
+                  child: Row(
+                    children: List.generate(star, (index) {
+                      return Icon(
+                        Icons.star,
+                        color: Colors.amber,
+                        size: screenWidth * 0.05, // Adjust size as needed
+                      );
+                    }),
+                  ),
+                ),
+              ),
+            ],
           ),
+          // Content below the image
           Padding(
             padding: EdgeInsets.all(screenWidth * 0.04),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(
-                          width: 200,
-                          child: Text(
-                            widget.hotel["hotel"],
-                            style: TextStyle(
-                              fontSize: screenWidth * 0.035,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
+                // Left side: City and Room Details
+                Expanded(
+                  flex: 2,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // City
+                      Text(
+                        widget.hotel["city"],
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: screenWidth * 0.04,
+                          fontWeight: FontWeight.bold,
                         ),
-                        SizedBox(height: 4),
-                        Text(
-                          widget.hotel["city"],
-                          style: TextStyle(
-                            color: Colors.grey[600],
-                            fontSize: screenWidth * 0.035,
-                          ),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      children: List.generate(star, (index) {
-                        return Icon(
-                          Icons.star,
-                          color: Colors.amber,
-                          size: screenWidth * 0.035,
-                        );
-                      }),
-                    ),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          '• Room Type: $roomType',
-                          style: TextStyle(
-                              fontSize: screenWidth * 0.03, height: 1.5),
-                        ),
-                        Text(
-                          '• Room Occupancy: Double or Twin',
-                          style: TextStyle(
-                              fontSize: screenWidth * 0.03, height: 1.5),
-                        ),
-                        Text(
-                          '• Meals Plan: $mealType',
-                          style: TextStyle(
-                              fontSize: screenWidth * 0.03, height: 1.5),
-                        ),
-                      ],
-                    ),
-                    Align(
-                      alignment: Alignment.topLeft,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
+                      ),
+                      SizedBox(height: screenWidth * 0.02),
+                      // Room Details
+                      Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Room Type
+                          Row(
+                            children: [
+                              Text(
+                                '•', // Dot
+                                style: TextStyle(
+                                  color: Colors.red, // Red dot color
+                                  fontSize: screenWidth * 0.035,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              SizedBox(width: 5),
+                              Text(
+                                'Room Type: $roomType',
+                                style: TextStyle(
+                                  fontSize: screenWidth * 0.03,
+                                  height: 1.5,
+                                ),
+                              ),
+                            ],
+                          ),
+                          // Room Occupancy
+                          Row(
+                            children: [
+                              Text(
+                                '•', // Dot
+                                style: TextStyle(
+                                  color: Colors.red, // Red dot color
+                                  fontSize: screenWidth * 0.035,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              SizedBox(width: 5),
+                              Text(
+                                'Room Occupancy: $occupancy',
+                                style: TextStyle(
+                                  fontSize: screenWidth * 0.03,
+                                  height: 1.5,
+                                ),
+                              ),
+                            ],
+                          ),
+                          // Meals Plan
+                          Row(
+                            children: [
+                              Text(
+                                '•', // Dot
+                                style: TextStyle(
+                                  color: Colors.red, // Red dot color
+                                  fontSize: screenWidth * 0.035,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              SizedBox(width: 5),
+                              Text(
+                                'Meals Plan: $mealType',
+                                style: TextStyle(
+                                  fontSize: screenWidth * 0.03,
+                                  height: 1.5,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+
+                // Right side: Price and Select Button
+                Expanded(
+                  flex: 1,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      // Price
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           Text(
                             'AED $price',
@@ -293,103 +405,41 @@ class _HotelCardState extends State<HotelCard> {
                             'Price Per Person',
                             style: TextStyle(
                               fontSize: screenWidth * 0.03,
-                              color: Colors.grey[600],
+                              color: Colors.black,
                             ),
                           ),
                         ],
                       ),
-                    )
-                  ],
-                ),
-                SizedBox(height: screenWidth * 0.03),
-                Row(
-                  children: [
-                    Container(
-                      width: screenWidth * 0.25,
-                      height: screenWidth * 0.12,
-                      decoration: BoxDecoration(
-                        border: Border.all(width: 1, color: Colors.grey),
-                        borderRadius: BorderRadius.circular(5),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(3),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'CHECK IN',
-                              style: TextStyle(
-                                  color: Colors.grey[600],
-                                  fontSize: screenWidth * 0.03),
+                      SizedBox(height: screenWidth * 0.005),
+                      // Select Button
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: SizedBox(
+                          width: screenWidth * 0.3,
+                          child: ElevatedButton(
+                            onPressed: widget.onTap,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor:
+                              widget.isSelected ? Color(0xFF0071BC) : Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              side: BorderSide(color: Color(0xFF0071BC)),
                             ),
-                            Text(
-                              widget.hotel["check_in"],
+                            child: Text(
+                              widget.isSelected ? 'SELECTED' : 'SELECT',
                               style: TextStyle(
-                                  fontSize: screenWidth * 0.035,
-                                  fontWeight: FontWeight.bold),
+                                color: widget.isSelected
+                                    ? Colors.white
+                                    : Color(0xFF0071BC),
+                                fontSize: screenWidth * 0.035,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-                          ],
+                          ),
                         ),
                       ),
-                    ),
-                    SizedBox(width: screenWidth * 0.03),
-                    Container(
-                      width: screenWidth * 0.25,
-                      height: screenWidth * 0.12,
-                      decoration: BoxDecoration(
-                        border: Border.all(width: 1, color: Colors.grey),
-                        borderRadius: BorderRadius.circular(5),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(3),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'CHECK OUT',
-                              style: TextStyle(
-                                  color: Colors.grey[600],
-                                  fontSize: screenWidth * 0.03),
-                            ),
-                            Text(
-                              widget.hotel["check_out"],
-                              style: TextStyle(
-                                  fontSize: screenWidth * 0.035,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ],
-                        ),
-                      ),
-                    )
-                  ],
-                ),
-                SizedBox(height: screenWidth * 0.03),
-                Align(
-                  alignment: Alignment.center,
-                  child: SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: widget.onTap,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor:
-                            widget.isSelected ? Colors.red : Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        side: BorderSide(
-                            color: Colors.red), // Add a border for visibility
-                      ),
-                      child: Text(
-                        widget.isSelected ? 'SELECTED' : 'SELECT',
-                        style: TextStyle(
-                          color: widget.isSelected
-                              ? Colors.white
-                              : Colors.red, // Fix text color
-                          fontSize: 16.0, // Set proper font size
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
+                    ],
                   ),
                 ),
               ],
@@ -464,5 +514,28 @@ class HotelCardShimmer extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class CirclePainter extends CustomPainter {
+  final double radius;
+
+  CirclePainter({required this.radius});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    Paint paint = Paint()..style = PaintingStyle.fill;
+
+    // We can use FontAwesome icon positioning logic here.
+    double centerX = size.width / 2;
+
+    // Draw the largest circle (dark blue)
+    paint.color = Color(0xFF0D939E); // Dark blue
+    canvas.drawCircle(Offset(centerX, radius - 600), radius + 400, paint);
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) {
+    return false;
   }
 }

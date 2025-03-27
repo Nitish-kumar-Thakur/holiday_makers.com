@@ -3,36 +3,71 @@ import 'package:flutter/material.dart';
 class TermsAndConditionsPage extends StatelessWidget {
   const TermsAndConditionsPage({super.key});
 
+      Widget _buildTopCurve() {
+    return Padding(
+      padding: const EdgeInsets.only(top: 40), // 20% of the screen height
+      child: CustomPaint(
+        size: Size(double.infinity, 0), // Height of the curved area
+        painter: CirclePainter(radius: 200),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
+      body: Container(color: Colors.white,
         child: Column(
           children: [
-            SizedBox(
-              height: 50,
-              child: Row(
-                children: [
-                  IconButton(
-                    icon: Icon(Icons.arrow_back, color: Colors.black),
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                  Expanded(
+            _buildTopCurve(),
+            const SizedBox(height: 30),
+            Row(
+              children: [
+                IconButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  icon: CircleAvatar(
+                    backgroundColor: Colors.grey.withOpacity(0.6),  // Transparent grey background
                     child: Text(
-                      "Terms & Conditions",
+                      '<',  // Use "<" symbol
                       style: TextStyle(
-                        fontSize: 20.0,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
+                        color: Colors.white,  // White text color
+                        fontSize: 24,  // Adjust font size as needed
+                        fontWeight: FontWeight.bold,  // Make the "<" bold if needed
                       ),
-                      textAlign: TextAlign.center,
                     ),
                   ),
-                  SizedBox(width: 48.0), // To balance the Row's layout
-                ],
-              ),
+                ),
+                const SizedBox(width: 10),
+                Text('Terms & Conditions'.toUpperCase(),
+                style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Colors.white)
+                )
+              ],
             ),
+            // SizedBox(
+            //   height: 50,
+            //   child: Row(
+            //     children: [
+            //       IconButton(
+            //         icon: Icon(Icons.arrow_back, color: Colors.black),
+            //         onPressed: () => Navigator.pop(context),
+            //       ),
+            //       Expanded(
+            //         child: Text(
+            //           "Terms & Conditions",
+            //           style: TextStyle(
+            //             fontSize: 20.0,
+            //             fontWeight: FontWeight.bold,
+            //             color: Colors.black,
+            //           ),
+            //           textAlign: TextAlign.center,
+            //         ),
+            //       ),
+            //       SizedBox(width: 48.0), // To balance the Row's layout
+            //     ],
+            //   ),
+            // ),
             // Custom App Bar
 
             // Content
@@ -42,7 +77,7 @@ class TermsAndConditionsPage extends StatelessWidget {
                 child: Column(
                   children: [
                     Text('Maintained by Signature Travel and Tourism LLC',
-                        style: TextStyle(fontWeight: FontWeight.bold)),
+                        style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
                     const SizedBox(height: 10),
                     termsCard(
                         "1. Legal Jurisdiction",
@@ -339,5 +374,28 @@ class TermsAndConditionsPage extends StatelessWidget {
         );
       }).toList(),
     );
+  }
+}
+
+class CirclePainter extends CustomPainter {
+  final double radius;
+
+  CirclePainter({required this.radius});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    Paint paint = Paint()..style = PaintingStyle.fill;
+
+    // We can use FontAwesome icon positioning logic here.
+    double centerX = size.width / 2;
+
+    // Draw the largest circle (dark blue)
+    paint.color = Color(0xFF0D939E); // Dark blue
+    canvas.drawCircle(Offset(centerX, radius - 600), radius + 400, paint);
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) {
+    return false;
   }
 }

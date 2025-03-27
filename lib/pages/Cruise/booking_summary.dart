@@ -118,42 +118,86 @@ class _BookingSummaryPageState extends State<BookingSummaryPage> {
   String? selectedTitle;
   PhoneNumber?number = PhoneNumber(isoCode: 'AE');
 
+  Widget _buildTopCurve() {
+    return Padding(
+      padding: const EdgeInsets.only(top: 50), // 20% of the screen height
+      child: CustomPaint(
+        size: Size(double.infinity, 0), // Height of the curved area
+        painter: CirclePainter(radius: 200),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final double screenWidth = MediaQuery.of(context).size.width;
     final double fontSize = screenWidth * 0.035;
 
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.pop(context),
-        ),
-        backgroundColor: Colors.white,
-        elevation: 0,
-        title: const Text(
-          'Booking Summary',
-          style: TextStyle(color: Colors.black),
-        ),
-        centerTitle: true,
-      ),
+      // appBar: AppBar(
+      //   leading: IconButton(
+      //     icon: const Icon(Icons.arrow_back, color: Colors.black),
+      //     onPressed: () => Navigator.pop(context),
+      //   ),
+      //   backgroundColor: Colors.white,
+      //   elevation: 0,
+      //   title: const Text(
+      //     'Booking Summary',
+      //     style: TextStyle(color: Colors.black),
+      //   ),
+      //   centerTitle: true,
+      // ),
       backgroundColor: Colors.white,
       body: isLoading == true
           ? _buildShimmerEffect()
           : SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.04),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildSection('PACKAGE DETAILS', packageDetails, fontSize),
-              _buildSection('PRICE DETAILS', priceDetails, fontSize),
-              _buildContactInfo(fontSize),
-            ],
-          ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildTopCurve(),
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                IconButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  icon: CircleAvatar(
+                    backgroundColor: Colors.grey.withOpacity(0.6),  // Transparent grey background
+                    child: Text(
+                      '<',  // Use "<" symbol
+                      style: TextStyle(
+                        color: Colors.white,  // White text color
+                        fontSize: 24,  // Adjust font size as needed
+                        fontWeight: FontWeight.bold,  // Make the "<" bold if needed
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Text('BOOKING SUMMARY',
+                    style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Colors.white)
+                )
+              ],
+            ),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.04),
+              child: Column(
+                children: [
+                  const SizedBox(height: 40),  // Add space before first section
+                  _buildSection('PACKAGE DETAILS', packageDetails, fontSize),
+                  const SizedBox(height: 20),  // Space between sections
+                  _buildSection('PRICE DETAILS', priceDetails, fontSize),
+                  const SizedBox(height: 20),  // Space between sections
+                  _buildContactInfo(fontSize),
+                  // const SizedBox(height: 20),  // Space at the bottom
+                ],
+              ),
+            ),
+          ],
         ),
       ),
-      bottomNavigationBar:isLoading?null:Padding(
+        bottomNavigationBar:isLoading?null:Padding(
         padding: const EdgeInsets.all(16.0),
         child: SizedBox(
           width: double.infinity,
@@ -187,66 +231,77 @@ class _BookingSummaryPageState extends State<BookingSummaryPage> {
     // Convert the map entries into a list of entries
     List<MapEntry<String, dynamic>> entryList = details.entries.toList();
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: TextStyle(
-            fontSize: fontSize * 1.3,
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-          ),
-        ),
-        const SizedBox(height: 10),
-        Column(
-          children: List.generate(
-            (entryList.length / 2).ceil(), // Divide into rows
-                (index) {
-              bool isLastOdd =
-                  entryList.length % 2 != 0 && index == entryList.length ~/ 2;
-              return Column(
-                children: [
-                  IntrinsicHeight(  // Ensures both boxes in the row will have equal height
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: _buildDetailBox(
-                            entryList[index * 2].key, // Key as the title
-                            entryList[index * 2].value.toString(), // Value as the value
-                            fontSize,
-                          ),
-                        ),
-                        if (!isLastOdd) ...[
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: _buildDetailBox(
-                              entryList[index * 2 + 1].key, // Key as the title
-                              entryList[index * 2 + 1].value.toString(), // Value as the value
-                              fontSize,
+    return Card(
+      color: Colors.white, // White background for the card
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8), // Rounded corners for the card
+      ),
+      elevation: 4, // Shadow effect for the card
+      child: Padding(
+        padding: const EdgeInsets.all(16.0), // Padding around the content
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: fontSize * 1.3,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+            ),
+            // const SizedBox(height: 10),
+            Column(
+              children: List.generate(
+                (entryList.length / 2).ceil(), // Divide into rows
+                    (index) {
+                  bool isLastOdd =
+                      entryList.length % 2 != 0 && index == entryList.length ~/ 2;
+                  return Column(
+                    children: [
+                      const Divider(color: Colors.grey), // Divider between each row
+                      const SizedBox(height: 15),
+                      IntrinsicHeight(  // Ensures both boxes in the row will have equal height
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: _buildDetailBox(
+                                entryList[index * 2].key, // Key as the title
+                                entryList[index * 2].value.toString(), // Value as the value
+                                fontSize,
+                              ),
                             ),
-                          ),
-                        ],
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 10), // Space after each row
-                ],
-              );
-            },
-          ),
+                            if (!isLastOdd) ...[
+                              const VerticalDivider(width: 10, color: Colors.grey),
+                              Expanded(
+                                child: _buildDetailBox(
+                                  entryList[index * 2 + 1].key, // Key as the title
+                                  entryList[index * 2 + 1].value.toString(), // Value as the value
+                                  fontSize,
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 10), // Space after each row
+                    ],
+                  );
+                },
+              ),
+            ),
+          ],
         ),
-        const SizedBox(height: 10),
-      ],
+      ),
     );
   }
 
   Widget _buildDetailBox(String title, String value, double fontSize) {
     return Container(
-      padding: EdgeInsets.all(fontSize * 0.5),
+      padding: EdgeInsets.symmetric(horizontal: fontSize * 0.7, vertical: fontSize * 0.4), // Padding inside the detail box
       decoration: BoxDecoration(
-        color: Colors.grey.shade200,
-        borderRadius: BorderRadius.circular(8),
+        color: Colors.grey.shade50, // Background color of the box
+        borderRadius: BorderRadius.circular(8), // Rounded corners
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -259,7 +314,7 @@ class _BookingSummaryPageState extends State<BookingSummaryPage> {
               color: Colors.black,
             ),
           ),
-          SizedBox(height: fontSize * 0.3),
+          SizedBox(height: fontSize * 0.3), // Space between title and value
           Text(
             value,
             style: TextStyle(
@@ -274,126 +329,131 @@ class _BookingSummaryPageState extends State<BookingSummaryPage> {
   }
 
   Widget _buildContactInfo(double fontSize) {
-    return Form(
-      key: _formKey,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'CONTACT DETAILS',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 10),
-          Row(
+    return Card(
+      color: Colors.white, // White background for the card
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8), // Rounded corners for the card
+      ),
+      elevation: 4, // Shadow effect for the card
+      child: Padding(
+        padding: const EdgeInsets.all(16.0), // Padding around the content
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                child: DropdownButtonFormField<String>(
-                  value: selectedTitle,
-                  onChanged: (value) {
-                    setState(() {
-                      selectedTitle = value;
-                      contactDetails["title"] = value ?? "";
-                    });
-                  },
-                  decoration: InputDecoration(
-                    filled: true,
-                    fillColor: Colors.grey.shade200,
-                    labelText: 'Title',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
+              const Text(
+                'CONTACT DETAILS',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  Expanded(
+                    child: DropdownButtonFormField<String>(
+                      value: selectedTitle,
+                      onChanged: (value) {
+                        setState(() {
+                          selectedTitle = value;
+                          contactDetails["title"] = value ?? "";
+                        });
+                      },
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: Colors.white,
+                        hintText: 'Title', // Placeholder text
+                        contentPadding: EdgeInsets.symmetric(vertical: 12.0), // Padding inside the input
+                      ),
+                      items: ['Mr', 'Ms', 'Miss', 'Mrs']
+                          .map((title) => DropdownMenuItem(
+                        value: title,
+                        child: Text(title),
+                      ))
+                          .toList(),
+                      validator: (value) => value == null ? 'Select a title' : null,
                     ),
                   ),
-                  items: ['Mr', 'Ms', 'Miss', 'Mrs']
-                      .map((title) => DropdownMenuItem(
-                    value: title,
-                    child: Text(title),
-                  ))
-                      .toList(),
-                  validator: (value) => value == null ? 'Select a title' : null,
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: TextFormField(
-                  controller: contactNameController,
-                  decoration: InputDecoration(
-                    filled: true,
-                    fillColor: Colors.grey.shade200,
-                    labelText: 'Contact Name',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: TextFormField(
+                      controller: contactNameController,
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: Colors.white,
+                        hintText: 'Contact Name', // Placeholder text
+                        contentPadding: EdgeInsets.symmetric(vertical: 12.0), // Padding inside the input
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Contact Name is required';
+                        }
+                        if (!RegExp(r'^[a-zA-Z\s]+$').hasMatch(value)) {
+                          return 'Only alphabets are allowed';
+                        }
+                        return null;
+                      },
+                      onChanged: (value) {
+                        contactDetails["contactName"] = value;
+                      },
                     ),
                   ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Contact Name is required';
-                    }
-                    if (!RegExp(r'^[a-zA-Z\s]+$').hasMatch(value)) {
-                      return 'Only alphabets are allowed';
-                    }
-                    return null;
-                  },
-                  onChanged: (value) {
-                    contactDetails["contactName"] = value;
-                  },
-                ),
+                ],
               ),
+              // const SizedBox(height: 10),
+              // const Divider(color: Colors.grey), // Divider between fields
+              const SizedBox(height: 10),
+              TextFormField(
+                controller: emailController,
+                keyboardType: TextInputType.emailAddress,
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: Colors.white,
+                  hintText: 'E-mail', // Placeholder text
+                  contentPadding: EdgeInsets.symmetric(vertical: 12.0), // Padding inside the input
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'E-mail is required';
+                  } else if (!RegExp(r'\S+@\S+\.\S+').hasMatch(value)) {
+                    return 'Enter a valid email';
+                  }
+                  return null;
+                },
+                onChanged: (value) {
+                  contactDetails["email"] = value;
+                },
+              ),
+              // const SizedBox(height: 10),
+              // const Divider(color: Colors.grey),
+              const SizedBox(height: 15),
+              IntlPhoneField(
+                decoration: InputDecoration(
+                  hintText: 'Phone Number', // Placeholder text
+                  contentPadding: EdgeInsets.symmetric(vertical: 12.0), // Padding inside the input
+                ),
+                initialCountryCode: 'AE',
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                onChanged: (phone) {
+                  setState(() {
+                    contactDetails["countryCode"] = phone.countryCode;
+                    contactDetails["phoneNumber"] = phone.number;
+                  });
+                },
+                validator: (phone) {
+                  if (phone == null || phone.number.isEmpty) {
+                    return 'Phone number is required';
+                  }
+                  if (!RegExp(r'^\d+$').hasMatch(phone.number)) {
+                    return 'Enter only numbers';
+                  }
+                  return null;
+                },
+                controller: phoneController,
+              ),
+              const SizedBox(height: 20),
             ],
           ),
-          const SizedBox(height: 10),
-          TextFormField(
-            controller: emailController,
-            keyboardType: TextInputType.emailAddress,
-            decoration: InputDecoration(
-              filled: true,
-              fillColor: Colors.grey.shade200,
-              labelText: 'E-mail',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'E-mail is required';
-              } else if (!RegExp(r'\S+@\S+\.\S+').hasMatch(value)) {
-                return 'Enter a valid email';
-              }
-              return null;
-            },
-            onChanged: (value) {
-              contactDetails["email"] = value;
-            },
-          ),
-          const SizedBox(height: 10),
-          IntlPhoneField(
-            decoration: InputDecoration(
-              labelText: 'Phone Number',
-              border: OutlineInputBorder(
-                borderSide: BorderSide(),
-              ),
-            ),
-            initialCountryCode: 'AE',
-            autovalidateMode: AutovalidateMode.onUserInteraction,
-            onChanged: (phone) {
-              setState(() {
-                contactDetails["countryCode"] = phone.countryCode;
-                contactDetails["phoneNumber"] = phone.number;
-              });
-            },
-            validator: (phone) {
-              if (phone == null || phone.number.isEmpty) {
-                return 'Phone number is required';
-              }
-              if (!RegExp(r'^\d+$').hasMatch(phone.number)) {
-                return 'Enter only numbers';
-              }
-              return null;
-            },
-            controller: phoneController,
-          ),
-
-          const SizedBox(height: 20),
-        ],
+        ),
       ),
     );
   }
@@ -520,5 +580,28 @@ class _BookingSummaryPageState extends State<BookingSummaryPage> {
         ),
       ),
     );
+  }
+}
+
+class CirclePainter extends CustomPainter {
+  final double radius;
+
+  CirclePainter({required this.radius});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    Paint paint = Paint()..style = PaintingStyle.fill;
+
+    // We can use FontAwesome icon positioning logic here.
+    double centerX = size.width / 2;
+
+    // Draw the largest circle (dark blue)
+    paint.color = Color(0xFF0D939E);
+    canvas.drawCircle(Offset(centerX, radius - 600), radius + 400, paint);
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) {
+    return false;
   }
 }

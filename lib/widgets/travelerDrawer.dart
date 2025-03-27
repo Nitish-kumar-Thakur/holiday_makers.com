@@ -121,7 +121,7 @@ class _TravelerdrawerState extends State<Travelerdrawer> {
                                         width: 20,
                                         height: 20,
                                         decoration: BoxDecoration(
-                                          color: Colors.red,
+                                          color: Colors.blue,
                                           shape: BoxShape.circle,
                                         ),
                                         child: Icon(Icons.remove,
@@ -197,7 +197,7 @@ class _TravelerdrawerState extends State<Travelerdrawer> {
                     ),
                     if (roomDetails.length < 10)
                       Center(
-                        child: ElevatedButton.icon(
+                        child: ElevatedButton(
                           onPressed: () {
                             setState(() {
                               roomDetails.add({
@@ -215,8 +215,35 @@ class _TravelerdrawerState extends State<Travelerdrawer> {
                               });
                             });
                           },
-                          icon: Icon(Icons.add),
-                          label: Text("Add Room"),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Color(0xFF0071BC), // Button color
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(
+                                  30), // Circular border radius
+                            ),
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 12), // Padding for a better look
+                            elevation: 5, // Optional: Adds a shadow effect
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize
+                                .min, // Prevents button from stretching unnecessarily
+                            children: [
+                              Text(
+                                "Add Rooms",
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16), // Ensures text is visible
+                              ),
+                              SizedBox(
+                                  width:
+                                      8), // Adds spacing between text and icon
+                              Icon(Icons.add,
+                                  color:
+                                      Colors.white), // Moves icon to the right
+                            ],
+                          ),
                         ),
                       ),
                     const SizedBox(height: 10),
@@ -229,7 +256,10 @@ class _TravelerdrawerState extends State<Travelerdrawer> {
                       },
                       child: Align(
                         alignment: Alignment.center,
-                        child: responciveButton(text: 'DONE'),
+                        child: responciveButton(
+                          text: 'DONE',
+                          color: Colors.red,
+                        ),
                       ),
                     ),
                   ],

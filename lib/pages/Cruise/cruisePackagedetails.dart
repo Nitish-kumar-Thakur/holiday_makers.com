@@ -1,14 +1,16 @@
+import 'package:HolidayMakers/widgets/appLargetext.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:HolidayMakers/pages/Cruise/cruise_deals_page.dart';
 import 'package:HolidayMakers/utils/api_handler.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shimmer/shimmer.dart';
 
 class CruisePackageDetails extends StatefulWidget {
   final String? packageId;
 
-  const CruisePackageDetails({super.key, this.packageId});
+  const CruisePackageDetails({super.key, required this.packageId});
 
   @override
   State<CruisePackageDetails> createState() => _CruisePackageDetailsState();
@@ -20,6 +22,7 @@ class _CruisePackageDetailsState extends State<CruisePackageDetails> {
   List<Map<String, dynamic>> image = [];
   bool isLoading = true;
   String package_id = "";
+
   @override
   void initState() {
     super.initState();
@@ -46,8 +49,58 @@ class _CruisePackageDetailsState extends State<CruisePackageDetails> {
     }
   }
 
+  Widget buildInclusionCard(String iconClass, String label) {
+    // Default icon in case no match is found
+    IconData icon = FontAwesomeIcons.circleQuestion;
+
+    // Map FontAwesome icon classes to Flutter icon
+    if (iconClass == "fa fa-plane") {
+      icon = FontAwesomeIcons.plane;
+    } else if (iconClass.contains("fa-bed")) {
+      icon = FontAwesomeIcons.bed;
+    } else if (iconClass.contains("fa-theater")) {
+      icon = FontAwesomeIcons.film;
+    } else if (iconClass.contains("fa-kids")) {
+      icon = FontAwesomeIcons.children;
+    } else if (iconClass.contains("fa-pool")) {
+      icon = FontAwesomeIcons.personSwimming;
+    } else if (iconClass.contains("fa-meals")) {
+      icon = FontAwesomeIcons.utensils;
+    } else if (iconClass.contains("fa-shows")) {
+      icon = FontAwesomeIcons.masksTheater;
+    }
+
+    return Container(
+      width: 75,
+      height: 70,
+      decoration: BoxDecoration(
+        color: Color(0xFF009EE2).withOpacity(0.2),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: Color(0xFF009EE2),  // Set border color to #009EE2
+          width: 2,  // You can adjust the width of the border here
+        ),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(icon, size: 30, color: Colors.black),
+          const SizedBox(height: 2),
+          Text(
+            label,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+                fontSize: MediaQuery.of(context).size.width * 0.02,
+                color: Colors.black),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final inclusionList = (packageData['inclusion_list'] as List<dynamic>?) ?? [];
     return Scaffold(
       body: Stack(
         children: [
@@ -110,13 +163,23 @@ class _CruisePackageDetailsState extends State<CruisePackageDetails> {
 
           // Back Button
           Positioned(
-            top: 40,
-            left: 16,
+            top: 50,
+            left: 8,
             child: IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.white),
               onPressed: () {
                 Navigator.pop(context);
               },
+              icon: CircleAvatar(
+                backgroundColor: Colors.grey.withOpacity(0.6),  // Transparent grey background
+                child: Text(
+                  '<',  // Use "<" symbol
+                  style: TextStyle(
+                    color: Colors.white,  // White text color
+                    fontSize: 24,  // Adjust font size as needed
+                    fontWeight: FontWeight.bold,  // Make the "<" bold if needed
+                  ),
+                ),
+              ),
             ),
           ),
 
@@ -190,6 +253,7 @@ class _CruisePackageDetailsState extends State<CruisePackageDetails> {
                             ],
                           ),
                           const SizedBox(height: 16),
+
                           // Description & Scrollable Content
                           Expanded(
                             child: SingleChildScrollView(
@@ -197,6 +261,34 @@ class _CruisePackageDetailsState extends State<CruisePackageDetails> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
+                                  Container(
+                                    width: double.infinity,
+                                    decoration: BoxDecoration(color: Colors.grey.shade50),
+                                    padding: const EdgeInsets.all(10),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        AppLargeText(
+                                          text: 'INCLUSIONS',
+                                          size: 25,
+                                        ),
+                                        const SizedBox(height: 10),
+                                        Center(
+                                          child: Wrap(
+                                            spacing: 10,
+                                            runSpacing: 10,
+                                            alignment: WrapAlignment.spaceEvenly,
+                                            children: inclusionList.map<Widget>((inclusion) {
+                                              return buildInclusionCard(
+                                                  inclusion['class'], inclusion['name']);
+                                            }).toList(),
+                                          ),
+                                        ),
+                                        const SizedBox(height: 10),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(height: 20),
                                   if (packageData['cruise_details'] !=
                                       null) ...[
                                     // Package Overview Section
@@ -350,7 +442,7 @@ class _CruisePackageDetailsState extends State<CruisePackageDetails> {
                                           "No package details available.",
                                           style: TextStyle(
                                               fontSize: 16,
-                                              color: Colors.redAccent),
+                                              color: Color(0xFF0071BC)),
                                         ),
                                       ),
                                     ),
@@ -366,7 +458,7 @@ class _CruisePackageDetailsState extends State<CruisePackageDetails> {
                             width: double.infinity,
                             child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.red,
+                                backgroundColor: Color(0xFF0071BC),
                                 padding: const EdgeInsets.symmetric(
                                   vertical: 13,
                                   horizontal: 80,
@@ -403,7 +495,7 @@ class _CruisePackageDetailsState extends State<CruisePackageDetails> {
   Widget _InfoChip({required IconData icon, required String label}) {
     return Row(
       children: [
-        Icon(icon, color: Colors.red, size: 20),
+        Icon(icon, color: Color(0xFF0071BC), size: 20),
         const SizedBox(width: 4),
         Text(
           label,
