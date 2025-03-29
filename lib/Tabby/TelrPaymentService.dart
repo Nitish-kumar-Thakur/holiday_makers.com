@@ -70,6 +70,7 @@ class TelrPaymentService {
           .findAllElements("code")
           .firstOrNull
           ?.text; // ✅ Capture Transaction Reference
+          print("telr code $code");
 
       if (startUrl != null) {
         return startUrl;
@@ -83,7 +84,7 @@ class TelrPaymentService {
   ///
   static Future<String> checkPaymentStatus() async {
     final url = Uri.parse(_statusUrl);
-    print("telr code $code");
+    
 
     final requestXml = '''<?xml version="1.0" encoding="UTF-8"?>
 <mobile>

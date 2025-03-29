@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:HolidayMakers/Tabby/PaymentPage.dart';
 import 'package:HolidayMakers/utils/api_handler.dart';
 import 'package:HolidayMakers/widgets/responciveButton.dart';
+import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
@@ -17,7 +18,16 @@ class TravelersDetailsFD extends StatefulWidget {
   final List<Map<String, dynamic>> activityList;
   final Map<String, dynamic> BSData;
 
-  const TravelersDetailsFD({super.key, required this.packageDetails, required this.selectedHotel, required this.flightDetails, required this.totalRoomsdata, required this.searchId, required this.activityList, required this.destination, required this.BSData});
+  const TravelersDetailsFD(
+      {super.key,
+      required this.packageDetails,
+      required this.selectedHotel,
+      required this.flightDetails,
+      required this.totalRoomsdata,
+      required this.searchId,
+      required this.activityList,
+      required this.destination,
+      required this.BSData});
 
   @override
   State<TravelersDetailsFD> createState() => _TravelersDetailsFD();
@@ -44,7 +54,8 @@ class _TravelersDetailsFD extends State<TravelersDetailsFD> {
   Map<String, dynamic> voucherAPIResponse = {};
 
   bool _isChecked = false; // Checkbox state
-  TextEditingController _voucherController = TextEditingController(); // Voucher input
+  TextEditingController _voucherController =
+      TextEditingController(); // Voucher input
   double totalAmount = 100.0; // Example total amount
   bool _showSuccessAnimation = false; // 🎊 Confetti animation trigger
   bool _showFailureAnimation = false; // 😞 Sad animation trigger
@@ -54,17 +65,20 @@ class _TravelersDetailsFD extends State<TravelersDetailsFD> {
   @override
   void initState() {
     super.initState();
-    travelers = _generateTravelers(widget.totalRoomsdata.cast<Map<String, dynamic>>());
+    travelers =
+        _generateTravelers(widget.totalRoomsdata.cast<Map<String, dynamic>>());
     _fetchCountry();
-    _travelerDetails = List.generate(travelers.length, (index) => {
-      "title": "",
-      "firstName": "",
-      "lastName": "",
-      "dob": "",
-      "nationality": "",
-      "residentCountry": "",
-      "residentCity": "",
-    });
+    _travelerDetails = List.generate(
+        travelers.length,
+        (index) => {
+              "title": "",
+              "firstName": "",
+              "lastName": "",
+              "dob": "",
+              "nationality": "",
+              "residentCountry": "",
+              "residentCity": "",
+            });
     finalPrice = widget.BSData['package_price']['total'].toString();
   }
 
@@ -85,7 +99,8 @@ class _TravelersDetailsFD extends State<TravelersDetailsFD> {
       final response = await APIHandler.getCity(countryId);
       if (response["status"] == true) {
         setState(() {
-          cityList = List<String>.from(response["data"].map((city) => city["city_name"]));
+          cityList = List<String>.from(
+              response["data"].map((city) => city["city_name"]));
         });
       }
     } catch (e) {
@@ -131,7 +146,8 @@ class _TravelersDetailsFD extends State<TravelersDetailsFD> {
             Positioned.fill(
               child: BackdropFilter(
                 filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-                child: Container(color: Colors.black.withOpacity(0.4)), // Dark overlay
+                child: Container(
+                    color: Colors.black.withOpacity(0.4)), // Dark overlay
               ),
             ),
             Center(
@@ -219,12 +235,14 @@ class _TravelersDetailsFD extends State<TravelersDetailsFD> {
     // print('###########################################################');
 
     if (voucherAPIResponse['code'] == 200) {
-      if(voucherAPIResponse['status'] == true){
+      if (voucherAPIResponse['status'] == true) {
         setState(() {
           _showSuccessAnimation = true;
           _showFailureAnimation = false;
           finalPrice = response['final_price'];
-          voucherMessage = voucherAPIResponse['message'] + ".\nYou saved ${voucherAPIResponse['discount_price']}" ?? "🎉 Woohoo! Voucher Applied Successfully!";
+          voucherMessage = voucherAPIResponse['message'] +
+                  ".\nYou saved ${voucherAPIResponse['discount_price']}" ??
+              "🎉 Woohoo! Voucher Applied Successfully!";
         });
 
         Future.delayed(Duration(seconds: 3), () {
@@ -236,7 +254,8 @@ class _TravelersDetailsFD extends State<TravelersDetailsFD> {
         setState(() {
           _showFailureAnimation = true;
           _showSuccessAnimation = false;
-          voucherMessage = voucherAPIResponse['message'] ?? "😞 Oops! Invalid Voucher.";
+          voucherMessage =
+              voucherAPIResponse['message'] ?? "😞 Oops! Invalid Voucher.";
         });
 
         Future.delayed(Duration(seconds: 3), () {
@@ -259,7 +278,6 @@ class _TravelersDetailsFD extends State<TravelersDetailsFD> {
       });
     }
   }
-
 
   // Future<void> _applyVoucher() async {
   //   String enteredCode = _voucherController.text.trim();
@@ -327,430 +345,480 @@ class _TravelersDetailsFD extends State<TravelersDetailsFD> {
       // ),
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
-        child: Column(
-          children: [
-            _buildTopCurve(),
-            const SizedBox(height: 10),
-            Row(
-              children: [
-                IconButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  icon: CircleAvatar(
-                    backgroundColor: Colors.grey.withOpacity(0.6),  // Transparent grey background
-                    child: Text(
-                      '<',  // Use "<" symbol
-                      style: TextStyle(
-                        color: Colors.white,  // White text color
-                        fontSize: 24,  // Adjust font size as needed
-                        fontWeight: FontWeight.bold,  // Make the "<" bold if needed
-                      ),
+          child: Column(
+        children: [
+          _buildTopCurve(),
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              IconButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                icon: CircleAvatar(
+                  backgroundColor: Colors.grey
+                      .withOpacity(0.6), // Transparent grey background
+                  child: Text(
+                    '<', // Use "<" symbol
+                    style: TextStyle(
+                      color: Colors.white, // White text color
+                      fontSize: 24, // Adjust font size as needed
+                      fontWeight:
+                          FontWeight.bold, // Make the "<" bold if needed
                     ),
                   ),
                 ),
-                const SizedBox(width: 10),
-                Text('TRAVELER DETAILS',
-                    style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Colors.white)
-                )
-              ],
-            ),
-            const SizedBox(height: 40),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.04),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Card(
-                      color: Colors.white,
-                      elevation: 4,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
+              ),
+              const SizedBox(width: 10),
+              Text('TRAVELER DETAILS',
+                  style: TextStyle(
+                      fontSize: 26,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white))
+            ],
+          ),
+          const SizedBox(height: 40),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.04),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Card(
+                    color: Colors.white,
+                    elevation: 4,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Title
+                          Text(
+                            'Contact Details',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 20),
+                          ),
+                          const Divider(),
+                          const SizedBox(height: 10),
+                          // Title and Name Row
+                          Row(
+                            children: [
+                              Expanded(
+                                child: DropdownButtonFormField<String>(
+                                  onChanged: (value) {
+                                    setState(() {
+                                      contactDetails["title"] = value!;
+                                    });
+                                  },
+                                  decoration: InputDecoration(
+                                    filled: true,
+                                    fillColor: Colors.white,
+                                    labelText: 'Title',
+                                  ),
+                                  items: ['Mr', 'Ms', 'Miss', 'Mrs']
+                                      .map((title) => DropdownMenuItem(
+                                            value: title,
+                                            child: Text(title),
+                                          ))
+                                      .toList(),
+                                  validator: (value) => value == null
+                                      ? 'Title is required'
+                                      : null,
+                                ),
+                              ),
+                              const VerticalDivider(),
+                              Expanded(
+                                child: TextFormField(
+                                  onChanged: (value) {
+                                    contactDetails["contactName"] = value;
+                                  },
+                                  decoration: InputDecoration(
+                                    filled: true,
+                                    fillColor: Colors.white,
+                                    labelText: 'Contact Name',
+                                  ),
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'Contact Name is required';
+                                    }
+                                    if (!RegExp(r'^[a-zA-Z]+$')
+                                        .hasMatch(value)) {
+                                      return 'Only alphabets are allowed';
+                                    }
+                                    return null;
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+
+                          const SizedBox(height: 10),
+
+                          // Email Row
+                          TextFormField(
+                            onChanged: (value) {
+                              contactDetails["email"] = value;
+                            },
+                            decoration: InputDecoration(
+                              filled: true,
+                              fillColor: Colors.white,
+                              labelText: 'E-mail',
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'E-mail is required';
+                              } else if (!RegExp(r'\S+@\S+\.\S+')
+                                  .hasMatch(value)) {
+                                return 'Enter a valid email';
+                              }
+                              return null;
+                            },
+                          ),
+
+                          const SizedBox(height: 10),
+
+                          // Phone Row
+                          IntlPhoneField(
+                            decoration: InputDecoration(
+                              labelText: 'Phone Number',
+                            ),
+                            initialCountryCode: 'AE',
+                            autovalidateMode:
+                                AutovalidateMode.onUserInteraction,
+                            onChanged: (phone) {
+                              setState(() {
+                                contactDetails["countryCode"] =
+                                    phone.countryCode;
+                                contactDetails["phoneNumber"] = phone.number;
+                              });
+                            },
+                            validator: (phone) {
+                              if (phone == null || phone.number.isEmpty) {
+                                return 'Phone number is required';
+                              }
+                              if (!RegExp(r'^\d+$').hasMatch(phone.number)) {
+                                return 'Enter only numbers';
+                              }
+                              return null;
+                            },
+                            controller: phoneController,
+                          ),
+                        ],
                       ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // Title
-                            Text(
-                              'Contact Details',
-                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-                            ),
-                            const Divider(),
-                            const SizedBox(height: 10),
-                            // Title and Name Row
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: DropdownButtonFormField<String>(
-                                    onChanged: (value) {
-                                      setState(() {
-                                        contactDetails["title"] = value!;
-                                      });
-                                    },
-                                    decoration: InputDecoration(
-                                      filled: true,
-                                      fillColor: Colors.white,
-                                      labelText: 'Title',
-                                    ),
-                                    items: ['Mr', 'Ms', 'Miss', 'Mrs']
-                                        .map((title) => DropdownMenuItem(
-                                      value: title,
-                                      child: Text(title),
-                                    ))
-                                        .toList(),
-                                    validator: (value) =>
-                                    value == null ? 'Title is required' : null,
-                                  ),
-                                ),
-                                const VerticalDivider(),
-                                Expanded(
-                                  child: TextFormField(
-                                    onChanged: (value) {
-                                      contactDetails["contactName"] = value;
-                                    },
-                                    decoration: InputDecoration(
-                                      filled: true,
-                                      fillColor: Colors.white,
-                                      labelText: 'Contact Name',
-                                    ),
-                                    validator: (value) {
-                                      if (value == null || value.isEmpty) {
-                                        return 'Contact Name is required';
-                                      }
-                                      if (!RegExp(r'^[a-zA-Z]+$').hasMatch(value)) {
-                                        return 'Only alphabets are allowed';
-                                      }
-                                      return null;
-                                    },
-                                  ),
-                                ),
-                              ],
-                            ),
-
-                            const SizedBox(height: 10),
-
-                            // Email Row
-                            TextFormField(
-                              onChanged: (value) {
-                                contactDetails["email"] = value;
-                              },
-                              decoration: InputDecoration(
-                                filled: true,
-                                fillColor: Colors.white,
-                                labelText: 'E-mail',
-                              ),
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'E-mail is required';
-                                } else if (!RegExp(r'\S+@\S+\.\S+').hasMatch(value)) {
-                                  return 'Enter a valid email';
-                                }
-                                return null;
-                              },
-                            ),
-
-                            const SizedBox(height: 10),
-
-                            // Phone Row
-                            IntlPhoneField(
-                              decoration: InputDecoration(
-                                labelText: 'Phone Number',
-                              ),
-                              initialCountryCode: 'AE',
-                              autovalidateMode: AutovalidateMode.onUserInteraction,
-                              onChanged: (phone) {
-                                setState(() {
-                                  contactDetails["countryCode"] = phone.countryCode;
-                                  contactDetails["phoneNumber"] = phone.number;
-                                });
-                              },
-                              validator: (phone) {
-                                if (phone == null || phone.number.isEmpty) {
-                                  return 'Phone number is required';
-                                }
-                                if (!RegExp(r'^\d+$').hasMatch(phone.number)) {
-                                  return 'Enter only numbers';
-                                }
-                                return null;
-                              },
-                              controller: phoneController,
-                            ),
-                          ],
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: travelers.length,
+                    itemBuilder: (context, index) {
+                      return Card(
+                        color: Colors.white,
+                        elevation: 4,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
                         ),
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    ListView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: travelers.length,
-                      itemBuilder: (context, index) {
-                        return Card(
-                          color: Colors.white,
-                          elevation: 4,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                // Traveler Header
-                                Text(
-                                  'Traveler ${index + 1} - ${travelers[index]}',
-                                  style: const TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black,
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // Traveler Header
+                              Text(
+                                'Traveler ${index + 1} - ${travelers[index]}',
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                ),
+                              ),
+                              const Divider(),
+                              const SizedBox(height: 15),
+
+                              // Title and First Name Row
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: DropdownButtonFormField<String>(
+                                      value: _travelerDetails[index]["title"]!
+                                              .isNotEmpty
+                                          ? _travelerDetails[index]["title"]
+                                          : null,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          _travelerDetails[index]["title"] =
+                                              value!;
+                                        });
+                                      },
+                                      validator: (value) => value == null
+                                          ? 'Title is required'
+                                          : null,
+                                      decoration: InputDecoration(
+                                        filled: true,
+                                        fillColor: Colors.white,
+                                        labelText: 'Title',
+                                      ),
+                                      items: ['Mr', 'Ms', 'Miss', 'Mrs']
+                                          .map((title) => DropdownMenuItem(
+                                                value: title,
+                                                child: Text(title),
+                                              ))
+                                          .toList(),
+                                    ),
                                   ),
-                                ),
-                                const Divider(),
-                                const SizedBox(height: 15),
+                                  const SizedBox(width: 10),
+                                  Expanded(
+                                    child: TextFormField(
+                                      onChanged: (value) {
+                                        setState(() {
+                                          _travelerDetails[index]["firstName"] =
+                                              value;
+                                        });
+                                      },
+                                      validator: (value) {
+                                        if (value == null || value.isEmpty) {
+                                          return 'First Name is required';
+                                        }
+                                        if (!RegExp(r'^[a-zA-Z]+$')
+                                            .hasMatch(value)) {
+                                          return 'Only alphabets are allowed';
+                                        }
+                                        return null;
+                                      },
+                                      decoration: InputDecoration(
+                                        filled: true,
+                                        fillColor: Colors.white,
+                                        labelText: 'First Name',
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 10),
 
-                                // Title and First Name Row
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      child: DropdownButtonFormField<String>(
-                                        value: _travelerDetails[index]["title"]!.isNotEmpty
-                                            ? _travelerDetails[index]["title"]
-                                            : null,
-                                        onChanged: (value) {
+                              // Last Name and Date of Birth Row
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: TextFormField(
+                                      onChanged: (value) {
+                                        setState(() {
+                                          _travelerDetails[index]["lastName"] =
+                                              value;
+                                        });
+                                      },
+                                      validator: (value) {
+                                        if (value == null || value.isEmpty) {
+                                          return 'Last Name is required';
+                                        }
+                                        if (!RegExp(r'^[a-zA-Z]+$')
+                                            .hasMatch(value)) {
+                                          return 'Only alphabets are allowed';
+                                        }
+                                        return null;
+                                      },
+                                      decoration: InputDecoration(
+                                        filled: true,
+                                        fillColor: Colors.white,
+                                        labelText: 'Last Name',
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Expanded(
+                                    child: TextFormField(
+                                      controller: TextEditingController(
+                                          text: _travelerDetails[index]["dob"]),
+                                      readOnly: true, // Makes it non-editable
+                                      onTap: () async {
+                                        DateTime? pickedDate =
+                                            await showDatePicker(
+                                          context: context,
+                                          initialDate: DateTime.now(),
+                                          firstDate: DateTime(1900),
+                                          lastDate: DateTime.now(),
+                                        );
+
+                                        if (pickedDate != null) {
                                           setState(() {
-                                            _travelerDetails[index]["title"] = value!;
+                                            _travelerDetails[index]["dob"] =
+                                                "${pickedDate.day}-${pickedDate.month}-${pickedDate.year}";
                                           });
-                                        },
-                                        validator: (value) =>
-                                        value == null ? 'Title is required' : null,
-                                        decoration: InputDecoration(
-                                          filled: true,
-                                          fillColor: Colors.white,
-                                          labelText: 'Title',
-                                        ),
-                                        items: ['Mr', 'Ms', 'Miss', 'Mrs']
-                                            .map((title) => DropdownMenuItem(
-                                          value: title,
-                                          child: Text(title),
-                                        ))
-                                            .toList(),
+                                        }
+                                      },
+                                      validator: (value) => value!.isEmpty
+                                          ? 'Date of Birth is required'
+                                          : null,
+                                      decoration: InputDecoration(
+                                        filled: true,
+                                        fillColor: Colors.white,
+                                        labelText: 'Date of Birth',
+                                        suffixIcon: Icon(Icons.calendar_today),
                                       ),
                                     ),
-                                    const SizedBox(width: 10),
-                                    Expanded(
-                                      child: TextFormField(
-                                        onChanged: (value) {
-                                          setState(() {
-                                            _travelerDetails[index]["firstName"] = value;
-                                          });
-                                        },
-                                        validator: (value) {
-                                          if (value == null || value.isEmpty) {
-                                            return 'First Name is required';
-                                          }
-                                          if (!RegExp(r'^[a-zA-Z]+$').hasMatch(value)) {
-                                            return 'Only alphabets are allowed';
-                                          }
-                                          return null;
-                                        },
-                                        decoration: InputDecoration(
-                                          filled: true,
-                                          fillColor: Colors.white,
-                                          labelText: 'First Name',
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 10),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 10),
 
-                                // Last Name and Date of Birth Row
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      child: TextFormField(
-                                        onChanged: (value) {
-                                          setState(() {
-                                            _travelerDetails[index]["lastName"] = value;
-                                          });
-                                        },
-                                        validator: (value) {
-                                          if (value == null || value.isEmpty) {
-                                            return 'Last Name is required';
-                                          }
-                                          if (!RegExp(r'^[a-zA-Z]+$').hasMatch(value)) {
-                                            return 'Only alphabets are allowed';
-                                          }
-                                          return null;
-                                        },
+                              // Nationality Row
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: DropdownSearch<String>(
+                                      popupProps: PopupProps.menu(
+                                        showSearchBox:
+                                            true,
+                                            
+                                             // Enables search functionality
+                                      ),
+                                      items: (filter, infiniteScrollProps) =>
+                                          countryList.isNotEmpty
+                                              ? countryList
+                                                  .map<String>((country) =>
+                                                      country["name"]
+                                                          ?.toString() ??
+                                                      "")
+                                                  .toList()
+                                              : [],
+                                      selectedItem: _travelerDetails[index]
+                                          ["nationality"],
+                                      onChanged: (value) {
+                                        setState(() {
+                                          _travelerDetails[index]
+                                              ["nationality"] = value!;
+                                        });
+                                      },
+                                      
+                                      decoratorProps: DropDownDecoratorProps(
+
                                         decoration: InputDecoration(
                                           filled: true,
                                           fillColor: Colors.white,
-                                          labelText: 'Last Name',
+                                          labelText: 'Select Nationality',
+                                          
                                         ),
+                                
                                       ),
+                                      validator: (value) {
+                                        if (value == null || value.isEmpty) {
+                                          return 'Please select nationality';
+                                        }
+                                        return null;
+                                      },
                                     ),
-                                    const SizedBox(width: 10),
-                                    Expanded(
-                                      child: TextFormField(
-                                        controller: TextEditingController(text: _travelerDetails[index]["dob"]),
-                                        readOnly: true, // Makes it non-editable
-                                        onTap: () async {
-                                          DateTime? pickedDate = await showDatePicker(
-                                            context: context,
-                                            initialDate: DateTime.now(),
-                                            firstDate: DateTime(1900),
-                                            lastDate: DateTime.now(),
-                                          );
+                                  ),
+                                ],
+                              ),
 
-                                          if (pickedDate != null) {
-                                            setState(() {
-                                              _travelerDetails[index]["dob"] =
-                                              "${pickedDate.day}-${pickedDate.month}-${pickedDate.year}";
-                                            });
-                                          }
-                                        },
-                                        validator: (value) =>
-                                        value!.isEmpty ? 'Date of Birth is required' : null,
-                                        decoration: InputDecoration(
-                                          filled: true,
-                                          fillColor: Colors.white,
-                                          labelText: 'Date of Birth',
-                                          suffixIcon: Icon(Icons.calendar_today),
-                                        ),
+                              const SizedBox(height: 10),
+
+                              // Resident Country Row
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: DropdownButtonFormField<String>(
+                                      value: countryList.any((country) =>
+                                              country["name"] ==
+                                              _travelerDetails[index]
+                                                  ["residentCountry"])
+                                          ? _travelerDetails[index]
+                                              ["residentCountry"]
+                                          : null,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          _travelerDetails[index]
+                                              ["residentCountry"] = value!;
+                                          cityList =
+                                              []; // Clear city list when country changes
+                                        });
+
+                                        // Fetch cities based on the selected country
+                                        _fetchCity(value!.toString());
+                                      },
+                                      validator: (value) {
+                                        if (value == null || value.isEmpty) {
+                                          return 'Please select resident country';
+                                        }
+                                        return null;
+                                      },
+                                      decoration: InputDecoration(
+                                        filled: true,
+                                        fillColor: Colors.white,
+                                        labelText: 'Resident Country',
                                       ),
+                                      items: countryList
+                                          .map((country) =>
+                                              DropdownMenuItem<String>(
+                                                value:
+                                                    country["origin"] as String,
+                                                child: Text(country["name"]!),
+                                              ))
+                                          .toList(),
                                     ),
-                                  ],
-                                ),
-                                const SizedBox(height: 10),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 10),
 
-                                // Nationality Row
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      child: DropdownButtonFormField<String>(
-                                        value: countryList.any((country) => country["name"] == _travelerDetails[index]["nationality"])
-                                            ? _travelerDetails[index]["nationality"]
-                                            : null,
-                                        onChanged: (value) {
-                                          setState(() {
-                                            _travelerDetails[index]["nationality"] = value!;
-                                          });
-                                        },
-                                        validator: (value) {
-                                          if (value == null || value.isEmpty) {
-                                            return 'Please select nationality';
-                                          }
-                                          return null;
-                                        },
-                                        decoration: InputDecoration(
-                                          filled: true,
-                                          fillColor: Colors.white,
-                                          labelText: 'Nationality',
-                                        ),
-                                        items: countryList
-                                            .map((country) => DropdownMenuItem<String>(
-                                          value: country["origin"] as String,
-                                          child: Text(country["name"] as String),
-                                        ))
-                                            .toList(),
+                              // Resident City Row
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: DropdownButtonFormField<String>(
+                                      value: cityList.contains(
+                                              _travelerDetails[index]
+                                                  ["residentCity"])
+                                          ? _travelerDetails[index]
+                                              ["residentCity"]
+                                          : null,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          _travelerDetails[index]
+                                              ["residentCity"] = value!;
+                                        });
+                                      },
+                                      validator: (value) {
+                                        if (value == null || value.isEmpty) {
+                                          return 'Please select resident city';
+                                        }
+                                        return null;
+                                      },
+                                      decoration: InputDecoration(
+                                        filled: true,
+                                        fillColor: Colors.white,
+                                        labelText: 'Resident City',
                                       ),
+                                      items: cityList
+                                          .map((city) =>
+                                              DropdownMenuItem<String>(
+                                                value: city,
+                                                child: Text(city),
+                                              ))
+                                          .toList(),
                                     ),
-                                  ],
-                                ),
-                                const SizedBox(height: 10),
-
-                                // Resident Country Row
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      child: DropdownButtonFormField<String>(
-                                        value: countryList.any((country) => country["name"] == _travelerDetails[index]["residentCountry"])
-                                            ? _travelerDetails[index]["residentCountry"]
-                                            : null,
-                                        onChanged: (value) {
-                                          setState(() {
-                                            _travelerDetails[index]["residentCountry"] = value!;
-                                            cityList = []; // Clear city list when country changes
-                                          });
-
-                                          // Fetch cities based on the selected country
-                                          _fetchCity(value!.toString());
-                                        },
-                                        validator: (value) {
-                                          if (value == null || value.isEmpty) {
-                                            return 'Please select resident country';
-                                          }
-                                          return null;
-                                        },
-                                        decoration: InputDecoration(
-                                          filled: true,
-                                          fillColor: Colors.white,
-                                          labelText: 'Resident Country',
-                                        ),
-                                        items: countryList
-                                            .map((country) => DropdownMenuItem<String>(
-                                          value: country["origin"] as String,
-                                          child: Text(country["name"]!),
-                                        ))
-                                            .toList(),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 10),
-
-                                // Resident City Row
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      child: DropdownButtonFormField<String>(
-                                        value: cityList.contains(_travelerDetails[index]["residentCity"])
-                                            ? _travelerDetails[index]["residentCity"]
-                                            : null,
-                                        onChanged: (value) {
-                                          setState(() {
-                                            _travelerDetails[index]["residentCity"] = value!;
-                                          });
-                                        },
-                                        validator: (value) {
-                                          if (value == null || value.isEmpty) {
-                                            return 'Please select resident city';
-                                          }
-                                          return null;
-                                        },
-                                        decoration: InputDecoration(
-                                          filled: true,
-                                          fillColor: Colors.white,
-                                          labelText: 'Resident City',
-                                        ),
-                                        items: cityList
-                                            .map((city) => DropdownMenuItem<String>(
-                                          value: city,
-                                          child: Text(city),
-                                        ))
-                                            .toList(),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 20), // Spacing between travelers
-                              ],
-                            ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(
+                                  height: 20), // Spacing between travelers
+                            ],
                           ),
-                        );
-                      },
-                    ),
-                  ],
-                ),
-              ),),
-          ],
-        )
-      ),
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      )),
       bottomNavigationBar: Stack(
         children: [
           Padding(
@@ -775,7 +843,8 @@ class _TravelersDetailsFD extends State<TravelersDetailsFD> {
                     SizedBox(width: 10),
                     ElevatedButton(
                       onPressed: _applyVoucher,
-                      child: Text("Apply", style: const TextStyle(color: Colors.white)),
+                      child: Text("Apply",
+                          style: const TextStyle(color: Colors.white)),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.lightBlueAccent,
                       ),
@@ -805,7 +874,8 @@ class _TravelersDetailsFD extends State<TravelersDetailsFD> {
                         },
                         child: RichText(
                           text: TextSpan(
-                            style: TextStyle(fontSize: 14.0, color: Colors.black),
+                            style:
+                                TextStyle(fontSize: 14.0, color: Colors.black),
                             children: [
                               TextSpan(text: "I have read and agree to the "),
                               TextSpan(
@@ -848,26 +918,34 @@ class _TravelersDetailsFD extends State<TravelersDetailsFD> {
                             'country_code': contactDetails['countryCode'],
                             'phone': contactDetails['phoneNumber'].toString(),
                             'payment_type': '',
-                            "passenger_title":
-                            _travelerDetails.map((t) => t["title"]).toList(),
-                            "passenger_first_name":
-                            _travelerDetails.map((t) => t["firstName"]).toList(),
-                            "passenger_last_name":
-                            _travelerDetails.map((t) => t["lastName"]).toList(),
+                            "passenger_title": _travelerDetails
+                                .map((t) => t["title"])
+                                .toList(),
+                            "passenger_first_name": _travelerDetails
+                                .map((t) => t["firstName"])
+                                .toList(),
+                            "passenger_last_name": _travelerDetails
+                                .map((t) => t["lastName"])
+                                .toList(),
                             "passenger_dob":
-                            _travelerDetails.map((t) => t["dob"]).toList(),
-                            "passenger_nationality":
-                            _travelerDetails.map((t) => t["nationality"]).toList(),
-                            "passenger_country":
-                            _travelerDetails.map((t) => t["residentCountry"]).toList(),
-                            "passenger_city":
-                            _travelerDetails.map((t) => t["residentCity"]).toList(),
+                                _travelerDetails.map((t) => t["dob"]).toList(),
+                            "passenger_nationality": _travelerDetails
+                                .map((t) => t["nationality"])
+                                .toList(),
+                            "passenger_country": _travelerDetails
+                                .map((t) => t["residentCountry"])
+                                .toList(),
+                            "passenger_city": _travelerDetails
+                                .map((t) => t["residentCity"])
+                                .toList(),
                             "passenger_type": travelers
                           };
                           Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => PaymentScreen(sbAPIBody: body, BSData: widget.BSData)),
-          );
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => PaymentScreen(
+                                    sbAPIBody: body, BSData: widget.BSData)),
+                          );
                           // _saveBooking(body);
                         } else {
                           print("⚠️ Form is not valid");
@@ -903,7 +981,10 @@ class _TravelersDetailsFD extends State<TravelersDetailsFD> {
                     ),
                     child: Text(
                       voucherMessage,
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+                      style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white),
                     ),
                   ),
                 ),
@@ -925,13 +1006,15 @@ class _TravelersDetailsFD extends State<TravelersDetailsFD> {
                     ),
                     child: Text(
                       voucherMessage,
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+                      style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white),
                     ),
                   ),
                 ),
               ),
             ),
-
         ],
       ),
     );

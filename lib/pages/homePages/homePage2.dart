@@ -1,8 +1,6 @@
 import 'package:HolidayMakers/pages/Cruise/cruisePackagedetails.dart';
 import 'package:HolidayMakers/pages/FixedDeparturesPages/departurePackagedetails.dart';
 import 'package:flutter/material.dart';
-import 'package:HolidayMakers/pages/Cruise/cruise_deals_page.dart';
-import 'package:HolidayMakers/pages/FixedDeparturesPages/departureDeals.dart';
 import 'package:HolidayMakers/widgets/responcive_card.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:HolidayMakers/utils/api_handler.dart';

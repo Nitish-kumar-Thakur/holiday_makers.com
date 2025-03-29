@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:HolidayMakers/extras/PaymentScreen.dart';
 import 'package:HolidayMakers/pages/homePages/mainPage.dart';
 import 'package:HolidayMakers/pages/homePages/splashscreen.dart';
 import 'package:flutter/material.dart';
@@ -56,7 +57,7 @@ class _MyAppState extends State<MyApp> {
         textTheme: GoogleFonts.poppinsTextTheme(Theme.of(context).textTheme),
         useMaterial3: true,
       ),
-      home: Splashscreen(),
+      home: PaymentScreen(),
       onGenerateRoute: (RouteSettings settings) {
         if (settings.name == '/payment') {
           final status = settings.arguments as String?;

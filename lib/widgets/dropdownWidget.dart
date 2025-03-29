@@ -8,16 +8,18 @@ class Dropdownwidget extends StatelessWidget {
   final ValueChanged<String?> onChanged;
   final Color txtcolor;
   final Color bgColor;
+  final bool search;
 
-  const Dropdownwidget({
-    Key? key,
-    required this.selectedValue,
-    required this.items,
-    required this.hintText,
-    required this.onChanged,
-    this.bgColor= const Color(0xFFF2F2F2),
-    this.txtcolor = Colors.black
-  }) : super(key: key);
+  const Dropdownwidget(
+      {Key? key,
+      required this.selectedValue,
+      required this.items,
+      required this.hintText,
+      required this.onChanged,
+      this.bgColor = const Color(0xFFF2F2F2),
+      this.txtcolor = Colors.black,
+      this.search = false})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +42,9 @@ class Dropdownwidget extends StatelessWidget {
                 ),
               ),
               DropdownSearch<String>(
-                popupProps: PopupProps.menu(),
+                popupProps: PopupProps.menu(
+                  showSearchBox: search
+                ),
                 items: (filter, infiniteScrollProps) =>
                     items.map((item) => item["name"] ?? "").toList(),
                 selectedItem: selectedValue != null
