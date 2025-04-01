@@ -3,10 +3,7 @@ import 'package:HolidayMakers/pages/Cruise/pax_details.dart';
 import 'package:HolidayMakers/widgets/dropdownwidget.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:HolidayMakers/pages/Cruise/cruise_deals_page2.dart';
 import 'package:HolidayMakers/utils/api_handler.dart';
-import 'package:HolidayMakers/widgets/appLargetext.dart';
 import 'package:HolidayMakers/widgets/responciveButton.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -131,9 +128,10 @@ class _CruiseDealsPageState extends State<CruiseDealsPage> {
   }
 
   void _validateAndProceed() {
-    Fluttertoast.showToast(msg: "Please select a cabin type");
+    
 
     if (selectedCabin != null) {
+      
       // print("@@@@@@@@@@@@@NitisH@@@@@@@@@@@@@@@@@@@@@");
       // print(totalRoomsdata);
       // print("@@@@@@@@@@@@@NitisH@@@@@@@@@@@@@@@@@@@@@");
@@ -147,6 +145,9 @@ class _CruiseDealsPageState extends State<CruiseDealsPage> {
           ),
         ),
       );
+    }
+    else{
+      Fluttertoast.showToast(msg: "Please select a cabin type");
     }
   }
 

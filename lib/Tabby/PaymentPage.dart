@@ -9,9 +9,9 @@ import 'package:fluttertoast/fluttertoast.dart';
 class PaymentScreen extends StatefulWidget {
   final Map<String, dynamic> BSData;
   final Map<String, dynamic> sbAPIBody;
-
+  final String flow;
   const PaymentScreen(
-      {super.key, required this.BSData, required this.sbAPIBody});
+      {super.key, required this.BSData, required this.sbAPIBody, required this.flow});
 
   @override
   _PaymentScreenState createState() => _PaymentScreenState();
@@ -27,26 +27,53 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
   void initState() {
     super.initState();
-    print(widget.sbAPIBody);
-    print(widget.BSData);
+    // print(widget.flow);
+    // print(widget.BSData);
+    // print(widget.sbAPIBody);
+    // print(widget.BSData['payment_options']);
     // print(widget.sbAPIBody['payment_type']);
-    paymentMethods = widget.BSData['payment_options'] ??
-        widget.BSData['data']['payment_options'];
+    paymentMethods = widget.BSData['payment_options'];
   }
 
   Future<void> _saveBooking(Map<String, dynamic> body) async {
     try {
-      final response = await APIHandler.fdSaveBooking(body);
-      if (response["status"] == true) {
-        setState(() {
-          sbAPIResponse = response['data'];
-        });
-        // print('===================================================');
-        // print(sbAPIResponse);
-        // print('===================================================');
+      if(widget.flow == "fd"){
+        print('debug__fd');
+        final response = await APIHandler.fdSaveBooking(body);
+        if (response["status"] == true) {
+          setState(() {
+            sbAPIResponse = response['data'];
+          });
+          print('===================================================');
+          print('FD API Response: $sbAPIResponse');
+          print('===================================================');
+        }
+      } else if(widget.flow == "fit") {
+        print('debug__fit');
+        final response = await APIHandler.fitSaveBooking(body);
+        if (response["status"] == true) {
+          setState(() {
+            sbAPIResponse = response['data'];
+          });
+          print('==================================');
+          print('FIT API Response: $sbAPIResponse');
+          print('==================================');
+        }
+      } else if(widget.flow == "cruise"){
+        print('debug__cruise');
+        final response = await APIHandler.cruiseSaveBooking(body);
+        if (response["status"] == true) {
+          setState(() {
+            sbAPIResponse = response['data'];
+          });
+          print('==================================');
+          print('CRUISE API Response: $sbAPIResponse');
+          print('==================================');
+        }
       }
+
     } catch (e) {
-      print("Error fetching cities: $e");
+      print("Error saving booking details: $e");
     }
   }
 

@@ -108,6 +108,7 @@ class _SignuppageState extends State<Signuppage> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
     return Container(
       decoration: BoxDecoration(
           image: DecorationImage(
@@ -148,7 +149,7 @@ class _SignuppageState extends State<Signuppage> {
                     child: SingleChildScrollView(
                   child: Container(
                       padding: EdgeInsets.all(20),
-                      width: 360,
+                      width: screenWidth * 0.93,
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(15),

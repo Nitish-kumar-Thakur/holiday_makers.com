@@ -6,6 +6,7 @@ import 'package:HolidayMakers/widgets/responciveButton.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 
 class TravelersDetailsFD extends StatefulWidget {
@@ -79,7 +80,6 @@ class _TravelersDetailsFD extends State<TravelersDetailsFD> {
               "residentCountry": "",
               "residentCity": "",
             });
-    finalPrice = widget.BSData['package_price']['total'].toString();
   }
 
   Future<void> _fetchCountry() async {
@@ -210,19 +210,19 @@ class _TravelersDetailsFD extends State<TravelersDetailsFD> {
   Future<void> _applyVoucher() async {
     String enteredCode = _voucherController.text.trim();
 
-    // Map<String, dynamic> body = {
-    //   "voucher_code": enteredCode,
-    //   "package_id": widget.BSData['package_details']['package_id'],
-    //   "package_price": widget.BSData['package_price']['total'],
-    //   "package_type": "fd"
-    // };
-
     Map<String, dynamic> body = {
       "voucher_code": enteredCode,
-      "package_id": 85,
-      "package_price": 13000,
+      "package_id": widget.BSData['package_details']['package_id'],
+      "package_price": widget.BSData['package_price']['total'],
       "package_type": "fd"
     };
+
+    // Map<String, dynamic> body = {
+    //   "voucher_code": enteredCode,
+    //   "package_id": 85,
+    //   "package_price": 13000,
+    //   "package_type": "fd"
+    // };
 
     final response = await APIHandler.validateVoucher(body);
 
@@ -234,48 +234,21 @@ class _TravelersDetailsFD extends State<TravelersDetailsFD> {
     // print(voucherAPIResponse);
     // print('###########################################################');
 
-    if (voucherAPIResponse['code'] == 200) {
-      if (voucherAPIResponse['status'] == true) {
-        setState(() {
-          _showSuccessAnimation = true;
-          _showFailureAnimation = false;
-          finalPrice = response['final_price'];
-          voucherMessage = voucherAPIResponse['message'] +
-                  ".\nYou saved ${voucherAPIResponse['discount_price']}" ??
-              "🎉 Woohoo! Voucher Applied Successfully!";
-        });
-
-        Future.delayed(Duration(seconds: 3), () {
-          setState(() {
-            _showSuccessAnimation = false;
-          });
-        });
-      } else {
-        setState(() {
-          _showFailureAnimation = true;
-          _showSuccessAnimation = false;
-          voucherMessage =
-              voucherAPIResponse['message'] ?? "😞 Oops! Invalid Voucher.";
-        });
-
-        Future.delayed(Duration(seconds: 3), () {
-          setState(() {
-            _showFailureAnimation = false;
-          });
-        });
-      }
-    } else {
+    if (voucherAPIResponse['status'] == true) {
+      
       setState(() {
-        _showFailureAnimation = true;
-        _showSuccessAnimation = false;
-        voucherMessage = "😞 Something went wrong.";
+        // _showSuccessAnimation = true;
+        // _showFailureAnimation = false;
+        finalPrice = response['final_price'];
+        voucherMessage = voucherAPIResponse['message'] +
+                ".\nYou saved ${voucherAPIResponse['discount_price']}" ??
+            "🎉 Woohoo! Voucher Applied Successfully!";
       });
+      Fluttertoast.showToast(msg: voucherMessage);
 
-      Future.delayed(Duration(seconds: 3), () {
-        setState(() {
-          _showFailureAnimation = false;
-        });
-      });
+    } else {
+      Fluttertoast.showToast(msg: voucherAPIResponse
+            ['message'] ?? "😞 Oops! Invalid Voucher.");
     }
   }
 
@@ -673,9 +646,7 @@ class _TravelersDetailsFD extends State<TravelersDetailsFD> {
                                     child: DropdownSearch<String>(
                                       popupProps: PopupProps.menu(
                                         showSearchBox:
-                                            true,
-                                            
-                                             // Enables search functionality
+                                            true, // Enables search functionality
                                       ),
                                       items: (filter, infiniteScrollProps) =>
                                           countryList.isNotEmpty
@@ -687,23 +658,38 @@ class _TravelersDetailsFD extends State<TravelersDetailsFD> {
                                                   .toList()
                                               : [],
                                       selectedItem: _travelerDetails[index]
-                                          ["nationality"],
+                                                  ["nationality"] !=
+                                              null
+                                          ? countryList.firstWhere(
+                                              (country) =>
+                                                  country["origin"] ==
+                                                  _travelerDetails[index]
+                                                      ["nationality"],
+                                              orElse: () =>
+                                                  {"name": ""})["name"]
+                                          : null,
                                       onChanged: (value) {
                                         setState(() {
+                                          // Find the country object where the name matches the selected value
+                                          var selectedCountry =
+                                              countryList.firstWhere(
+                                                  (country) =>
+                                                      country["name"] == value,
+                                                  orElse: () =>
+                                                      {}); // Provide a fallback in case no match is found
+
+                                          // Store the 'origin' instead of the country name
                                           _travelerDetails[index]
-                                              ["nationality"] = value!;
+                                                  ["nationality"] =
+                                              selectedCountry["origin"];
                                         });
                                       },
-                                      
                                       decoratorProps: DropDownDecoratorProps(
-
                                         decoration: InputDecoration(
                                           filled: true,
                                           fillColor: Colors.white,
                                           labelText: 'Select Nationality',
-                                          
                                         ),
-                                
                                       ),
                                       validator: (value) {
                                         if (value == null || value.isEmpty) {
@@ -715,31 +701,57 @@ class _TravelersDetailsFD extends State<TravelersDetailsFD> {
                                   ),
                                 ],
                               ),
-
                               const SizedBox(height: 10),
 
                               // Resident Country Row
                               Row(
                                 children: [
                                   Expanded(
-                                    child: DropdownButtonFormField<String>(
-                                      value: countryList.any((country) =>
-                                              country["name"] ==
-                                              _travelerDetails[index]
-                                                  ["residentCountry"])
-                                          ? _travelerDetails[index]
-                                              ["residentCountry"]
+                                    child: DropdownSearch<String>(
+                                      popupProps: PopupProps.menu(
+                                        showSearchBox:
+                                            true, // Enables search functionality
+                                      ),
+                                      items: (filter, infiniteScrollProps) =>
+                                          countryList.isNotEmpty
+                                              ? countryList
+                                                  .map<String>((country) =>
+                                                      country["name"]
+                                                          ?.toString() ??
+                                                      "")
+                                                  .toList()
+                                              : [],
+                                      selectedItem: _travelerDetails[index]
+                                                  ["residentCountry"] !=
+                                              null
+                                          ? countryList.firstWhere(
+                                              (country) =>
+                                                  country["origin"] ==
+                                                  _travelerDetails[index]
+                                                      ["residentCountry"],
+                                              orElse: () =>
+                                                  {"name": ""})["name"]
                                           : null,
                                       onChanged: (value) {
                                         setState(() {
+                                          // Find the country object where the name matches the selected value
+                                          var selectedCountry =
+                                              countryList.firstWhere(
+                                                  (country) =>
+                                                      country["name"] == value,
+                                                  orElse: () =>
+                                                      {}); // Provide a fallback in case no match is found
+
+                                          // Store the 'origin' (not name) instead of the country name
                                           _travelerDetails[index]
-                                              ["residentCountry"] = value!;
-                                          cityList =
-                                              []; // Clear city list when country changes
+                                                  ["residentCountry"] =
+                                              selectedCountry["origin"];
                                         });
 
-                                        // Fetch cities based on the selected country
-                                        _fetchCity(value!.toString());
+                                        // Fetch cities based on the selected country's origin
+                                        _fetchCity(_travelerDetails[index]
+                                                ["residentCountry"]
+                                            .toString());
                                       },
                                       validator: (value) {
                                         if (value == null || value.isEmpty) {
@@ -747,19 +759,13 @@ class _TravelersDetailsFD extends State<TravelersDetailsFD> {
                                         }
                                         return null;
                                       },
-                                      decoration: InputDecoration(
-                                        filled: true,
-                                        fillColor: Colors.white,
-                                        labelText: 'Resident Country',
+                                      decoratorProps: DropDownDecoratorProps(
+                                        decoration: InputDecoration(
+                                          filled: true,
+                                          fillColor: Colors.white,
+                                          labelText: 'Resident Country',
+                                        ),
                                       ),
-                                      items: countryList
-                                          .map((country) =>
-                                              DropdownMenuItem<String>(
-                                                value:
-                                                    country["origin"] as String,
-                                                child: Text(country["name"]!),
-                                              ))
-                                          .toList(),
                                     ),
                                   ),
                                 ],
@@ -770,17 +776,36 @@ class _TravelersDetailsFD extends State<TravelersDetailsFD> {
                               Row(
                                 children: [
                                   Expanded(
-                                    child: DropdownButtonFormField<String>(
-                                      value: cityList.contains(
-                                              _travelerDetails[index]
-                                                  ["residentCity"])
+                                    child: DropdownSearch<String>(
+                                      popupProps: PopupProps.menu(
+                                        showSearchBox:
+                                            true, // Enables search functionality
+                                      ),
+                                      items: (filter, infiniteScrollProps) {
+                                        // Filter the cityList based on the filter string
+                                        if (filter == null || filter.isEmpty) {
+                                          return cityList; // Return all cities if no filter is applied
+                                        } else {
+                                          // Filter cities by the search filter (case insensitive)
+                                          return cityList
+                                              .where((city) => city
+                                                  .toLowerCase()
+                                                  .contains(
+                                                      filter.toLowerCase()))
+                                              .toList();
+                                        }
+                                      },
+                                      selectedItem: _travelerDetails[index]
+                                                  ["residentCity"] !=
+                                              null
                                           ? _travelerDetails[index]
                                               ["residentCity"]
                                           : null,
                                       onChanged: (value) {
                                         setState(() {
                                           _travelerDetails[index]
-                                              ["residentCity"] = value!;
+                                                  ["residentCity"] =
+                                              value!; // Update selected city
                                         });
                                       },
                                       validator: (value) {
@@ -789,18 +814,13 @@ class _TravelersDetailsFD extends State<TravelersDetailsFD> {
                                         }
                                         return null;
                                       },
-                                      decoration: InputDecoration(
-                                        filled: true,
-                                        fillColor: Colors.white,
-                                        labelText: 'Resident City',
+                                      decoratorProps: DropDownDecoratorProps(
+                                        decoration: InputDecoration(
+                                          filled: true,
+                                          fillColor: Colors.white,
+                                          labelText: 'Resident City',
+                                        ),
                                       ),
-                                      items: cityList
-                                          .map((city) =>
-                                              DropdownMenuItem<String>(
-                                                value: city,
-                                                child: Text(city),
-                                              ))
-                                          .toList(),
                                     ),
                                   ),
                                 ],
@@ -813,21 +833,9 @@ class _TravelersDetailsFD extends State<TravelersDetailsFD> {
                       );
                     },
                   ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      )),
-      bottomNavigationBar: Stack(
-        children: [
-          Padding(
-            padding: EdgeInsets.all(20.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Voucher Code Input Field
-                Row(
+                  SizedBox(height: 5,),
+                  Padding(padding: EdgeInsets.all(5),
+                  child: Row(
                   children: [
                     Expanded(
                       child: TextField(
@@ -850,9 +858,20 @@ class _TravelersDetailsFD extends State<TravelersDetailsFD> {
                       ),
                     ),
                   ],
-                ),
-                SizedBox(height: 10),
-
+                ),)
+                ],
+              ),
+            ),
+          ),
+        ],
+      )),
+      bottomNavigationBar: Stack(
+        children: [
+          Padding(
+            padding: EdgeInsets.only(left: 20.0, right: 20.0, bottom: 20.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
                 // Checkbox for Terms and Conditions
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -940,11 +959,14 @@ class _TravelersDetailsFD extends State<TravelersDetailsFD> {
                                 .toList(),
                             "passenger_type": travelers
                           };
+                          // print(body);
                           Navigator.push(
                             context,
                             MaterialPageRoute(
                                 builder: (context) => PaymentScreen(
-                                    sbAPIBody: body, BSData: widget.BSData)),
+                                    sbAPIBody: body,
+                                    BSData: widget.BSData,
+                                    flow: 'fd')),
                           );
                           // _saveBooking(body);
                         } else {
@@ -955,9 +977,10 @@ class _TravelersDetailsFD extends State<TravelersDetailsFD> {
                     child: Opacity(
                       opacity: _isChecked ? 1.0 : 0.5,
                       child: responciveButton(
-                        // text: finalPrice ?? widget.BSData['package_price']['total'].toString(),
+                        text:
+                            'Pay Now (${finalPrice ?? widget.BSData['package_price']['total'].toString()})',
                         // text: '${finalPrice}' ?? widget.BSData['package_price']['total'].toString(),
-                        text: 'Pay Now',
+                        // text: 'Pay Now',
                       ),
                     ),
                   ),
@@ -965,56 +988,6 @@ class _TravelersDetailsFD extends State<TravelersDetailsFD> {
               ],
             ),
           ),
-
-          // 🎉 Success Animation
-          if (_showSuccessAnimation)
-            Positioned.fill(
-              child: Center(
-                child: AnimatedOpacity(
-                  opacity: _showSuccessAnimation ? 1.0 : 0.0,
-                  duration: Duration(milliseconds: 500),
-                  child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                    decoration: BoxDecoration(
-                      color: Colors.green.withOpacity(0.9),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Text(
-                      voucherMessage,
-                      style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-
-// 😞 Failure Animation
-          if (_showFailureAnimation)
-            Positioned.fill(
-              child: Center(
-                child: AnimatedOpacity(
-                  opacity: _showFailureAnimation ? 1.0 : 0.0,
-                  duration: Duration(milliseconds: 500),
-                  child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                    decoration: BoxDecoration(
-                      color: Colors.red.withOpacity(0.9),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Text(
-                      voucherMessage,
-                      style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white),
-                    ),
-                  ),
-                ),
-              ),
-            ),
         ],
       ),
     );

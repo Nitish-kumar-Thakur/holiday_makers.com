@@ -8,7 +8,7 @@ import 'package:shimmer/shimmer.dart';
 
 class Travelerhotels extends StatefulWidget {
   final String numberOfNights;
-  final Map<String, dynamic> responceData;
+  final Map<String, dynamic> responceData; 
   final List<dynamic> roomArray;
   const Travelerhotels(
       {super.key,
@@ -100,6 +100,7 @@ class _TravelerhotelsState extends State<Travelerhotels> {
     final hotelList = List<Map<String, dynamic>>.from(
         widget.responceData['data']['hotel_list'] ?? []);
 
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: Column(
@@ -165,7 +166,35 @@ class _TravelerhotelsState extends State<Travelerhotels> {
           Expanded(
             child: isLoading
                 ? _buildShimmerGrid(screenWidth)
-                : ListView.builder(
+                : hotelList.isEmpty?
+                 Center(
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  'Oops!',
+                                  style: TextStyle(
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                SizedBox(height: 10),
+                                Text(
+                                  'No hotels found matching your search.',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                                SizedBox(height: 30),
+                              ],
+                            ),
+                          ),
+                        )
+                 :ListView.builder(
               itemCount: hotelList.length,
               itemBuilder: (_, index) {
                 return Padding(
@@ -406,28 +435,39 @@ class _HotelCardState extends State<HotelCard> {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
-                child: Image.network(
-                  widget.hotel["hotel_image"],
-                  fit: BoxFit.cover,
-                  width: screenWidth,
-                  height: screenWidth * 0.5, // Set a fixed height for the image
+                child: Stack(
+                  children: [
+                    // Image
+                    Image.network(
+                      widget.hotel["hotel_image"],
+                      fit: BoxFit.cover,
+                      width: screenWidth,
+                      height: screenWidth * 0.6, // Adjust the height of the image as needed
+                    ),
+                    // Semi-transparent black overlay
+                    Container(
+                      width: screenWidth,
+                      height: screenWidth * 0.6, // Same height as the image
+                      color: Colors.black.withOpacity(0.3), // Adjust opacity for darkness
+                    ),
+                  ],
                 ),
               ),
               Positioned(
                 bottom: 10,
                 left: 10,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      widget.hotel["hotel_name"],
-                      style: TextStyle(
-                        fontSize: screenWidth * 0.05,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
+                right: 60,
+                child: Container(
+                  width: screenWidth * 0.6, // Set a fixed width to allow wrapping
+                  child: Text(
+                    widget.hotel["hotel_name"],
+                    style: TextStyle(
+                      fontSize: screenWidth * 0.05, // Adjust size as needed
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white, // White text for visibility on dark backgrounds
                     ),
-                  ],
+                    softWrap: true, // Allow text to wrap onto the next line
+                  ),
                 ),
               ),
               Positioned(
@@ -457,12 +497,16 @@ class _HotelCardState extends State<HotelCard> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // City
-                      Text(
-                        widget.hotel["destination"] ?? "N/A",
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: screenWidth * 0.04,
-                          fontWeight: FontWeight.bold,
+                      Container(
+                        width: screenWidth * 0.6, // Fixed width for the city text
+                        child: Text(
+                          widget.hotel["destination"] ?? "N/A",
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: screenWidth * 0.04,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          softWrap: true, // Allow the text to wrap to the next line
                         ),
                       ),
                       SizedBox(height: screenWidth * 0.02),
@@ -482,11 +526,16 @@ class _HotelCardState extends State<HotelCard> {
                                 ),
                               ),
                               SizedBox(width: 5),
-                              Text(
-                                'Room Type: $roomType',
-                                style: TextStyle(
-                                  fontSize: screenWidth * 0.03,
-                                  height: 1.5,
+                              // Allow text to wrap without truncating
+                              Container(
+                                width: screenWidth * 0.5, // Fixed width for the room type text
+                                child: Text(
+                                  'Type: $roomType',
+                                  style: TextStyle(
+                                    fontSize: screenWidth * 0.03,
+                                    height: 1.5,
+                                  ),
+                                  softWrap: true, // Allow the text to wrap
                                 ),
                               ),
                             ],
@@ -503,11 +552,16 @@ class _HotelCardState extends State<HotelCard> {
                                 ),
                               ),
                               SizedBox(width: 5),
-                              Text(
-                                'Room Occupancy: $occupancy',
-                                style: TextStyle(
-                                  fontSize: screenWidth * 0.03,
-                                  height: 1.5,
+                              // Allow text to wrap without truncating
+                              Container(
+                                width: screenWidth * 0.5, // Fixed width for the room occupancy text
+                                child: Text(
+                                  'Occupancy: $occupancy',
+                                  style: TextStyle(
+                                    fontSize: screenWidth * 0.03,
+                                    height: 1.5,
+                                  ),
+                                  softWrap: true, // Allow the text to wrap
                                 ),
                               ),
                             ],
@@ -524,11 +578,16 @@ class _HotelCardState extends State<HotelCard> {
                                 ),
                               ),
                               SizedBox(width: 5),
-                              Text(
-                                'Meals Plan: $mealType',
-                                style: TextStyle(
-                                  fontSize: screenWidth * 0.03,
-                                  height: 1.5,
+                              // Allow text to wrap without truncating
+                              Container(
+                                width: screenWidth * 0.5, // Fixed width for the meals plan text
+                                child: Text(
+                                  'Meals Plan: $mealType',
+                                  style: TextStyle(
+                                    fontSize: screenWidth * 0.03,
+                                    height: 1.5,
+                                  ),
+                                  softWrap: true, // Allow the text to wrap
                                 ),
                               ),
                             ],

@@ -118,49 +118,51 @@ void _showLoginDialog(BuildContext context) {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+
     return Drawer(
       child: Container(
         color: Colors.white, // Background color
         child: Padding(
-          padding: EdgeInsets.only(top: 40, left: 0, right: 15),
+          padding: EdgeInsets.only(top: screenWidth * 0.1, left: 0, right: screenWidth * 0.04), // Dynamic top padding and right padding
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start, // Align items to the left
             children: [
               // Profile Header
               Container(
-                height: 80,
+                height: screenWidth * 0.2, // Height based on screen width
                 decoration: BoxDecoration(
                   color: Colors.grey.shade300, // Background of the whole list container
                   borderRadius: BorderRadius.only(
-                    topRight: Radius.circular(20),
-                    bottomRight: Radius.circular(20),
+                    topRight: Radius.circular(screenWidth * 0.05),
+                    bottomRight: Radius.circular(screenWidth * 0.05),
                   ),
                 ),
                 child: Padding(
-                  padding: EdgeInsets.only(left: 15),
+                  padding: EdgeInsets.only(left: screenWidth * 0.04),
                   child: Row(
                     children: [
                       CircleAvatar(
+                        radius: screenWidth * 0.07, // Dynamic circle avatar size
                         backgroundImage: profileImg.trim().isNotEmpty
                             ? NetworkImage(profileImg)
                             : AssetImage("img/placeholder.png"),
                       ),
-                      SizedBox(width: 10),
+                      SizedBox(width: screenWidth * 0.03),
                       AppLargeText(
                         text: firstName.trim().isEmpty ? "Hi, There" : firstName,
                         color: Colors.black, // Text color changed to black
-                        size: 24,
+                        size: screenWidth * 0.06, // Dynamic text size
                       ),
                     ],
                   ),
                 ),
               ),
-
-              SizedBox(height: 20),
+              SizedBox(height: screenWidth * 0.02),
 
               // Quick Actions Section
               Container(
-                padding: EdgeInsets.symmetric(vertical: 10),
+                padding: EdgeInsets.symmetric(vertical: screenWidth * 0.03),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
@@ -168,58 +170,78 @@ void _showLoginDialog(BuildContext context) {
                             () => Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => firstName.trim().isEmpty? LoginPage():ProfilePage()),
+                              builder: (context) => firstName.trim().isEmpty
+                                  ? LoginPage()
+                                  : ProfilePage()),
                         ),
-                        textColor: Colors.blue), // Blue text, black icon
+                        textColor: Colors.blue),
                     _iconButton(FontAwesomeIcons.userPen, "Manage Account",
-                            () => Navigator.push(context, MaterialPageRoute(builder: (context) => ManageAccount())),
+                            () => Navigator.push(context,
+                            MaterialPageRoute(builder: (context) => ManageAccount())),
                         textColor: Colors.blue),
                     _iconButton(FontAwesomeIcons.unlock, "Change Password",
-                            () => Navigator.push(context, MaterialPageRoute(builder: (context) => ChangePasswordScreen())),
+                            () => Navigator.push(context,
+                            MaterialPageRoute(builder: (context) => ChangePasswordScreen())),
                         textColor: Colors.blue),
                   ],
                 ),
               ),
 
-              SizedBox(height: 20),
+              SizedBox(height: screenWidth * 0.01),
 
               // My Trip Section
-              _sectionTitle("My Trips"),
-              Center( // Center aligning the container
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: AppLargeText(
+                  text: 'My Trips',
+                  size: screenWidth * 0.06,
+                  color: Colors.blue, // Text color changed to blue
+                ),
+              ),
+              Center(
                 child: Container(
-                  width: MediaQuery.of(context).size.width * 0.85, // Responsive width
+                  width: screenWidth * 0.8, // Responsive width
                   decoration: BoxDecoration(
                     color: Colors.grey.shade100, // Gray background
                     borderRadius: BorderRadius.only(
-                      topRight: Radius.circular(20),
-                      bottomRight: Radius.circular(20),
+                      topRight: Radius.circular(screenWidth * 0.05),
+                      bottomRight: Radius.circular(screenWidth * 0.05),
                     ),
                   ),
-                  padding: EdgeInsets.symmetric(vertical: 10),
+                  padding: EdgeInsets.symmetric(vertical: screenWidth * 0.02),
                   child: Column(
                     children: [
-                      _listItem(FontAwesomeIcons.newspaper, "My Booking", () => Navigator.push(context, MaterialPageRoute(builder: (context) => MyBookings()))),
+                      _listItem(FontAwesomeIcons.newspaper, "My Booking",
+                              () => Navigator.push(context,
+                              MaterialPageRoute(builder: (context) => MyBookings()))),
                       _listItem(FontAwesomeIcons.wallet, "Wallet", () {}),
                     ],
                   ),
                 ),
               ),
 
-              SizedBox(height: 20),
+              SizedBox(height: screenWidth * 0.02),
 
               // About Section
-              _sectionTitle("About"),
-              Center( // Center aligning the container
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: AppLargeText(
+                  text: 'About',
+                  size: screenWidth * 0.06,
+                  color: Colors.blue, // Text color changed to blue
+                ),
+              ),
+              Center(
                 child: Container(
-                  width: MediaQuery.of(context).size.width * 0.85, // Responsive width
+                  width: screenWidth * 0.85, // Responsive width
                   decoration: BoxDecoration(
                     color: Colors.grey.shade100, // Gray background
                     borderRadius: BorderRadius.only(
-                      topRight: Radius.circular(20),
-                      bottomRight: Radius.circular(20),
+                      topRight: Radius.circular(screenWidth * 0.05),
+                      bottomRight: Radius.circular(screenWidth * 0.05),
                     ),
                   ),
-                  padding: EdgeInsets.symmetric(vertical: 10),
+                  padding: EdgeInsets.symmetric(vertical: screenWidth * 0.03),
                   child: Column(
                     children: [
                       _listItem(FontAwesomeIcons.filePen, "Blogs", () => Navigator.push(context, MaterialPageRoute(builder: (context) => BlogsPage()))),
@@ -240,21 +262,9 @@ void _showLoginDialog(BuildContext context) {
     );
   }
 
-
-// Helper Widget for Section Titles
-  Widget _sectionTitle(String title) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-      child: AppLargeText(
-        text: title,
-        size: 24,
-        color: Colors.blue, // Text color changed to blue
-      ),
-    );
-  }
-
 // Helper Widget for List Items
   Widget _listItem(IconData icon, String text, VoidCallback onTap) {
+    final screenWidth = MediaQuery.of(context).size.width;
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -262,9 +272,9 @@ void _showLoginDialog(BuildContext context) {
         padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
         child: Row(
           children: [
-            Icon(icon, color: Colors.black, size: 20), // Icon color changed to black
+            Icon(icon, color: Colors.black, size: screenWidth * 0.05),
             SizedBox(width: 10),
-            AppLargeText(text: text, size: 16, color: Colors.black), // Text color changed to black
+            AppLargeText(text: text, size: screenWidth * 0.04, color: Colors.black), // Text color changed to black
           ],
         ),
       ),

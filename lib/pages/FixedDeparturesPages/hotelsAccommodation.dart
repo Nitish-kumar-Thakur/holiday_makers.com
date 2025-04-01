@@ -32,6 +32,8 @@ class _HotelsAccommodationState extends State<HotelsAccommodation> {
     // print("@@@@@@@@@@@@@@@@Nitish Thakur@@@@@@@@@@@@@@@@");
     // print(widget.packageData["dep_date"]);
     // print(widget.packageData["package_id"]);
+    // print(widget.totalRoomsdata);
+    // print(widget.packageData);
     // print("@@@@@@@@@@@@@@@@Nitish Thakur@@@@@@@@@@@@@@@@");
 
     super.initState();
@@ -50,7 +52,7 @@ class _HotelsAccommodationState extends State<HotelsAccommodation> {
       "package_id": widget.packageData['package_id'],
       "rooms": widget.totalRoomsdata.length.toString(),
       "room_wise_pax": widget.totalRoomsdata,
-      "dep_date": "2024-11-30"
+      "dep_date": widget.packageData['dep_date']
     };
     try {
       final response = await APIHandler.getFDHotelDetails(body);
@@ -115,45 +117,78 @@ class _HotelsAccommodationState extends State<HotelsAccommodation> {
                     Navigator.pop(context);
                   },
                   icon: CircleAvatar(
-                    backgroundColor: Colors.grey.withOpacity(0.6),  // Transparent grey background
+                    backgroundColor: Colors.grey
+                        .withOpacity(0.6), // Transparent grey background
                     child: Text(
-                      '<',  // Use "<" symbol
+                      '<', // Use "<" symbol
                       style: TextStyle(
-                        color: Colors.white,  // White text color
-                        fontSize: 24,  // Adjust font size as needed
-                        fontWeight: FontWeight.bold,  // Make the "<" bold if needed
+                        color: Colors.white, // White text color
+                        fontSize: 24, // Adjust font size as needed
+                        fontWeight:
+                            FontWeight.bold, // Make the "<" bold if needed
                       ),
                     ),
                   ),
                 ),
                 const SizedBox(width: 10),
                 Text('HOTELS',
-                style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Colors.white)
-                )
+                    style: TextStyle(
+                        fontSize: 26,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white))
               ],
             ),
             Expanded(
               child: isLoading
                   ? const HotelCardShimmer()
-                  : ListView.builder(
-                      itemCount: flattenedHotelList.length,
-                      itemBuilder: (_, index) {
-                        return Padding(
-                          padding: const EdgeInsets.only(left: 8, right: 8, bottom: 12),
-                          child: isLoading
-                              ? const HotelCardShimmer()
-                              : HotelCard(
-                                  hotel: flattenedHotelList[index],
-                                  isSelected: selectedHotelIndex == index,
-                                  onTap: () {
-                                    setState(() {
-                                      selectedHotelIndex = index;
-                                    });
-                                  },
+                  : flattenedHotelList.isEmpty
+                      ? Center(
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  'Oops!',
+                                  style: TextStyle(
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
-                        );
-                      },
-                    ),
+                                SizedBox(height: 10),
+                                Text(
+                                  'No hotels found matching your search.',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                                SizedBox(height: 30),
+                              ],
+                            ),
+                          ),
+                        )
+                      : ListView.builder(
+                          itemCount: flattenedHotelList.length,
+                          itemBuilder: (_, index) {
+                            return Padding(
+                              padding: const EdgeInsets.only(
+                                  left: 8, right: 8, bottom: 12),
+                              child: isLoading
+                                  ? const HotelCardShimmer()
+                                  : HotelCard(
+                                      hotel: flattenedHotelList[index],
+                                      isSelected: selectedHotelIndex == index,
+                                      onTap: () {
+                                        setState(() {
+                                          selectedHotelIndex = index;
+                                        });
+                                      },
+                                    ),
+                            );
+                          },
+                        ),
             ),
             isLoading == true
                 ? Padding(
@@ -171,33 +206,33 @@ class _HotelsAccommodationState extends State<HotelsAccommodation> {
                       ),
                     ),
                   )
-                : Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 20, vertical: 10),
-                    child: GestureDetector(
-                      onTap: flattenedHotelList.isEmpty
-                          ? null
-                          : () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => FlightPageFD(
-                                    activityList: widget.activityList,
-                                    selectedHotel:
-                                        flattenedHotelList[selectedHotelIndex],
-                                    packageData: widget.packageData,
-                                    // flightList: flightList,
-                                    totalRoomsdata: widget.totalRoomsdata,
-                                    searchId: searchId,
-                                  ),
+                : flattenedHotelList.isEmpty
+                    ? Container()
+                    : Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 20, vertical: 10),
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => FlightPageFD(
+                                  activityList: widget.activityList,
+                                  selectedHotel:
+                                      flattenedHotelList[selectedHotelIndex],
+                                  packageData: widget.packageData,
+                                  // flightList: flightList,
+                                  totalRoomsdata: widget.totalRoomsdata,
+                                  searchId: searchId,
                                 ),
-                              );
-                            },
-                      child: Padding(
-                          padding: const EdgeInsets.only(bottom: 20.0),
-                          child: responciveButton(text: "Book Now")),
-                    ),
-                  ),
+                              ),
+                            );
+                          },
+                          child: Padding(
+                              padding: const EdgeInsets.only(bottom: 20.0),
+                              child: responciveButton(text: "Book Now")),
+                        ),
+                      ),
           ],
         ),
       ),
@@ -245,23 +280,46 @@ class _HotelCardState extends State<HotelCard> {
               // Image widget
               ClipRRect(
                 borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
-                child: Image.network(
-                  widget.hotel["image"],
-                  fit: BoxFit.cover,
-                  width: screenWidth,
-                  // height: screenWidth * 0.6, // Adjust the height of the image as needed
+                child: Stack(
+                  children: [
+                    // Image
+                    Image.network(
+                      widget.hotel["image"] ??
+                          "https://www.pngkey.com/png/full/360-3608307_placeholder-hotel-house.png",
+                      fit: BoxFit.cover,
+                      width: screenWidth,
+                      height: screenWidth * 0.6,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Image.network("https://www.pngkey.com/png/full/360-3608307_placeholder-hotel-house.png");
+                      }, // Adjust the height of the image as needed
+                    ),
+                    // Semi-transparent black overlay
+                    Container(
+                      width: screenWidth,
+                      height: screenWidth * 0.6, // Same height as the image
+                      color: Colors.black
+                          .withOpacity(0.3), // Adjust opacity for darkness
+                    ),
+                  ],
                 ),
               ),
               // Positioned text for hotel name (bottom left)
               Positioned(
                 bottom: 10,
                 left: 10,
-                child: Text(
-                  widget.hotel["hotel"].toUpperCase(),
-                  style: TextStyle(
-                    fontSize: screenWidth * 0.05, // Adjust size as needed
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white, // White text for visibility on dark backgrounds
+                right: 60, // Avoid overlapping with stars
+                child: Container(
+                  width:
+                      screenWidth * 0.6, // Set a fixed width to allow wrapping
+                  child: Text(
+                    widget.hotel["hotel"].toUpperCase(),
+                    style: TextStyle(
+                      fontSize: screenWidth * 0.05, // Adjust size as needed
+                      fontWeight: FontWeight.bold,
+                      color: Colors
+                          .white, // White text for visibility on dark backgrounds
+                    ),
+                    softWrap: true, // Allow text to wrap onto the next line
                   ),
                 ),
               ),
@@ -270,11 +328,8 @@ class _HotelCardState extends State<HotelCard> {
                 bottom: 10,
                 right: 10,
                 child: Container(
-                  // decoration: BoxDecoration(
-                  //   color: Colors.grey[200],  // Set the background color to grey
-                  //   borderRadius: BorderRadius.circular(12),  // Set the border radius
-                  // ),
-                  padding: EdgeInsets.all(3),  // Optional padding around the stars
+                  padding:
+                      EdgeInsets.all(3), // Optional padding around the stars
                   child: Row(
                     children: List.generate(star, (index) {
                       return Icon(
@@ -301,12 +356,18 @@ class _HotelCardState extends State<HotelCard> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // City
-                      Text(
-                        widget.hotel["city"],
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: screenWidth * 0.04,
-                          fontWeight: FontWeight.bold,
+                      Container(
+                        width:
+                            screenWidth * 0.6, // Fixed width for the city text
+                        child: Text(
+                          widget.hotel["city"] ?? "N/A",
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: screenWidth * 0.04,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          softWrap:
+                              true, // Allow the text to wrap to the next line
                         ),
                       ),
                       SizedBox(height: screenWidth * 0.02),
@@ -326,11 +387,17 @@ class _HotelCardState extends State<HotelCard> {
                                 ),
                               ),
                               SizedBox(width: 5),
-                              Text(
-                                'Room Type: $roomType',
-                                style: TextStyle(
-                                  fontSize: screenWidth * 0.03,
-                                  height: 1.5,
+                              // Allow text to wrap without truncating
+                              Container(
+                                width: screenWidth *
+                                    0.5, // Fixed width for the room type text
+                                child: Text(
+                                  'Type: $roomType',
+                                  style: TextStyle(
+                                    fontSize: screenWidth * 0.03,
+                                    height: 1.5,
+                                  ),
+                                  softWrap: true, // Allow the text to wrap
                                 ),
                               ),
                             ],
@@ -347,11 +414,17 @@ class _HotelCardState extends State<HotelCard> {
                                 ),
                               ),
                               SizedBox(width: 5),
-                              Text(
-                                'Room Occupancy: $occupancy',
-                                style: TextStyle(
-                                  fontSize: screenWidth * 0.03,
-                                  height: 1.5,
+                              // Allow text to wrap without truncating
+                              Container(
+                                width: screenWidth *
+                                    0.5, // Fixed width for the room occupancy text
+                                child: Text(
+                                  'Occupancy: $occupancy',
+                                  style: TextStyle(
+                                    fontSize: screenWidth * 0.03,
+                                    height: 1.5,
+                                  ),
+                                  softWrap: true, // Allow the text to wrap
                                 ),
                               ),
                             ],
@@ -368,11 +441,17 @@ class _HotelCardState extends State<HotelCard> {
                                 ),
                               ),
                               SizedBox(width: 5),
-                              Text(
-                                'Meals Plan: $mealType',
-                                style: TextStyle(
-                                  fontSize: screenWidth * 0.03,
-                                  height: 1.5,
+                              // Allow text to wrap without truncating
+                              Container(
+                                width: screenWidth *
+                                    0.5, // Fixed width for the meals plan text
+                                child: Text(
+                                  'Meals Plan: $mealType',
+                                  style: TextStyle(
+                                    fontSize: screenWidth * 0.03,
+                                    height: 1.5,
+                                  ),
+                                  softWrap: true, // Allow the text to wrap
                                 ),
                               ),
                             ],
@@ -419,8 +498,9 @@ class _HotelCardState extends State<HotelCard> {
                           child: ElevatedButton(
                             onPressed: widget.onTap,
                             style: ElevatedButton.styleFrom(
-                              backgroundColor:
-                              widget.isSelected ? Color(0xFF0071BC) : Colors.white,
+                              backgroundColor: widget.isSelected
+                                  ? Color(0xFF0071BC)
+                                  : Colors.white,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(20),
                               ),
@@ -432,7 +512,7 @@ class _HotelCardState extends State<HotelCard> {
                                 color: widget.isSelected
                                     ? Colors.white
                                     : Color(0xFF0071BC),
-                                fontSize: screenWidth * 0.035,
+                                fontSize: screenWidth * 0.030,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),

@@ -28,6 +28,7 @@ class _MaincarouselState extends State<Maincarousel> {
               decoration: BoxDecoration(
                 image: DecorationImage(
                   image: CachedNetworkImageProvider(
+                    
                     widget.banner_list[index]['mobile_img'],
                     // Optionally add a placeholder or handle error.
                   ),

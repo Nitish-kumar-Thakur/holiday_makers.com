@@ -3,19 +3,11 @@ import 'package:HolidayMakers/extras/TabbyWebView.dart';
 import 'package:flutter/material.dart';
 
 class PaymentScreen extends StatelessWidget {
-  
-
   const PaymentScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final tabbyService = TabbyService(
-      apiKey: 'sk_test_6cffbd5b-d2ac-4e84-a9ea-e854e7460fb9',
-      merchantCode: 'smarttravel',
-      successUrl: 'https://yourdomain.com/success',
-      cancelUrl: 'https://yourdomain.com/cancel',
-      failureUrl: 'https://yourdomain.com/failure',
-    );
+    final tabbyService = TabbyService();
 
     return Scaffold(
       appBar: AppBar(title: const Text('Select Payment Method')),
@@ -58,18 +50,14 @@ class _PaymentMethodsState extends State<PaymentMethods> {
 
   Future<void> _initiateTabbyPayment() async {
     setState(() => _isLoading = true);
-    
+
     try {
-      final session = await widget.tabbyService.createCheckoutSession(
-        amount: widget.amount,
-        orderId: widget.orderId,
-        customerName: widget.customerName,
-        customerEmail: widget.customerEmail,
-        customerPhone: widget.customerPhone,
-      );
+      final session = await widget.tabbyService.createCheckoutSession();
 
       final paymentId = session['payment']['id'];
-      final webviewUrl = session['configuration']['available_products']['installments'][0]['web_url'];
+      final webviewUrl = session['configuration']['available_products']
+          ['installments'][0]['web_url'];
+      print("payment id $paymentId");
 
       final result = await Navigator.push(
         context,
@@ -77,7 +65,7 @@ class _PaymentMethodsState extends State<PaymentMethods> {
           builder: (context) => TabbyWebView(
             url: webviewUrl,
             paymentId: paymentId,
-            amount: widget.amount,
+            amount: 5449,
             tabbyService: widget.tabbyService,
           ),
         ),
@@ -159,7 +147,7 @@ class _PaymentMethodsState extends State<PaymentMethods> {
         leading: Icon(icon, size: 40),
         title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
         subtitle: Text(subtitle),
-        trailing: _isLoading 
+        trailing: _isLoading
             ? const CircularProgressIndicator()
             : const Icon(Icons.arrow_forward),
         onTap: _isLoading ? null : onTap,

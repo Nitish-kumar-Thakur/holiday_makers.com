@@ -40,7 +40,10 @@ class _TabbyWebViewState extends State<TabbyWebView> {
           onPageStarted: (_) => _updateLoadingState(false),
           onPageFinished: (_) async {
             _updateLoadingState(false);
-            _canGoBack = await _controller.canGoBack();
+            bool canGoBack = await _controller.canGoBack();
+            setState(() {
+              _canGoBack = canGoBack;
+            });
           },
           onWebResourceError: (error) {
             _updateLoadingState(false);
@@ -62,25 +65,30 @@ class _TabbyWebViewState extends State<TabbyWebView> {
 
   NavigationDecision _handleNavigation(NavigationRequest request) {
     if (request.url.contains('success')) {
+      print('success in tabby webview');
       _completePayment();
       return NavigationDecision.prevent;
     }
     if (request.url.contains('cancel') || request.url.contains('failure')) {
-      Navigator.pop(context, request.url.contains('cancel') ? 'cancel' : 'failure');
+      Navigator.pop(
+          context, request.url.contains('cancel') ? 'cancel' : 'failure');
       return NavigationDecision.prevent;
     }
     return NavigationDecision.navigate;
   }
 
   Future<void> _completePayment() async {
+    print("_completePayment");
     try {
-      final status = await widget.tabbyService.getPaymentStatus(widget.paymentId);
-      
-      if (status['status'] == 'CREATED') {
+      final status =
+          await widget.tabbyService.getPaymentStatus(widget.paymentId);
+      print("getPaymentStatus: $status");
+
+      if (status['status'] == 'AUTHORIZED') {
         await widget.tabbyService.capturePayment(
           widget.paymentId,
-          widget.amount,
         );
+        print("capturePayment: $status");
         Navigator.pop(context, 'success');
       } else {
         Navigator.pop(context, 'failure');
@@ -93,28 +101,21 @@ class _TabbyWebViewState extends State<TabbyWebView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Tabby Payment'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: _canGoBack
-              ? () async {
-                  if (await _controller.canGoBack()) {
-                    await _controller.goBack();
-                  } else {
-                    Navigator.pop(context, 'cancel');
-                  }
-                }
-              : null,
-        ),
-      ),
-      body: Stack(
-        children: [
-          WebViewWidget(controller: _controller),
-          if (_isLoading)
-            const Center(child: CircularProgressIndicator()),
-        ],
-      ),
-    );
+        // appBar: AppBar(
+        //   title: const Text('Tabby Payment'),
+        //   leading: IconButton(
+        //     icon: const Icon(Icons.arrow_back),
+        //     onPressed: _canGoBack
+        //         ? () async {
+        //             if (await _controller.canGoBack()) {
+        //               await _controller.goBack();
+        //             } else {
+        //               Navigator.pop(context, 'cancel');
+        //             }
+        //           }
+        //         : null,
+        //   ),
+        // ),
+        body: SafeArea(child: WebViewWidget(controller: _controller)));
   }
 }

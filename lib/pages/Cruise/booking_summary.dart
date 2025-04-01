@@ -1,6 +1,12 @@
+import 'dart:ui';
+
+import 'package:HolidayMakers/Tabby/PaymentPage.dart';
 import 'package:HolidayMakers/utils/api_handler.dart';
 import 'package:HolidayMakers/widgets/responciveButton.dart';
+import 'package:HolidayMakers/widgets/terms_and_conditions_page.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
@@ -29,6 +35,11 @@ class _BookingSummaryPageState extends State<BookingSummaryPage> {
   };
   String searchId = "";
   Map<String, dynamic> apiResponse = {};
+  Map<String, dynamic> BSData = {};
+  bool _isChecked = false;
+  TextEditingController _voucherController = TextEditingController();
+  Map<String, dynamic> voucherAPIResponse = {};
+  String? finalPrice;
 
   @override
   void initState() {
@@ -56,9 +67,9 @@ class _BookingSummaryPageState extends State<BookingSummaryPage> {
       };
 
       final response = await APIHandler.getCruiseBSDetails(requestBody: requestBody);
-
       setState(() {
         var data = response['data'] ?? {};
+        BSData = response['data'];
 
         packageDetails = {
           'PACKAGE': data['cruise_details']?['cruise_name'] ?? 'N/A',
@@ -86,6 +97,8 @@ class _BookingSummaryPageState extends State<BookingSummaryPage> {
         searchId = response['data']['search_id'].toString();
         isLoading = false;
       });
+      print(BSData['cruise_details']['cruise_id']);
+      print(BSData['cruise_price']['total']);
     } catch (e) {
       print("Error: $e");
       setState(() {
@@ -94,22 +107,58 @@ class _BookingSummaryPageState extends State<BookingSummaryPage> {
     }
   }
 
-  Future<void> _saveBooking(Map<String, dynamic> body) async {
-    print(body);
-    try {
-      final response = await APIHandler.cruiseSaveBooking(body);
-      if (response["status"] == true) {
-        setState(() {
-          apiResponse = response['data'];
-        });
-        print('==================================');
-        print('Final API Response: $apiResponse');
-        print('==================================');
-      }
-    } catch (e) {
-      print("Error fetching cities: $e");
+  Future<void> _applyVoucher() async {
+    String enteredCode = _voucherController.text.trim();
+
+    // Map<String, dynamic> body = {
+    //   "voucher_code": enteredCode,
+    //   "package_id": widget.BSData['package_details']['package_id'],
+    //   "package_price": widget.BSData['package_price']['total'],
+    //   "package_type": "fd"
+    // };
+
+    Map<String, dynamic> body = {
+      "voucher_code": enteredCode,
+      "package_id": BSData['cruise_details']['cruise_id'],
+      "package_price": BSData['cruise_price']['total'],
+      "package_type": "cruise"
+    };
+
+    final response = await APIHandler.validateVoucher(body);
+
+    setState(() {
+      voucherAPIResponse = response;
+    });
+
+    print('###########################################################');
+    print(voucherAPIResponse);
+    print('###########################################################');
+
+    if (voucherAPIResponse['status'] == true) {
+      finalPrice = voucherAPIResponse['final_price'];
+      Fluttertoast.showToast(msg: voucherAPIResponse['message']);
+
+    } else {
+      Fluttertoast.showToast(msg: voucherAPIResponse['message']);
     }
   }
+
+  // Future<void> _saveBooking(Map<String, dynamic> body) async {
+  //   print(body);
+  //   try {
+  //     final response = await APIHandler.cruiseSaveBooking(body);
+  //     if (response["status"] == true) {
+  //       setState(() {
+  //         apiResponse = response['data'];
+  //       });
+  //       print('==================================');
+  //       print('Final API Response: $apiResponse');
+  //       print('==================================');
+  //     }
+  //   } catch (e) {
+  //     print("Error fetching cities: $e");
+  //   }
+  // }
 
   // Controllers for input fields
   final TextEditingController contactNameController = TextEditingController();
@@ -125,6 +174,78 @@ class _BookingSummaryPageState extends State<BookingSummaryPage> {
         size: Size(double.infinity, 0), // Height of the curved area
         painter: CirclePainter(radius: 200),
       ),
+    );
+  }
+
+  void _showTermsPopup(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) {
+        return Stack(
+          children: [
+            // Blurred Background Effect
+            Positioned.fill(
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                child: Container(
+                    color: Colors.black.withOpacity(0.05)),
+              ),
+            ),
+            Center(
+              child: AlertDialog(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12), // Rounded corners
+                ),
+                title: Text(
+                  "Terms and Conditions",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.center,
+                ),
+                content: Container(
+                  width: double.maxFinite,
+                  constraints: BoxConstraints(maxHeight: 300), // Limit height
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Please read the terms carefully before proceeding:",
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        SizedBox(height: 10),
+                        Text(
+                          "1. You must agree to the terms before proceeding.\n"
+                              "2. Payments are final and non-refundable.\n"
+                              "3. Your data will be used as per our privacy policy.\n"
+                              "4. Other terms may apply...\n\n"
+                              "By proceeding, you confirm that you have read and accepted these terms.",
+                          style: TextStyle(fontSize: 14),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: Text(
+                      "Close",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.blue, // Professional blue color
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -191,39 +312,135 @@ class _BookingSummaryPageState extends State<BookingSummaryPage> {
                   const SizedBox(height: 20),  // Space between sections
                   _buildContactInfo(fontSize),
                   // const SizedBox(height: 20),  // Space at the bottom
+                  SizedBox(height: 5,),
+                  Padding(padding: EdgeInsets.all(5),
+                  child: Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _voucherController,
+                        decoration: InputDecoration(
+                          labelText: "Enter Voucher Code",
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 10),
+                    ElevatedButton(
+                      onPressed: _applyVoucher,
+                      child: Text("Apply",
+                          style: const TextStyle(color: Colors.white)),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.lightBlueAccent,
+                      ),
+                    ),
+                  ],
+                ),)
                 ],
               ),
             ),
           ],
         ),
       ),
-        bottomNavigationBar:isLoading?null:Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: SizedBox(
-          width: double.infinity,
-          child: IconButton(
-            onPressed: () {
-              if (_formKey.currentState!.validate()) {
-                // print(contactDetails);
-                // print(searchId);
-                Map <String, dynamic> body = {
-                  "search_id": searchId.toString(),
-                  "voucher_code":"",
-                  "title": contactDetails['title'].toString(),
-                  "name": contactDetails['contactName'].toString(),
-                  "email": contactDetails['email'].toString(),
-                  "country_code": contactDetails['countryCode'].toString(),
-                  "phone": contactDetails['phoneNumber'].toString(),
-                  "payment_type": "telr"
-                };
-                _saveBooking(body);
-              }
+      bottomNavigationBar: isLoading
+          ? null
+          : Stack(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 20.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Checkbox(
+                          value: _isChecked,
+                          onChanged: (bool? value) {
+                            setState(() {
+                              _isChecked = value ?? false;
+                            });
+                          },
+                        ),
+                        Flexible(
+                          child: GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                _isChecked = !_isChecked;
+                              });
+                            },
+                            child: RichText(
+                              text: TextSpan(
+                                style: TextStyle(fontSize: 14.0, color: Colors.black),
+                                children: [
+                                  TextSpan(text: "I have read and agree to the "),
+                                  TextSpan(
+                                    text: "Terms and Conditions",
+                                    style: TextStyle(
+                                      color: Colors.blue,
+                                      fontWeight: FontWeight.bold,
+                                      decoration: TextDecoration.underline,
+                                    ),
+                                    recognizer: TapGestureRecognizer()
+                                      ..onTap = () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => TermsAndConditionsPage(),
+                                          ),
+                                        );
+                                      },
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                    AbsorbPointer(
+                      absorbing: !_isChecked,
+                      child: GestureDetector(
+                        onTap: () {
+                          if (_formKey.currentState!.validate()) {
+                            // print(contactDetails);
+                            // print(searchId);
+                            Map <String, dynamic> body = {
+                              "search_id": searchId.toString(),
+                              "voucher_code": _voucherController.text,
+                              "title": contactDetails['title'].toString(),
+                              "name": contactDetails['contactName'].toString(),
+                              "email": contactDetails['email'].toString(),
+                              "country_code": contactDetails['countryCode'].toString(),
+                              "phone": contactDetails['phoneNumber'].toString(),
+                              "payment_type": ""
+                            };
+                            // _saveBooking(body);
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => PaymentScreen(BSData: BSData, sbAPIBody: body, flow: 'cruise'),
+                                ));
+                          }
 
-            },
-            icon: responciveButton(text: 'Pay Now'),
-          ),
-        ),
-      ),
+                        },
+                        child: Opacity(
+                          opacity: _isChecked ? 1.0 : 0.5,
+                          child: responciveButton(
+                            text: "Pay Now (${finalPrice ?? BSData['cruise_price']['total'].toString()})",
+                            // text: '${finalPrice}' ?? widget.BSData['package_price']['total'].toString(),
+                            // text: 'Pay Now',
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                )
+              ),
+            ],
+          )
     );
   }
 

@@ -24,64 +24,70 @@ class Dropdownwidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // List<String> cityNames = items.map((city) => city["name"] ?? "").toList();
-    return Row(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 8.0, bottom: 4.0),
-                child: Text(
-                  hintText,
-                  style: TextStyle(
-                    color: txtcolor,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              DropdownSearch<String>(
-                popupProps: PopupProps.menu(
-                  showSearchBox: search
-                ),
-                items: (filter, infiniteScrollProps) =>
-                    items.map((item) => item["name"] ?? "").toList(),
-                selectedItem: selectedValue != null
-                    ? items.firstWhere(
-                        (item) => item["id"] == selectedValue)["name"]
-                    : null,
-                decoratorProps: DropDownDecoratorProps(
-                  decoration: InputDecoration(
-                    hintText: "Select",
-                    prefixIcon: Icon(Icons.location_on, size: 30),
-                    contentPadding: EdgeInsets.symmetric(horizontal: 16),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: Colors.white, width: 1),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: Colors.white, width: 1),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: Colors.grey, width: 1),
-                    ),
-                    fillColor: bgColor,
-                    filled: true,
-                  ),
-                ),
-                onChanged: (String? newValue) {
-                  String? selectedId = items.firstWhere(
-                      (item) => item["name"] == newValue,
-                      orElse: () => {"id": ""})["id"];
-                  onChanged(selectedId);
-                },
-              )
-            ],
+        Padding(
+          padding: const EdgeInsets.only(left: 8.0, bottom: 4.0),
+          child: Text(
+            hintText,
+            style: TextStyle(
+              color: txtcolor,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
+        Row(
+          children: [
+            Expanded(
+                child: DropdownSearch<String>(
+              popupProps: PopupProps.menu(
+                showSearchBox: search,
+                constraints: BoxConstraints(
+                  minHeight: 100, // Minimum height when items are few
+                  maxHeight: items.length * 48.0 > 300
+                      ? 300
+                      : items.length * 48.0 + 20,
+                  // Max height is 300 or dynamically calculated height  // Adjusts dynamically based on items
+                ),
+              ),
+              items: (filter, infiniteScrollProps) =>
+                  items.map((item) => item["name"] ?? "").toList(),
+              selectedItem: selectedValue != null
+                  ? items
+                      .firstWhere((item) => item["id"] == selectedValue)["name"]
+                  : null,
+              decoratorProps: DropDownDecoratorProps(
+                decoration: InputDecoration(
+                  hintText: "Select",
+                  prefixIcon: Icon(Icons.location_on, size: 30),
+                  contentPadding: EdgeInsets.symmetric(horizontal: 16),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(color: Colors.white, width: 1),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(color: Colors.white, width: 1),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(color: Colors.grey, width: 1),
+                  ),
+                  fillColor: bgColor,
+                  filled: true,
+                ),
+              ),
+              onChanged: (String? newValue) {
+                String? selectedId = items.firstWhere(
+                    (item) => item["name"] == newValue,
+                    orElse: () => {"id": ""})["id"];
+                onChanged(selectedId);
+              },
+            ))
+          ],
+        )
       ],
     );
   }

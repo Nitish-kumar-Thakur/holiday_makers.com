@@ -151,14 +151,32 @@ class _FlightPageFDState extends State<FlightPageFD> {
                   )
                 : flightList.isEmpty
                     ? const Center(
-                        child: Text(
-                          "Flights not available",
-                          style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black54),
-                        ),
-                      )
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  'Oops!',
+                                  style: TextStyle(
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                SizedBox(height: 10),
+                                Text(
+                                  'No flights found matching your search.',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                                SizedBox(height: 30),
+                              ],
+                            ),
+                          ),
+                        )
                     : Padding(
                         padding: const EdgeInsets.all(16.0),
                         child: ListView.builder(
@@ -188,47 +206,10 @@ class _FlightPageFDState extends State<FlightPageFD> {
           ),
         ],
       ),
-      // body: Container(
-      //   color: Colors.white, // Set background color to white
-      //   child: Padding(
-      //     padding: const EdgeInsets.all(16.0),
-      //     child: widget.flightList.isEmpty
-      //         ? const Center(
-      //       child: Text(
-      //         "Flights not available",
-      //         style: TextStyle(
-      //             fontSize: 18,
-      //             fontWeight: FontWeight.bold,
-      //             color: Colors.black54),
-      //       ),
-      //     )
-      //         : ListView.builder(
-      //       itemCount: widget.flightList.length,
-      //       itemBuilder: (context, index) {
-      //         final flightData = widget.flightList[index];
-      //
-      //         return FlightPackageCard(
-      //           optionKey:
-      //           flightData["option_type"], // "Option_1", "Option_2"
-      //           onwardFlights: List<Map<String, dynamic>>.from(
-      //               flightData["Onward"] ?? []),
-      //           returnFlights: List<Map<String, dynamic>>.from(
-      //               flightData["Return"] ?? []),
-      //           isSelected: selectedFlightIndex == index,
-      //           onTap: () {
-      //             setState(() {
-      //               selectedFlightIndex = index;
-      //             });
-      //           },
-      //         );
-      //       },
-      //     ),
-      //   ),
-      // ),
 
       bottomNavigationBar: isLoading
           ? null
-          : Padding(
+          : flightList.isEmpty? SizedBox(): Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               child: GestureDetector(
                 onTap: () {
@@ -265,7 +246,7 @@ class _FlightPageFDState extends State<FlightPageFD> {
                     );
                   }
                 },
-                child: Padding(
+                child:  Padding(
                   padding: const EdgeInsets.only(bottom: 20.0),
                   child: responciveButton(text: "Book Now"),
                 ),
@@ -332,8 +313,8 @@ class _FlightPackageCardState extends State<FlightPackageCard> {
           children: [
             Align( alignment: Alignment.bottomRight,
               child: Container(
-                      height: 10,
-                      width: 10,
+                      height: 12,
+                      width: 12,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         color: widget.isSelected
@@ -417,7 +398,7 @@ class _FlightPackageCardState extends State<FlightPackageCard> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SizedBox(height: 10),
+        // const SizedBox(height: 10),
         Column(
           children: flights.map((flight) {
             String flightKey = flight["flight_details_id"];
@@ -468,99 +449,135 @@ class _FlightPackageCardState extends State<FlightPackageCard> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // const SizedBox(height: 12),
-        // Row(
-        //   children: [
-        //     Expanded(
-        //       child: Text(
-        //         flightName,
-        //         style: const TextStyle(
-        //             fontSize: 14,
-        //             fontWeight: FontWeight.bold,
-        //             color: Colors.black87),
-        //       ),
-        //     ),
-        //     Text(
-        //       "Flight No: $flightNo",
-        //       style: const TextStyle(fontSize: 14, color: Colors.black54),
-        //     ),
-        //   ],
-        // ),
-        // const SizedBox(height: 10),
-        if (show)
-          Text(
-            flightName,
-            style: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
+        const SizedBox(height: 12),
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                flightName,
+                style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87),
+              ),
             ),
-          ),
+            Text(
+              "Flight No: $flightNo",
+              style: const TextStyle(fontSize: 14, color: Colors.black54),
+            ),
+          ],
+        ),
+        // const SizedBox(height: 10),
+        // if (show)
+        //   Text(
+        //     flightName,
+        //     style: const TextStyle(
+        //       fontSize: 20,
+        //       fontWeight: FontWeight.bold,
+        //       color: Colors.black,
+        //     ),
+        //   ),
         const SizedBox(height: 10),
         Row(
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(depTime,
-                    style: const TextStyle(
-                        fontSize: 16, fontWeight: FontWeight.bold)),
-                const SizedBox(height: 4),
-                Text(depFrom,
-                    style: const TextStyle(fontSize: 14, color: Colors.black)),
-                // Text(depTerminal,
-                //     style: const TextStyle(fontSize: 12, color: Colors.black)),
-              ],
+            // Left Column (Departure info)
+            Container(
+              width: MediaQuery.of(context).size.width * 0.3, // Set fixed width (30% of screen width)
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    depTime,
+                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    softWrap: true, // Text will wrap if it's too long
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    depFrom,
+                    style: const TextStyle(fontSize: 14, color: Colors.black),
+                    softWrap: true,
+                  ),
+                  Text(
+                    depTerminal,
+                    style: const TextStyle(fontSize: 12, color: Colors.black),
+                    softWrap: true,
+                  ),
+                ],
+              ),
             ),
+
             const Spacer(),
-            Column(
-              children: [
-                Icon(
+
+            // Middle Column (Flight Icon and Duration)
+            Container(
+              width: MediaQuery.of(context).size.width * 0.2, // Set fixed width (20% of screen width)
+              child: Column(
+                children: [
+                  Icon(
                     title == "Onward Flight"
                         ? Icons.flight_takeoff
                         : Icons.flight_land_outlined,
                     color: Colors.blueAccent,
-                    size: 30),
-                Text(duration,
-                    style: const TextStyle(fontSize: 14, color: Colors.grey)),
-              ],
+                    size: 30,
+                  ),
+                  Text(
+                    duration,
+                    style: const TextStyle(fontSize: 14, color: Colors.grey),
+                    softWrap: true,
+                  ),
+                ],
+              ),
             ),
+
             const Spacer(),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text(arrTime,
-                    style: const TextStyle(
-                        fontSize: 16, fontWeight: FontWeight.bold)),
-                const SizedBox(height: 4),
-                Text(arrTo,
-                    style: const TextStyle(fontSize: 14, color: Colors.black)),
-                // Text(arrTerminal,
-                //     style: const TextStyle(fontSize: 12, color: Colors.black)),
-              ],
+
+            // Right Column (Arrival info)
+            Container(
+              width: MediaQuery.of(context).size.width * 0.3, // Set fixed width (30% of screen width)
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    arrTime,
+                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    softWrap: true,
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    arrTo,
+                    style: const TextStyle(fontSize: 14, color: Colors.black),
+                    softWrap: true,
+                  ),
+                  Text(
+                    arrTerminal,
+                    style: const TextStyle(fontSize: 12, color: Colors.black),
+                    softWrap: true,
+                  ),
+                ],
+              ),
             ),
           ],
         ),
 
         // Additional flight details (baggage info, etc.)
-        if (!show) const SizedBox(height: 8),
+        // if (!show) const SizedBox(height: 8),
 
-        if (!show)
-          InkWell(
-            onTap: () => _toggleExpand(flightKey),
-            child: Row(
-              children: [
-                const Icon(Icons.info_outline,
-                    size: 16, color: Colors.blueAccent),
-                const SizedBox(width: 5),
-                Text(
-                  isExpanded ? "Hide Info" : "Show More",
-                  style:
-                      const TextStyle(fontSize: 12, color: Colors.blueAccent),
-                ),
-              ],
-            ),
+        // if (!show)
+        InkWell(
+          onTap: () => _toggleExpand(flightKey),
+          child: Row(
+            children: [
+              const Icon(Icons.info_outline,
+                  size: 16, color: Colors.blueAccent),
+              const SizedBox(width: 5),
+              Text(
+                isExpanded ? "Hide Info" : "Show More",
+                style:
+                    const TextStyle(fontSize: 12, color: Colors.blueAccent),
+              ),
+            ],
           ),
+        ),
         AnimatedCrossFade(
           firstChild: const SizedBox.shrink(),
           secondChild: Column(

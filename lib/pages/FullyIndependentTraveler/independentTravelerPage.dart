@@ -9,6 +9,7 @@ import 'package:HolidayMakers/widgets/dropdownWidget.dart';
 import 'package:HolidayMakers/widgets/responciveButton.dart';
 import 'package:HolidayMakers/widgets/travelerDrawer.dart';
 import 'package:HolidayMakers/pages/FullyIndependentTraveler/travelerhotels.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 
 class IndependentTravelerPage extends StatefulWidget {
@@ -129,18 +130,19 @@ class _IndependentTravelerPageState extends State<IndependentTravelerPage>
 
       print(totalRoomsdata); // Not Used Yet
       print("====================");
-      setState(() {
-        errorMessage = "Please fill all the required fields";
-      });
-      _errorController.forward();
-
-      // Fade out the error message after 3 seconds
-      Future.delayed(Duration(seconds: 3), () {
-        _errorController.reverse();
-        setState(() {
-          errorMessage = null;
-        });
-      });
+      // setState(() {
+      //   errorMessage = "Please fill all the required fields";
+      // });
+      // _errorController.forward();
+      //
+      // // Fade out the error message after 3 seconds
+      // Future.delayed(Duration(seconds: 3), () {
+      //   _errorController.reverse();
+      //   setState(() {
+      //     errorMessage = null;
+      //   });
+      // });
+      Fluttertoast.showToast(msg: 'Please fill all the required fields');
       return;
     }
 
@@ -176,32 +178,34 @@ class _IndependentTravelerPageState extends State<IndependentTravelerPage>
           ),
         );
       } else {
-        setState(() {
-          errorMessage = response["message"];
-        });
-        _errorController.forward();
-
-        // Fade out the error message after 3 seconds
-        Future.delayed(Duration(seconds: 3), () {
-          _errorController.reverse();
-          setState(() {
-            errorMessage = null;
-          });
-        });
+        Fluttertoast.showToast(msg: response["message"]);
+        // setState(() {
+        //   errorMessage = ;
+        // });
+        // _errorController.forward();
+        //
+        // // Fade out the error message after 3 seconds
+        // Future.delayed(Duration(seconds: 3), () {
+        //   _errorController.reverse();
+        //   setState(() {
+        //     errorMessage = null;
+        //   });
+        // });
       }
     } catch (error) {
-      setState(() {
-        errorMessage = "Error fetching hotels: $error";
-      });
-      _errorController.forward();
-
-      // Fade out the error message after 3 seconds
-      Future.delayed(Duration(seconds: 3), () {
-        _errorController.reverse();
-        setState(() {
-          errorMessage = null;
-        });
-      });
+      Fluttertoast.showToast(msg: "Error fetching hotels: $error");
+      // setState(() {
+      //   errorMessage = "Error fetching hotels: $error";
+      // });
+      // _errorController.forward();
+      //
+      // // Fade out the error message after 3 seconds
+      // Future.delayed(Duration(seconds: 3), () {
+      //   _errorController.reverse();
+      //   setState(() {
+      //     errorMessage = null;
+      //   });
+      // });
     }
   }
 
@@ -223,6 +227,9 @@ class _IndependentTravelerPageState extends State<IndependentTravelerPage>
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
       backgroundColor: Colors.white,
       // appBar: AppBar(
@@ -257,7 +264,7 @@ class _IndependentTravelerPageState extends State<IndependentTravelerPage>
                   const SizedBox(height: 30),
                   // Wrap the contents in a container with background image and box shadow
                   Container(
-                    height: 620, // Increased height of the container (adjust as needed)
+                    height: screenHeight * 0.65, // Increased height of the container (adjust as needed)
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20), // Rounded corners for the container
                       boxShadow: [
@@ -283,11 +290,10 @@ class _IndependentTravelerPageState extends State<IndependentTravelerPage>
                           ),
                           // The rest of the content inside the container
                           Padding(
-                            padding: const EdgeInsets.all(16.0),
+                            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const SizedBox(height: 10),
                                 Dropdownwidget(
                                   txtcolor: Colors.white,
                                   bgColor: Colors.white,
@@ -306,7 +312,7 @@ class _IndependentTravelerPageState extends State<IndependentTravelerPage>
                                     }
                                   },
                                 ),
-                                const SizedBox(height: 40),
+                                const SizedBox(height: 15),
                                 AbsorbPointer(
                                   absorbing: destinationLoading, // Prevents interaction when loading
                                   child: Dropdownwidget(
@@ -326,7 +332,7 @@ class _IndependentTravelerPageState extends State<IndependentTravelerPage>
                                     },
                                   ),
                                 ),
-                                const SizedBox(height: 40),
+                                const SizedBox(height: 20),
                                 Container(
                                   height: 58,
                                   width: double.infinity,
@@ -409,7 +415,7 @@ class _IndependentTravelerPageState extends State<IndependentTravelerPage>
                                     ),
                                   ),
                                 ),
-                                const SizedBox(height: 40),
+                                const SizedBox(height: 20),
                                 Travelerdrawer(
                                   onSelectionChanged: (Map<String, dynamic> selection) {
                                     setState(() {
@@ -430,16 +436,16 @@ class _IndependentTravelerPageState extends State<IndependentTravelerPage>
                                   ),
                                 ),
                                 const SizedBox(height: 20),
-                                if (errorMessage != null)
-                                  FadeTransition(
-                                    opacity: _fadeAnimation,
-                                    child: Center(
-                                      child: Text(
-                                        errorMessage!,
-                                        style: TextStyle(color: Colors.red.shade900, fontSize: 20, fontWeight: FontWeight.bold),
-                                      ),
-                                    ),
-                                  ),
+                                // if (errorMessage != null)
+                                //   FadeTransition(
+                                //     opacity: _fadeAnimation,
+                                //     child: Center(
+                                //       child: Text(
+                                //         errorMessage!,
+                                //         style: TextStyle(color: Colors.red.shade900, fontSize: 20, fontWeight: FontWeight.bold),
+                                //       ),
+                                //     ),
+                                //   ),
                               ],
                             ),
                           ),

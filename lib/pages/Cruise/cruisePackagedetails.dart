@@ -100,6 +100,7 @@ class _CruisePackageDetailsState extends State<CruisePackageDetails> {
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
     final inclusionList = (packageData['inclusion_list'] as List<dynamic>?) ?? [];
     return Scaffold(
       body: Stack(
@@ -119,14 +120,14 @@ class _CruisePackageDetailsState extends State<CruisePackageDetails> {
                     )
                   : Stack(children: [
                       Container(
-                        height: 300,
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                            image: NetworkImage(image[index]["image"]),
-                            fit: BoxFit.fill,
+                          height: screenHeight * 0.35,
+                          decoration: BoxDecoration(
+                            image: DecorationImage(
+                              image: NetworkImage(image.isEmpty? "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQD4qmuiXoOrmp-skck7b7JjHA8Ry4TZyPHkw&s":image[index]["image"]),
+                              fit: BoxFit.fill,
+                            ),
                           ),
                         ),
-                      ),
                       Container(
                         width: double.infinity,
                         height: double.infinity,

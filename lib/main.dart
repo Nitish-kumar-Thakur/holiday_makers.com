@@ -57,7 +57,7 @@ class _MyAppState extends State<MyApp> {
         textTheme: GoogleFonts.poppinsTextTheme(Theme.of(context).textTheme),
         useMaterial3: true,
       ),
-      home: PaymentScreen(),
+      home: Splashscreen(),
       onGenerateRoute: (RouteSettings settings) {
         if (settings.name == '/payment') {
           final status = settings.arguments as String?;

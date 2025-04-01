@@ -148,7 +148,7 @@ class _DepartureDealsState extends State<DepartureDeals> {
                   children: [
                     const SizedBox(height: 50),
                     Row(
-                      children: [ 
+                      children: [
                         IconButton(
                           onPressed: () {
                             Navigator.pop(context);

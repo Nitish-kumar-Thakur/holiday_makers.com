@@ -2,30 +2,20 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class TabbyService {
-  static const String _baseUrl = 'https://api.tabby.ai/api/v2/';
-  final String apiKey;
-  final String merchantCode;
-  final String successUrl;
-  final String cancelUrl;
-  final String failureUrl;
+  static const String _baseUrl = "https://api.tabby.ai/api/v2";
+  final String apiKey = 'sk_test_6cffbd5b-d2ac-4e84-a9ea-e854e7460fb9';
 
-  TabbyService({
-    required this.apiKey,
-    required this.merchantCode,
-    required this.successUrl,
-    required this.cancelUrl,
-    required this.failureUrl,
-  });
+  // TabbyService({required this.apiKey});
 
-  // Payment payload templates
-  Map<String, dynamic> _createCheckoutPayload({
-    required double amount,
-    required String orderId,
-    required String customerName,
-    required String customerEmail,
-    required String customerPhone,
-  }) {
-    return {
+  Future<Map<String, dynamic>> createCheckoutSession() async {
+    final url = Uri.parse("$_baseUrl/checkout");
+    final response = await http.post(
+      url,
+      headers: {
+        "Authorization": "Bearer $apiKey",
+        "Content-Type": "application/json",
+      },
+      body: jsonEncode({
         "payment": {
           "amount": 5449,
           "currency": "AED",
@@ -72,86 +62,85 @@ class TabbyService {
         "merchant_code": "smarttravel",
         "webhook_key": "337410a1-91b6-40bc-afd0-08e6a66f6bfa",
         "merchant_urls": {
-          "success":
-              "holidaymakers://payment?status=success",
+          "success": "holidaymakers://payment?status=success",
           "cancel":
               "https://b2cuat.tikipopi.com/index.php/payment_gateway/tabby_cancel/HMFD-509/FD_VHCID1433498322",
           "failure":
               "https://b2cuat.tikipopi.com/index.php/payment_gateway/tabby_failure/HMFD-509/FD_VHCID1433498322"
         }
-      };
-  }
-
-  Map<String, dynamic> _createCapturePayload(double amount) {
-    return {
-      "amount": amount.toStringAsFixed(2),
-      "tax_amount": "0.00",
-      "shipping_amount": "0.00",
-    };
-  }
-
-  // API Methods
-  Future<Map<String, dynamic>> createCheckoutSession({
-    required double amount,
-    required String orderId,
-    required String customerName,
-    required String customerEmail,
-    required String customerPhone,
-  }) async {
-    final payload = _createCheckoutPayload(
-      amount: amount,
-      orderId: orderId,
-      customerName: customerName,
-      customerEmail: customerEmail,
-      customerPhone: customerPhone,
+      }),
     );
+    print("Response Code: ${response.statusCode}");
+    print("Response Body: ${response.body}");
 
-    final response = await http.post(
-      Uri.parse('${_baseUrl}checkout'),
-      headers: _buildHeaders(),
-      body: json.encode(payload),
-    );
-
-    return _handleResponse(response, 'Failed to create checkout session');
+    try {
+      final data = json.decode(response.body);
+      return data;
+    } catch (e) {
+      return {'error': 'Invalid response'};
+    }
   }
 
   Future<Map<String, dynamic>> getPaymentStatus(String paymentId) async {
+    print("getPaymentStatus service");
     final response = await http.get(
-      Uri.parse('${_baseUrl}payments/$paymentId'),
-      headers: _buildHeaders(),
+      Uri.parse('$_baseUrl/payments/$paymentId'),
+      headers: {
+        'Authorization': 'Bearer $apiKey',
+        'Content-Type': 'application/json',
+      },
     );
 
-    return _handleResponse(response, 'Failed to get payment status');
+    try {
+      final data = json.decode(response.body);
+      return data;
+    } catch (e) {
+      return {'error': 'Invalid response'};
+    }
   }
 
-  Future<Map<String, dynamic>> capturePayment(
-    String paymentId,
-    double amount,
-  ) async {
-    final payload = _createCapturePayload(amount);
-    
+  Future<Map<String, dynamic>> capturePayment(String paymentId) async {
     final response = await http.post(
-      Uri.parse('${_baseUrl}payments/$paymentId/capture'),
-      headers: _buildHeaders(),
-      body: json.encode(payload),
+      Uri.parse('$_baseUrl/payments/$paymentId/captures'),
+      headers: {
+        'Authorization': 'Bearer $apiKey',
+        'Content-Type': 'application/json',
+      },
+      body: json.encode({
+        "amount": "100.00",
+        "reference_id": "HMCR-EMI-51_4500",
+        "tax_amount": "0.00",
+        "shipping_amount": "0.00",
+        "discount_amount": "0.00",
+        "created_at": "2025-02-26T14:15:22Z",
+        "items": [
+          {
+            "title": "Oman : UAE National Day",
+            "description": "Oman : UAE National Day",
+            "quantity": 1,
+            "unit_price": "100.00",
+            "discount_amount": "0.00",
+            "reference_id": "string",
+            "image_url": "http://example.com",
+            "product_url": "http://example.com",
+            "gender": "Male",
+            "category": "string",
+            "color": "string",
+            "product_material": "string",
+            "size_type": "string",
+            "size": "string",
+            "brand": "string",
+            "is_refundable": true
+          }
+        ]
+      }),
     );
 
-    return _handleResponse(response, 'Failed to capture payment');
-  }
-
-  // Helper methods
-  Map<String, String> _buildHeaders() {
-    return {
-      'Authorization': 'Bearer $apiKey',
-      'Content-Type': 'application/json',
-    };
-  }
-
-  Map<String, dynamic> _handleResponse(http.Response response, String errorMessage) {
-    if (response.statusCode >= 200 && response.statusCode < 300) {
-      return json.decode(response.body);
-    } else {
-      throw Exception('$errorMessage: ${response.statusCode} - ${response.body}');
+    try {
+      final data = json.decode(response.body);
+      return data;
+    } catch (e) {
+      return {'error': 'Invalid response'};
     }
   }
 }

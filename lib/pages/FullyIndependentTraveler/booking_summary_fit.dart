@@ -349,7 +349,7 @@ class _BookingSummaryFITState extends State<BookingSummaryFIT> {
                     MaterialPageRoute(
                         builder: (context) => TravelersDetailsFIT(
                             totalRoomsdata: widget.roomArray,
-                            searchId: widget.searchId)),
+                            searchId: widget.searchId, BSData: bookingSummreyData['data'],)),
                   );
                 },
                 child: responciveButton(text: 'PROCEED TO BOOKING'),

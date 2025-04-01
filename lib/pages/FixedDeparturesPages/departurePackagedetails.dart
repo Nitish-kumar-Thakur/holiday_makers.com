@@ -40,8 +40,8 @@ class _DeparturePackageDetailsState extends State<DeparturePackageDetails> {
       setState(() {
         packageData = response['package_details'] ?? {};
         inclusionList = response["inclusion_list"];
-        countryName = response["country_name"];
-        cityName = response["city_name"];
+        countryName = response["country_name"] ?? "N/A";
+        cityName = response["city_name"] ?? "N/A";
 
         image = List<Map<String, dynamic>>.from(response['package_gallery'].map(
             (item) => {'image': item['image'], 'alt_text': item['alt_text']}));
@@ -58,6 +58,8 @@ class _DeparturePackageDetailsState extends State<DeparturePackageDetails> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
       body: Stack(
         children: [
@@ -77,10 +79,10 @@ class _DeparturePackageDetailsState extends State<DeparturePackageDetails> {
                   : Stack(
                       children: [
                         Container(
-                          height: 300,
+                          height: screenHeight * 0.35,
                           decoration: BoxDecoration(
                             image: DecorationImage(
-                              image: NetworkImage(image[index]["image"]),
+                              image: NetworkImage(image.isEmpty? "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQD4qmuiXoOrmp-skck7b7JjHA8Ry4TZyPHkw&s":image[index]["image"]),
                               fit: BoxFit.fill,
                             ),
                           ),
@@ -130,13 +132,14 @@ class _DeparturePackageDetailsState extends State<DeparturePackageDetails> {
                 Navigator.pop(context);
               },
               icon: CircleAvatar(
-                backgroundColor: Colors.grey.withOpacity(0.6),  // Transparent grey background
+                backgroundColor:
+                    Colors.grey.withOpacity(0.6), // Transparent grey background
                 child: Text(
-                  '<',  // Use "<" symbol
+                  '<', // Use "<" symbol
                   style: TextStyle(
-                    color: Colors.white,  // White text color
-                    fontSize: 24,  // Adjust font size as needed
-                    fontWeight: FontWeight.bold,  // Make the "<" bold if needed
+                    color: Colors.white, // White text color
+                    fontSize: 24, // Adjust font size as needed
+                    fontWeight: FontWeight.bold, // Make the "<" bold if needed
                   ),
                 ),
               ),
@@ -187,18 +190,24 @@ class _DeparturePackageDetailsState extends State<DeparturePackageDetails> {
                               // Location icon
                               Icon(
                                 Icons.location_on,
-                                color: Color(0xFF0071BC), // Change the icon color as needed
+                                color: Color(
+                                    0xFF0071BC), // Change the icon color as needed
                                 size: 18, // Adjust the icon size if needed
                               ),
                               // Text with city and country
-                              SizedBox(width: 8), // Adds space between the icon and the text
-                              Text(
-                                "$cityName, $countryName" ?? "Unknown Location",
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.grey,
+                              SizedBox(
+                                  width:
+                                      8), // Adds space between the icon and the text
+                              SizedBox(
+                                width: MediaQuery.of(context).size.width * 0.8,
+                                child: Text(
+                                  "$cityName, $countryName",
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.grey,
+                                  ),
                                 ),
-                              ),
+                              )
                             ],
                           ),
                           const SizedBox(height: 16),
@@ -209,7 +218,7 @@ class _DeparturePackageDetailsState extends State<DeparturePackageDetails> {
                               _InfoChip(
                                 icon: Icons.flight_takeoff,
                                 label: packageData["dep_date"]?.toString() ??
-                                    "4.8/5.0",
+                                    "N/A",
                               ),
                               // _InfoChip(
                               //   icon: Icons.location_on,
@@ -232,8 +241,8 @@ class _DeparturePackageDetailsState extends State<DeparturePackageDetails> {
                                   Container(
                                     width: double.infinity,
                                     decoration: BoxDecoration(
-                                        color: Colors.grey.shade50,
-                                        borderRadius: BorderRadius.circular(15),
+                                      color: Colors.grey.shade50,
+                                      borderRadius: BorderRadius.circular(15),
                                     ),
                                     padding: const EdgeInsets.all(10),
                                     child: Column(
@@ -242,7 +251,7 @@ class _DeparturePackageDetailsState extends State<DeparturePackageDetails> {
                                       children: [
                                         AppLargeText(
                                           text: 'INCLUSIONS',
-                                          size: 25,
+                                          size: 20,
                                         ),
                                         const SizedBox(height: 10),
                                         Center(
@@ -546,25 +555,25 @@ class _DeparturePackageDetailsState extends State<DeparturePackageDetails> {
         color: Color(0xFF009EE2).withOpacity(0.2),
         borderRadius: BorderRadius.circular(10),
         border: Border.all(
-          color: Color(0xFF009EE2),  // Set border color to #009EE2
-          width: 2,  // You can adjust the width of the border here
+          color: Color(0xFF009EE2), // Set border color to #009EE2
+          width: 2, // You can adjust the width of the border here
         ),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, size: 30, color: Colors.black),  // Change icon color to black
+          Icon(icon,
+              size: 30, color: Colors.black), // Change icon color to black
           const SizedBox(height: 2),
           Text(
             label,
             style: TextStyle(
               fontSize: MediaQuery.of(context).size.width * 0.02,
-              color: Colors.black,  // Change text color to black
+              color: Colors.black, // Change text color to black
             ),
           ),
         ],
       ),
     );
-
   }
 }
