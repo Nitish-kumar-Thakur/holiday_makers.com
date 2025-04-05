@@ -6,8 +6,23 @@ class TabbyPaymentService {
   static const String _secretKey =
       "sk_test_6cffbd5b-d2ac-4e84-a9ea-e854e7460fb9"; // Ensure it's correct
   static const String _merchantCode = "smarttravel"; // Verify this
+  static const String _webhookKey = "337410a1-91b6-40bc-afd0-08e6a66f6bfa";
 
-  static Future<String?> createTabbySession(double amount) async {
+  static Future<String?> createTabbySession({
+    required double amount,
+    required String description,
+    required String referenceId,
+    required String buyerPhone,
+    required String buyerEmail,
+    required String buyerName,
+    required String itemTitle,
+    required String itemDescription,
+    required String itemImageUrl,
+    required String itemProductUrl,
+    required String itemCategory,
+    required String orderId,
+    required String customerId,
+  }) async {
     final url = Uri.parse(_apiUrl);
 
     final response = await http.post(
@@ -18,35 +33,33 @@ class TabbyPaymentService {
       },
       body: jsonEncode({
         "payment": {
-          "amount": 5449,
+          "amount": amount,
           "currency": "AED",
-          "description": "FD_VHCID1433498322",
+          "description": description,
           "buyer": {
-            "phone": "500000001",
-            "email": "otp.success@tabby.ai",
-            "name": "Ranjith",
+            "phone": buyerPhone,
+            "email": buyerEmail,
+            "name": buyerName,
             "dob": "0000-00-00"
           },
           "order": {
             "tax_amount": "0.00",
             "shipping_amount": "0.00",
             "discount_amount": "0.00",
-            "updated_at": "2025-03-25T14:39:41Z",
-            "reference_id": "HMFD-509",
+            "updated_at": DateTime.now().toIso8601String(),
+            "reference_id": referenceId,
             "items": [
               {
-                "title": "Zanzibar : Honeymoon Package",
-                "description": "Zanzibar : Honeymoon Package",
+                "title": itemTitle,
+                "description": itemDescription,
                 "quantity": 1,
-                "unit_price": 5449,
+                "unit_price": amount,
                 "discount_amount": "0.00",
-                "reference_id": "HMFD-509",
-                "image_url":
-                    "https://b2cuat.tikipopi.com/extras/custom/TMX1512291534825461/uploads/package_images/17425600961740485376freepik__expand__71870.jpg",
-                "product_url":
-                    "https://b2cuat.tikipopi.com/package/holidays-details/zanzibar-tanzaniaa-honeymoon-holiday-package",
+                "reference_id": referenceId,
+                "image_url": itemImageUrl,
+                "product_url": itemProductUrl,
                 "gender": "Male",
-                "category": "FD_VHCID1433498322_HMFD-509",
+                "category": itemCategory,
                 "product_material": "Holiday Package",
                 "brand": "Holidaymakers"
               }
@@ -57,18 +70,14 @@ class TabbyPaymentService {
             "address": "Dubai",
             "zip": "00000"
           },
-          "meta": {"order_id": "HMFD-509", "customer": "0"}
+          "meta": {"order_id": orderId, "customer": customerId}
         },
         "lang": "en",
-        "merchant_code": "smarttravel",
-        "webhook_key": "337410a1-91b6-40bc-afd0-08e6a66f6bfa",
+        "merchant_code": _merchantCode,
         "merchant_urls": {
-          "success":
-              "holidaymakers://payment?status=success",
-          "cancel":
-              "https://b2cuat.tikipopi.com/index.php/payment_gateway/tabby_cancel/HMFD-509/FD_VHCID1433498322",
-          "failure":
-              "https://b2cuat.tikipopi.com/index.php/payment_gateway/tabby_failure/HMFD-509/FD_VHCID1433498322"
+          "success": "holidaymakers://payment?status=success",
+          "cancel": "https://b2cuat.tikipopi.com/index.php/payment_gateway/tabby_cancel/$orderId/$referenceId",
+          "failure": "https://b2cuat.tikipopi.com/index.php/payment_gateway/tabby_failure/$orderId/$referenceId"
         }
       }),
     );
@@ -78,7 +87,7 @@ class TabbyPaymentService {
 
     final data = jsonDecode(response.body);
     if (response.statusCode == 200) {
-      // print(data['configuration']['available_products']['installments'][0]['web_url'];
+      print(data['configuration']['available_products']['installments'][0]['web_url']);
       return data['configuration']['available_products']['installments'][0]['web_url'];
       // return "https://checkout.tabby.ai/?apiKey=pk_test_c4f49063-5ef5-4c31-bfcd-5d5a8a903cbb&lang=eng&merchantCode=smarttravel&product=installments&sessionId=17cc7f1b-5b6f-4b92-ad00-44e06f86c0e7";
     } else {

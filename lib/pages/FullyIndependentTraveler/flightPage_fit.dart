@@ -338,6 +338,32 @@ class _FlightPackageCardState extends State<FlightPackageCard> {
 
   @override
   Widget build(BuildContext context) {
+    String onwardStops = (widget.onwardFlights.length - 1 == 0 ? 'Non-stop' : widget.onwardFlights.length - 1).toString();
+    String returnStops = (widget.returnFlights.length - 1 == 0 ? 'Non-stop' : widget.returnFlights.length - 1).toString();
+
+    String returnFlightKey = widget.returnFlights[0]['flight_details_id'].toString();
+    String returnCabinBaggage = widget.returnFlights[0]['cabin_baggage'].toString();
+    String returnCheckinBaggage = widget.returnFlights[0]['check_in_baggage'].toString();
+
+    String onwardFlightKey = widget.onwardFlights[0]['flight_details_id'].toString();
+    String onwardCabinBaggage = widget.onwardFlights[0]['cabin_baggage'].toString();
+    String onwardCheckinBaggage = widget.onwardFlights[0]['check_in_baggage'].toString();
+
+    bool isOnwardExpanded = _expandedFlights.contains(onwardFlightKey);
+    bool isReturnExpanded = _expandedFlights.contains(returnFlightKey);
+
+    // print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
+    // print(onwardStops);
+    // print(returnStops);
+    // print(returnFlightKey);
+    // print(returnCabinBaggage);
+    // print(returnCheckinBaggage);
+    // print('=======================================================');
+    // print(onwardFlightKey);
+    // print(onwardCabinBaggage);
+    // print(onwardCheckinBaggage);
+    // print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
+
     return GestureDetector(
       onTap: widget.onTap,
       child: Card(
@@ -364,9 +390,106 @@ class _FlightPackageCardState extends State<FlightPackageCard> {
                       ),
                     ),
             ),
+            Text(
+              "Onward Flight",
+              style: TextStyle(
+                color: Color(0xFF0071BC),
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+            ),
             _flightSection("Onward Flight", widget.onwardFlights),
-            // Divider(),
+            InkWell(
+              onTap: () => _toggleExpand(onwardFlightKey),
+              child: Row(
+                children: [
+                  const Icon(Icons.info_outline,
+                      size: 16, color: Colors.blueAccent),
+                  const SizedBox(width: 5),
+                  Text(
+                    isOnwardExpanded ? "Hide Info" : "Show More",
+                    style:
+                    const TextStyle(fontSize: 12, color: Colors.blueAccent),
+                  ),
+                ],
+              ),
+            ),
+            AnimatedCrossFade(
+              firstChild: const SizedBox.shrink(),
+              secondChild: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(height: 10),
+                  Text("Cabin Baggage: $onwardCabinBaggage kg"),
+                  Text("Check-in Baggage: $onwardCheckinBaggage kg"),
+                ],
+              ),
+              crossFadeState:
+              isOnwardExpanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+              duration: const Duration(milliseconds: 300),
+            ),
+            const SizedBox(height: 5),
+            Center(
+              child: Text(
+                'Stops: $onwardStops',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
+            ),
+            const SizedBox(height: 5),
+            Divider(),
+            Text(
+              "Return Flight",
+              style: TextStyle(
+                color: Color(0xFF0071BC),
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+            ),
             _flightSection("Return Flight", widget.returnFlights),
+            const SizedBox(height: 10),
+            InkWell(
+              onTap: () => _toggleExpand(returnFlightKey),
+              child: Row(
+                children: [
+                  const Icon(Icons.info_outline,
+                      size: 16, color: Colors.blueAccent),
+                  const SizedBox(width: 5),
+                  Text(
+                    isReturnExpanded ? "Hide Info" : "Show More",
+                    style:
+                    const TextStyle(fontSize: 12, color: Colors.blueAccent),
+                  ),
+                ],
+              ),
+            ),
+            AnimatedCrossFade(
+              firstChild: const SizedBox.shrink(),
+              secondChild: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(height: 10),
+                  Text("Cabin Baggage: $returnCabinBaggage kg"),
+                  Text("Check-in Baggage: $returnCheckinBaggage kg"),
+                ],
+              ),
+              crossFadeState:
+              isReturnExpanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+              duration: const Duration(milliseconds: 300),
+            ),
+            const SizedBox(height: 5),
+            Center(
+              child: Text(
+                'Stops: $returnStops',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
+            ),
+            const SizedBox(height: 5),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -614,35 +737,35 @@ class _FlightPackageCardState extends State<FlightPackageCard> {
 
         // Additional flight details (baggage info, etc.)
         // if (!show)
-        InkWell(
-          onTap: () => _toggleExpand(flightKey),
-          child: Row(
-            children: [
-              const Icon(Icons.info_outline,
-                  size: 16, color: Colors.blueAccent),
-              const SizedBox(width: 5),
-              Text(
-                isExpanded ? "Hide Info" : "Show More",
-                style:
-                    const TextStyle(fontSize: 12, color: Colors.blueAccent),
-              ),
-            ],
-          ),
-        ),
-        AnimatedCrossFade(
-          firstChild: const SizedBox.shrink(),
-          secondChild: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(height: 10),
-              Text("Cabin Baggage: $cabinBaggage kg"),
-              Text("Check-in Baggage: $checkinBaggage kg"),
-            ],
-          ),
-          crossFadeState:
-              isExpanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
-          duration: const Duration(milliseconds: 300),
-        ),
+        // InkWell(
+        //   onTap: () => _toggleExpand(flightKey),
+        //   child: Row(
+        //     children: [
+        //       const Icon(Icons.info_outline,
+        //           size: 16, color: Colors.blueAccent),
+        //       const SizedBox(width: 5),
+        //       Text(
+        //         isExpanded ? "Hide Info" : "Show More",
+        //         style:
+        //             const TextStyle(fontSize: 12, color: Colors.blueAccent),
+        //       ),
+        //     ],
+        //   ),
+        // ),
+        // AnimatedCrossFade(
+        //   firstChild: const SizedBox.shrink(),
+        //   secondChild: Column(
+        //     crossAxisAlignment: CrossAxisAlignment.start,
+        //     children: [
+        //       SizedBox(height: 10),
+        //       Text("Cabin Baggage: $cabinBaggage kg"),
+        //       Text("Check-in Baggage: $checkinBaggage kg"),
+        //     ],
+        //   ),
+        //   crossFadeState:
+        //       isExpanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+        //   duration: const Duration(milliseconds: 300),
+        // ),
       ],
     );
   }

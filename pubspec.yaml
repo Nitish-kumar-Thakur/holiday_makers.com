@@ -20,7 +20,6 @@ dependencies:
   intl_phone_field: ^3.2.0
   font_awesome_flutter: ^10.8.0
   shimmer: ^3.0.0
-  google_maps_flutter: ^2.10.0
   curved_navigation_bar: ^1.0.6
   google_fonts: ^6.2.1
   cached_network_image: ^3.4.1
@@ -35,6 +34,8 @@ dependencies:
   introduction_screen: ^3.1.17
   webview_flutter: ^4.10.0
   xml: ^6.5.0
+  get: ^4.7.2
+  provider: ^6.1.4
 
 
 

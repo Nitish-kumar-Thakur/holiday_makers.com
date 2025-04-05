@@ -45,10 +45,10 @@ class Dropdownwidget extends StatelessWidget {
               popupProps: PopupProps.menu(
                 showSearchBox: search,
                 constraints: BoxConstraints(
-                  minHeight: 100, // Minimum height when items are few
-                  maxHeight: items.length * 48.0 > 300
-                      ? 300
-                      : items.length * 48.0 + 20,
+                minHeight: 100, // Ensure a default minimum height
+    maxHeight: items.length == 1 
+        ? 150 // Prevent issue when only one item exists
+        : (items.length * 48.0 > 300 ? 300 : items.length * 48.0 + 20),
                   // Max height is 300 or dynamically calculated height  // Adjusts dynamically based on items
                 ),
               ),

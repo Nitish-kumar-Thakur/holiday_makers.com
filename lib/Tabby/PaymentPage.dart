@@ -11,7 +11,10 @@ class PaymentScreen extends StatefulWidget {
   final Map<String, dynamic> sbAPIBody;
   final String flow;
   const PaymentScreen(
-      {super.key, required this.BSData, required this.sbAPIBody, required this.flow});
+      {super.key,
+      required this.BSData,
+      required this.sbAPIBody,
+      required this.flow});
 
   @override
   _PaymentScreenState createState() => _PaymentScreenState();
@@ -37,7 +40,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
   Future<void> _saveBooking(Map<String, dynamic> body) async {
     try {
-      if(widget.flow == "fd"){
+      if (widget.flow == "fd") {
         print('debug__fd');
         final response = await APIHandler.fdSaveBooking(body);
         if (response["status"] == true) {
@@ -48,7 +51,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
           print('FD API Response: $sbAPIResponse');
           print('===================================================');
         }
-      } else if(widget.flow == "fit") {
+      } else if (widget.flow == "fit") {
         print('debug__fit');
         final response = await APIHandler.fitSaveBooking(body);
         if (response["status"] == true) {
@@ -59,7 +62,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
           print('FIT API Response: $sbAPIResponse');
           print('==================================');
         }
-      } else if(widget.flow == "cruise"){
+      } else if (widget.flow == "cruise") {
         print('debug__cruise');
         final response = await APIHandler.cruiseSaveBooking(body);
         if (response["status"] == true) {
@@ -71,7 +74,6 @@ class _PaymentScreenState extends State<PaymentScreen> {
           print('==================================');
         }
       }
-
     } catch (e) {
       print("Error saving booking details: $e");
     }
@@ -81,18 +83,56 @@ class _PaymentScreenState extends State<PaymentScreen> {
     widget.sbAPIBody['payment_type'] = paymentMethod;
     try {
       await _saveBooking(widget.sbAPIBody);
-      // print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
-      // print(sbAPIResponse);
-      // print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
+      print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
+      print("responce $sbAPIResponse");
+      print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
 
       setState(() {
         _loading = true;
       });
 
       if (paymentMethod == "tabby") {
-        checkoutUrl = await TabbyPaymentService.createTabbySession(5000);
+        checkoutUrl = await TabbyPaymentService.createTabbySession(
+          amount: double.parse(sbAPIResponse["payment"]["amount"].toString()),
+          description: sbAPIResponse["payment"]["description"],
+          referenceId: sbAPIResponse["payment"]["order"]["reference_id"],
+          buyerPhone:
+              "500000001", // sbAPIResponse["data"]["payment"]["buyer"]["phone"]
+          buyerEmail:
+              "otp.success@tabby.ai", // sbAPIResponse["data"]["payment"]["buyer"]["email"]
+
+          buyerName: sbAPIResponse["payment"]["buyer"]["name"],
+          itemTitle:
+              sbAPIResponse["payment"]["order"]["items"][0]["title"] ?? "",
+          itemDescription: sbAPIResponse["payment"]["order"]["items"][0]
+                  ["description"] ??
+              "",
+          itemImageUrl: sbAPIResponse["payment"]["order"]["items"][0]
+              ["image_url"],
+          itemProductUrl: sbAPIResponse["payment"]["order"]["items"][0]
+              ["product_url"],
+          itemCategory: sbAPIResponse["payment"]["order"]["items"][0]
+              ["category"],
+          orderId: sbAPIResponse["payment"]["meta"]["order_id"],
+          customerId: sbAPIResponse["payment"]["meta"]["customer"],
+        );
       } else if (paymentMethod == "telr") {
-        checkoutUrl = await TelrPaymentService.createTelrSession();
+        checkoutUrl = await TelrPaymentService.createTelrSession(
+          ivpStore: "18140", // Assuming this remains static
+          ivpAuthKey: "rT3bm-vWwF5~ML2q", // Assuming this remains static
+          ivpCart: sbAPIResponse["ivp_cart"],
+          ivpAmount: sbAPIResponse["ivp_amount"].toString(),
+          ivpCurrency: sbAPIResponse["ivp_currency"],
+          ivpDesc: sbAPIResponse["ivp_desc"],
+          billName: sbAPIResponse["bill_name"],
+          billAddr1: sbAPIResponse["bill_addr1"],
+          billAddr2: sbAPIResponse["bill_addr2"],
+          billCity: sbAPIResponse["bill_city"],
+          billRegion: sbAPIResponse["bill_region"],
+          billCountry: sbAPIResponse["bill_country"],
+          billZip: sbAPIResponse["bill_zip"],
+          billEmail: sbAPIResponse["bill_email"],
+        );
       }
 
       setState(() {

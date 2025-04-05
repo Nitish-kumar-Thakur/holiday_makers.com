@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:html/parser.dart' show parse;
+import 'package:html/dom.dart' as dom;
 
 class TourSelectionModal extends StatefulWidget {
   final List<Map<String, dynamic>> tours;
@@ -15,6 +17,13 @@ class TourSelectionModal extends StatefulWidget {
 
 class _TourSelectionModalState extends State<TourSelectionModal> {
   Map<int, bool> isExpanded = {}; // Track which inclusion are expanded
+
+  String _htmlToPlainText(String html) {
+    // Parse the HTML content
+    dom.Document document = parse(html);
+    // Extract the plain text by calling 'text' on the document
+    return document.body?.text ?? '';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -116,11 +125,18 @@ class _TourSelectionModalState extends State<TourSelectionModal> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          // Convert HTML to plain text first
                           Text(
-                            expanded ? inclusion : (inclusion.length > maxLength ? inclusion.substring(0, maxLength) + "..." : inclusion),
+                            expanded
+                                ? _htmlToPlainText(inclusion) // If expanded, show full plain text
+                                : (_htmlToPlainText(inclusion).length > maxLength
+                                ? _htmlToPlainText(inclusion).substring(0, maxLength) + "..." // Truncate plain text
+                                : _htmlToPlainText(inclusion)), // Otherwise, show full text
                             style: const TextStyle(fontSize: 12, color: Colors.black),
                           ),
-                          if (inclusion.length > maxLength) // Show Read More only if text is long
+
+                          // Show "Read More" or "Read Less" based on text length
+                          if (_htmlToPlainText(inclusion).length > maxLength) // Show Read More only if text is long
                             GestureDetector(
                               onTap: () {
                                 setState(() {

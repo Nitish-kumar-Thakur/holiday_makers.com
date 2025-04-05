@@ -718,11 +718,11 @@ class _TravelersDetailsFD extends State<TravelersDetailsFD> {
                                                   .map<String>((country) =>
                                                       country["name"]
                                                           ?.toString() ??
-                                                      "")
+                                                       "")
                                                   .toList()
-                                              : [],
+                                               : [],
                                       selectedItem: _travelerDetails[index]
-                                                  ["residentCountry"] !=
+                                                  ["residentCountry"] != 
                                               null
                                           ? countryList.firstWhere(
                                               (country) =>
@@ -1005,7 +1005,7 @@ class CirclePainter extends CustomPainter {
 
     // We can use FontAwesome icon positioning logic here.
     double centerX = size.width / 2;
-
+                                 
     // Draw the largest circle (dark blue)
     paint.color = Color(0xFF0D939E);
     canvas.drawCircle(Offset(centerX, radius - 600), radius + 400, paint);

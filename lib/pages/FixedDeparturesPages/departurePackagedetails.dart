@@ -254,20 +254,17 @@ class _DeparturePackageDetailsState extends State<DeparturePackageDetails> {
                                           size: 20,
                                         ),
                                         const SizedBox(height: 10),
-                                        Center(
-                                          child: Wrap(
-                                            spacing:
-                                                10, // Horizontal space between items
-                                            runSpacing:
-                                                10, // Vertical space between rows
-                                            alignment:
-                                                WrapAlignment.spaceEvenly,
-                                            children: inclusionList
-                                                .map<Widget>((inclusion) {
-                                              return buildInclusionCard(
-                                                  inclusion['class'],
-                                                  inclusion['name']);
-                                            }).toList(),
+                                        Container(
+                                          child: SingleChildScrollView(
+                                            scrollDirection: Axis.horizontal, // Make it horizontally scrollable
+                                            child: Wrap(
+                                              spacing: 10, // Horizontal space between items
+                                              runSpacing: 10, // Vertical space between rows
+                                              alignment: WrapAlignment.start, // Align items to the start
+                                              children: inclusionList.map<Widget>((inclusion) {
+                                                return buildInclusionCard(inclusion['class'], inclusion['name']);
+                                              }).toList(),
+                                            ),
                                           ),
                                         ),
                                         const SizedBox(height: 10),

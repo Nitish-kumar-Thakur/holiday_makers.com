@@ -1,0 +1,39 @@
+// import 'dart:async';
+// import 'package:connectivity_plus/connectivity_plus.dart';
+// import 'package:get/get.dart';
+// import 'package:HolidayMakers/pages/homePages/no_internet_page.dart';
+
+// class ConnectivityController extends GetxController {
+//   var isConnected = true.obs; // Observable to track connectivity
+//   late StreamSubscription<ConnectivityResult> _connectivitySubscription;
+
+//   @override
+//   void onInit() {
+//     super.onInit();
+//     _checkInitialConnection();
+//     _connectivitySubscription =
+//         Connectivity().onConnectivityChanged.listen(_updateConnectionStatus);
+//   }
+
+//   // Check the initial connection status when the app starts
+//   Future<void> _checkInitialConnection() async {
+//     var connectivityResult = await Connectivity().checkConnectivity();
+//     _updateConnectionStatus(connectivityResult);
+//   }
+
+//   // Update connection status whenever connectivity changes
+//   void _updateConnectionStatus(ConnectivityResult result) {
+//     if (result == ConnectivityResult.none) {
+//       isConnected.value = false;
+//       Get.offAll(() => NoInternetPage()); // Redirect to No Internet Page
+//     } else {
+//       isConnected.value = true;
+//     }
+//   }
+
+//   @override
+//   void onClose() {
+//     _connectivitySubscription.cancel();
+//     super.onClose();
+//   }
+// }

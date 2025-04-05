@@ -4,7 +4,10 @@ import 'package:HolidayMakers/pages/FixedDeparturesPages/tour_selection_modal_fd
 import 'package:HolidayMakers/utils/api_handler.dart';
 import 'package:HolidayMakers/widgets/appText.dart';
 import 'package:HolidayMakers/widgets/responciveButton.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:html/parser.dart' show parse;
+import 'package:html/dom.dart' as dom;
 
 class TourBookingPage extends StatefulWidget {
   final Map<String, dynamic> packageDetails;
@@ -43,6 +46,9 @@ class _TourBookingPageState extends State<TourBookingPage>
   @override
   void initState() {
     super.initState();
+    print('###############@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
+    print(widget.searchId);
+    print('###############@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
 
     // Fetch available tours
     _fetchFDTourList();
@@ -253,6 +259,13 @@ class _TourBookingPageState extends State<TourBookingPage>
     }).toList();
   }
 
+  String _htmlToPlainText(String html) {
+    // Parse the HTML content
+    dom.Document document = parse(html);
+    // Extract the plain text by calling 'text' on the document
+    return document.body?.text ?? '';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container( decoration: BoxDecoration(image: DecorationImage(image: AssetImage('img/departureDealsBG.png'), fit: BoxFit.fill)),
@@ -406,46 +419,38 @@ class _TourBookingPageState extends State<TourBookingPage>
                                     const SizedBox(height: 5),
                                     StatefulBuilder(
                                       builder: (context, setInnerState) {
-                                        bool expanded =
-                                            isExpanded[index] ?? false;
-                                        String inclusion =
-                                            tourForDay['inclusion'] ?? '';
+                                        bool expanded = isExpanded[index] ?? false;
+                                        String inclusion = tourForDay['inclusion'] ?? '';
                                         int maxLength = 100;
 
+                                        // Convert HTML to plain text
+                                        String plainText = _htmlToPlainText(inclusion);
+
                                         return Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
+                                          crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
+                                            // Text widget to show truncated plain text for read more functionality
                                             Text(
                                               expanded
-                                                  ? inclusion
-                                                  : (inclusion.length >
-                                                          maxLength
-                                                      ? inclusion.substring(
-                                                              0, maxLength) +
-                                                          "..."
-                                                      : inclusion),
-                                              style: const TextStyle(
-                                                  fontSize: 12,
-                                                  color: Colors.black),
+                                                  ? plainText
+                                                  : (plainText.length > maxLength
+                                                  ? plainText.substring(0, maxLength) + "..."
+                                                  : plainText),
+                                              style: const TextStyle(fontSize: 12, color: Colors.black),
                                               textAlign: TextAlign.justify,
                                             ),
-                                            if (inclusion.length > maxLength)
+
+                                            // "Read More" / "Read Less" toggle functionality
+                                            if (plainText.length > maxLength)
                                               GestureDetector(
                                                 onTap: () {
                                                   setInnerState(() {
-                                                    isExpanded[index] =
-                                                        !expanded;
+                                                    isExpanded[index] = !expanded;
                                                   });
                                                 },
                                                 child: Text(
-                                                  expanded
-                                                      ? "Read Less"
-                                                      : "Read More",
-                                                  style: TextStyle(
-                                                      color: Colors.black,
-                                                      fontWeight:
-                                                          FontWeight.bold),
+                                                  expanded ? "Read Less" : "Read More",
+                                                  style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
                                                   textAlign: TextAlign.justify,
                                                 ),
                                               ),

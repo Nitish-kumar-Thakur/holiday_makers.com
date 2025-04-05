@@ -1,5 +1,3 @@
-import 'package:HolidayMakers/pages/homePages/introPage.dart';
-import 'package:HolidayMakers/widgets/appText.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';

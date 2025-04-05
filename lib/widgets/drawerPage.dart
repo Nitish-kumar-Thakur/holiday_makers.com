@@ -213,7 +213,8 @@ void _showLoginDialog(BuildContext context) {
                     children: [
                       _listItem(FontAwesomeIcons.newspaper, "My Booking",
                               () => Navigator.push(context,
-                              MaterialPageRoute(builder: (context) => MyBookings()))),
+                              MaterialPageRoute(builder: (context) => firstName.trim().isEmpty
+                                  ? LoginPage():MyBookings()))),
                       _listItem(FontAwesomeIcons.wallet, "Wallet", () {}),
                     ],
                   ),

@@ -29,6 +29,130 @@ class _FlightPageFDState extends State<FlightPageFD> {
   List<Map<String, dynamic>> flightList = [];
   List<Map<String, dynamic>> selectedFlightPackage = [];
 
+  // List<Map<String, dynamic>> flightList = [
+  // {
+  // "option_type": "Option_2",
+  // "Onward": [
+  // {
+  // "flight_details_id": "559",
+  // "flight_option": "Option_2",
+  // "flight": "QR",
+  // "dep_from": "SHJ",
+  // "arr_to": "EVN",
+  // "travel_date": "2024-11-30",
+  // "dep_time": "09:00",
+  // "arr_time": "13:00",
+  // "flight_duration": "04:00",
+  // "package_id": "42",
+  // "depart_terminal": "Terminal 1",
+  // "arrival_terminal": "Terminal 1",
+  // "flight_no": "1035",
+  // "cabin_baggage": "10",
+  // "checkin_baggage": "20",
+  // "flight_type": "Onward",
+  // "airline_name": "QATAR AIRWAYS",
+  // "from_airport_name": "Sharjah",
+  // "to_airport_name": "Yerevan"
+  // },
+  // ],
+  // "Return": [
+  // {
+  // "flight_details_id": "562",
+  // "flight_option": "Option_2",
+  // "flight": "QR",
+  // "dep_from": "EVN",
+  // "arr_to": "SHJ",
+  // "travel_date": "2024-12-03",
+  // "dep_time": "13:00",
+  // "arr_time": "16:00",
+  // "flight_duration": "04:00",
+  // "package_id": "42",
+  // "depart_terminal": "Terminal 1",
+  // "arrival_terminal": "Terminal 1",
+  // "flight_no": "1036",
+  // "cabin_baggage": "10",
+  // "checkin_baggage": "20",
+  // "flight_type": "Return",
+  // "airline_name": "QATAR AIRWAYS",
+  // "from_airport_name": "Yerevan",
+  // "to_airport_name": "Sharjah"
+  // },
+  //   {
+  //     "flight_details_id": "559",
+  //     "flight_option": "Option_2",
+  //     "flight": "QR",
+  //     "dep_from": "SHJ",
+  //     "arr_to": "EVN",
+  //     "travel_date": "2024-11-30",
+  //     "dep_time": "09:00",
+  //     "arr_time": "13:00",
+  //     "flight_duration": "04:00",
+  //     "package_id": "42",
+  //     "depart_terminal": "Terminal 1",
+  //     "arrival_terminal": "Terminal 1",
+  //     "flight_no": "1035",
+  //     "cabin_baggage": "10",
+  //     "checkin_baggage": "20",
+  //     "flight_type": "Onward",
+  //     "airline_name": "QATAR AIRWAYS",
+  //     "from_airport_name": "Sharjah",
+  //     "to_airport_name": "Yerevan"
+  //   }
+  // ],
+  // "total": 3299
+  // },
+  // {
+  // "option_type": "Option_1",
+  // "Onward": [
+  // {
+  // "flight_details_id": "461",
+  // "flight_option": "Option_1",
+  // "flight": "G9",
+  // "dep_from": "SHJ",
+  // "arr_to": "EVN",
+  // "travel_date": "2024-11-30",
+  // "dep_time": "08:15",
+  // "arr_time": "11:30",
+  // "flight_duration": "03:15",
+  // "package_id": "42",
+  // "depart_terminal": "Terminal 1",
+  // "arrival_terminal": "Terminal 1",
+  // "flight_no": "244",
+  // "cabin_baggage": "10",
+  // "checkin_baggage": "20",
+  // "flight_type": "Onward",
+  // "airline_name": "Air Arabia",
+  // "from_airport_name": "Sharjah",
+  // "to_airport_name": "Yerevan"
+  // }
+  // ],
+  // "Return": [
+  // {
+  // "flight_details_id": "462",
+  // "flight_option": "Option_1",
+  // "flight": "G9",
+  // "dep_from": "EVN",
+  // "arr_to": "SHJ",
+  // "travel_date": "2024-12-03",
+  // "dep_time": "12:20",
+  // "arr_time": "15:15",
+  // "flight_duration": "03:05",
+  // "package_id": "42",
+  // "depart_terminal": "Terminal 1",
+  // "arrival_terminal": "Terminal 1",
+  // "flight_no": "245",
+  // "cabin_baggage": "10",
+  // "checkin_baggage": "20",
+  // "flight_type": "Return",
+  // "airline_name": "Air Arabia",
+  // "from_airport_name": "Yerevan",
+  // "to_airport_name": "Sharjah"
+  // }
+  // ],
+  // "total": 3299
+  // }
+  // ];
+
   bool isLoading = true;
   @override
   void initState() {
@@ -280,8 +404,7 @@ class FlightPackageCard extends StatefulWidget {
 }
 
 class _FlightPackageCardState extends State<FlightPackageCard> {
-  final Set<String> _expandedFlights =
-      {}; // Tracks which flight details are expanded
+  final Set<String> _expandedFlights = {}; // Tracks which flight details are expanded
   String? selectedOnwardFlight;
   String? selectedReturnFlight;
 
@@ -297,7 +420,26 @@ class _FlightPackageCardState extends State<FlightPackageCard> {
 
   @override
   Widget build(BuildContext context) {
-    print(widget.onwardFlights);
+    String onwardStops = (widget.onwardFlights.length - 1 == 0 ? 'Non-stop' : widget.onwardFlights.length - 1).toString();
+    String returnStops = (widget.returnFlights.length - 1 == 0 ? 'Non-stop' : widget.returnFlights.length - 1).toString();
+
+    String returnFlightKey = widget.returnFlights[0]['flight_details_id'].toString();
+    String returnCabinBaggage = widget.returnFlights[0]['cabin_baggage'].toString();
+    String returnCheckinBaggage = widget.returnFlights[0]['checkin_baggage'].toString();
+
+    String onwardFlightKey = widget.onwardFlights[0]['flight_details_id'].toString();
+    String onwardCabinBaggage = widget.onwardFlights[0]['cabin_baggage'].toString();
+    String onwardCheckinBaggage = widget.onwardFlights[0]['checkin_baggage'].toString();
+
+    bool isOnwardExpanded = _expandedFlights.contains(onwardFlightKey);
+    bool isReturnExpanded = _expandedFlights.contains(returnFlightKey);
+
+    print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
+    print(onwardFlightKey);
+    print(onwardCabinBaggage);
+    print(onwardCheckinBaggage);
+    print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
+
     return GestureDetector(
      onTap: widget.onTap,
      child: Card(
@@ -324,10 +466,105 @@ class _FlightPackageCardState extends State<FlightPackageCard> {
                       ),
                     ),
             ),
-            
+
+            Text(
+              "Onward Flight",
+              style: TextStyle(
+                color: Color(0xFF0071BC),
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+            ),
             _flightSection("Onward Flight", widget.onwardFlights),
-            // Divider(),
+            InkWell(
+              onTap: () => _toggleExpand(onwardFlightKey),
+              child: Row(
+                children: [
+                  const Icon(Icons.info_outline,
+                      size: 16, color: Colors.blueAccent),
+                  const SizedBox(width: 5),
+                  Text(
+                    isOnwardExpanded ? "Hide Info" : "Show More",
+                    style:
+                    const TextStyle(fontSize: 12, color: Colors.blueAccent),
+                  ),
+                ],
+              ),
+            ),
+            AnimatedCrossFade(
+              firstChild: const SizedBox.shrink(),
+              secondChild: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(height: 10),
+                  Text("Cabin Baggage: $onwardCabinBaggage kg"),
+                  Text("Check-in Baggage: $onwardCheckinBaggage kg"),
+                ],
+              ),
+              crossFadeState:
+              isOnwardExpanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+              duration: const Duration(milliseconds: 300),
+            ),
+            Center(
+              child: Text(
+                'Stops: $onwardStops',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
+            ),
+            const SizedBox(height: 5),
+            Divider(),
+            Text(
+              "Return Flight",
+              style: TextStyle(
+                color: Color(0xFF0071BC),
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+            ),
             _flightSection("Return Flight", widget.returnFlights),
+            const SizedBox(height: 10),
+            InkWell(
+              onTap: () => _toggleExpand(returnFlightKey),
+              child: Row(
+                children: [
+                  const Icon(Icons.info_outline,
+                      size: 16, color: Colors.blueAccent),
+                  const SizedBox(width: 5),
+                  Text(
+                    isReturnExpanded ? "Hide Info" : "Show More",
+                    style:
+                    const TextStyle(fontSize: 12, color: Colors.blueAccent),
+                  ),
+                ],
+              ),
+            ),
+            AnimatedCrossFade(
+              firstChild: const SizedBox.shrink(),
+              secondChild: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(height: 10),
+                  Text("Cabin Baggage: $returnCabinBaggage kg"),
+                  Text("Check-in Baggage: $returnCheckinBaggage kg"),
+                ],
+              ),
+              crossFadeState:
+              isReturnExpanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+              duration: const Duration(milliseconds: 300),
+            ),
+            Center(
+              child: Text(
+                'Stops: $returnStops',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
+            ),
+            const SizedBox(height: 5),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -449,14 +686,14 @@ class _FlightPackageCardState extends State<FlightPackageCard> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SizedBox(height: 12),
+        const SizedBox(height: 10),
         Row(
           children: [
             Expanded(
               child: Text(
                 flightName,
                 style: const TextStyle(
-                    fontSize: 20,
+                    fontSize: 16,
                     fontWeight: FontWeight.bold,
                     color: Colors.black87),
               ),
@@ -563,35 +800,35 @@ class _FlightPackageCardState extends State<FlightPackageCard> {
         // if (!show) const SizedBox(height: 8),
 
         // if (!show)
-        InkWell(
-          onTap: () => _toggleExpand(flightKey),
-          child: Row(
-            children: [
-              const Icon(Icons.info_outline,
-                  size: 16, color: Colors.blueAccent),
-              const SizedBox(width: 5),
-              Text(
-                isExpanded ? "Hide Info" : "Show More",
-                style:
-                    const TextStyle(fontSize: 12, color: Colors.blueAccent),
-              ),
-            ],
-          ),
-        ),
-        AnimatedCrossFade(
-          firstChild: const SizedBox.shrink(),
-          secondChild: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(height: 10),
-              Text("Cabin Baggage: $cabinBaggage kg"),
-              Text("Check-in Baggage: $checkinBaggage kg"),
-            ],
-          ),
-          crossFadeState:
-              isExpanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
-          duration: const Duration(milliseconds: 300),
-        ),
+        // InkWell(
+        //   onTap: () => _toggleExpand(flightKey),
+        //   child: Row(
+        //     children: [
+        //       const Icon(Icons.info_outline,
+        //           size: 16, color: Colors.blueAccent),
+        //       const SizedBox(width: 5),
+        //       Text(
+        //         isExpanded ? "Hide Info" : "Show More",
+        //         style:
+        //             const TextStyle(fontSize: 12, color: Colors.blueAccent),
+        //       ),
+        //     ],
+        //   ),
+        // ),
+        // AnimatedCrossFade(
+        //   firstChild: const SizedBox.shrink(),
+        //   secondChild: Column(
+        //     crossAxisAlignment: CrossAxisAlignment.start,
+        //     children: [
+        //       SizedBox(height: 10),
+        //       Text("Cabin Baggage: $cabinBaggage kg"),
+        //       Text("Check-in Baggage: $checkinBaggage kg"),
+        //     ],
+        //   ),
+        //   crossFadeState:
+        //       isExpanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+        //   duration: const Duration(milliseconds: 300),
+        // ),
       ],
     );
   }

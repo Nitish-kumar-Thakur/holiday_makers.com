@@ -10,7 +10,22 @@ class TelrPaymentService {
   static const String _storeId = "18140";
   static const String _storeKey = "GLTzL@cdrQ-mpV5X";
 
-  static Future<String?> createTelrSession() async {
+  static Future<String?> createTelrSession({
+    required String ivpStore,
+    required String ivpAuthKey,
+    required String ivpCart,
+    required String ivpAmount,
+    required String ivpCurrency,
+    required String ivpDesc,
+    required String billName,
+    required String billAddr1,
+    required String billAddr2,
+    required String billCity,
+    required String billRegion,
+    required String billCountry,
+    required String billZip,
+    required String billEmail,
+  }) async {
     final url = Uri.parse(_authUrl);
 
     final requestXml = '''<?xml version="1.0" encoding="UTF-8"?>
@@ -30,29 +45,29 @@ class TelrPaymentService {
 <tran>
 <test>1</test>
 <type>paypage</type>
-<cartid>BOOKREF1234</cartid>
-<description>Cruise Payment</description>
-<currency>AED</currency>
-<amount>500</amount>
+<cartid>$ivpCart</cartid>
+<description>$ivpDesc</description>
+<currency>$ivpCurrency</currency>
+<amount>$ivpAmount</amount>
 <language>en</language>
 <ref></ref>
 </tran>
 <billing>
 <name>
 <title>Mr</title>
-<first>John</first>
-<last>Doe</last>
+<first>$billName</first>
+<last></last>
 </name>
 <address>
-<line1>Address line 1</line1>
-<line2>Address line 2</line2>
-<city>Dubai</city>
-<region>Gulf</region>
-<country>United Arab Emirates</country>
-<zip>000000</zip>
+<line1>$billAddr1</line1>
+<line2>$billAddr2</line2>
+<city>$billCity</city>
+<region>$billRegion</region>
+<country>$billCountry</country>
+<zip>$billZip</zip>
 </address>
-<phone>+971524589887</phone>
-<email>testuser@gmail.com</email>
+<phone></phone>
+<email>$billEmail</email>
 </billing>
 </mobile>
     ''';
@@ -70,7 +85,7 @@ class TelrPaymentService {
           .findAllElements("code")
           .firstOrNull
           ?.text; // ✅ Capture Transaction Reference
-          print("telr code $code");
+      print("telr code $code");
 
       if (startUrl != null) {
         return startUrl;
@@ -84,7 +99,6 @@ class TelrPaymentService {
   ///
   static Future<String> checkPaymentStatus() async {
     final url = Uri.parse(_statusUrl);
-    
 
     final requestXml = '''<?xml version="1.0" encoding="UTF-8"?>
 <mobile>

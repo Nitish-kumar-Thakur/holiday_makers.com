@@ -959,8 +959,8 @@ class APIHandler {
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         print("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
-      print("Blocked responce = $data");
-      print("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
+        print("Blocked responce = $data");
+        print("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
 
         if (data['status'] == true && data['data'] is List) {
           print("Chla to bhai");
@@ -974,8 +974,10 @@ class APIHandler {
     }
     return [];
   }
-    static Future<Map<String, dynamic>> fitInclusionList() async {
-    final Uri url = Uri.parse('https://b2cuat.tikipopi.com/index.php/holiday_api/fit_inclusion_list');
+
+  static Future<Map<String, dynamic>> fitInclusionList() async {
+    final Uri url = Uri.parse(
+        'https://b2cuat.tikipopi.com/index.php/holiday_api/fit_inclusion_list');
     try {
       final response = await http.get(url);
 
@@ -988,8 +990,10 @@ class APIHandler {
       throw Exception('Error fetching inclusion list: $e');
     }
   }
+
   Future<List<dynamic>> fetchCountries() async {
-    final response = await http.get(Uri.parse('https://b2cuat.tikipopi.com/index.php/holiday_api/country_list'));
+    final response = await http.get(Uri.parse(
+        'https://b2cuat.tikipopi.com/index.php/holiday_api/country_list'));
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
@@ -998,8 +1002,11 @@ class APIHandler {
       throw Exception('Failed to load countries');
     }
   }
-  static Future<Map<String, dynamic>> fdSaveBooking(Map<String, dynamic> body) async {
-    final Uri url = Uri.parse('https://b2cuat.tikipopi.com/index.php/holiday_api/save_fd_package');
+
+  static Future<Map<String, dynamic>> fdSaveBooking(
+      Map<String, dynamic> body) async {
+    final Uri url = Uri.parse(
+        'https://b2cuat.tikipopi.com/index.php/holiday_api/save_fd_package');
     try {
       final response = await http.post(
         url,
@@ -1030,8 +1037,10 @@ class APIHandler {
     }
   }
 
-  static Future<Map<String, dynamic>> fitSaveBooking(Map<String, dynamic> body) async {
-    final Uri url = Uri.parse('https://b2cuat.tikipopi.com/index.php/holiday_api/save_fit_package');
+  static Future<Map<String, dynamic>> fitSaveBooking(
+      Map<String, dynamic> body) async {
+    final Uri url = Uri.parse(
+        'https://b2cuat.tikipopi.com/index.php/holiday_api/save_fit_package');
     try {
       final response = await http.post(
         url,
@@ -1062,8 +1071,10 @@ class APIHandler {
     }
   }
 
-  static Future<Map<String, dynamic>> cruiseSaveBooking(Map<String, dynamic> body) async {
-    final Uri url = Uri.parse('https://b2cuat.tikipopi.com/index.php/holiday_api/save_cruise_package');
+  static Future<Map<String, dynamic>> cruiseSaveBooking(
+      Map<String, dynamic> body) async {
+    final Uri url = Uri.parse(
+        'https://b2cuat.tikipopi.com/index.php/holiday_api/save_cruise_package');
     try {
       final response = await http.post(
         url,
@@ -1096,8 +1107,11 @@ class APIHandler {
       };
     }
   }
-    static Future<Map<String, dynamic>> validateVoucher(Map<String, dynamic> body) async {
-    final Uri url = Uri.parse('https://b2cuat.tikipopi.com/index.php/holiday_api/get_voucher_code_details');
+
+  static Future<Map<String, dynamic>> validateVoucher(
+      Map<String, dynamic> body) async {
+    final Uri url = Uri.parse(
+        'https://b2cuat.tikipopi.com/index.php/holiday_api/get_voucher_code_details');
     try {
       final response = await http.post(
         url,
@@ -1115,6 +1129,41 @@ class APIHandler {
       return {
         "status": false,
         "message": "Error fetching voucher details",
+        "data": {}
+      };
+    }
+  }
+
+  static Future<Map<String, dynamic>> bookingHistoryList(
+      Map<String, dynamic> body) async {
+    final Uri url = Uri.parse(
+        'https://b2cuat.tikipopi.com/index.php/holiday_api/user_booking_list');
+    Map<String, String> profileDetails = await _ProfileDetails();
+    String token = profileDetails['token'] ?? "";
+    String testToken =
+        "pEMKrNZOvFRCbht3btZQH0xrM1Pur6opG3dxp5Uft5izj8QgCdDNCTAm71I4bIU4EV084HnsMWd5YzzKrxhdoE0zvEaBhXQ62RaS";
+    try {
+      final response = await http.post(
+        url,
+        headers: {
+          "Authorization": "Bearer $token",
+          'Content-Type': 'application/json'
+        },
+        body: jsonEncode(body),
+      );
+      print("BookingHistoryList $response");
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = jsonDecode(response.body);
+        print("api respnce $data");
+        return data;
+      } else {
+        print(response.statusCode);
+        throw Exception("Server error: ${response.statusCode}");
+      }
+    } catch (e) {
+      return {
+        "status": false,
+        "message": "Error fetching BookingHistoryList $e",
         "data": {}
       };
     }
