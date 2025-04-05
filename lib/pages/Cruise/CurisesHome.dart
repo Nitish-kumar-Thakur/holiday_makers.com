@@ -19,11 +19,11 @@ class CurisesHome extends StatefulWidget {
 class _CurisesHomeState extends State<CurisesHome> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  String? selectedCountry; // Nullable for dropdown selection.
-  String? selectedMonth; // Nullable for dropdown selection.
+  String? selectedCountry;
+  String? selectedMonth;
 
-  List<Map<String, String>> countryList = []; // Country list from API.
-  List<Map<String, String>> monthList = []; // Month list from API.
+  List<Map<String, String>> countryList = [];
+  List<Map<String, String>> monthList = [];
   List<Map<String, dynamic>> cruisePackages = []; // Package data for cruises.
   List<Map<String, dynamic>> bannerList = [];
 
@@ -93,6 +93,12 @@ class _CurisesHomeState extends State<CurisesHome> {
   Future<void> _fetchCruisePackages(String country, String month) async {
     print(country);
     print(month);
+    if(month == "All"){
+      month = '';
+    }
+    if(country == "All"){
+      country = '';
+    }
     try {
       final data =
           await APIHandler.getNewPackagesData("cruise", country, month);
@@ -143,7 +149,41 @@ class _CurisesHomeState extends State<CurisesHome> {
                     painter: CirclePainter(radius: 200),
                   ),
                   Maincarousel(banner_list: bannerList),
-                  _buildDropdownSection(),
+                  // _buildDropdownSection(),
+                  // _buildFilterSection(),
+                  const SizedBox(height: 20),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        AppLargeText(
+                          text: 'CRUISE DEALS',
+                          color: Color(0xFF009EE2),
+                          size: 24,
+                        ),
+                        IconButton(
+                          onPressed: _openFilterBottomSheet,
+                          icon: Icon(Icons.filter_list, color: Color(0xFF009EE2), size: 35),
+                        ),
+                      ],
+                    ),
+                  ),
+                  // Padding(
+                  //   padding: const EdgeInsets.only(left: 10, right: 10, top: 10),
+                  //   child: AppLargeText(
+                  //     text: 'PACKAGES',
+                  //     color: Color(0xFF009EE2),
+                  //     size: 24,
+                  //   ),
+                  // ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: Divider(
+                      color: Color(0xFF007A8C),
+                      thickness: 1,
+                    ),
+                  ),
                   _buildPackageGrid(screenWidth),
                 ],
               ),
@@ -346,59 +386,240 @@ class _CurisesHomeState extends State<CurisesHome> {
     );
   }
 
-  // Normal Dropdown Section
-  Widget _buildDropdownSection() {
-    return Padding(
-      padding: const EdgeInsets.all(10),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: 10),
-          AppLargeText(
-            text: 'CRUISE DEALS',
-            color: Color(0xFF009EE2),
-            size: 24,
-          ),
-          const SizedBox(height: 20),
-          Dropdownwidget(
-            selectedValue: selectedCountry,
-            items: countryList,
-            hintText: "Select Country",
-            onChanged: (value) {
-              setState(() {
-                selectedCountry = value;
-                _fetchCruisePackages(
-                    selectedCountry ?? '', selectedMonth ?? '');
-              });
-            },
-          ),
-          const SizedBox(height: 15),
-          Dropdownwidget(
-            selectedValue: selectedMonth,
-            items: monthList,
-            hintText: "Select Month",
-            onChanged: (value) {
-              setState(() {
-                selectedMonth = value;
-                _fetchCruisePackages(
-                    selectedCountry ?? '', selectedMonth ?? '');
-              });
-            },
-          ),
-          const SizedBox(height: 30),
-          AppLargeText(
-            text: 'PACKAGES',
-            color: Color(0xFF009EE2),
-            size: 24,
-          ),
-          const Divider(
-            color: Color(0xFF007A8C),
-            thickness: 1,
-          ),
-        ],
+  // Widget _buildFilterSection() {
+  //   return Padding(
+  //     padding: const EdgeInsets.all(10),
+  //     child: Row(
+  //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //       children: [
+  //         AppLargeText(
+  //           text: 'CRUISE DEALS',
+  //           color: Color(0xFF009EE2),
+  //           size: 24,
+  //         ),
+  //         IconButton(
+  //           onPressed: _openFilterBottomSheet,
+  //           icon: Icon(Icons.filter_list, color: Color(0xFF009EE2), size: 35),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
+
+  void _openFilterBottomSheet() {
+    showModalBottomSheet(
+      context: context,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      builder: (BuildContext context) {
+        return FractionallySizedBox(
+          heightFactor: 0.6,
+          child: StatefulBuilder(
+            builder: (BuildContext context, StateSetter setModalState) {
+              return Column(
+                children: [
+                  SizedBox(height: 20),
+                  // Fixed Drag Indicator
+                  Center(
+                    child: Container(
+                      width: 50,
+                      height: 5,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[400],
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 10), // Spacing below the drag indicator
+
+                  // Scrollable Content
+                  Expanded(
+                    child: SingleChildScrollView(
+                      child: Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Country Section
+                            Row(
+                              children: [
+                                Icon(Icons.location_on, color: Colors.black, size: 24),
+                                SizedBox(width: 8),
+                                Text("Select Country", style: TextStyle(fontSize: 20)),
+                              ],
+                            ),
+                            SizedBox(height: 10),
+                            Container(
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                color: Colors.grey.shade100,
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                              padding: EdgeInsets.all(10),
+                              child: Wrap(
+                                spacing: 10,
+                                runSpacing: 10,
+                                alignment: WrapAlignment.center,
+                                children: countryList.map((country) {
+                                  return ElevatedButton(
+                                    onPressed: () {
+                                      setModalState(() {
+                                        selectedCountry = country['id'];
+                                      });
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: selectedCountry == country['id']
+                                          ? Color(0xFF009EE2)
+                                          : Colors.white,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                    ),
+                                    child: Text(
+                                      country['name'].toString(),
+                                      style: TextStyle(
+                                        color: selectedCountry == country['id']
+                                            ? Colors.white
+                                            : Colors.black,
+                                      ),
+                                    ),
+                                  );
+                                }).toList(),
+                              ),
+                            ),
+                            SizedBox(height: 20),
+
+                            // Month Section
+                            Row(
+                              children: [
+                                Icon(Icons.calendar_month, color: Colors.black, size: 24),
+                                SizedBox(width: 8),
+                                Text("Select Month", style: TextStyle(fontSize: 20)),
+                              ],
+                            ),
+                            SizedBox(height: 10),
+                            Container(
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                color: Colors.grey.shade100,
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                              padding: EdgeInsets.all(10),
+                              child: Wrap(
+                                spacing: 10,
+                                runSpacing: 10,
+                                alignment: WrapAlignment.center,
+                                children: monthList.map((month) {
+                                  return ElevatedButton(
+                                    onPressed: () {
+                                      setModalState(() {
+                                        selectedMonth = month['name'];
+                                      });
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: selectedMonth == month['name']
+                                          ? Color(0xFF009EE2)
+                                          : Colors.white,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                    ),
+                                    child: Text(
+                                      month['name'].toString(),
+                                      style: TextStyle(
+                                        color: selectedMonth == month['name']
+                                            ? Colors.white
+                                            : Colors.black,
+                                      ),
+                                    ),
+                                  );
+                                }).toList(),
+                              ),
+                            ),
+                            // SizedBox(height: 80),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  // Apply Filters Button
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                          _fetchCruisePackages(selectedCountry ?? '', selectedMonth ?? '');
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Color(0xFF009EE2),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        child: Text("Apply Filters", style: TextStyle(color: Colors.white)),
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+        );
+      },
     );
   }
+
+  // Normal Dropdown Section
+  // Widget _buildDropdownSection() {
+  //   return Padding(
+  //     padding: const EdgeInsets.all(10),
+  //     child: Column(
+  //       crossAxisAlignment: CrossAxisAlignment.start,
+  //       children: [
+  //         // const SizedBox(height: 10),
+  //         // AppLargeText(
+  //         //   text: 'CRUISE DEALS',
+  //         //   color: Color(0xFF009EE2),
+  //         //   size: 24,
+  //         // ),
+  //         _buildFilterSection(),
+  //         const SizedBox(height: 20),
+  //         Dropdownwidget(
+  //           selectedValue: selectedCountry,
+  //           items: countryList,
+  //           hintText: "Select Country",
+  //           onChanged: (value) {
+  //             setState(() {
+  //               selectedCountry = value;
+  //               _fetchCruisePackages(
+  //                   selectedCountry ?? '', selectedMonth ?? '');
+  //             });
+  //           },
+  //         ),
+  //         const SizedBox(height: 15),
+  //         Dropdownwidget(
+  //           selectedValue: selectedMonth,
+  //           items: monthList,
+  //           hintText: "Select Month",
+  //           onChanged: (value) {
+  //             setState(() {
+  //               selectedMonth = value;
+  //               _fetchCruisePackages(
+  //                   selectedCountry ?? '', selectedMonth ?? '');
+  //             });
+  //           },
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   // Normal Package Grid
   Widget _buildPackageGrid(double screenWidth) {
