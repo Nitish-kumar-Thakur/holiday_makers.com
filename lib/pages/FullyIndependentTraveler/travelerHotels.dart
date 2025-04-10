@@ -456,17 +456,15 @@ class _HotelCardState extends State<HotelCard> {
               Positioned(
                 bottom: 10,
                 left: 10,
-                right: 60,
-                child: Container(
-                  width: screenWidth * 0.6, // Set a fixed width to allow wrapping
+                child: SizedBox(
+                  width: screenWidth * 0.5, // Set a fixed width to allow wrapping
                   child: Text(
                     widget.hotel["hotel_name"],
                     style: TextStyle(
                       fontSize: screenWidth * 0.05, // Adjust size as needed
                       fontWeight: FontWeight.bold,
                       color: Colors.white, // White text for visibility on dark backgrounds
-                    ),
-                    softWrap: true, // Allow text to wrap onto the next line
+                    ), // Allow text to wrap onto the next line
                   ),
                 ),
               ),

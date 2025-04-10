@@ -246,7 +246,7 @@ class _CruiseDealsPageState extends State<CruiseDealsPage> {
                           ),
                         ),
                         const SizedBox(width: 10),
-                        Text('CRUISE DEALS',
+                        Text('DEP DATE DETAILS',
                             style: TextStyle(
                                 fontSize: 26,
                                 fontWeight: FontWeight.bold,
@@ -352,7 +352,7 @@ class _CruiseDealsPageState extends State<CruiseDealsPage> {
                           ),
                           const SizedBox(height: 20),
 
-                          Dropdownwidget(
+                          Dropdownwidget(  txtcolor: Colors.white,
                             selectedValue: selectedCabin?['cabin_type'],
                             items: cruiseCabins
                                 .map((item) => {
@@ -360,7 +360,7 @@ class _CruiseDealsPageState extends State<CruiseDealsPage> {
                                       'name': item['cabin_type']!,
                                     })
                                 .toList(),
-                            hintText: 'Choose a cabin type',
+                            hintText: 'Select Cabin Type',
                             onChanged: (String? newValue) {
                               setState(() {
                                 selectedCabin = cruiseCabins.firstWhere(

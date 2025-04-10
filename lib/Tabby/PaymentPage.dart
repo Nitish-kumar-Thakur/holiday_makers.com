@@ -1,8 +1,8 @@
 import 'package:HolidayMakers/Tabby/PaymentWebView.dart';
 import 'package:HolidayMakers/Tabby/TabbyPaymentService.dart';
 import 'package:HolidayMakers/Tabby/TelrPaymentService.dart';
+import 'package:HolidayMakers/pages/FullyIndependentTraveler/payment_success_screen.dart';
 import 'package:HolidayMakers/utils/api_handler.dart';
-import 'package:HolidayMakers/pages/homePages/mainPage.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
@@ -30,13 +30,15 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
   void initState() {
     super.initState();
-    // print(widget.flow);
-    // print(widget.BSData);
-    // print(widget.sbAPIBody);
-    // print(widget.BSData['payment_options']);
-    // print(widget.sbAPIBody['payment_type']);
+    print(widget.flow);
+    print(widget.BSData);
+    print(widget.sbAPIBody);
+    print(widget.BSData['payment_options']);
+    print(widget.sbAPIBody['payment_type']);
+    print('==================================');
     paymentMethods = widget.BSData['payment_options'];
   }
+  
 
   Future<void> _saveBooking(Map<String, dynamic> body) async {
     try {
@@ -159,9 +161,10 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
           if (paymentStatus == "success") {
             Fluttertoast.showToast(msg: "Payment Successful!");
+            
             Navigator.pushAndRemoveUntil(
               context,
-              MaterialPageRoute(builder: (context) => Mainpage()),
+              MaterialPageRoute(builder: (context) => PaymentSuccessScreen()),
               (Route<dynamic> route) => false, // Removes all previous routes
             );
           } else if (paymentStatus == "declined") {
@@ -174,10 +177,11 @@ class _PaymentScreenState extends State<PaymentScreen> {
         } else if (result == "success") {
           // If Tabby is selected, just show success
           Fluttertoast.showToast(msg: "Payment Successful!");
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => Mainpage()),
-          );
+          Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) => PaymentSuccessScreen()),
+              (Route<dynamic> route) => false, // Removes all previous routes
+            );
         } else {
           Fluttertoast.showToast(msg: "Payment Failed or Canceled!");
         }

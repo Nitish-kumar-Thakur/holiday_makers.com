@@ -30,6 +30,8 @@ class _DepartureDealsState extends State<DepartureDeals> {
   List<dynamic> totalRoomsdata = [
     {"adults": "2", "children": "0", "childrenAges": []}
   ];
+  String showTourPage = "";
+  int showFlightPage=0;
 
   @override
   void initState() {
@@ -44,8 +46,10 @@ class _DepartureDealsState extends State<DepartureDeals> {
           await APIHandler.getDepartureDeal(widget.packageId ?? "");
       setState(() {
         packageData = response;
-        inclusionList = response["inclusion_list"];
-        activityList = response["activity_list"];
+        inclusionList = response["inclusion_list"]??[];
+        activityList = response["activity_list"]??[];
+        showTourPage = response['package_details']['tour_section_status'];
+        showFlightPage = response["without_flight"];
       });
     } catch (error) {
       print("Error fetching package details: $error");
@@ -293,7 +297,10 @@ class _DepartureDealsState extends State<DepartureDeals> {
                         builder: (context) => HotelsAccommodation(
                             activityList: activityList,
                             packageData: selectedPackageData!,
-                            totalRoomsdata: totalRoomsdata),
+                            totalRoomsdata: totalRoomsdata,
+                            showTourPage: showTourPage,
+                            showFlightPage: showFlightPage,
+                        ),
                       ),
                     );
                   }

@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:HolidayMakers/Tabby/PaymentPage.dart';
+import 'package:HolidayMakers/pages/login&signup/Test.dart';
 import 'package:HolidayMakers/utils/api_handler.dart';
 import 'package:HolidayMakers/widgets/responciveButton.dart';
 import 'package:HolidayMakers/widgets/terms_and_conditions_page.dart';
@@ -8,6 +9,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 
@@ -30,7 +32,7 @@ class _BookingSummaryPageState extends State<BookingSummaryPage> {
     "title": "",
     "contactName": "",
     "email": "",
-    "countryCode": "+971", // Default
+    "countryCode": "+971",
     "phoneNumber": "",
   };
   String searchId = "";
@@ -39,12 +41,25 @@ class _BookingSummaryPageState extends State<BookingSummaryPage> {
   bool _isChecked = false;
   TextEditingController _voucherController = TextEditingController();
   Map<String, dynamic> voucherAPIResponse = {};
+
   String? finalPrice;
+  bool isCodeApplied = false;
+  String enteredCode = "";
+  String? discountPrice;
+  String? voucherCode;
+  bool isLoggedIn = false;
 
   @override
   void initState() {
     super.initState();
     _fetchCruiseBookingSummary();
+  }
+
+    Future<void> _loadLogedinDetails() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      isLoggedIn = prefs.getBool("isLoggedIn") ?? false;
+    });
   }
 
   Future<void> _fetchCruiseBookingSummary() async {
@@ -93,6 +108,7 @@ class _BookingSummaryPageState extends State<BookingSummaryPage> {
           ].join('\n'),
           'TOTAL': '${data['cruise_price']?['currency'] ?? 'AED'} ${data['cruise_price']?['total'] ?? 'N/A'}',
         };
+        finalPrice = '${data['cruise_price']?['currency'] ?? 'AED'} ${data['cruise_price']?['total'] ?? 'N/A'}';
 
         searchId = response['data']['search_id'].toString();
         isLoading = false;
@@ -108,38 +124,45 @@ class _BookingSummaryPageState extends State<BookingSummaryPage> {
   }
 
   Future<void> _applyVoucher() async {
-    String enteredCode = _voucherController.text.trim();
+    // print(BSData);
+    try {
+      enteredCode = _voucherController.text.trim();
 
-    // Map<String, dynamic> body = {
-    //   "voucher_code": enteredCode,
-    //   "package_id": widget.BSData['package_details']['package_id'],
-    //   "package_price": widget.BSData['package_price']['total'],
-    //   "package_type": "fd"
-    // };
+      // Map<String, dynamic> body = {
+      //   "voucher_code": enteredCode,
+      //   "package_id": "25",
+      //   "package_price": "5000",
+      //   "package_type": "cruise"
+      // };
 
-    Map<String, dynamic> body = {
-      "voucher_code": enteredCode,
-      "package_id": BSData['cruise_details']['cruise_id'],
-      "package_price": BSData['cruise_price']['total'],
-      "package_type": "cruise"
-    };
+      Map<String, dynamic> body = {
+        "voucher_code": enteredCode,
+        "package_id": BSData['cruise_details']['cruise_id'],
+        "package_price": BSData['cruise_price']['total'],
+        "package_type": "cruise"
+      };
 
-    final response = await APIHandler.validateVoucher(body);
+      final response = await APIHandler.validateVoucher(body);
+      setState(() {
+        voucherAPIResponse = response;
+      });
 
-    setState(() {
-      voucherAPIResponse = response;
-    });
+      print('###########################################################');
+      print(voucherAPIResponse);
+      print('###########################################################');
 
-    print('###########################################################');
-    print(voucherAPIResponse);
-    print('###########################################################');
-
-    if (voucherAPIResponse['status'] == true) {
-      finalPrice = voucherAPIResponse['final_price'];
-      Fluttertoast.showToast(msg: voucherAPIResponse['message']);
-
-    } else {
-      Fluttertoast.showToast(msg: voucherAPIResponse['message']);
+      if (voucherAPIResponse['status'] == true) {
+        finalPrice = voucherAPIResponse['final_price'];
+        discountPrice = voucherAPIResponse['discount_price'];
+        voucherCode = voucherAPIResponse['voucher_code'];
+        Fluttertoast.showToast(msg: voucherAPIResponse['message']);
+        isCodeApplied = true;
+      } else {
+        Fluttertoast.showToast(msg: voucherAPIResponse['message']);
+      }
+    } catch(e){
+      print(e);
+      Fluttertoast.showToast(msg: e.toString());
     }
   }
 
@@ -308,35 +331,38 @@ class _BookingSummaryPageState extends State<BookingSummaryPage> {
                   const SizedBox(height: 40),  // Add space before first section
                   _buildSection('PACKAGE DETAILS', packageDetails, fontSize),
                   const SizedBox(height: 20),  // Space between sections
-                  _buildSection('PRICE DETAILS', priceDetails, fontSize),
+                  _buildPriceSection('PRICE DETAILS', priceDetails, fontSize),
                   const SizedBox(height: 20),  // Space between sections
                   _buildContactInfo(fontSize),
                   // const SizedBox(height: 20),  // Space at the bottom
                   SizedBox(height: 5,),
                   Padding(padding: EdgeInsets.all(5),
                   child: Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: _voucherController,
-                        decoration: InputDecoration(
-                          labelText: "Enter Voucher Code",
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            controller: _voucherController,
+                            enabled: !isCodeApplied,
+                            decoration: InputDecoration(
+                              labelText: "Enter Voucher Code",
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                    ),
-                    SizedBox(width: 10),
-                    ElevatedButton(
-                      onPressed: _applyVoucher,
-                      child: Text("Apply",
-                          style: const TextStyle(color: Colors.white)),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.lightBlueAccent,
-                      ),
-                    ),
-                  ],
+                        SizedBox(width: 10),
+                        ElevatedButton(
+                          onPressed: isCodeApplied ? null : _applyVoucher,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.lightBlueAccent,
+                          ),
+                          child: Text(
+                            isCodeApplied ? "Applied" : "Apply",
+                            style: const TextStyle(color: Colors.white),
+                          ),
+                        ),
+                      ]
                 ),)
                 ],
               ),
@@ -404,6 +430,7 @@ class _BookingSummaryPageState extends State<BookingSummaryPage> {
                       absorbing: !_isChecked,
                       child: GestureDetector(
                         onTap: () {
+                          _loadLogedinDetails();
                           if (_formKey.currentState!.validate()) {
                             // print(contactDetails);
                             // print(searchId);
@@ -421,7 +448,8 @@ class _BookingSummaryPageState extends State<BookingSummaryPage> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => PaymentScreen(BSData: BSData, sbAPIBody: body, flow: 'cruise'),
+                                  builder: (context) =>isLoggedIn? PaymentScreen(BSData: BSData, sbAPIBody: body, flow: 'cruise'):
+                                  LoginPage(redirectTo: PaymentScreen(BSData: BSData, sbAPIBody: body, flow: 'cruise'),),
                                 ));
                           }
 
@@ -429,9 +457,9 @@ class _BookingSummaryPageState extends State<BookingSummaryPage> {
                         child: Opacity(
                           opacity: _isChecked ? 1.0 : 0.5,
                           child: responciveButton(
-                            text: "Pay Now (${finalPrice ?? BSData['cruise_price']['total'].toString()})",
-                            // text: '${finalPrice}' ?? widget.BSData['package_price']['total'].toString(),
-                            // text: 'Pay Now',
+                            // text: "Pay Now (${finalPrice ?? BSData['cruise_price']['total'].toString()})",
+                            // text: isCodeApplied ? finalPrice.toString() : BSData['cruise_price']['total'].toString(),
+                            text: 'Pay Now ($finalPrice)',
                           ),
                         ),
                       ),
@@ -514,6 +542,158 @@ class _BookingSummaryPageState extends State<BookingSummaryPage> {
   }
 
   Widget _buildDetailBox(String title, String value, double fontSize) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: fontSize * 0.7, vertical: fontSize * 0.4), // Padding inside the detail box
+      decoration: BoxDecoration(
+        color: Colors.grey.shade50, // Background color of the box
+        borderRadius: BorderRadius.circular(8), // Rounded corners
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: fontSize * 1.2,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
+          ),
+          SizedBox(height: fontSize * 0.3), // Space between title and value
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: fontSize,
+              fontWeight: FontWeight.normal,
+              color: Colors.black,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPriceSection(String title, Map<String, dynamic> details, double fontSize) {
+    // Convert the map entries into a list of entries
+    List<MapEntry<String, dynamic>> entryList = details.entries.toList();
+
+    return Card(
+      color: Colors.white, // White background for the card
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8), // Rounded corners for the card
+      ),
+      elevation: 4, // Shadow effect for the card
+      child: Padding(
+        padding: const EdgeInsets.all(16.0), // Padding around the content
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: fontSize * 1.3,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+            ),
+            // const SizedBox(height: 10),
+            Column(
+              children: List.generate(
+                (entryList.length / 2).ceil(), // Divide into rows
+                    (index) {
+                  bool isLastOdd =
+                      entryList.length % 2 != 0 && index == entryList.length ~/ 2;
+                  return Column(
+                    children: [
+                      const Divider(color: Colors.grey), // Divider between each row
+                      const SizedBox(height: 15),
+                      IntrinsicHeight(  // Ensures both boxes in the row will have equal height
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: _buildPriceDetailBox(
+                                entryList[index * 2].key, // Key as the title
+                                entryList[index * 2].value.toString(), // Value as the value
+                                fontSize,
+                              ),
+                            ),
+                            if (!isLastOdd) ...[
+                              const VerticalDivider(width: 10, color: Colors.grey),
+                              Expanded(
+                                child: _buildPriceDetailBox(
+                                  entryList[index * 2 + 1].key, // Key as the title
+                                  entryList[index * 2 + 1].value.toString(), // Value as the value
+                                  fontSize,
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      // isCodeApplied ? Text('Coupon code section') : SizedBox(height: 0),
+                    ],
+                  );
+                },
+              ),
+            ),
+            if(isCodeApplied)
+              const Divider(),
+            if(isCodeApplied)
+              const SizedBox(height: 10),
+            if(isCodeApplied)
+              Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade50,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Voucher Applied',
+                      style: TextStyle(
+                        fontSize: fontSize,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('Voucher Code:'),
+                        Text(voucherCode ?? "N/A"),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('Discount Price:'),
+                        Text(discountPrice ?? "N/A"),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('Final Price:'),
+                        Text(finalPrice ?? "N/A"),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPriceDetailBox(String title, String value, double fontSize) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: fontSize * 0.7, vertical: fontSize * 0.4), // Padding inside the detail box
       decoration: BoxDecoration(

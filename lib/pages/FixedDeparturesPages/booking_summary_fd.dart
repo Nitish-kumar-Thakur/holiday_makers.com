@@ -1,7 +1,10 @@
+import 'package:HolidayMakers/pages/login&signup/Test.dart';
 import 'package:flutter/material.dart';
 import 'package:HolidayMakers/pages/FixedDeparturesPages/traveler_details_fd.dart';
 import 'package:HolidayMakers/utils/api_handler.dart';
 import 'package:HolidayMakers/widgets/responciveButton.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
 
 class BookingSummaryFD extends StatefulWidget {
@@ -37,6 +40,17 @@ class _BookingSummaryFDState extends State<BookingSummaryFD> {
   List<Map<String, String>> insuranceDetails = [];
   List<Map<String, dynamic>> tourList = [];
   bool isLoading = true;
+  bool isLoggedIn = false;
+
+  TextEditingController _voucherController =
+      TextEditingController(); // Voucher input
+  Map<String, dynamic> voucherAPIResponse = {};
+  String? finalPrice;
+  String voucherMessage = "";
+  bool isCodeApplied = false;
+  String? voucherCode;
+  String enteredCode = "";
+  String? discountPrice;
 
   @override
   void initState() {
@@ -58,10 +72,20 @@ class _BookingSummaryFDState extends State<BookingSummaryFD> {
     // print(widget.activityList);
     // print('&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&');
     _fetchFDBSDetails();
+    print('&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&');
+    print(widget.packageDetails);
+    print(widget.flightDetails);
+    print('&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&');
+  }
+
+  Future<void> _loadLogedinDetails() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      isLoggedIn = prefs.getBool("isLoggedIn") ?? false;
+    });
   }
 
   Future<void> _fetchFDBSDetails() async {
-    // print(widget.searchId);
     Map<dynamic, dynamic> apiBody = {
       "search_id": widget.searchId,
       "activity_list": [
@@ -71,21 +95,64 @@ class _BookingSummaryFDState extends State<BookingSummaryFD> {
     try {
       final response =
           await APIHandler.getFDBSDetails(apiBody); //widget.searchId
-
       // Ensure response contains expected keys and types
       if (response.containsKey('data') &&
           response['data'] is Map<String, dynamic>) {
         setState(() {
           BSData = response['data'];
+          finalPrice = response['data']['package_price']['total'].toString();
           _PackageData();
         });
-
-        // print('Fetched Data: $BSData');
+        print('fetched data: $BSData');
       } else {
         throw Exception("Invalid data structure: ${response.toString()}");
       }
     } catch (e) {
       print("Error fetching package cards: $e");
+    }
+  }
+
+  Future<void> _applyVoucher() async {
+    print('method_called');
+    // print(BSData);
+    try {
+      enteredCode = _voucherController.text.trim();
+      print('debug__1');
+      // Map<String, dynamic> body = {
+      //   "voucher_code": "SPIN50",
+      //   "package_id": "75",
+      //   "package_price": "5000",
+      //   "package_type": "fd"
+      // };
+
+      Map<String, dynamic> body = {
+        "voucher_code": enteredCode,
+        "package_id": BSData['package_details']['package_id'],
+        "package_price": BSData['package_price']['total'],
+        "package_type": "fd"
+      };
+
+      final response = await APIHandler.validateVoucher(body);
+      setState(() {
+        voucherAPIResponse = response;
+      });
+
+      print('###########################################################');
+      print(voucherAPIResponse);
+      print('###########################################################');
+
+      if (voucherAPIResponse['status'] == true) {
+        finalPrice = voucherAPIResponse['final_price'];
+        discountPrice = voucherAPIResponse['discount_price'];
+        voucherCode = voucherAPIResponse['voucher_code'];
+        Fluttertoast.showToast(msg: voucherAPIResponse['message']);
+        isCodeApplied = true;
+      } else {
+        Fluttertoast.showToast(msg: voucherAPIResponse['message']);
+      }
+    } catch (e) {
+      print(e);
+      Fluttertoast.showToast(msg: e.toString());
     }
   }
 
@@ -107,42 +174,58 @@ class _BookingSummaryFDState extends State<BookingSummaryFD> {
         },
       ];
 
-      flightDetails = [
-        {
-          // 'flight': 'Emirates EK 567',
-          // 'type': 'Departure',
-          // 'icon': 'takeoff',
-          // 'airport': 'Bangalore (BLR), India',
-          // 'date': '11-Dec-2024',
-          // 'terminal': 'T1',
-          'flight':
-              BSData['flight_details'][0]['airline_name']?.toString() ?? "N/A",
-          'type':
-              BSData['flight_details'][0]['flight_type']?.toString() ?? "N/A",
-          'icon': 'takeoff',
-          'airport':
-              BSData['flight_details'][0]['from_city']?.toString() ?? "N/A",
-          'date':
-              BSData['flight_details'][0]['travel_date']?.toString() ?? "N/A",
-          'terminal':
-              BSData['flight_details'][0]['depart_terminal']?.toString() ??
-                  "N/A"
-        },
-        {
-          'flight':
-              BSData['flight_details'][1]['airline_name']?.toString() ?? "N/A",
-          'type':
-              BSData['flight_details'][1]['flight_type']?.toString() ?? "N/A",
-          'icon': 'landing',
-          'airport':
-              BSData['flight_details'][1]['from_city']?.toString() ?? "N/A",
-          'date':
-              BSData['flight_details'][1]['travel_date']?.toString() ?? "N/A",
-          'terminal':
-              BSData['flight_details'][1]['depart_terminal']?.toString() ??
-                  "N/A"
-        },
-      ];
+      flightDetails = widget.flightDetails.isEmpty
+          ? []
+          : [
+              {
+                // 'flight': 'Emirates EK 567',
+                // 'type': 'Departure',
+                // 'icon': 'takeoff',
+                // 'airport': 'Bangalore (BLR), India',
+                // 'date': '11-Dec-2024',
+                // 'terminal': 'T1',
+                'flight':
+                    BSData['flight_details'][0]['airline_name']?.toString() ??
+                        "N/A",
+                'type':
+                    BSData['flight_details'][0]['flight_type']?.toString() ??
+                        "N/A",
+                'icon': 'takeoff',
+                'airport':
+                    BSData['flight_details'][0]['from_city']?.toString() ??
+                        "N/A",
+                'date':
+                    BSData['flight_details'][0]['travel_date']?.toString() ??
+                        "N/A",
+                'terminal': BSData['flight_details'][0]['depart_terminal']
+                        ?.toString() ??
+                    "N/A"
+              },
+              {
+                // 'flight': 'Emirates EK 567',
+                // 'type': 'Departure',
+                // 'icon': 'takeoff',
+                // 'airport': 'Bangalore (BLR), India',
+                // 'date': '11-Dec-2024',
+                // 'terminal': 'T1',
+                'flight':
+                    BSData['flight_details'][1]['airline_name']?.toString() ??
+                        "N/A",
+                'type':
+                    BSData['flight_details'][1]['flight_type']?.toString() ??
+                        "N/A",
+                'icon': 'landing',
+                'airport':
+                    BSData['flight_details'][1]['from_city']?.toString() ??
+                        "N/A",
+                'date':
+                    BSData['flight_details'][1]['travel_date']?.toString() ??
+                        "N/A",
+                'terminal': BSData['flight_details'][1]['depart_terminal']
+                        ?.toString() ??
+                    "N/A"
+              },
+            ];
 
       hotelDetails = [
         {
@@ -279,60 +362,101 @@ class _BookingSummaryFDState extends State<BookingSummaryFD> {
         child: isLoading
             ? _buildShimmerEffect()
             : Column(
-              children: [
-                _buildTopCurve(),
-                const SizedBox(height: 10),
-                Row(
-                  children: [
-                    IconButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      icon: CircleAvatar(
-                        backgroundColor: Colors.grey.withOpacity(0.6),  // Transparent grey background
-                        child: Text(
-                          '<',  // Use "<" symbol
-                          style: TextStyle(
-                            color: Colors.white,  // White text color
-                            fontSize: 24,  // Adjust font size as needed
-                            fontWeight: FontWeight.bold,  // Make the "<" bold if needed
+                children: [
+                  _buildTopCurve(),
+                  const SizedBox(height: 10),
+                  Row(
+                    children: [
+                      IconButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        icon: CircleAvatar(
+                          backgroundColor: Colors.grey
+                              .withOpacity(0.6), // Transparent grey background
+                          child: Text(
+                            '<', // Use "<" symbol
+                            style: TextStyle(
+                              color: Colors.white, // White text color
+                              fontSize: 24, // Adjust font size as needed
+                              fontWeight: FontWeight
+                                  .bold, // Make the "<" bold if needed
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 10),
-                    Text('BOOKING SUMMARY',
-                        style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Colors.white)
-                    )
-                  ],
-                ),
-                Padding(
-                    padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.04),
+                      const SizedBox(width: 10),
+                      Text('BOOKING SUMMARY',
+                          style: TextStyle(
+                              fontSize: 26,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white))
+                    ],
+                  ),
+                  Padding(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: screenWidth * 0.04),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const SizedBox(height: 40),
-                        _buildSection('PACKAGE DETAILS', packageDetails, fontSize),
+                        _buildSection(
+                            'PACKAGE DETAILS', packageDetails, fontSize),
                         const SizedBox(height: 20),
-                        _buildFlightDetailsSection(
-                            'FLIGHT DETAILS', flightDetails, fontSize),
+                        if (flightDetails.isNotEmpty)
+                          _buildFlightDetailsSection(
+                              'FLIGHT DETAILS', flightDetails, fontSize),
                         tourList.isEmpty
                             ? SizedBox()
-                            : _buildtourDetailsSection("TOUR DETAILS", tourList, fontSize),
+                            : _buildtourDetailsSection(
+                                "TOUR DETAILS", tourList, fontSize),
                         const SizedBox(height: 20),
                         _buildSection('HOTEL DETAILS', hotelDetails, fontSize),
                         const SizedBox(height: 20),
-                        _buildSection('TRANSFER DETAILS', transferDetails, fontSize),
+                        _buildSection(
+                            'TRANSFER DETAILS', transferDetails, fontSize),
                         const SizedBox(height: 20),
-                        _buildSection('TRAVEL INSURANCE DETAILS', insuranceDetails, fontSize),
+                        _buildSection('TRAVEL INSURANCE DETAILS',
+                            insuranceDetails, fontSize),
                         const SizedBox(height: 20),
-                        _buildPriceSection('PRICE DETAILS', priceDetails, fontSize),
+                        _buildPriceSection(
+                            'PRICE DETAILS', priceDetails, fontSize),
                         const SizedBox(height: 20),
+                        Padding(
+                          padding: EdgeInsets.all(5),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: TextField(
+                                  controller: _voucherController,
+                                  enabled: !isCodeApplied,
+                                  decoration: InputDecoration(
+                                    labelText: "Enter Voucher Code",
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              SizedBox(width: 10),
+                              ElevatedButton(
+                                onPressed: isCodeApplied ? null : _applyVoucher,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.lightBlueAccent,
+                                ),
+                                child: Text(
+                                  isCodeApplied ? "Applied" : "Apply",
+                                  style: const TextStyle(color: Colors.white),
+                                ),
+                              ),
+                            ],
+                          ),
+                        )
                       ],
                     ),
                   ),
-              ],
-            ),
+                ],
+              ),
       ),
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.only(
@@ -341,20 +465,35 @@ class _BookingSummaryFDState extends State<BookingSummaryFD> {
           width: double.infinity,
           child: IconButton(
             onPressed: () {
+              _loadLogedinDetails();
               Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => TravelersDetailsFD(
-                        flightDetails: widget.flightDetails,
-                        selectedHotel: widget.selectedHotel,
-                        packageDetails: widget.packageDetails,
-                        totalRoomsdata: widget.totalRoomsdata,
-                        searchId: widget.searchId,
-                        activityList: widget.activityList,
-                        destination: widget.destination,
-                        BSData: BSData
-                    ),
-                  ));
+                      builder: (context) => isLoggedIn
+                          ? TravelersDetailsFD(
+                              flightDetails: widget.flightDetails,
+                              selectedHotel: widget.selectedHotel,
+                              packageDetails: widget.packageDetails,
+                              totalRoomsdata: widget.totalRoomsdata,
+                              searchId: widget.searchId,
+                              activityList: widget.activityList,
+                              destination: widget.destination,
+                              BSData: BSData,
+                              finalPrice: finalPrice.toString(),
+                              voucherCode: enteredCode)
+                          : LoginPage(
+                              redirectTo: TravelersDetailsFD(
+                                  flightDetails: widget.flightDetails,
+                                  selectedHotel: widget.selectedHotel,
+                                  packageDetails: widget.packageDetails,
+                                  totalRoomsdata: widget.totalRoomsdata,
+                                  searchId: widget.searchId,
+                                  activityList: widget.activityList,
+                                  destination: widget.destination,
+                                  BSData: BSData,
+                                  finalPrice: finalPrice.toString(),
+                                  voucherCode: enteredCode),
+                            )));
             },
             icon: responciveButton(text: 'SELECT'),
           ),
@@ -363,7 +502,8 @@ class _BookingSummaryFDState extends State<BookingSummaryFD> {
     );
   }
 
-  Widget _buildSection(String title, List<Map<String, String>> details, double fontSize) {
+  Widget _buildSection(
+      String title, List<Map<String, String>> details, double fontSize) {
     return Card(
       color: Colors.white, // White background
       shape: RoundedRectangleBorder(
@@ -386,7 +526,7 @@ class _BookingSummaryFDState extends State<BookingSummaryFD> {
             Column(
               children: List.generate(
                 (details.length / 2).ceil(), // Divide into rows
-                    (index) {
+                (index) {
                   bool isLastOdd =
                       details.length % 2 != 0 && index == details.length ~/ 2;
                   return Column(
@@ -405,7 +545,8 @@ class _BookingSummaryFDState extends State<BookingSummaryFD> {
                               ),
                             ),
                             if (!isLastOdd) ...[
-                              const VerticalDivider(width: 10, color: Colors.grey),
+                              const VerticalDivider(
+                                  width: 10, color: Colors.grey),
                               Expanded(
                                 child: _buildPriceDetailBox(
                                   details[index * 2 + 1]['title']!,
@@ -428,7 +569,8 @@ class _BookingSummaryFDState extends State<BookingSummaryFD> {
     );
   }
 
-  Widget _buildFlightDetailsSection(String title, List<Map<String, String>> details, double fontSize) {
+  Widget _buildFlightDetailsSection(
+      String title, List<Map<String, String>> details, double fontSize) {
     return Card(
       color: Colors.white, // White background for the card
       shape: RoundedRectangleBorder(
@@ -479,13 +621,16 @@ class _BookingSummaryFDState extends State<BookingSummaryFD> {
           Row(
             children: [
               Icon(
-                flight['type'] == 'Departure' ? Icons.flight_takeoff : Icons.flight_land,
+                flight['type'] == 'Departure'
+                    ? Icons.flight_takeoff
+                    : Icons.flight_land,
                 color: Colors.black54,
               ),
               const SizedBox(width: 5),
               Text(
                 flight['type']!,
-                style: TextStyle(fontSize: fontSize * 1.2, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                    fontSize: fontSize * 1.2, fontWeight: FontWeight.bold),
               ),
             ],
           ),
@@ -526,7 +671,8 @@ class _BookingSummaryFDState extends State<BookingSummaryFD> {
             children: [
               const Icon(Icons.directions_transit, color: Colors.black54),
               const SizedBox(width: 5),
-              Text("${flight['terminal']}", style: TextStyle(fontSize: fontSize)),
+              Text("${flight['terminal']}",
+                  style: TextStyle(fontSize: fontSize)),
             ],
           ),
         ],
@@ -534,7 +680,8 @@ class _BookingSummaryFDState extends State<BookingSummaryFD> {
     );
   }
 
-  Widget _buildPriceSection(String title, List<Map<String, dynamic>> details, double fontSize) {
+  Widget _buildPriceSection(
+      String title, List<Map<String, dynamic>> details, double fontSize) {
     return Card(
       color: Colors.white, // White background for the card
       shape: RoundedRectangleBorder(
@@ -558,7 +705,7 @@ class _BookingSummaryFDState extends State<BookingSummaryFD> {
             Column(
               children: List.generate(
                 (details.length / 2).ceil(), // Divide into rows
-                    (index) {
+                (index) {
                   bool isLastOdd =
                       details.length % 2 != 0 && index == details.length ~/ 2;
                   return Column(
@@ -579,7 +726,8 @@ class _BookingSummaryFDState extends State<BookingSummaryFD> {
                             if (!isLastOdd) ...[
                               const SizedBox(width: 10),
                               // Vertical divider between the two items in the row
-                              const VerticalDivider(color: Colors.grey, thickness: 1),
+                              const VerticalDivider(
+                                  color: Colors.grey, thickness: 1),
                               const SizedBox(width: 10),
                               Expanded(
                                 child: _buildPriceDetailBox(
@@ -597,6 +745,55 @@ class _BookingSummaryFDState extends State<BookingSummaryFD> {
                 },
               ),
             ),
+            // const SizedBox(height: 10),
+            if (isCodeApplied) const Divider(),
+            if (isCodeApplied) const SizedBox(height: 10),
+            if (isCodeApplied)
+              Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade50,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Voucher Applied',
+                      style: TextStyle(
+                        fontSize: fontSize,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('Voucher Code:'),
+                        Text(voucherCode ?? "N/A"),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('Discount Price:'),
+                        Text(discountPrice ?? "N/A"),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('Final Price:'),
+                        Text(finalPrice ?? "N/A"),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
           ],
         ),
       ),
@@ -635,7 +832,8 @@ class _BookingSummaryFDState extends State<BookingSummaryFD> {
     );
   }
 
-  Widget _buildtourDetailsSection(String title, List<Map<String, dynamic>> tour, double fontSize) {
+  Widget _buildtourDetailsSection(
+      String title, List<Map<String, dynamic>> tour, double fontSize) {
     return Card(
       color: Colors.white, // White background for the card
       shape: RoundedRectangleBorder(
@@ -675,7 +873,8 @@ class _BookingSummaryFDState extends State<BookingSummaryFD> {
   Widget _buildTourCard(Map<dynamic, dynamic> tour, double fontSize) {
     return Container(
       // padding: EdgeInsets.all(fontSize * 0.7),
-      padding: EdgeInsets.symmetric(horizontal: fontSize * 0.7, vertical: fontSize * 0.5),
+      padding: EdgeInsets.symmetric(
+          horizontal: fontSize * 0.7, vertical: fontSize * 0.5),
       margin: const EdgeInsets.only(bottom: 2),
       decoration: BoxDecoration(
         color: Colors.grey.shade50,
@@ -685,7 +884,8 @@ class _BookingSummaryFDState extends State<BookingSummaryFD> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           SizedBox(
-            width: MediaQuery.of(context).size.width * 0.4, // 40% of screen width
+            width:
+                MediaQuery.of(context).size.width * 0.4, // 40% of screen width
             child: Text(
               "Day ${tour['day'] ?? 'N/A'}: ${tour['title'] ?? 'N/A'}",
               style: TextStyle(
@@ -708,7 +908,7 @@ class _BookingSummaryFDState extends State<BookingSummaryFD> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Expanded(
+        SizedBox(
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(

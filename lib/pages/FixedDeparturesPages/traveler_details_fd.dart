@@ -18,6 +18,8 @@ class TravelersDetailsFD extends StatefulWidget {
   final String destination;
   final List<Map<String, dynamic>> activityList;
   final Map<String, dynamic> BSData;
+  final String finalPrice;
+  final String voucherCode;
 
   const TravelersDetailsFD(
       {super.key,
@@ -28,7 +30,10 @@ class TravelersDetailsFD extends StatefulWidget {
       required this.searchId,
       required this.activityList,
       required this.destination,
-      required this.BSData});
+      required this.BSData,
+      required this.finalPrice,
+      required this.voucherCode
+      });
 
   @override
   State<TravelersDetailsFD> createState() => _TravelersDetailsFD();
@@ -61,7 +66,7 @@ class _TravelersDetailsFD extends State<TravelersDetailsFD> {
   bool _showSuccessAnimation = false; // 🎊 Confetti animation trigger
   bool _showFailureAnimation = false; // 😞 Sad animation trigger
   String voucherMessage = "";
-  String? finalPrice;
+  // String? finalPrice;
 
   @override
   void initState() {
@@ -207,50 +212,48 @@ class _TravelersDetailsFD extends State<TravelersDetailsFD> {
     );
   }
 
-  Future<void> _applyVoucher() async {
-    String enteredCode = _voucherController.text.trim();
-
-    Map<String, dynamic> body = {
-      "voucher_code": enteredCode,
-      "package_id": widget.BSData['package_details']['package_id'],
-      "package_price": widget.BSData['package_price']['total'],
-      "package_type": "fd"
-    };
-
-    // Map<String, dynamic> body = {
-    //   "voucher_code": enteredCode,
-    //   "package_id": 85,
-    //   "package_price": 13000,
-    //   "package_type": "fd"
-    // };
-
-    final response = await APIHandler.validateVoucher(body);
-
-    setState(() {
-      voucherAPIResponse = response;
-    });
-
-    // print('###########################################################');
-    // print(voucherAPIResponse);
-    // print('###########################################################');
-
-    if (voucherAPIResponse['status'] == true) {
-      
-      setState(() {
-        // _showSuccessAnimation = true;
-        // _showFailureAnimation = false;
-        finalPrice = response['final_price'];
-        voucherMessage = voucherAPIResponse['message'] +
-                ".\nYou saved ${voucherAPIResponse['discount_price']}" ??
-            "🎉 Woohoo! Voucher Applied Successfully!";
-      });
-      Fluttertoast.showToast(msg: voucherMessage);
-
-    } else {
-      Fluttertoast.showToast(msg: voucherAPIResponse
-            ['message'] ?? "😞 Oops! Invalid Voucher.");
-    }
-  }
+  // Future<void> _applyVoucher() async {
+  //   String enteredCode = _voucherController.text.trim();
+  //
+  //   Map<String, dynamic> body = {
+  //     "voucher_code": enteredCode,
+  //     "package_id": widget.BSData['package_details']['package_id'],
+  //     "package_price": widget.BSData['package_price']['total'],
+  //     "package_type": "fd"
+  //   };
+  //
+  //   // Map<String, dynamic> body = {
+  //   //   "voucher_code": enteredCode,
+  //   //   "package_id": 85,
+  //   //   "package_price": 13000,
+  //   //   "package_type": "fd"
+  //   // };
+  //
+  //   final response = await APIHandler.validateVoucher(body);
+  //
+  //   setState(() {
+  //     voucherAPIResponse = response;
+  //   });
+  //
+  //   // print('###########################################################');
+  //   // print(voucherAPIResponse);
+  //   // print('###########################################################');
+  //
+  //   if (voucherAPIResponse['status'] == true) {
+  //     setState(() {
+  //       // _showSuccessAnimation = true;
+  //       // _showFailureAnimation = false;
+  //       finalPrice = response['final_price'];
+  //       voucherMessage = voucherAPIResponse['message'] +
+  //               ".\nYou saved ${voucherAPIResponse['discount_price']}" ??
+  //           "🎉 Woohoo! Voucher Applied Successfully!";
+  //     });
+  //     Fluttertoast.showToast(msg: voucherMessage);
+  //   } else {
+  //     Fluttertoast.showToast(
+  //         msg: voucherAPIResponse['message'] ?? "😞 Oops! Invalid Voucher.");
+  //   }
+  // }
 
   // Future<void> _applyVoucher() async {
   //   String enteredCode = _voucherController.text.trim();
@@ -718,11 +721,11 @@ class _TravelersDetailsFD extends State<TravelersDetailsFD> {
                                                   .map<String>((country) =>
                                                       country["name"]
                                                           ?.toString() ??
-                                                       "")
+                                                      "")
                                                   .toList()
-                                               : [],
+                                              : [],
                                       selectedItem: _travelerDetails[index]
-                                                  ["residentCountry"] != 
+                                                  ["residentCountry"] !=
                                               null
                                           ? countryList.firstWhere(
                                               (country) =>
@@ -833,32 +836,34 @@ class _TravelersDetailsFD extends State<TravelersDetailsFD> {
                       );
                     },
                   ),
-                  SizedBox(height: 5,),
-                  Padding(padding: EdgeInsets.all(5),
-                  child: Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: _voucherController,
-                        decoration: InputDecoration(
-                          labelText: "Enter Voucher Code",
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 10),
-                    ElevatedButton(
-                      onPressed: _applyVoucher,
-                      child: Text("Apply",
-                          style: const TextStyle(color: Colors.white)),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.lightBlueAccent,
-                      ),
-                    ),
-                  ],
-                ),)
+                  SizedBox(
+                    height: 5,
+                  ),
+                  //   Padding(padding: EdgeInsets.all(5),
+                  //   child: Row(
+                  //   children: [
+                  //     Expanded(
+                  //       child: TextField(
+                  //         controller: _voucherController,
+                  //         decoration: InputDecoration(
+                  //           labelText: "Enter Voucher Code",
+                  //           border: OutlineInputBorder(
+                  //             borderRadius: BorderRadius.circular(8),
+                  //           ),
+                  //         ),
+                  //       ),
+                  //     ),
+                  //     SizedBox(width: 10),
+                  //     ElevatedButton(
+                  //       onPressed: _applyVoucher,
+                  //       child: Text("Apply",
+                  //           style: const TextStyle(color: Colors.white)),
+                  //       style: ElevatedButton.styleFrom(
+                  //         backgroundColor: Colors.lightBlueAccent,
+                  //       ),
+                  //     ),
+                  //   ],
+                  // ),)
                 ],
               ),
             ),
@@ -930,7 +935,7 @@ class _TravelersDetailsFD extends State<TravelersDetailsFD> {
 
                           Map<String, dynamic> body = {
                             'search_id': widget.searchId.toString(),
-                            'voucher_code': _voucherController.text,
+                            'voucher_code': widget.voucherCode,
                             'title': contactDetails['title'],
                             'name': contactDetails['contactName'],
                             'email': contactDetails['email'],
@@ -977,10 +982,9 @@ class _TravelersDetailsFD extends State<TravelersDetailsFD> {
                     child: Opacity(
                       opacity: _isChecked ? 1.0 : 0.5,
                       child: responciveButton(
-                        text:
-                            'Pay Now (${finalPrice ?? widget.BSData['package_price']['total'].toString()})',
+                        // text: 'Pay Now (${finalPrice ?? widget.BSData['package_price']['total'].toString()})',
                         // text: '${finalPrice}' ?? widget.BSData['package_price']['total'].toString(),
-                        // text: 'Pay Now',
+                        text: 'Pay Now (AED ${widget.finalPrice})',
                       ),
                     ),
                   ),
@@ -1005,7 +1009,7 @@ class CirclePainter extends CustomPainter {
 
     // We can use FontAwesome icon positioning logic here.
     double centerX = size.width / 2;
-                                 
+
     // Draw the largest circle (dark blue)
     paint.color = Color(0xFF0D939E);
     canvas.drawCircle(Offset(centerX, radius - 600), radius + 400, paint);

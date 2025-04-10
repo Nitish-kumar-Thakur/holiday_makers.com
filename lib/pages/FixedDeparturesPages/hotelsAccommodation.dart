@@ -1,7 +1,8 @@
+import 'package:HolidayMakers/pages/FixedDeparturesPages/add_tour_fd.dart';
+import 'package:HolidayMakers/pages/FixedDeparturesPages/booking_summary_fd.dart';
 import 'package:flutter/material.dart';
 import 'package:HolidayMakers/pages/FixedDeparturesPages/flightPageFD.dart';
 import 'package:HolidayMakers/utils/api_handler.dart';
-import 'package:HolidayMakers/widgets/appLargetext.dart';
 import 'package:HolidayMakers/widgets/responciveButton.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -9,11 +10,16 @@ class HotelsAccommodation extends StatefulWidget {
   final List<dynamic> activityList;
   final Map<String, dynamic> packageData;
   final List<dynamic> totalRoomsdata;
+  final String showTourPage;
+  final int showFlightPage;
   const HotelsAccommodation(
       {super.key,
       required this.packageData,
       required this.totalRoomsdata,
-      required this.activityList});
+      required this.activityList,
+      required this.showTourPage,
+      required this.showFlightPage
+      });
 
   @override
   State<HotelsAccommodation> createState() => _HotelsAccommodationState();
@@ -26,6 +32,7 @@ class _HotelsAccommodationState extends State<HotelsAccommodation> {
   // List<Map<String, dynamic>> flightList = [];
   String temp = "";
   String searchId = "";
+  String hotelId = "";
 
   @override
   void initState() {
@@ -67,6 +74,22 @@ class _HotelsAccommodationState extends State<HotelsAccommodation> {
       });
     } catch (e) {
       print("Error fetching package cards: $e");
+    }
+  }
+
+  Future<void> _updateHotelDetails(String hotelId) async {
+    Map<dynamic, dynamic> body = {
+      "search_id": searchId,
+      "hotel_id": hotelId
+    };
+    // print('body: $body');
+    try {
+      final response = await APIHandler.getFDFlightDetails(body);
+      // print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
+      // print(response);
+      // print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
+    } catch (e) {
+      print("Error updating hotel details: $e");
     }
   }
 
@@ -213,20 +236,38 @@ class _HotelsAccommodationState extends State<HotelsAccommodation> {
                             horizontal: 20, vertical: 10),
                         child: GestureDetector(
                           onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => FlightPageFD(
-                                  activityList: widget.activityList,
-                                  selectedHotel:
-                                      flattenedHotelList[selectedHotelIndex],
-                                  packageData: widget.packageData,
-                                  // flightList: flightList,
-                                  totalRoomsdata: widget.totalRoomsdata,
-                                  searchId: searchId,
+                            if(widget.showFlightPage == 0) { // flight available
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => FlightPageFD(
+                                    activityList: widget.activityList,
+                                    selectedHotel: flattenedHotelList[selectedHotelIndex],
+                                    packageData: widget.packageData,
+                                    // flightList: flightList,
+                                    totalRoomsdata: widget.totalRoomsdata,
+                                    searchId: searchId,
+                                    showTourPage: widget.showTourPage,
+                                  ),
                                 ),
-                              ),
-                            );
+                              );
+                            } else if(widget.showTourPage != "0"){
+                              _updateHotelDetails(flattenedHotelList[selectedHotelIndex]['git_adhoc_hotel_id']);
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => TourBookingPage(packageDetails: widget.packageData, selectedHotel: flattenedHotelList[selectedHotelIndex], flightDetails: [], totalRoomsdata: widget.totalRoomsdata, searchId: searchId, fixedActivities: widget.activityList)
+                                ),
+                              );
+                            } else {
+                              _updateHotelDetails(flattenedHotelList[selectedHotelIndex]['git_adhoc_hotel_id']);
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => BookingSummaryFD(packageDetails: widget.packageData, selectedHotel: flattenedHotelList[selectedHotelIndex], flightDetails: [], totalRoomsdata: widget.totalRoomsdata, searchId: searchId, activityList: [], destination: "")
+                                ),
+                              );
+                            }
                           },
                           child: Padding(
                               padding: const EdgeInsets.only(bottom: 20.0),
@@ -307,19 +348,18 @@ class _HotelCardState extends State<HotelCard> {
               Positioned(
                 bottom: 10,
                 left: 10,
-                right: 60, // Avoid overlapping with stars
-                child: Container(
-                  width:
-                      screenWidth * 0.6, // Set a fixed width to allow wrapping
+                child: SizedBox(
+                  width: screenWidth * 0.5, // 50% of screen width
                   child: Text(
                     widget.hotel["hotel"].toUpperCase(),
                     style: TextStyle(
-                      fontSize: screenWidth * 0.05, // Adjust size as needed
+                      fontSize: screenWidth * 0.05,
                       fontWeight: FontWeight.bold,
-                      color: Colors
-                          .white, // White text for visibility on dark backgrounds
+                      color: Colors.white,
                     ),
-                    softWrap: true, // Allow text to wrap onto the next line
+                    softWrap: true,
+                    maxLines: 2, // Optional: limits to 2 lines, remove if you want unlimited
+                    overflow: TextOverflow.visible, // or .ellipsis if you want to trim long text
                   ),
                 ),
               ),

@@ -1,3 +1,4 @@
+import 'package:HolidayMakers/pages/FixedDeparturesPages/booking_summary_fd.dart';
 import 'package:flutter/material.dart';
 import 'package:HolidayMakers/pages/FixedDeparturesPages/add_tour_fd.dart';
 import 'package:HolidayMakers/utils/api_handler.dart';
@@ -11,6 +12,7 @@ class FlightPageFD extends StatefulWidget {
   // final List<Map<String, dynamic>> flightList;
   final String searchId;
   final List<dynamic> totalRoomsdata;
+  final String showTourPage;
 
   const FlightPageFD(
       {super.key,
@@ -19,7 +21,9 @@ class FlightPageFD extends StatefulWidget {
       required this.selectedHotel,
       // required this.flightList,
       required this.totalRoomsdata,
-      required this.activityList});
+      required this.activityList,
+      required this.showTourPage
+      });
 
   @override
   State<FlightPageFD> createState() => _FlightPageFDState();
@@ -152,7 +156,6 @@ class _FlightPageFDState extends State<FlightPageFD> {
   // "total": 3299
   // }
   // ];
-
   bool isLoading = true;
   @override
   void initState() {
@@ -161,6 +164,10 @@ class _FlightPageFDState extends State<FlightPageFD> {
     // print(widget.searchId);
     // print(widget.selectedHotel['git_adhoc_hotel_id']);
     _fetchFDFlightDetails();
+    print('#####################################');
+    print(widget.showTourPage);
+    print(widget.packageData['package_id']);
+    print('#####################################');
   }
 
   Future<void> _fetchFDFlightDetails() async {
@@ -356,18 +363,36 @@ class _FlightPageFDState extends State<FlightPageFD> {
                     // print(flight_id.runtimeType);
                     // print('########################################################');
                     _updateFlightDetails(searchId, flightId);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => TourBookingPage(
+                    if (widget.showTourPage == "0") {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => BookingSummaryFD(
+                            packageDetails: widget.packageData,
+                            selectedHotel: widget.selectedHotel,
+                            flightDetails: selectedFlightPackage,
+                            totalRoomsdata: widget.totalRoomsdata,
+                            searchId: widget.searchId,
+                            activityList: [],
+                            destination: "",
+                          ),
+                        ),
+                      );
+                    } else {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => TourBookingPage(
                             flightDetails: selectedFlightPackage,
                             selectedHotel: widget.selectedHotel,
                             packageDetails: widget.packageData,
                             totalRoomsdata: widget.totalRoomsdata,
                             searchId: widget.searchId,
-                            fixedActivities: widget.activityList),
-                      ),
-                    );
+                            fixedActivities: widget.activityList,
+                          ),
+                        ),
+                      );
+                    }
                   }
                 },
                 child:  Padding(

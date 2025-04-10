@@ -254,180 +254,321 @@ class _MyBookingsState extends State<MyBookings>
   }
 
   Widget _buildBookingList() {
+    final double screenWidth = MediaQuery.of(context).size.width;
     return ListView.builder(
       padding: const EdgeInsets.all(16.0),
       itemCount: bookingList.length,
       itemBuilder: (context, index) {
         final booking = bookingList[index];
-        // print("buildBooking List $booking");
         return Card(
-          color: Colors.white70,
+          color: Colors.white,
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           elevation: 4,
-          margin: const EdgeInsets.only(bottom: 30),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: Column(
+          margin: const EdgeInsets.only(bottom: 20),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Package Header
+                Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(booking["package_name"] ?? "N/A",
+                    Expanded(
+                      child: Text(
+                        booking["package_name"] ?? "N/A",
                         style: const TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold)),
-                    const SizedBox(height: 4),
-                    // Row(
-                    //   children: [
-                    //     Text(booking["destination_name"] ?? "N/A"),
-                    //     const Spacer(),
-                    //     Text(booking["travel_date_from"] ?? "N/A", style: TextStyle(color: Colors.grey[600])),
-                    //   ],
-                    // ),
-                    Text(booking["destination_name"] ?? "N/A"),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        const Icon(Icons.library_books,
-                            color: Colors.blueAccent),
-                        const SizedBox(width: 8),
-                        Text(booking["payment_status"] ?? "N/A"),
-                      ],
-                    ),
-                    const Divider(
-                        height: 20, thickness: 1, color: Colors.black),
-                    Row(
-                      children: [
-                        Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(booking["travel_date_from"] ?? "N/a",
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.bold)),
-                              // Text(booking["fromTime"] ?? "N/A")
-                            ]),
-                        const Spacer(),
-                        Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Text(booking["travel_date_to"] ?? "N/a",
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.bold)),
-                              // Text(booking["toTime"] ?? "N/A")
-                            ]),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                    Center(
-                      child: ElevatedButton(
-                        onPressed: () {
-                          final pdfUrl = booking["receipt_pdf"];
-                          if (pdfUrl != null && pdfUrl.isNotEmpty) {
-                            _downloadTicket(pdfUrl);
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text("No receipt available.")),
-                            );
-                          }
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.red,
-                        ),
-                        child: const Text(
-                          "Download Ticket",
-                          style: TextStyle(color: Colors.white),
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
-                    )
+                    ),
+                    const Icon(Icons.location_on, color: Colors.blue, size: 20),
+                    const SizedBox(width: 4),
+                    Text(
+                      booking["destination"] ?? "N/A",
+                      style: const TextStyle(color: Colors.grey),
+                    ),
                   ],
                 ),
-              ),
-            ],
+
+                const SizedBox(height: 12),
+                const Divider(),
+
+                // Reference & Date
+                _buildLabelValueRow("Reference No.", booking["booking_ref_no"]),
+                _buildLabelValueRow(
+                    "Booking Date", booking["booking_created_datetime"]),
+                _buildLabelValueRow(
+                    "Payment Status", booking["payment_status"]),
+                _buildLabelValueRow(
+                    "Booking Status", booking["booking_status"]),
+                _buildLabelValueRow("Booking Type", booking["booking_type"]),
+
+                const Divider(),
+
+                // Travel Info
+                _buildLabelValueRow("From", booking["travel_date_from"]),
+                _buildLabelValueRow("To", booking["travel_date_to"]),
+                _buildLabelValueRow(
+                    "No. of Pax", booking["no_of_pax"].toString()),
+                _buildLabelValueRow(
+                    "Total Amount", 'AED ${booking["total_amount"] ?? "N/A"}'),
+
+                if ((booking["booking_voucher"] ?? "").isNotEmpty)
+                  _buildLabelValueRow(
+                      "Booking Voucher", booking["booking_voucher"]),
+
+                const SizedBox(height: 16),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: ElevatedButton.icon(
+                          onPressed: () {
+                            final voucherUrl = booking["booking_voucher"];
+                            if (voucherUrl != null && voucherUrl.isNotEmpty) {
+                              _downloadTicket(voucherUrl);
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content:
+                                        Text("No booking voucher available.")),
+                              );
+                            }
+                          },
+                          icon: const Icon(Icons.download, color: Colors.white),
+                          label: Text(
+                            "Booking Voucher",
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: screenWidth * 0.03),
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blue,
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: ElevatedButton.icon(
+                          onPressed: () {
+                            final receiptUrl = booking["payment_receipt"];
+                            if (receiptUrl != null && receiptUrl.isNotEmpty) {
+                              _downloadTicket(receiptUrl);
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content:
+                                        Text("No payment receipt available.")),
+                              );
+                            }
+                          },
+                          icon: const Icon(Icons.download, color: Colors.white),
+                          label: Text(
+                            "Payment Receipt",
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: screenWidth * 0.03),
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blue,
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         );
       },
     );
   }
 
+  Widget _buildLabelValueRow(String label, String? value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              label,
+              style: const TextStyle(
+                fontWeight: FontWeight.w600,
+                color: Colors.black87,
+              ),
+            ),
+          ),
+          Expanded(
+            child: Text(
+              value ?? "N/A",
+              textAlign: TextAlign.end,
+              style: const TextStyle(
+                color: Colors.black54,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildCruiseList() {
+    final double screenWidth = MediaQuery.of(context).size.width;
     return ListView.builder(
       padding: const EdgeInsets.all(16.0),
       itemCount: cruiseList.length,
       itemBuilder: (context, index) {
         final booking = cruiseList[index];
-        // print("buildBooking List $booking");
         return Card(
-          color: Colors.white70,
+          color: Colors.white,
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           elevation: 4,
-          margin: const EdgeInsets.only(bottom: 30),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: Column(
+          margin: const EdgeInsets.only(bottom: 20),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Package Header
+                Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(booking["cruise_name"] ?? "N/A",
+                    Expanded(
+                      child: Text(
+                        booking["cruise_name"] ?? "N/A",
                         style: const TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold)),
-                    const SizedBox(height: 4),
-                    // Row(
-                    //   children: [
-                    //     Text(booking["destination_name"] ?? "N/A"),
-                    //     const Spacer(),
-                    //     Text(booking["travel_date_from"] ?? "N/A", style: TextStyle(color: Colors.grey[600])),
-                    //   ],
-                    // ),
-                    Text(booking["destination_name"] ?? "N/A"),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        const Icon(Icons.library_books,
-                            color: Colors.blueAccent),
-                        const SizedBox(width: 8),
-                        Text(booking["payment_status"] ?? "N/A"),
-                      ],
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
-                    const Divider(
-                        height: 20, thickness: 1, color: Colors.black),
-                    Row(
-                      children: [
-                        Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(booking["travel_date_from"] ?? "N/a",
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.bold)),
-                              // Text(booking["fromTime"] ?? "N/A")
-                            ]),
-                        const Spacer(),
-                        Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Text(booking["travel_date_to"] ?? "N/a",
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.bold)),
-                              // Text(booking["toTime"] ?? "N/A")
-                            ]),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                    Center(
-                      child: ElevatedButton(
-                          onPressed: () {},
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.red),
-                          child: const Text("Download Ticket",
-                              style: TextStyle(color: Colors.white))),
+                    const Icon(Icons.location_on, color: Colors.blue, size: 20),
+                    const SizedBox(width: 4),
+                    Text(
+                      booking["destination"] ?? "N/A",
+                      style: const TextStyle(color: Colors.grey),
                     ),
                   ],
                 ),
-              ),
-            ],
+
+                const SizedBox(height: 12),
+                const Divider(),
+
+                // Reference & Date
+                _buildLabelValueRow("Reference No.", booking["booking_ref_no"]),
+                _buildLabelValueRow(
+                    "Booking Date", booking["booking_created_datetime"]),
+                _buildLabelValueRow(
+                    "Payment Status", booking["payment_status"]),
+                _buildLabelValueRow(
+                    "Booking Status", booking["booking_status"]),
+                // _buildLabelValueRow("Booking Type", booking["booking_type"]),
+
+                const Divider(),
+
+                // Travel Info
+                _buildLabelValueRow("From", booking["travel_date_from"]),
+                _buildLabelValueRow("To", booking["travel_date_to"]),
+                _buildLabelValueRow(
+                    "No. of Pax", booking["no_of_pax"].toString()),
+                _buildLabelValueRow(
+                    "Total Amount", 'AED ${booking["total_amount"] ?? "N/A"}'),
+
+                if ((booking["booking_voucher"] ?? "").isNotEmpty)
+                  _buildLabelValueRow(
+                      "Booking Voucher", booking["booking_voucher"]),
+
+                const SizedBox(height: 16),
+
+                // Download Button
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: ElevatedButton.icon(
+                          onPressed: () {
+                            final voucherUrl = booking["booking_voucher"];
+                            if (voucherUrl != null && voucherUrl.isNotEmpty) {
+                              _downloadTicket(voucherUrl);
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content:
+                                        Text("No booking voucher available.")),
+                              );
+                            }
+                          },
+                          icon: const Icon(Icons.download, color: Colors.white),
+                          label: Text(
+                            "Booking Voucher",
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: screenWidth * 0.03),
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blue,
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: ElevatedButton.icon(
+                          onPressed: () {
+                            final receiptUrl = booking["payment_receipt"];
+                            if (receiptUrl != null && receiptUrl.isNotEmpty) {
+                              _downloadTicket(receiptUrl);
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content:
+                                        Text("No payment receipt available.")),
+                              );
+                            }
+                          },
+                          icon: const Icon(Icons.download, color: Colors.white),
+                          label: Text(
+                            "Payment Receipt",
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: screenWidth * 0.03),
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blue,
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         );
       },

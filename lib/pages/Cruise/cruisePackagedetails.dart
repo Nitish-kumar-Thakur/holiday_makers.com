@@ -225,7 +225,7 @@ class _CruisePackageDetailsState extends State<CruisePackageDetails> {
                           const SizedBox(height: 4),
                           // Location
                           Text(
-                            packageData['location'] ?? "Unknown Location",
+                            packageData['cruise_details']['country_name'] ?? "Unknown Location",
                             style: const TextStyle(
                               fontSize: 16,
                               color: Colors.grey,
@@ -237,7 +237,7 @@ class _CruisePackageDetailsState extends State<CruisePackageDetails> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               _InfoChip(
-                                icon: Icons.flight_takeoff,
+                                icon: FontAwesomeIcons.sailboat,
                                 label: packageData['cruise_details']['dep_date']
                                         ?.toString() ??
                                     "N/A",

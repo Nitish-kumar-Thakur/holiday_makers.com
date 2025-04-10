@@ -38,7 +38,6 @@ class _SignuppageState extends State<Signuppage> {
     print(phone);
     print("@@@@@@@@@@@@@@@@@@@@@@@@@@@");
 
-
     setState(() {
       _errorMessage = '';
       _isLoading = true;
@@ -88,6 +87,7 @@ class _SignuppageState extends State<Signuppage> {
       );
 
       if (result['status'] == true) {
+        Fluttertoast.showToast(msg: "Registration Completed");
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => LoginPage()),

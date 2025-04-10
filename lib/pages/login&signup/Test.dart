@@ -1,6 +1,5 @@
 import 'package:HolidayMakers/pages/homePages/mainPage.dart';
 import 'package:HolidayMakers/pages/login&signup/Test2.dart';
-import 'package:HolidayMakers/pages/login&signup/signupPage.dart';
 import 'package:HolidayMakers/utils/api_handler.dart';
 import 'package:HolidayMakers/utils/shared_preferences_handler.dart';
 import 'package:HolidayMakers/widgets/responciveButton.dart';
@@ -10,8 +9,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class LoginPage extends StatefulWidget {
+  final Widget redirectTo;
   final bool backbutton;
-  const LoginPage({super.key, this.backbutton=false});
+  const LoginPage({super.key, this.backbutton = false, this.redirectTo= const Mainpage()});
   @override
   State<LoginPage> createState() => _LoginPageState();
 }
@@ -29,7 +29,7 @@ class _LoginPageState extends State<LoginPage> {
     await SharedPreferencesHandler.saveLoginData(responseData);
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => const Mainpage()),
+      MaterialPageRoute(builder: (context) => widget.redirectTo),
     );
   }
 
@@ -67,6 +67,7 @@ class _LoginPageState extends State<LoginPage> {
     try {
       final responseData = await APIHandler.login(email, password);
       if (responseData['status'] == true) {
+        Fluttertoast.showToast(msg: "Login Succesfully");
         _completeLogin(responseData);
       } else {
         Fluttertoast.showToast(msg: responseData['message'] ?? 'Login failed');
@@ -116,29 +117,31 @@ class _LoginPageState extends State<LoginPage> {
           body: Column(
             children: [
               const SizedBox(height: 50),
-             widget.backbutton? Container() :Row(
-                children: [
-                  IconButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    icon: CircleAvatar(
-                      backgroundColor: Colors.grey
-                          .withOpacity(0.6), // Transparent grey background
-                      child: Text(
-                        '<', // Use "<" symbol
-                        style: TextStyle(
-                          color: Colors.white, // White text color
-                          fontSize: 24, // Adjust font size as needed
-                          fontWeight:
-                              FontWeight.bold, // Make the "<" bold if needed
+              widget.backbutton
+                  ? Container()
+                  : Row(
+                      children: [
+                        IconButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          icon: CircleAvatar(
+                            backgroundColor: Colors.grey.withOpacity(
+                                0.6), // Transparent grey background
+                            child: Text(
+                              '<', // Use "<" symbol
+                              style: TextStyle(
+                                color: Colors.white, // White text color
+                                fontSize: 24, // Adjust font size as needed
+                                fontWeight: FontWeight
+                                    .bold, // Make the "<" bold if needed
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
+                        const SizedBox(width: 10),
+                      ],
                     ),
-                  ),
-                  const SizedBox(width: 10),
-                ],
-              ),
               Expanded(
                 child: Center(
                     child: SingleChildScrollView(
@@ -326,7 +329,10 @@ class _LoginPageState extends State<LoginPage> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => Signuppage(backbutton: widget.backbutton,)),
+                  MaterialPageRoute(
+                      builder: (context) => Signuppage(
+                            backbutton: widget.backbutton,
+                          )),
                 );
               },
               child: Text("Register Now",

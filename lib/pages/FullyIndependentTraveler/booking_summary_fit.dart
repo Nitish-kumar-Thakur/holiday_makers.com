@@ -1,7 +1,10 @@
+import 'package:HolidayMakers/pages/login&signup/Test.dart';
 import 'package:flutter/material.dart';
 import 'package:HolidayMakers/pages/FullyIndependentTraveler/travelers_details_fit.dart';
 import 'package:HolidayMakers/utils/api_handler.dart';
 import 'package:HolidayMakers/widgets/responciveButton.dart';
+import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
 
 class BookingSummaryFIT extends StatefulWidget {
@@ -33,6 +36,7 @@ class _BookingSummaryFITState extends State<BookingSummaryFIT> {
   Map<dynamic, dynamic> bookingSummreyData = {};
   // List<dynamic> destinationList = [];
   bool isLoading = true;
+  bool isLoggedIn = false;
 
   @override
   void initState() {
@@ -48,6 +52,13 @@ class _BookingSummaryFITState extends State<BookingSummaryFIT> {
     });
     print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
     print("================================================");
+  }
+
+  Future<void> _loadLogedinDetails() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      isLoggedIn = prefs.getBool("isLoggedIn") ?? false;
+    });
   }
 
   void bookingApiDataIntlize() {
@@ -98,7 +109,7 @@ class _BookingSummaryFITState extends State<BookingSummaryFIT> {
     final hotel = bookingSummreyData["data"]["result"]["hotel"] ?? [];
     final amount = bookingSummreyData["data"] ?? [];
     final onwardFlight =
-        bookingSummreyData["data"]["result"]["flight"]["onward"] ?? [];
+        bookingSummreyData["data"]["result"]["flight"]["onward"];
     final returnFlight =
         bookingSummreyData["data"]["result"]["flight"]["return"] ?? [];
     final activityList =
@@ -146,24 +157,31 @@ class _BookingSummaryFITState extends State<BookingSummaryFIT> {
           {"title": "No. of Rooms", "value": amount["room_count"].toString()},
           {"title": "Meal Plan", "value": hotel["meal_type_name"]},
         ];
-        flightDetails = [
-          {
-            'flight': onwardFlight["flight_name"],
-            'type': 'Departure',
-            'icon': 'takeoff',
-            'airport': onwardFlight["dep_from_city"],
-            'date': onwardFlight["onward_date"],
-            'terminal': onwardFlight["depart_terminal"]
-          },
-          {
-            'flight': returnFlight["flight_name"],
-            'type': 'Arrival',
-            'icon': 'landing',
-            'airport': returnFlight["dep_from_city"],
-            'date': returnFlight["return_date"],
-            'terminal': returnFlight["depart_terminal"]
-          },
-        ];
+        print(
+            "onward flight: ${bookingSummreyData["data"]["result"]["flight"]["onward"]}");
+        if (bookingSummreyData["data"]["result"]["flight"]["onward"] == null) {
+          print("flightDetails: $flightDetails");
+        } else {
+          flightDetails = [
+            {
+              'flight': onwardFlight["flight_name"] ?? "N/A",
+              'type': 'Departure',
+              'icon': 'takeoff',
+              'airport': onwardFlight["dep_from_city"] ?? "N/A",
+              'date': onwardFlight["onward_date"] ?? "N/A",
+              'terminal': onwardFlight["depart_terminal"] ?? "N/A"
+            },
+            {
+              'flight': returnFlight["flight_name"] ?? "N/A",
+              'type': 'Arrival',
+              'icon': 'landing',
+              'airport': returnFlight["dep_from_city"] ?? "N/A",
+              'date': returnFlight["return_date"] ?? "N/A",
+              'terminal': returnFlight["depart_terminal"] ?? "N/A"
+            },
+          ];
+        }
+
         insuranceDetails = [
           {'title': 'Travel Insurance in accordance to standards', 'value': ''},
         ];
@@ -283,73 +301,91 @@ class _BookingSummaryFITState extends State<BookingSummaryFIT> {
       body: isLoading
           ? _buildShimmerEffect()
           : SingleChildScrollView(
-              child: Column(
+              child: Column(children: [
+                _buildTopCurve(),
+                const SizedBox(height: 10),
+                Row(
                   children: [
-                    _buildTopCurve(),
-                    const SizedBox(height: 10),
-                    Row(
-                      children: [
-                        IconButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          icon: CircleAvatar(
-                            backgroundColor: Colors.grey.withOpacity(0.6),  // Transparent grey background
-                            child: Text(
-                              '<',  // Use "<" symbol
-                              style: TextStyle(
-                                color: Colors.white,  // White text color
-                                fontSize: 24,  // Adjust font size as needed
-                                fontWeight: FontWeight.bold,  // Make the "<" bold if needed
-                              ),
-                            ),
+                    IconButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      icon: CircleAvatar(
+                        backgroundColor: Colors.grey
+                            .withOpacity(0.6), // Transparent grey background
+                        child: Text(
+                          '<', // Use "<" symbol
+                          style: TextStyle(
+                            color: Colors.white, // White text color
+                            fontSize: 24, // Adjust font size as needed
+                            fontWeight:
+                                FontWeight.bold, // Make the "<" bold if needed
                           ),
                         ),
-                        const SizedBox(width: 10),
-                        Text('BOOKING SUMMARY',
-                            style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Colors.white)
-                        )
-                      ],
-                    ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.04),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const SizedBox(height: 40),
-                          // _buildSection('PACKAGE DETAILS', packageDetails, fontSize),
-                          _buildFlightDetailsSection('FLIGHT DETAILS', flightDetails, fontSize),
-                          const SizedBox(height: 20),
-                          tourList.isEmpty
-                              ? SizedBox()
-                              : _buildtourDetailsSection("TOUR DETAILS", tourList, fontSize),
-                          const SizedBox(height: 20),
-                          _buildSection('HOTEL DETAILS', hotelDetails, fontSize),
-                          const SizedBox(height: 20),
-                          _buildSection('TRANSFER DETAILS', transferDetails, fontSize),
-                          const SizedBox(height: 20),
-                          _buildSection('TRAVEL INSURANCE DETAILS', insuranceDetails, fontSize),
-                          const SizedBox(height: 20),
-                          _buildPriceSection('PRICE DETAILS', priceDetails, fontSize),
-                          const SizedBox(height: 20),
-                        ],
                       ),
                     ),
-                  ]
-              ),
-          ),
+                    const SizedBox(width: 10),
+                    Text('BOOKING SUMMARY',
+                        style: TextStyle(
+                            fontSize: 26,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white))
+                  ],
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.04),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 40),
+                      // _buildSection('PACKAGE DETAILS', packageDetails, fontSize),
+                      flightDetails.isEmpty? SizedBox(height: 10,):_buildFlightDetailsSection(
+                          'FLIGHT DETAILS', flightDetails, fontSize),
+                      const SizedBox(height: 20),
+                      tourList.isEmpty
+                          ? SizedBox()
+                          : _buildtourDetailsSection(
+                              "TOUR DETAILS", tourList, fontSize),
+                      const SizedBox(height: 20),
+                      _buildSection('HOTEL DETAILS', hotelDetails, fontSize),
+                      const SizedBox(height: 20),
+                      flightDetails.isEmpty? SizedBox(height: 10,):_buildSection(
+                          'TRANSFER DETAILS', transferDetails, fontSize),
+                      const SizedBox(height: 20),
+                      _buildSection('TRAVEL INSURANCE DETAILS',
+                          insuranceDetails, fontSize),
+                      const SizedBox(height: 20),
+                      _buildPriceSection(
+                          'PRICE DETAILS', priceDetails, fontSize),
+                      const SizedBox(height: 20),
+                    ],
+                  ),
+                ),
+              ]),
+            ),
       bottomNavigationBar: isLoading
           ? null
           : Padding(
               padding: EdgeInsets.all(20.0),
               child: GestureDetector(
                 onTap: () {
+                  _loadLogedinDetails();
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => TravelersDetailsFIT(
-                            totalRoomsdata: widget.roomArray,
-                            searchId: widget.searchId, BSData: bookingSummreyData['data'],)),
+                        builder: (context) => isLoggedIn
+                            ? TravelersDetailsFIT(
+                                totalRoomsdata: widget.roomArray,
+                                searchId: widget.searchId,
+                                BSData: bookingSummreyData['data'],
+                              )
+                            : LoginPage(
+                                redirectTo: TravelersDetailsFIT(
+                                  totalRoomsdata: widget.roomArray,
+                                  searchId: widget.searchId,
+                                  BSData: bookingSummreyData['data'],
+                                ),
+                              )),
                   );
                 },
                 child: responciveButton(text: 'PROCEED TO BOOKING'),
@@ -358,7 +394,8 @@ class _BookingSummaryFITState extends State<BookingSummaryFIT> {
     );
   }
 
-  Widget _buildFlightDetailsSection(String title, List<Map<String, dynamic>> details, double fontSize) {
+  Widget _buildFlightDetailsSection(
+      String title, List<Map<String, dynamic>> details, double fontSize) {
     return Card(
       color: Colors.white, // White background for the card
       shape: RoundedRectangleBorder(
@@ -555,7 +592,8 @@ class _BookingSummaryFITState extends State<BookingSummaryFIT> {
   //   );
   // }
 
-  Widget _buildSection(String title, List<Map<String, dynamic>> details, double fontSize) {
+  Widget _buildSection(
+      String title, List<Map<String, dynamic>> details, double fontSize) {
     return Card(
       color: Colors.white, // White background for the card
       shape: RoundedRectangleBorder(
@@ -578,11 +616,13 @@ class _BookingSummaryFITState extends State<BookingSummaryFIT> {
             Column(
               children: List.generate(
                 (details.length / 2).ceil(), // Divide into rows
-                    (index) {
-                  bool isLastOdd = details.length % 2 != 0 && index == details.length ~/ 2;
+                (index) {
+                  bool isLastOdd =
+                      details.length % 2 != 0 && index == details.length ~/ 2;
                   return Column(
                     children: [
-                      const Divider(color: Colors.grey), // Divider before each row
+                      const Divider(
+                          color: Colors.grey), // Divider before each row
                       const SizedBox(height: 10),
                       IntrinsicHeight(
                         // This ensures both boxes in the row will have equal height
@@ -652,7 +692,8 @@ class _BookingSummaryFITState extends State<BookingSummaryFIT> {
     );
   }
 
-  Widget _buildPriceSection(String title, List<Map<String, dynamic>> details, double fontSize) {
+  Widget _buildPriceSection(
+      String title, List<Map<String, dynamic>> details, double fontSize) {
     return Card(
       color: Colors.white, // White background for the card
       shape: RoundedRectangleBorder(
@@ -676,11 +717,13 @@ class _BookingSummaryFITState extends State<BookingSummaryFIT> {
             Column(
               children: List.generate(
                 (details.length / 2).ceil(), // Divide into rows
-                    (index) {
-                  bool isLastOdd = details.length % 2 != 0 && index == details.length ~/ 2;
+                (index) {
+                  bool isLastOdd =
+                      details.length % 2 != 0 && index == details.length ~/ 2;
                   return Column(
                     children: [
-                      const Divider(color: Colors.grey), // Divider before each row
+                      const Divider(
+                          color: Colors.grey), // Divider before each row
                       const SizedBox(height: 10),
                       IntrinsicHeight(
                         // This ensures both boxes in the row will have equal height
@@ -750,7 +793,8 @@ class _BookingSummaryFITState extends State<BookingSummaryFIT> {
     );
   }
 
-  Widget _buildtourDetailsSection(String title, List<Map<String, dynamic>> tour, double fontSize) {
+  Widget _buildtourDetailsSection(
+      String title, List<Map<String, dynamic>> tour, double fontSize) {
     return Card(
       color: Colors.white, // White background for the card
       shape: RoundedRectangleBorder(
@@ -798,7 +842,8 @@ class _BookingSummaryFITState extends State<BookingSummaryFIT> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               SizedBox(
-                width: MediaQuery.of(context).size.width * 0.4, // 40% of screen width
+                width: MediaQuery.of(context).size.width *
+                    0.4, // 40% of screen width
                 child: Text(
                   "Day ${tour['day'] ?? 'N/A'}: ${tour['title'] ?? 'N/A'}",
                   style: TextStyle(

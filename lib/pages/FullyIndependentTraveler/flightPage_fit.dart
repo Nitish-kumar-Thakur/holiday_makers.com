@@ -68,7 +68,7 @@ class _FlightPageFITState extends State<FlightPageFIT> {
     Map<String, dynamic> fitUpdateFlightData = {
       "search_id": widget.responceData?["data"]["search_id"],
       "flight_fare_id":
-          "${selectedFlightPackage["onward"][0]["flight_fare_id"]}_${selectedFlightPackage["return"][0]["flight_fare_id"]}"
+          "${selectedFlightPackage["onward"][0]["flight_fare_id"] ?? ""}_${selectedFlightPackage["return"][0]["flight_fare_id"] ?? ""}"
     };
     try {
       // print("Sending API Request with Data: $fitUpdateHotelData");
@@ -275,7 +275,7 @@ class _FlightPageFITState extends State<FlightPageFIT> {
       ),
       bottomNavigationBar: isLoading
           ? null
-          : groupedFlights.isEmpty? SizedBox():Padding(
+          : Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               child: GestureDetector(
                 onTap: () {
@@ -289,6 +289,20 @@ class _FlightPageFITState extends State<FlightPageFIT> {
                         "${selectedFlightPackage["onward"][0]["flight_fare_id"]}_${selectedFlightPackage["return"][0]["flight_fare_id"]}");
                     print("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
                     _selectButton(selectedFlightPackage);
+                  } else {
+                    print(
+                        "SearchFIT: ${widget.responceData?["data"]["search_id"]}");
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => TourBookingPageFIT(
+                            numberOfNights: widget.numberOfNights,
+                            searchId: (widget.responceData?["data"]
+                                    ["search_id"])
+                                .toString(),
+                            totalRoomsdata: widget.roomArray),
+                      ),
+                    );
                   }
                 },
                 child: Padding(
@@ -338,16 +352,28 @@ class _FlightPackageCardState extends State<FlightPackageCard> {
 
   @override
   Widget build(BuildContext context) {
-    String onwardStops = (widget.onwardFlights.length - 1 == 0 ? 'Non-stop' : widget.onwardFlights.length - 1).toString();
-    String returnStops = (widget.returnFlights.length - 1 == 0 ? 'Non-stop' : widget.returnFlights.length - 1).toString();
+    String onwardStops = (widget.onwardFlights.length - 1 == 0
+            ? 'Non-stop'
+            : widget.onwardFlights.length - 1)
+        .toString();
+    String returnStops = (widget.returnFlights.length - 1 == 0
+            ? 'Non-stop'
+            : widget.returnFlights.length - 1)
+        .toString();
 
-    String returnFlightKey = widget.returnFlights[0]['flight_details_id'].toString();
-    String returnCabinBaggage = widget.returnFlights[0]['cabin_baggage'].toString();
-    String returnCheckinBaggage = widget.returnFlights[0]['check_in_baggage'].toString();
+    String returnFlightKey =
+        widget.returnFlights[0]['flight_details_id'].toString();
+    String returnCabinBaggage =
+        widget.returnFlights[0]['cabin_baggage'].toString();
+    String returnCheckinBaggage =
+        widget.returnFlights[0]['check_in_baggage'].toString();
 
-    String onwardFlightKey = widget.onwardFlights[0]['flight_details_id'].toString();
-    String onwardCabinBaggage = widget.onwardFlights[0]['cabin_baggage'].toString();
-    String onwardCheckinBaggage = widget.onwardFlights[0]['check_in_baggage'].toString();
+    String onwardFlightKey =
+        widget.onwardFlights[0]['flight_details_id'].toString();
+    String onwardCabinBaggage =
+        widget.onwardFlights[0]['cabin_baggage'].toString();
+    String onwardCheckinBaggage =
+        widget.onwardFlights[0]['check_in_baggage'].toString();
 
     bool isOnwardExpanded = _expandedFlights.contains(onwardFlightKey);
     bool isReturnExpanded = _expandedFlights.contains(returnFlightKey);
@@ -367,200 +393,203 @@ class _FlightPackageCardState extends State<FlightPackageCard> {
     return GestureDetector(
       onTap: widget.onTap,
       child: Card(
-      // color: Colors.white,
-      color: Color(0xFFEEEEEE),
-      margin: const EdgeInsets.only(bottom: 20),
-      elevation: 6,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Align( alignment: Alignment.bottomRight,
-              child: Container(
-                      height: 12,
-                      width: 12,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: widget.isSelected
-                            ? Color(0xFF0071BC)
-                            : Colors.transparent,
-                        border: Border.all(color: Color(0xFF0071BC)),
-                      ),
+        // color: Colors.white,
+        color: Color(0xFFEEEEEE),
+        margin: const EdgeInsets.only(bottom: 20),
+        elevation: 6,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Align(
+                alignment: Alignment.bottomRight,
+                child: Container(
+                  height: 12,
+                  width: 12,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: widget.isSelected
+                        ? Color(0xFF0071BC)
+                        : Colors.transparent,
+                    border: Border.all(color: Color(0xFF0071BC)),
+                  ),
+                ),
+              ),
+              Text(
+                "Onward Flight",
+                style: TextStyle(
+                  color: Color(0xFF0071BC),
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
+              _flightSection("Onward Flight", widget.onwardFlights),
+              InkWell(
+                onTap: () => _toggleExpand(onwardFlightKey),
+                child: Row(
+                  children: [
+                    const Icon(Icons.info_outline,
+                        size: 16, color: Colors.blueAccent),
+                    const SizedBox(width: 5),
+                    Text(
+                      isOnwardExpanded ? "Hide Info" : "Show More",
+                      style: const TextStyle(
+                          fontSize: 12, color: Colors.blueAccent),
                     ),
-            ),
-            Text(
-              "Onward Flight",
-              style: TextStyle(
-                color: Color(0xFF0071BC),
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-              ),
-            ),
-            _flightSection("Onward Flight", widget.onwardFlights),
-            InkWell(
-              onTap: () => _toggleExpand(onwardFlightKey),
-              child: Row(
-                children: [
-                  const Icon(Icons.info_outline,
-                      size: 16, color: Colors.blueAccent),
-                  const SizedBox(width: 5),
-                  Text(
-                    isOnwardExpanded ? "Hide Info" : "Show More",
-                    style:
-                    const TextStyle(fontSize: 12, color: Colors.blueAccent),
-                  ),
-                ],
-              ),
-            ),
-            AnimatedCrossFade(
-              firstChild: const SizedBox.shrink(),
-              secondChild: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(height: 10),
-                  Text("Cabin Baggage: $onwardCabinBaggage kg"),
-                  Text("Check-in Baggage: $onwardCheckinBaggage kg"),
-                ],
-              ),
-              crossFadeState:
-              isOnwardExpanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
-              duration: const Duration(milliseconds: 300),
-            ),
-            const SizedBox(height: 5),
-            Center(
-              child: Text(
-                'Stops: $onwardStops',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
+                  ],
                 ),
               ),
-            ),
-            const SizedBox(height: 5),
-            Divider(),
-            Text(
-              "Return Flight",
-              style: TextStyle(
-                color: Color(0xFF0071BC),
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-              ),
-            ),
-            _flightSection("Return Flight", widget.returnFlights),
-            const SizedBox(height: 10),
-            InkWell(
-              onTap: () => _toggleExpand(returnFlightKey),
-              child: Row(
-                children: [
-                  const Icon(Icons.info_outline,
-                      size: 16, color: Colors.blueAccent),
-                  const SizedBox(width: 5),
-                  Text(
-                    isReturnExpanded ? "Hide Info" : "Show More",
-                    style:
-                    const TextStyle(fontSize: 12, color: Colors.blueAccent),
-                  ),
-                ],
-              ),
-            ),
-            AnimatedCrossFade(
-              firstChild: const SizedBox.shrink(),
-              secondChild: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(height: 10),
-                  Text("Cabin Baggage: $returnCabinBaggage kg"),
-                  Text("Check-in Baggage: $returnCheckinBaggage kg"),
-                ],
-              ),
-              crossFadeState:
-              isReturnExpanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
-              duration: const Duration(milliseconds: 300),
-            ),
-            const SizedBox(height: 5),
-            Center(
-              child: Text(
-                'Stops: $returnStops',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
+              AnimatedCrossFade(
+                firstChild: const SizedBox.shrink(),
+                secondChild: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(height: 10),
+                    Text("Cabin Baggage: $onwardCabinBaggage kg"),
+                    Text("Check-in Baggage: $onwardCheckinBaggage kg"),
+                  ],
                 ),
+                crossFadeState: isOnwardExpanded
+                    ? CrossFadeState.showSecond
+                    : CrossFadeState.showFirst,
+                duration: const Duration(milliseconds: 300),
               ),
-            ),
-            const SizedBox(height: 5),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  "Total Amount",
+              const SizedBox(height: 5),
+              Center(
+                child: Text(
+                  'Stops: $onwardStops',
                   style: TextStyle(
-                    color: Color(0xFF0071BC),
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
                   ),
                 ),
-                Row(
+              ),
+              const SizedBox(height: 5),
+              Divider(),
+              Text(
+                "Return Flight",
+                style: TextStyle(
+                  color: Color(0xFF0071BC),
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
+              _flightSection("Return Flight", widget.returnFlights),
+              const SizedBox(height: 10),
+              InkWell(
+                onTap: () => _toggleExpand(returnFlightKey),
+                child: Row(
                   children: [
+                    const Icon(Icons.info_outline,
+                        size: 16, color: Colors.blueAccent),
+                    const SizedBox(width: 5),
                     Text(
-                      "AED ${(widget.onwardFlights.isNotEmpty && widget.returnFlights.isNotEmpty ? widget.onwardFlights[0]["Per_totalAmount"] + widget.returnFlights[0]["Per_totalAmount"] + widget.hotelAndTransferFare : 0).toString()}",
+                      isReturnExpanded ? "Hide Info" : "Show More",
                       style: const TextStyle(
-                        color: Color(0xFF0071BC),
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
+                          fontSize: 12, color: Colors.blueAccent),
                     ),
-                    SizedBox(width: 8),
-                    // Container(
-                    //   height: 10,
-                    //   width: 10,
-                    //   decoration: BoxDecoration(
-                    //     shape: BoxShape.circle,
-                    //     color: widget.isSelected
-                    //         ? Colors.pinkAccent
-                    //         : Colors.transparent,
-                    //     border: Border.all(color: Colors.pinkAccent),
-                    //   ),
-                    // ),
                   ],
                 ),
-              ],
-            ),
-            // const SizedBox(height: 15),
-            // Align(
-            //   alignment: Alignment.center,
-            //   child: SizedBox(
-            //     width: double.infinity,
-            //     child: ElevatedButton(
-            //       onPressed: widget.onTap,
-            //       style: ElevatedButton.styleFrom(
-            //         backgroundColor:
-            //             widget.isSelected ? Color(0xFF0071BC) : Colors.white,
-            //         shape: RoundedRectangleBorder(
-            //           borderRadius: BorderRadius.circular(10),
-            //         ),
-            //         side: BorderSide(
-            //             color:
-            //                 Color(0xFF0071BC)), // Add a border for visibility
-            //       ),
-            //       child: Text(
-            //         widget.isSelected ? 'SELECTED' : 'SELECT',
-            //         style: TextStyle(
-            //           color: widget.isSelected
-            //               ? Colors.white
-            //               : Color(0xFF0071BC), // Fix text color
-            //           fontSize: 16.0, // Set proper font size
-            //           fontWeight: FontWeight.bold,
-            //         ),
-            //       ),
-            //     ),
-            //   ),
-            // ),
-          ],
+              ),
+              AnimatedCrossFade(
+                firstChild: const SizedBox.shrink(),
+                secondChild: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(height: 10),
+                    Text("Cabin Baggage: $returnCabinBaggage kg"),
+                    Text("Check-in Baggage: $returnCheckinBaggage kg"),
+                  ],
+                ),
+                crossFadeState: isReturnExpanded
+                    ? CrossFadeState.showSecond
+                    : CrossFadeState.showFirst,
+                duration: const Duration(milliseconds: 300),
+              ),
+              const SizedBox(height: 5),
+              Center(
+                child: Text(
+                  'Stops: $returnStops',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 5),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "Total Amount",
+                    style: TextStyle(
+                      color: Color(0xFF0071BC),
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                  Row(
+                    children: [
+                      Text(
+                        "AED ${(widget.onwardFlights.isNotEmpty && widget.returnFlights.isNotEmpty ? widget.onwardFlights[0]["Per_totalAmount"] + widget.returnFlights[0]["Per_totalAmount"] + widget.hotelAndTransferFare : 0).toString()}",
+                        style: const TextStyle(
+                          color: Color(0xFF0071BC),
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                      SizedBox(width: 8),
+                      // Container(
+                      //   height: 10,
+                      //   width: 10,
+                      //   decoration: BoxDecoration(
+                      //     shape: BoxShape.circle,
+                      //     color: widget.isSelected
+                      //         ? Colors.pinkAccent
+                      //         : Colors.transparent,
+                      //     border: Border.all(color: Colors.pinkAccent),
+                      //   ),
+                      // ),
+                    ],
+                  ),
+                ],
+              ),
+              // const SizedBox(height: 15),
+              // Align(
+              //   alignment: Alignment.center,
+              //   child: SizedBox(
+              //     width: double.infinity,
+              //     child: ElevatedButton(
+              //       onPressed: widget.onTap,
+              //       style: ElevatedButton.styleFrom(
+              //         backgroundColor:
+              //             widget.isSelected ? Color(0xFF0071BC) : Colors.white,
+              //         shape: RoundedRectangleBorder(
+              //           borderRadius: BorderRadius.circular(10),
+              //         ),
+              //         side: BorderSide(
+              //             color:
+              //                 Color(0xFF0071BC)), // Add a border for visibility
+              //       ),
+              //       child: Text(
+              //         widget.isSelected ? 'SELECTED' : 'SELECT',
+              //         style: TextStyle(
+              //           color: widget.isSelected
+              //               ? Colors.white
+              //               : Color(0xFF0071BC), // Fix text color
+              //           fontSize: 16.0, // Set proper font size
+              //           fontWeight: FontWeight.bold,
+              //         ),
+              //       ),
+              //     ),
+              //   ),
+              // ),
+            ],
+          ),
         ),
       ),
-    ),
     );
   }
 
@@ -657,13 +686,15 @@ class _FlightPackageCardState extends State<FlightPackageCard> {
           children: [
             // Left Column (Departure info)
             Container(
-              width: MediaQuery.of(context).size.width * 0.3, // Set fixed width (30% of screen width)
+              width: MediaQuery.of(context).size.width *
+                  0.3, // Set fixed width (30% of screen width)
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     depTime,
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                        fontSize: 16, fontWeight: FontWeight.bold),
                     softWrap: true, // Text will wrap if it's too long
                   ),
                   const SizedBox(height: 4),
@@ -685,7 +716,8 @@ class _FlightPackageCardState extends State<FlightPackageCard> {
 
             // Middle Column (Flight Icon and Duration)
             Container(
-              width: MediaQuery.of(context).size.width * 0.2, // Set fixed width (20% of screen width)
+              width: MediaQuery.of(context).size.width *
+                  0.2, // Set fixed width (20% of screen width)
               child: Column(
                 children: [
                   Icon(
@@ -708,13 +740,15 @@ class _FlightPackageCardState extends State<FlightPackageCard> {
 
             // Right Column (Arrival info)
             Container(
-              width: MediaQuery.of(context).size.width * 0.3, // Set fixed width (30% of screen width)
+              width: MediaQuery.of(context).size.width *
+                  0.3, // Set fixed width (30% of screen width)
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
                     arrTime,
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                        fontSize: 16, fontWeight: FontWeight.bold),
                     softWrap: true, // Text will wrap if it's too long
                   ),
                   const SizedBox(height: 4),
