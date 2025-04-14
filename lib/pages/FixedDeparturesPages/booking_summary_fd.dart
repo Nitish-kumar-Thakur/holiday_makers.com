@@ -482,6 +482,7 @@ class _BookingSummaryFDState extends State<BookingSummaryFD> {
                               finalPrice: finalPrice.toString(),
                               voucherCode: enteredCode)
                           : LoginPage(
+                              canSkip: true,
                               redirectTo: TravelersDetailsFD(
                                   flightDetails: widget.flightDetails,
                                   selectedHotel: widget.selectedHotel,
@@ -492,7 +493,8 @@ class _BookingSummaryFDState extends State<BookingSummaryFD> {
                                   destination: widget.destination,
                                   BSData: BSData,
                                   finalPrice: finalPrice.toString(),
-                                  voucherCode: enteredCode),
+                                  voucherCode: enteredCode,
+                              ),
                             )));
             },
             icon: responciveButton(text: 'SELECT'),

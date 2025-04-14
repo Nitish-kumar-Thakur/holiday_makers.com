@@ -449,7 +449,7 @@ class _BookingSummaryPageState extends State<BookingSummaryPage> {
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) =>isLoggedIn? PaymentScreen(BSData: BSData, sbAPIBody: body, flow: 'cruise'):
-                                  LoginPage(redirectTo: PaymentScreen(BSData: BSData, sbAPIBody: body, flow: 'cruise'),),
+                                  LoginPage(canSkip: true, redirectTo: PaymentScreen(BSData: BSData, sbAPIBody: body, flow: 'cruise'),),
                                 ));
                           }
 

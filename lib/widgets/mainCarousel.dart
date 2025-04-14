@@ -24,7 +24,7 @@ class _MaincarouselState extends State<Maincarousel> {
           itemCount: widget.banner_list.length,
           itemBuilder: (context, index, realIndex) {
             return Container(
-              margin: const EdgeInsets.all(10),
+              margin: const EdgeInsets.only(bottom: 10),
               decoration: BoxDecoration(
                 image: DecorationImage(
                   image: CachedNetworkImageProvider(

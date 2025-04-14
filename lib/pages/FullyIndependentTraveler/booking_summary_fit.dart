@@ -380,6 +380,7 @@ class _BookingSummaryFITState extends State<BookingSummaryFIT> {
                                 BSData: bookingSummreyData['data'],
                               )
                             : LoginPage(
+                                canSkip: true,
                                 redirectTo: TravelersDetailsFIT(
                                   totalRoomsdata: widget.roomArray,
                                   searchId: widget.searchId,

@@ -264,7 +264,7 @@ class _IndependentTravelerPageState extends State<IndependentTravelerPage>
                   const SizedBox(height: 30),
                   // Wrap the contents in a container with background image and box shadow
                   Container(
-                    height: screenHeight * 0.65, // Increased height of the container (adjust as needed)
+                    height: screenHeight * 0.67, // Increased height of the container (adjust as needed)
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20), // Rounded corners for the container
                       boxShadow: [
@@ -290,7 +290,7 @@ class _IndependentTravelerPageState extends State<IndependentTravelerPage>
                           ),
                           // The rest of the content inside the container
                           Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
+                            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 14),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -299,7 +299,7 @@ class _IndependentTravelerPageState extends State<IndependentTravelerPage>
                                   bgColor: Colors.white,
                                   selectedValue: selectedCity,
                                   items: cities,
-                                  hintText: "Select City".toUpperCase(),
+                                  hintText: "Departure From".toUpperCase(),
                                   onChanged: (String? newValue) {
                                     setState(() {
                                       destinationLoading = true;
@@ -320,7 +320,7 @@ class _IndependentTravelerPageState extends State<IndependentTravelerPage>
                                     bgColor: Colors.white,
                                     selectedValue: selectedDestination,
                                     items: destinations,
-                                    hintText: "Select Destination".toUpperCase(),
+                                    hintText: "Destination".toUpperCase(),
                                     onChanged: (String? newValue) {
                                       setState(() {
                                         selectedDestination = newValue;
@@ -332,7 +332,7 @@ class _IndependentTravelerPageState extends State<IndependentTravelerPage>
                                     },
                                   ),
                                 ),
-                                const SizedBox(height: 20),
+                                const SizedBox(height: 30),
                                 Container(
                                   height: 58,
                                   width: double.infinity,
@@ -353,25 +353,34 @@ class _IndependentTravelerPageState extends State<IndependentTravelerPage>
                                               size: 24,
                                             ),
                                             SizedBox(
-                                              width: 20,
+                                              width: 5,
                                             ),
-                                            Column(
-                                              children: [
-                                                AppLargeText(
-                                                  text: 'TRAVEL DATE',
-                                                  color: Colors.black,
-                                                  size: 14,
-                                                ),
-                                                Calendarwidget(
-                                                  blockedDates: blockedDates,
-                                                  onDateSelected: (DateTime? newValue) {
-                                                    setState(() {
-                                                      fromDate = DateFormat('dd-MM-yyyy')
-                                                          .format(newValue!);
-                                                    });
-                                                  },
-                                                ),
-                                              ],
+                                            // Column(
+                                            //   children: [
+                                            //     AppLargeText(
+                                            //       text: 'TRAVEL DATE',
+                                            //       color: Colors.black,
+                                            //       size: 14,
+                                            //     ),
+                                            //     Calendarwidget(
+                                            //       blockedDates: blockedDates,
+                                            //       onDateSelected: (DateTime? newValue) {
+                                            //         setState(() {
+                                            //           fromDate = DateFormat('dd-MM-yyyy')
+                                            //               .format(newValue!);
+                                            //         });
+                                            //       },
+                                            //     ),
+                                            //   ],
+                                            // ),
+                                            Calendarwidget(
+                                              blockedDates: blockedDates,
+                                              onDateSelected: (DateTime? newValue) {
+                                                setState(() {
+                                                  fromDate = DateFormat('dd-MM-yyyy')
+                                                      .format(newValue!);
+                                                });
+                                              },
                                             ),
                                           ],
                                         ),
@@ -388,8 +397,9 @@ class _IndependentTravelerPageState extends State<IndependentTravelerPage>
                                               value: stayingDay, // Allow null values
                                               hint: Center(
                                                 child: AppText(
-                                                  text: "Select",
+                                                  text: "No. of Nights",
                                                   color: Colors.black,
+                                                  size: 13,
                                                 ),
                                               ), // Default hint text
                                               items: List.generate(60, (index) {
@@ -397,7 +407,7 @@ class _IndependentTravelerPageState extends State<IndependentTravelerPage>
                                                     .toString(); // Generate numbers from 1 to 90
                                                 return DropdownMenuItem<String>(
                                                   value: "$item night",
-                                                  child: Center(child: Text("$item night")),
+                                                  child: Center(child: Text("$item Night")),
                                                 );
                                               }),
                                               onChanged: (String? newValue) {
@@ -415,7 +425,7 @@ class _IndependentTravelerPageState extends State<IndependentTravelerPage>
                                     ),
                                   ),
                                 ),
-                                const SizedBox(height: 20),
+                                const SizedBox(height: 30),
                                 Travelerdrawer(
                                   onSelectionChanged: (Map<String, dynamic> selection) {
                                     setState(() {

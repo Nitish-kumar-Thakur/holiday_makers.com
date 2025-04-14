@@ -143,14 +143,15 @@ class _DepartureDealsState extends State<DepartureDeals> {
       //   ),
       // ),
       body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
           child: isLoading
-              ? _buildShimmerEffect()
+              ? Padding(
+                padding: const EdgeInsets.all(16),
+                child: _buildShimmerEffect(),
+              )
               : Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(height: 50),
+                    const SizedBox(height: 60),
                     Row(
                       children: [
                         IconButton(
@@ -171,7 +172,7 @@ class _DepartureDealsState extends State<DepartureDeals> {
                           ),
                         ),
                         const SizedBox(width: 10),
-                        Text('Fixed Departures'.toUpperCase(),
+                        Text('Dep Date Details'.toUpperCase(),
                             style: TextStyle(
                                 fontSize: 26,
                                 fontWeight: FontWeight.bold,
@@ -180,43 +181,49 @@ class _DepartureDealsState extends State<DepartureDeals> {
                     ),
                     SizedBox(height: 30),
                     // Package Selection Section
-                    Text(
-                      'Select Departure',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Text(
+                        'Select Departure',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
                     SizedBox(height: 10),
 
-                    Column(
-                      children: packageList.asMap().entries.map((entry) {
-                        int index = entry.key;
-                        var package = entry.value;
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Column(
+                        children: packageList.asMap().entries.map((entry) {
+                          int index = entry.key;
+                          var package = entry.value;
 
-                        return Column(
-                          children: [
-                            PackageCard(
-                              title: package['package_name'] ?? '',
-                              departureDate: "${package['dep_date']}",
-                              arrivalDate: "${package['arrival_date']}",
-                              duration: '${package['duration']}',
-                              price:
-                                  '${package['currency']} ${package['price']}',
-                              isSelected: selectedOption == index,
-                              onSelect: () {
-                                setState(() {
-                                  selectedOption = index;
-                                  selectedPackageData =
-                                      package; // Store selected package data
-                                });
-                              },
-                            ),
-                            SizedBox(height: 10),
-                          ],
-                        );
-                      }).toList(),
+                          return Column(
+                            children: [
+                              PackageCard(
+                                title: package['package_name'] ?? '',
+                                departureDate: "${package['dep_date']}",
+                                arrivalDate: "${package['arrival_date']}",
+                                duration: '${package['duration']}',
+                                price:
+                                    '${package['currency']} ${package['price']}',
+                                isSelected: selectedOption == index,
+                                onSelect: () {
+                                  setState(() {
+                                    selectedOption = index;
+                                    selectedPackageData =
+                                        package; // Store selected package data
+                                  });
+                                },
+                              ),
+                              SizedBox(height: 10),
+                            ],
+                          );
+                        }).toList(),
+                      ),
                     ),
                     SizedBox(height: 24),
 
@@ -251,33 +258,38 @@ class _DepartureDealsState extends State<DepartureDeals> {
                     // SizedBox(height: 24),
 
                     // Traveler Selection
-                    Text(
-                      'SELECT TRAVELLERS',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Text(
+                        'SELECT TRAVELLERS',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
                     SizedBox(height: 10),
-                    Travelerdrawer(
-                      onSelectionChanged: (Map<String, dynamic> selection) {
-                        setState(() {
-                          selectedRoom = selection['totalRooms'].toString();
-                          selectedAdult = selection['totalAdults'].toString();
-                          selectedChild = selection['totalChildren'].toString();
-                          childrenAge = selection['childrenAges'];
-                          totalRoomsdata = selection["totalData"];
-                          // print("@@@@@@@@@@@@@@@@@@@@@@@@");
-                          // print(selectedAdult);
-                          // print("@@@@@@@@@@@@@@@@@@@@@@@@@@");
-                        });
-                      },
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Travelerdrawer(
+                        onSelectionChanged: (Map<String, dynamic> selection) {
+                          setState(() {
+                            selectedRoom = selection['totalRooms'].toString();
+                            selectedAdult = selection['totalAdults'].toString();
+                            selectedChild = selection['totalChildren'].toString();
+                            childrenAge = selection['childrenAges'];
+                            totalRoomsdata = selection["totalData"];
+                            // print("@@@@@@@@@@@@@@@@@@@@@@@@");
+                            // print(selectedAdult);
+                            // print("@@@@@@@@@@@@@@@@@@@@@@@@@@");
+                          });
+                        },
+                      ),
                     ),
                     SizedBox(height: 30),
                   ],
                 ),
-        ),
       ),
 
       // Bottom Navigation Button
@@ -433,24 +445,24 @@ class _PackageCardState extends State<PackageCard> {
             width: 2
           ),
         ),
-        child: Column(
+        child: Stack(
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(
-                  width: MediaQuery.of(context).size.width *
-                      0.5, // 50% of screen width
-                  child: Text(
-                    widget.title.toUpperCase(),
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                ),
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.5,
+                      child: Text(
+                        widget.title.toUpperCase(),
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
                     Text(
                       widget.price,
                       style: TextStyle(
@@ -459,71 +471,74 @@ class _PackageCardState extends State<PackageCard> {
                         fontSize: 16,
                       ),
                     ),
-                    SizedBox(width: 8),
-                    Container(
-                      height: 10,
-                      width: 10,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: widget.isSelected
-                            ? Colors.blue
-                            : Colors.transparent,
-                        border: Border.all(color: Colors.blue),
-                      ),
-                    ),
                   ],
                 ),
-              ],
-            ),
-            SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start, // Align items properly
-              children: [
-                Column(
+                SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      "Travel Details",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                        color: Colors.black,
-                      ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Travel Details",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                            color: Colors.black,
+                          ),
+                        ),
+                        SizedBox(height: 4),
+                        Text(
+                          '${widget.departureDate} - ${widget.arrivalDate}',
+                          style: TextStyle(
+                            color: Colors.grey[600],
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
                     ),
-                    SizedBox(height: 4),
-                    Text(
-                      '${widget.departureDate} - ${widget.arrivalDate}',
-                      style: TextStyle(
-                        color: Colors.grey[600],
-                        fontSize: 14,
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(50),
+                        border: Border.all(width: 1, color: Colors.grey),
                       ),
-                    ),
-                  ],
-                ),
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(50),
-                    border: Border.all(width: 1, color: Colors.grey),
-                  ),
-                  child: Center(
-                    child: Padding(
-                      padding: EdgeInsets.all(5),
-                      child: Text(
-                        widget.duration,
-                        style: TextStyle(
-                          color: Colors.grey[600],
-                          fontSize: MediaQuery.of(context).size.width * 0.03,
+                      child: Center(
+                        child: Padding(
+                          padding: EdgeInsets.all(5),
+                          child: Text(
+                            widget.duration,
+                            style: TextStyle(
+                              color: Colors.grey[600],
+                              fontSize: MediaQuery.of(context).size.width * 0.03,
+                            ),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ),
+                  ],
+                )
               ],
-            )
+            ),
+            // 🔵 Circle in top-right
+            Positioned(
+              top: 0,
+              right: 0,
+              child: Container(
+                height: 10,
+                width: 10,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: widget.isSelected ? Colors.blue : Colors.transparent,
+                  border: Border.all(color: Colors.blue),
+                ),
+              ),
+            ),
           ],
-        ),
+        )
+
       ),
     );
   }

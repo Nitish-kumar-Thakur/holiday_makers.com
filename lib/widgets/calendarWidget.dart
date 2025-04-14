@@ -52,14 +52,14 @@ final DateTime? picked = await showDatePicker(
   Widget build(BuildContext context) {
     String formattedDate = _selectedDate != null
         ? DateFormat('dd MMM yy, EEE').format(_selectedDate!)
-        : "Select"; // Show "Select" if no date is chosen
+        : "Travel Date"; // Show "Select" if no date is chosen
 
     return GestureDetector(
       onTap: () => _selectDate(context),
       child: Text(
         formattedDate, // Display formatted date or "Select"
         style: const TextStyle(
-          fontSize: 12,
+          fontSize: 13,
           fontWeight: FontWeight.bold,
           color: Colors.black, // Adjust color for visibility
         ),

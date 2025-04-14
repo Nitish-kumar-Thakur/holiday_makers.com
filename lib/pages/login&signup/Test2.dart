@@ -1,5 +1,7 @@
 import 'package:HolidayMakers/pages/login&signup/Test.dart';
 import 'package:HolidayMakers/utils/api_handler.dart';
+import 'package:HolidayMakers/widgets/terms_and_conditions_page.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -87,13 +89,13 @@ class _SignuppageState extends State<Signuppage> {
       );
 
       if (result['status'] == true) {
-        Fluttertoast.showToast(msg: "Registration Completed");
+        Fluttertoast.showToast(msg: result['message'] ?? "Registered successfully.");
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => LoginPage()),
         );
       } else {
-        Fluttertoast.showToast(msg: result['message'] ?? 'Registration failed');
+        Fluttertoast.showToast(msg: result['message'] ?? 'Registration failed.');
         setState(() {
           _isLoading = false;
         });
@@ -263,16 +265,32 @@ class _SignuppageState extends State<Signuppage> {
                                   },
                                 ),
                                 Expanded(
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      // You can add navigation to your Terms and Conditions page
-                                    },
-                                    child: Text(
-                                      'I agree to the terms and conditions',
+                                  child: Text.rich(
+                                    TextSpan(
+                                      text: 'I agree to the ',
                                       style: TextStyle(
                                         color: Colors.black,
                                         fontSize: 12,
                                       ),
+                                      children: [
+                                        TextSpan(
+                                          text: 'Terms and Conditions',
+                                          style: TextStyle(
+                                            color: Colors.blue,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 12,
+                                          ),
+                                          recognizer: TapGestureRecognizer()
+                                            ..onTap = () {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) => TermsAndConditionsPage(),
+                                                ),
+                                              );
+                                            },
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ),
