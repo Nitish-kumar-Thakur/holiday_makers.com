@@ -3,10 +3,12 @@ import 'dart:ui';
 import 'package:HolidayMakers/Tabby/PaymentPage.dart';
 import 'package:HolidayMakers/utils/api_handler.dart';
 import 'package:HolidayMakers/widgets/responciveButton.dart';
+import 'package:country_code_picker/country_code_picker.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class TravelersDetailsFIT extends StatefulWidget {
   final List<dynamic> totalRoomsdata;
@@ -24,20 +26,33 @@ class TravelersDetailsFIT extends StatefulWidget {
 }
 
 class _TravelersDetailsFD extends State<TravelersDetailsFIT> {
-  late List<String> travelers;
+  List<Map<String, dynamic>> travelers = [];
   bool isLoading = true;
   List<dynamic> countryList = [];
   late List<Map<String, String>> _travelerDetails;
   List<String> cityList = [];
   final _formKey = GlobalKey<FormState>(); // Form key for validation
   TextEditingController dobController = TextEditingController();
-  final TextEditingController phoneController = TextEditingController();
+  TextEditingController phoneController = TextEditingController();
+  TextEditingController contactNameController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
+  String phoneCode = "+971";
+
   Map<String, dynamic> apiResponse = {};
   bool _isChecked = false;
+  bool isLoggedIn = false;
+  Map<String, String> contactDetails = {
+    "title": "",
+    "contactName": "",
+    "email": "",
+    "countryCode": "+971", // Default
+    "phoneNumber": "",
+  };
 
   @override
   void initState() {
     super.initState();
+    _loadLogedinDetails();
     travelers =
         _generateTravelers(widget.totalRoomsdata.cast<Map<String, dynamic>>());
     _fetchCountry();
@@ -52,6 +67,40 @@ class _TravelersDetailsFD extends State<TravelersDetailsFIT> {
               "residentCountry": "",
               "residentCity": "",
             });
+  }
+
+  String? selectedTitle;
+
+  Future<void> _loadLogedinDetails() async {
+    print("chla tpo h");
+    final prefs = await SharedPreferences.getInstance();
+    isLoggedIn = prefs.getBool("isLoggedIn") ?? false;
+    print("isLOggedin $isLoggedIn");
+
+    if (isLoggedIn) {
+      String fullName =
+          '${prefs.getString('first_name') ?? ''} ${prefs.getString('last_name') ?? ''}'
+              .trim();
+
+      setState(() {
+        selectedTitle = prefs.getString("title") ?? "Mr";
+        contactNameController.text = fullName;
+        emailController.text = prefs.getString("email_org") ?? '';
+        phoneController.text = prefs.getString("phone") ?? '';
+        phoneCode = prefs.getString("country_code") ?? "+971";
+
+        contactDetails = {
+          "title": selectedTitle!,
+          "contactName": fullName,
+          "email": prefs.getString("email_org") ?? '',
+          "countryCode": prefs.getString("country_code") ?? "+91",
+          "phoneNumber": prefs.getString("phone") ?? '',
+        };
+      });
+
+      print(contactDetails);
+      print(phoneCode);
+    }
   }
 
   Future<void> _fetchCountry() async {
@@ -171,26 +220,48 @@ class _TravelersDetailsFD extends State<TravelersDetailsFIT> {
     );
   }
 
-  List<String> _generateTravelers(List<Map<String, dynamic>> data) {
-    List<String> generatedTravelers = [];
+  List<Map<String, dynamic>> _generateTravelers(
+      List<Map<String, dynamic>> data) {
+    List<Map<String, dynamic>> generatedTravelers = [];
 
     for (var entry in data) {
-      int adultCount = int.parse(entry["adults"] ?? "0");
-      int childCount = int.parse(entry["children"] ?? "0");
-      generatedTravelers.addAll(List.filled(adultCount, "Adult"));
-      generatedTravelers.addAll(List.filled(childCount, "Child"));
+      int adultCount = int.parse(entry["adults"].toString());
+      int childCount = int.parse(entry["children"].toString());
+      List<dynamic> childrenAges = entry["childrenAges"] ?? [];
+
+      // Add adults
+      for (int i = 0; i < adultCount; i++) {
+        generatedTravelers.add({"type": "Adult"});
+      }
+
+      // Add children/infants based on age
+      for (int i = 0; i < childCount; i++) {
+        int age = (childrenAges.length > i)
+            ? int.tryParse(childrenAges[i].toString()) ?? 0
+            : 0;
+        if (age < 2) {
+          generatedTravelers.add({"type": "Infant"});
+        } else {
+          generatedTravelers.add({"type": "Child"});
+        }
+      }
     }
 
     return generatedTravelers;
   }
 
-  Map<String, String> contactDetails = {
-    "title": "",
-    "contactName": "",
-    "email": "",
-    "countryCode": "+971", // Default
-    "phoneNumber": "",
-  };
+  List<String> _getTitlesByTravelerType(String type) {
+    switch (type) {
+      case "Adult":
+        return ['Mr', 'Ms', 'Miss', 'Mrs'];
+      case "Child":
+        return ['Miss', 'Master'];
+      case "Infant":
+        return ['Inf'];
+      default:
+        return [];
+    }
+  }
 
   Widget _buildTopCurve() {
     return Padding(
@@ -251,7 +322,7 @@ class _TravelersDetailsFD extends State<TravelersDetailsFIT> {
                     ),
                   ),
                   const SizedBox(width: 10),
-                  Text('TRAVELER DETAILS',
+                  Text('TRAVELLER DETAILS',
                       style: TextStyle(
                           fontSize: 26,
                           fontWeight: FontWeight.bold,
@@ -275,37 +346,36 @@ class _TravelersDetailsFD extends State<TravelersDetailsFIT> {
                               10), // Optional: rounded corners
                         ),
                         child: Padding(
-                          padding: const EdgeInsets.all(
-                              16.0), // Adds padding around the content inside the card
+                          padding: const EdgeInsets.all(16.0),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text(
-                                'CONTACT DETAILS',
+                              // Title
+                              Text(
+                                'Contact Details',
                                 style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black,
-                                ),
+                                    fontWeight: FontWeight.bold, fontSize: 20),
                               ),
                               const Divider(),
-                              const SizedBox(height: 15),
+                              const SizedBox(height: 10),
+                              // Title and Name Row
                               Row(
                                 children: [
                                   Expanded(
                                     child: DropdownButtonFormField<String>(
+                                      value: selectedTitle,
                                       onChanged: (value) {
                                         setState(() {
-                                          contactDetails["title"] = value!;
+                                          selectedTitle = value;
+                                          contactDetails["title"] = value ?? "";
                                         });
                                       },
-                                      decoration: InputDecoration(
+                                      decoration: const InputDecoration(
                                         filled: true,
                                         fillColor: Colors.white,
-                                        labelText: 'Title',
-                                        // border: OutlineInputBorder(
-                                        //   borderRadius: BorderRadius.circular(8),
-                                        // ),
+                                        hintText: 'Title',
+                                        contentPadding: EdgeInsets.symmetric(
+                                            vertical: 12.0),
                                       ),
                                       items: ['Mr', 'Ms', 'Miss', 'Mrs']
                                           .map((title) => DropdownMenuItem(
@@ -314,13 +384,14 @@ class _TravelersDetailsFD extends State<TravelersDetailsFIT> {
                                               ))
                                           .toList(),
                                       validator: (value) => value == null
-                                          ? 'Title is required'
+                                          ? 'Select a title'
                                           : null,
                                     ),
                                   ),
-                                  const SizedBox(width: 10),
+                                  const VerticalDivider(),
                                   Expanded(
                                     child: TextFormField(
+                                      controller: contactNameController,
                                       onChanged: (value) {
                                         contactDetails["contactName"] = value;
                                       },
@@ -328,15 +399,12 @@ class _TravelersDetailsFD extends State<TravelersDetailsFIT> {
                                         filled: true,
                                         fillColor: Colors.white,
                                         labelText: 'Contact Name',
-                                        // border: OutlineInputBorder(
-                                        //   borderRadius: BorderRadius.circular(8),
-                                        // ),
                                       ),
                                       validator: (value) {
                                         if (value == null || value.isEmpty) {
                                           return 'Contact Name is required';
                                         }
-                                        if (!RegExp(r'^[a-zA-Z]+$')
+                                        if (!RegExp(r'^[a-zA-Z\s]+$')
                                             .hasMatch(value)) {
                                           return 'Only alphabets are allowed';
                                         }
@@ -346,44 +414,41 @@ class _TravelersDetailsFD extends State<TravelersDetailsFIT> {
                                   ),
                                 ],
                               ),
+
                               const SizedBox(height: 10),
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: TextFormField(
-                                      onChanged: (value) {
-                                        contactDetails["email"] = value;
-                                      },
-                                      decoration: InputDecoration(
-                                        filled: true,
-                                        fillColor: Colors.white,
-                                        labelText: 'E-mail',
-                                        // border: OutlineInputBorder(
-                                        //   borderRadius: BorderRadius.circular(8),
-                                        // ),
-                                      ),
-                                      validator: (value) {
-                                        if (value == null || value.isEmpty) {
-                                          return 'E-mail is required';
-                                        } else if (!RegExp(r'\S+@\S+\.\S+')
-                                            .hasMatch(value)) {
-                                          return 'Enter a valid email';
-                                        }
-                                        return null;
-                                      },
-                                    ),
-                                  ),
-                                ],
+
+                              // Email Row
+                              TextFormField(
+                                controller: emailController,
+                                onChanged: (value) {
+                                  contactDetails["email"] = value;
+                                },
+                                decoration: InputDecoration(
+                                  filled: true,
+                                  fillColor: Colors.white,
+                                  labelText: 'E-mail',
+                                ),
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'E-mail is required';
+                                  } else if (!RegExp(r'\S+@\S+\.\S+')
+                                      .hasMatch(value)) {
+                                    return 'Enter a valid email';
+                                  }
+                                  return null;
+                                },
                               ),
+
                               const SizedBox(height: 10),
+
+                              // Phone Row
                               IntlPhoneField(
+                                key: ValueKey(phoneCode),
                                 decoration: InputDecoration(
                                   labelText: 'Phone Number',
-                                  // border: OutlineInputBorder(
-                                  //   borderSide: BorderSide(),
-                                  // ),
                                 ),
-                                initialCountryCode: 'AE',
+                                initialCountryCode:
+                                    CountryCode.fromDialCode(phoneCode).code,
                                 autovalidateMode:
                                     AutovalidateMode.onUserInteraction,
                                 onChanged: (phone) {
@@ -428,7 +493,7 @@ class _TravelersDetailsFD extends State<TravelersDetailsFIT> {
                                 children: [
                                   // Traveler Header
                                   Text(
-                                    'Traveler ${index + 1} - ${travelers[index]}',
+                                    'Traveller ${index + 1} - ${travelers[index]["type"]}',
                                     style: const TextStyle(
                                       fontSize: 20,
                                       fontWeight: FontWeight.bold,
@@ -457,15 +522,13 @@ class _TravelersDetailsFD extends State<TravelersDetailsFIT> {
                                           validator: (value) => value == null
                                               ? 'Title is required'
                                               : null,
-                                          decoration: InputDecoration(
+                                          decoration: const InputDecoration(
                                             filled: true,
                                             fillColor: Colors.white,
                                             labelText: 'Title',
-                                            // border: OutlineInputBorder(
-                                            //   borderRadius: BorderRadius.circular(8),
-                                            // ),
                                           ),
-                                          items: ['Mr', 'Ms', 'Miss', 'Mrs']
+                                          items: _getTitlesByTravelerType(
+                                                  travelers[index]["type"])
                                               .map((title) => DropdownMenuItem(
                                                     value: title,
                                                     child: Text(title),
@@ -584,190 +647,201 @@ class _TravelersDetailsFD extends State<TravelersDetailsFIT> {
 
                                   // Nationality and Resident Country Row
                                   Row(
-                                children: [
-                                  Expanded(
-                                    child: DropdownSearch<String>(
-                                      popupProps: PopupProps.menu(
-                                        showSearchBox:
-                                            true, // Enables search functionality
-                                      ),
-                                      items: (filter, infiniteScrollProps) =>
-                                          countryList.isNotEmpty
-                                              ? countryList
-                                                  .map<String>((country) =>
-                                                      country["name"]
-                                                          ?.toString() ??
-                                                      "")
-                                                  .toList()
-                                              : [],
-                                      selectedItem: _travelerDetails[index]
-                                                  ["nationality"] !=
-                                              null
-                                          ? countryList.firstWhere(
-                                              (country) =>
-                                                  country["origin"] ==
-                                                  _travelerDetails[index]
-                                                      ["nationality"],
-                                              orElse: () =>
-                                                  {"name": ""})["name"]
-                                          : null,
-                                      onChanged: (value) {
-                                        setState(() {
-                                          // Find the country object where the name matches the selected value
-                                          var selectedCountry =
-                                              countryList.firstWhere(
+                                    children: [
+                                      Expanded(
+                                        child: DropdownSearch<String>(
+                                          popupProps: PopupProps.menu(
+                                            showSearchBox:
+                                                true, // Enables search functionality
+                                          ),
+                                          items: (filter,
+                                                  infiniteScrollProps) =>
+                                              countryList.isNotEmpty
+                                                  ? countryList
+                                                      .map<String>((country) =>
+                                                          country["name"]
+                                                              ?.toString() ??
+                                                          "")
+                                                      .toList()
+                                                  : [],
+                                          selectedItem: _travelerDetails[index]
+                                                      ["nationality"] !=
+                                                  null
+                                              ? countryList.firstWhere(
                                                   (country) =>
-                                                      country["name"] == value,
+                                                      country["origin"] ==
+                                                      _travelerDetails[index]
+                                                          ["nationality"],
                                                   orElse: () =>
-                                                      {}); // Provide a fallback in case no match is found
+                                                      {"name": ""})["name"]
+                                              : null,
+                                          onChanged: (value) {
+                                            setState(() {
+                                              // Find the country object where the name matches the selected value
+                                              var selectedCountry =
+                                                  countryList.firstWhere(
+                                                      (country) =>
+                                                          country["name"] ==
+                                                          value,
+                                                      orElse: () =>
+                                                          {}); // Provide a fallback in case no match is found
 
-                                          // Store the 'origin' instead of the country name
-                                          _travelerDetails[index]
-                                                  ["nationality"] =
-                                              selectedCountry["origin"];
-                                        });
-                                      },
-                                      decoratorProps: DropDownDecoratorProps(
-                                        decoration: InputDecoration(
-                                          filled: true,
-                                          fillColor: Colors.white,
-                                          labelText: 'Select Nationality',
+                                              // Store the 'origin' instead of the country name
+                                              _travelerDetails[index]
+                                                      ["nationality"] =
+                                                  selectedCountry["origin"];
+                                            });
+                                          },
+                                          decoratorProps:
+                                              DropDownDecoratorProps(
+                                            decoration: InputDecoration(
+                                              filled: true,
+                                              fillColor: Colors.white,
+                                              labelText: 'Select Nationality',
+                                            ),
+                                          ),
+                                          validator: (value) {
+                                            if (value == null ||
+                                                value.isEmpty) {
+                                              return 'Please select nationality';
+                                            }
+                                            return null;
+                                          },
                                         ),
                                       ),
-                                      validator: (value) {
-                                        if (value == null || value.isEmpty) {
-                                          return 'Please select nationality';
-                                        }
-                                        return null;
-                                      },
-                                    ),
+                                    ],
                                   ),
-                                ],
-                              ),
-                              const SizedBox(height: 10),
+                                  const SizedBox(height: 10),
 
-                              // Resident Country Row
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: DropdownSearch<String>(
-                                      popupProps: PopupProps.menu(
-                                        showSearchBox:
-                                            true, // Enables search functionality
-                                      ),
-                                      items: (filter, infiniteScrollProps) =>
-                                          countryList.isNotEmpty
-                                              ? countryList
-                                                  .map<String>((country) =>
-                                                      country["name"]
-                                                          ?.toString() ??
-                                                      "")
-                                                  .toList()
-                                              : [],
-                                      selectedItem: _travelerDetails[index]
-                                                  ["residentCountry"] !=
-                                              null
-                                          ? countryList.firstWhere(
-                                              (country) =>
-                                                  country["origin"] ==
-                                                  _travelerDetails[index]
-                                                      ["residentCountry"],
-                                              orElse: () =>
-                                                  {"name": ""})["name"]
-                                          : null,
-                                      onChanged: (value) {
-                                        setState(() {
-                                          // Find the country object where the name matches the selected value
-                                          var selectedCountry =
-                                              countryList.firstWhere(
+                                  // Resident Country Row
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: DropdownSearch<String>(
+                                          popupProps: PopupProps.menu(
+                                            showSearchBox:
+                                                true, // Enables search functionality
+                                          ),
+                                          items: (filter,
+                                                  infiniteScrollProps) =>
+                                              countryList.isNotEmpty
+                                                  ? countryList
+                                                      .map<String>((country) =>
+                                                          country["name"]
+                                                              ?.toString() ??
+                                                          "")
+                                                      .toList()
+                                                  : [],
+                                          selectedItem: _travelerDetails[index]
+                                                      ["residentCountry"] !=
+                                                  null
+                                              ? countryList.firstWhere(
                                                   (country) =>
-                                                      country["name"] == value,
+                                                      country["origin"] ==
+                                                      _travelerDetails[index]
+                                                          ["residentCountry"],
                                                   orElse: () =>
-                                                      {}); // Provide a fallback in case no match is found
+                                                      {"name": ""})["name"]
+                                              : null,
+                                          onChanged: (value) {
+                                            setState(() {
+                                              // Find the country object where the name matches the selected value
+                                              var selectedCountry =
+                                                  countryList.firstWhere(
+                                                      (country) =>
+                                                          country["name"] ==
+                                                          value,
+                                                      orElse: () =>
+                                                          {}); // Provide a fallback in case no match is found
 
-                                          // Store the 'origin' (not name) instead of the country name
-                                          _travelerDetails[index]
-                                                  ["residentCountry"] =
-                                              selectedCountry["origin"];
-                                        });
+                                              // Store the 'origin' (not name) instead of the country name
+                                              _travelerDetails[index]
+                                                      ["residentCountry"] =
+                                                  selectedCountry["origin"];
+                                            });
 
-                                        // Fetch cities based on the selected country's origin
-                                        _fetchCity(_travelerDetails[index]
-                                                ["residentCountry"]
-                                            .toString());
-                                      },
-                                      validator: (value) {
-                                        if (value == null || value.isEmpty) {
-                                          return 'Please select resident country';
-                                        }
-                                        return null;
-                                      },
-                                      decoratorProps: DropDownDecoratorProps(
-                                        decoration: InputDecoration(
-                                          filled: true,
-                                          fillColor: Colors.white,
-                                          labelText: 'Resident Country',
+                                            // Fetch cities based on the selected country's origin
+                                            _fetchCity(_travelerDetails[index]
+                                                    ["residentCountry"]
+                                                .toString());
+                                          },
+                                          validator: (value) {
+                                            if (value == null ||
+                                                value.isEmpty) {
+                                              return 'Please select resident country';
+                                            }
+                                            return null;
+                                          },
+                                          decoratorProps:
+                                              DropDownDecoratorProps(
+                                            decoration: InputDecoration(
+                                              filled: true,
+                                              fillColor: Colors.white,
+                                              labelText: 'Resident Country',
+                                            ),
+                                          ),
                                         ),
                                       ),
-                                    ),
+                                    ],
                                   ),
-                                ],
-                              ),
-                              const SizedBox(height: 10),
+                                  const SizedBox(height: 10),
 
-                              // Resident City Row
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: DropdownSearch<String>(
-                                      popupProps: PopupProps.menu(
-                                        showSearchBox:
-                                            true, // Enables search functionality
-                                      ),
-                                      items: (filter, infiniteScrollProps) {
-                                        // Filter the cityList based on the filter string
-                                        if (filter == null || filter.isEmpty) {
-                                          return cityList; // Return all cities if no filter is applied
-                                        } else {
-                                          // Filter cities by the search filter (case insensitive)
-                                          return cityList
-                                              .where((city) => city
-                                                  .toLowerCase()
-                                                  .contains(
-                                                      filter.toLowerCase()))
-                                              .toList();
-                                        }
-                                      },
-                                      selectedItem: _travelerDetails[index]
-                                                  ["residentCity"] !=
-                                              null
-                                          ? _travelerDetails[index]
-                                              ["residentCity"]
-                                          : null,
-                                      onChanged: (value) {
-                                        setState(() {
-                                          _travelerDetails[index]
-                                                  ["residentCity"] =
-                                              value!; // Update selected city
-                                        });
-                                      },
-                                      validator: (value) {
-                                        if (value == null || value.isEmpty) {
-                                          return 'Please select resident city';
-                                        }
-                                        return null;
-                                      },
-                                      decoratorProps: DropDownDecoratorProps(
-                                        decoration: InputDecoration(
-                                          filled: true,
-                                          fillColor: Colors.white,
-                                          labelText: 'Resident City',
+                                  // Resident City Row
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: DropdownSearch<String>(
+                                          popupProps: PopupProps.menu(
+                                            showSearchBox:
+                                                true, // Enables search functionality
+                                          ),
+                                          items: (filter, infiniteScrollProps) {
+                                            // Filter the cityList based on the filter string
+                                            if (filter == null ||
+                                                filter.isEmpty) {
+                                              return cityList; // Return all cities if no filter is applied
+                                            } else {
+                                              // Filter cities by the search filter (case insensitive)
+                                              return cityList
+                                                  .where((city) => city
+                                                      .toLowerCase()
+                                                      .contains(
+                                                          filter.toLowerCase()))
+                                                  .toList();
+                                            }
+                                          },
+                                          selectedItem: _travelerDetails[index]
+                                                      ["residentCity"] !=
+                                                  null
+                                              ? _travelerDetails[index]
+                                                  ["residentCity"]
+                                              : null,
+                                          onChanged: (value) {
+                                            setState(() {
+                                              _travelerDetails[index]
+                                                      ["residentCity"] =
+                                                  value!; // Update selected city
+                                            });
+                                          },
+                                          validator: (value) {
+                                            if (value == null ||
+                                                value.isEmpty) {
+                                              return 'Please select resident city';
+                                            }
+                                            return null;
+                                          },
+                                          decoratorProps:
+                                              DropDownDecoratorProps(
+                                            decoration: InputDecoration(
+                                              filled: true,
+                                              fillColor: Colors.white,
+                                              labelText: 'Resident City',
+                                            ),
+                                          ),
                                         ),
                                       ),
-                                    ),
+                                    ],
                                   ),
-                                ],
-                              ),
                                   const SizedBox(
                                       height: 20), // Spacing between travelers
                                 ],
@@ -872,7 +946,8 @@ class _TravelersDetailsFD extends State<TravelersDetailsFIT> {
                             "pass_city": _travelerDetails
                                 .map((t) => t["residentCity"])
                                 .toList(),
-                            "passenger_type": travelers,
+                            "passenger_type":
+                                travelers.map((t) => t["type"]!).toList(),
                             'payment_type': '',
                           };
 
@@ -895,7 +970,8 @@ class _TravelersDetailsFD extends State<TravelersDetailsFIT> {
                       child: Opacity(
                         opacity: _isChecked ? 1.0 : 0.5,
                         child: responciveButton(
-                          text: "Pay Now (${widget.BSData['total_amount'].toString() ?? "N/A"})",
+                          text:
+                              "Pay Now (${widget.BSData['total_amount'].toString() ?? "N/A"})",
                           // text: '${finalPrice}' ?? widget.BSData['package_price']['total'].toString(),
                           // text: 'Pay Now',
                         ),

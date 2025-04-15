@@ -3,11 +3,12 @@ import 'dart:ui';
 import 'package:HolidayMakers/Tabby/PaymentPage.dart';
 import 'package:HolidayMakers/utils/api_handler.dart';
 import 'package:HolidayMakers/widgets/responciveButton.dart';
+import 'package:country_code_picker/country_code_picker.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class TravelersDetailsFD extends StatefulWidget {
   final Map<String, dynamic> packageDetails;
@@ -32,23 +33,28 @@ class TravelersDetailsFD extends StatefulWidget {
       required this.destination,
       required this.BSData,
       required this.finalPrice,
-      required this.voucherCode
-      });
+      required this.voucherCode});
 
   @override
   State<TravelersDetailsFD> createState() => _TravelersDetailsFD();
 }
 
 class _TravelersDetailsFD extends State<TravelersDetailsFD> {
-  late List<String> travelers;
+  List<Map<String, dynamic>> travelers = [];
   bool isLoading = true;
   List<dynamic> countryList = [];
   late List<Map<String, String>> _travelerDetails;
   List<String> cityList = [];
   final _formKey = GlobalKey<FormState>(); // Form key for validation
-  final TextEditingController phoneController = TextEditingController();
-  List<dynamic> countryData = [];
-  bool isCodeSelected = false;
+  TextEditingController dobController = TextEditingController();
+  TextEditingController phoneController = TextEditingController();
+  TextEditingController contactNameController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
+  String phoneCode = "+971";
+
+  Map<String, dynamic> apiResponse = {};
+  bool _isChecked = false;
+  bool isLoggedIn = false;
   Map<String, String> contactDetails = {
     "title": "",
     "contactName": "",
@@ -57,9 +63,7 @@ class _TravelersDetailsFD extends State<TravelersDetailsFD> {
     "phoneNumber": "",
   };
   Map<String, dynamic> sbAPIResponse = {};
-  Map<String, dynamic> voucherAPIResponse = {};
-
-  bool _isChecked = false; // Checkbox state
+  Map<String, dynamic> voucherAPIResponse = {}; // Checkbox state
   TextEditingController _voucherController =
       TextEditingController(); // Voucher input
   double totalAmount = 100.0; // Example total amount
@@ -71,6 +75,7 @@ class _TravelersDetailsFD extends State<TravelersDetailsFD> {
   @override
   void initState() {
     super.initState();
+    _loadLogedinDetails();
     travelers =
         _generateTravelers(widget.totalRoomsdata.cast<Map<String, dynamic>>());
     _fetchCountry();
@@ -85,6 +90,40 @@ class _TravelersDetailsFD extends State<TravelersDetailsFD> {
               "residentCountry": "",
               "residentCity": "",
             });
+  }
+
+  String? selectedTitle;
+
+  Future<void> _loadLogedinDetails() async {
+    print("chla tpo h");
+    final prefs = await SharedPreferences.getInstance();
+    isLoggedIn = prefs.getBool("isLoggedIn") ?? false;
+    print("isLOggedin $isLoggedIn");
+
+    if (isLoggedIn) {
+      String fullName =
+          '${prefs.getString('first_name') ?? ''} ${prefs.getString('last_name') ?? ''}'
+              .trim();
+
+      setState(() {
+        selectedTitle = prefs.getString("title") ?? "Mr";
+        contactNameController.text = fullName;
+        emailController.text = prefs.getString("email_org") ?? '';
+        phoneController.text = prefs.getString("phone") ?? '';
+        phoneCode = prefs.getString("country_code") ?? "+971";
+
+        contactDetails = {
+          "title": selectedTitle!,
+          "contactName": fullName,
+          "email": prefs.getString("email_org") ?? '',
+          "countryCode": prefs.getString("country_code") ?? "+91",
+          "phoneNumber": prefs.getString("phone") ?? '',
+        };
+      });
+
+      print(contactDetails);
+      print(phoneCode);
+    }
   }
 
   Future<void> _fetchCountry() async {
@@ -127,17 +166,47 @@ class _TravelersDetailsFD extends State<TravelersDetailsFD> {
     }
   }
 
-  List<String> _generateTravelers(List<Map<String, dynamic>> data) {
-    List<String> generatedTravelers = [];
+  List<Map<String, dynamic>> _generateTravelers(
+      List<Map<String, dynamic>> data) {
+    List<Map<String, dynamic>> generatedTravelers = [];
 
     for (var entry in data) {
-      int adultCount = int.parse(entry["adults"] ?? "0");
-      int childCount = int.parse(entry["children"] ?? "0");
-      generatedTravelers.addAll(List.filled(adultCount, "Adult"));
-      generatedTravelers.addAll(List.filled(childCount, "Child"));
+      int adultCount = int.parse(entry["adults"].toString());
+      int childCount = int.parse(entry["children"].toString());
+      List<dynamic> childrenAges = entry["childrenAges"] ?? [];
+
+      // Add adults
+      for (int i = 0; i < adultCount; i++) {
+        generatedTravelers.add({"type": "Adult"});
+      }
+
+      // Add children/infants based on age
+      for (int i = 0; i < childCount; i++) {
+        int age = (childrenAges.length > i)
+            ? int.tryParse(childrenAges[i].toString()) ?? 0
+            : 0;
+        if (age < 2) {
+          generatedTravelers.add({"type": "Infant"});
+        } else {
+          generatedTravelers.add({"type": "Child"});
+        }
+      }
     }
 
     return generatedTravelers;
+  }
+
+  List<String> _getTitlesByTravelerType(String type) {
+    switch (type) {
+      case "Adult":
+        return ['Mr', 'Ms', 'Miss', 'Mrs'];
+      case "Child":
+        return ['Miss', 'Master'];
+      case "Infant":
+        return ['Inf'];
+      default:
+        return [];
+    }
   }
 
   void _showTermsPopup(BuildContext context) {
@@ -346,7 +415,7 @@ class _TravelersDetailsFD extends State<TravelersDetailsFD> {
                 ),
               ),
               const SizedBox(width: 10),
-              Text('TRAVELER DETAILS',
+              Text('TRAVELLER DETAILS',
                   style: TextStyle(
                       fontSize: 26,
                       fontWeight: FontWeight.bold,
@@ -385,15 +454,19 @@ class _TravelersDetailsFD extends State<TravelersDetailsFD> {
                             children: [
                               Expanded(
                                 child: DropdownButtonFormField<String>(
+                                  value: selectedTitle,
                                   onChanged: (value) {
                                     setState(() {
-                                      contactDetails["title"] = value!;
+                                      selectedTitle = value;
+                                      contactDetails["title"] = value ?? "";
                                     });
                                   },
-                                  decoration: InputDecoration(
+                                  decoration: const InputDecoration(
                                     filled: true,
                                     fillColor: Colors.white,
-                                    labelText: 'Title',
+                                    hintText: 'Title',
+                                    contentPadding:
+                                        EdgeInsets.symmetric(vertical: 12.0),
                                   ),
                                   items: ['Mr', 'Ms', 'Miss', 'Mrs']
                                       .map((title) => DropdownMenuItem(
@@ -401,14 +474,14 @@ class _TravelersDetailsFD extends State<TravelersDetailsFD> {
                                             child: Text(title),
                                           ))
                                       .toList(),
-                                  validator: (value) => value == null
-                                      ? 'Title is required'
-                                      : null,
+                                  validator: (value) =>
+                                      value == null ? 'Select a title' : null,
                                 ),
                               ),
                               const VerticalDivider(),
                               Expanded(
                                 child: TextFormField(
+                                  controller: contactNameController,
                                   onChanged: (value) {
                                     contactDetails["contactName"] = value;
                                   },
@@ -421,7 +494,7 @@ class _TravelersDetailsFD extends State<TravelersDetailsFD> {
                                     if (value == null || value.isEmpty) {
                                       return 'Contact Name is required';
                                     }
-                                    if (!RegExp(r'^[a-zA-Z]+$')
+                                    if (!RegExp(r'^[a-zA-Z\s]+$')
                                         .hasMatch(value)) {
                                       return 'Only alphabets are allowed';
                                     }
@@ -436,6 +509,7 @@ class _TravelersDetailsFD extends State<TravelersDetailsFD> {
 
                           // Email Row
                           TextFormField(
+                            controller: emailController,
                             onChanged: (value) {
                               contactDetails["email"] = value;
                             },
@@ -459,10 +533,12 @@ class _TravelersDetailsFD extends State<TravelersDetailsFD> {
 
                           // Phone Row
                           IntlPhoneField(
+                            key: ValueKey(phoneCode),
                             decoration: InputDecoration(
                               labelText: 'Phone Number',
                             ),
-                            initialCountryCode: 'AE',
+                            initialCountryCode:
+                                CountryCode.fromDialCode(phoneCode).code,
                             autovalidateMode:
                                 AutovalidateMode.onUserInteraction,
                             onChanged: (phone) {
@@ -506,7 +582,7 @@ class _TravelersDetailsFD extends State<TravelersDetailsFD> {
                             children: [
                               // Traveler Header
                               Text(
-                                'Traveler ${index + 1} - ${travelers[index]}',
+                                'Traveller ${index + 1} - ${travelers[index]["type"]}',
                                 style: const TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,
@@ -534,12 +610,13 @@ class _TravelersDetailsFD extends State<TravelersDetailsFD> {
                                       validator: (value) => value == null
                                           ? 'Title is required'
                                           : null,
-                                      decoration: InputDecoration(
+                                      decoration: const InputDecoration(
                                         filled: true,
                                         fillColor: Colors.white,
                                         labelText: 'Title',
                                       ),
-                                      items: ['Mr', 'Ms', 'Miss', 'Mrs']
+                                      items: _getTitlesByTravelerType(
+                                              travelers[index]["type"])
                                           .map((title) => DropdownMenuItem(
                                                 value: title,
                                                 child: Text(title),
@@ -962,7 +1039,7 @@ class _TravelersDetailsFD extends State<TravelersDetailsFD> {
                             "passenger_city": _travelerDetails
                                 .map((t) => t["residentCity"])
                                 .toList(),
-                            "passenger_type": travelers
+                            "passenger_type": travelers.map((t) => t["type"]!).toList(),
                           };
                           // print(body);
                           Navigator.push(

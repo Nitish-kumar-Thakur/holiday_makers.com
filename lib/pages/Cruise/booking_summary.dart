@@ -5,6 +5,7 @@ import 'package:HolidayMakers/pages/login&signup/Test.dart';
 import 'package:HolidayMakers/utils/api_handler.dart';
 import 'package:HolidayMakers/widgets/responciveButton.dart';
 import 'package:HolidayMakers/widgets/terms_and_conditions_page.dart';
+import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -17,7 +18,11 @@ class BookingSummaryPage extends StatefulWidget {
   final Map<String, dynamic>? selectedCruiseData;
   final List<dynamic> totalRoomdata;
   final Map<String, String>? selectedCabin;
-  const BookingSummaryPage({super.key, required this.selectedCruiseData, required this.selectedCabin, required this.totalRoomdata});
+  const BookingSummaryPage(
+      {super.key,
+      required this.selectedCruiseData,
+      required this.selectedCabin,
+      required this.totalRoomdata});
 
   @override
   State<BookingSummaryPage> createState() => _BookingSummaryPageState();
@@ -35,6 +40,7 @@ class _BookingSummaryPageState extends State<BookingSummaryPage> {
     "countryCode": "+971",
     "phoneNumber": "",
   };
+  String initialCountryCode = 'AE';
   String searchId = "";
   Map<String, dynamic> apiResponse = {};
   Map<String, dynamic> BSData = {};
@@ -52,14 +58,35 @@ class _BookingSummaryPageState extends State<BookingSummaryPage> {
   @override
   void initState() {
     super.initState();
+    _loadLogedinDetails();
     _fetchCruiseBookingSummary();
   }
 
-    Future<void> _loadLogedinDetails() async {
+  
+
+  Future<void> _loadLogedinDetails() async {
     final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      isLoggedIn = prefs.getBool("isLoggedIn") ?? false;
-    });
+    isLoggedIn = prefs.getBool("isLoggedIn") ?? false;
+
+    if (isLoggedIn) {
+      String fullName =
+          '${prefs.getString('first_name') ?? ''} ${prefs.getString('last_name') ?? ''}'
+              .trim();
+
+      setState(() {
+        selectedTitle = prefs.getString("title") ?? "Mr"; // default fallback
+        contactDetails = {
+          "title": selectedTitle!,
+          "contactName": fullName,
+          "email": prefs.getString("email_org") ?? '',
+          "countryCode": prefs.getString("country_code") ?? "+91",
+          "phoneNumber": prefs.getString("phone") ?? '',
+        };
+        contactNameController.text = fullName;
+        emailController.text = contactDetails["email"]!;
+        phoneController.text = contactDetails["phoneNumber"]!;
+      });
+    }
   }
 
   Future<void> _fetchCruiseBookingSummary() async {
@@ -81,7 +108,8 @@ class _BookingSummaryPageState extends State<BookingSummaryPage> {
         "cabin_type": widget.selectedCabin?['origin'].toString() ?? "",
       };
 
-      final response = await APIHandler.getCruiseBSDetails(requestBody: requestBody);
+      final response =
+          await APIHandler.getCruiseBSDetails(requestBody: requestBody);
       setState(() {
         var data = response['data'] ?? {};
         BSData = response['data'];
@@ -94,7 +122,8 @@ class _BookingSummaryPageState extends State<BookingSummaryPage> {
           'DEPARTURE DATE': data['cruise_details']?['dep_date'] ?? 'N/A',
           'ARRIVAL DATE': data['cruise_details']?['arrival_date'] ?? 'N/A',
           'NO. OF ROOMS': widget.totalRoomdata.length.toString(),
-          'CHECK IN TIME': '${data['cruise_details']?['checkin_from_time'] ?? 'N/A'} - ${data['cruise_details']?['checkin_to_time'] ?? 'N/A'}',
+          'CHECK IN TIME':
+              '${data['cruise_details']?['checkin_from_time'] ?? 'N/A'} - ${data['cruise_details']?['checkin_to_time'] ?? 'N/A'}',
         };
 
         priceDetails = {
@@ -106,9 +135,11 @@ class _BookingSummaryPageState extends State<BookingSummaryPage> {
             if ((data['cruise_price']?['infant_count'] ?? 0) > 0)
               '${data['cruise_price']?['infant_count']} Infant(s)',
           ].join('\n'),
-          'TOTAL': '${data['cruise_price']?['currency'] ?? 'AED'} ${data['cruise_price']?['total'] ?? 'N/A'}',
+          'TOTAL':
+              '${data['cruise_price']?['currency'] ?? 'AED'} ${data['cruise_price']?['total'] ?? 'N/A'}',
         };
-        finalPrice = '${data['cruise_price']?['currency'] ?? 'AED'} ${data['cruise_price']?['total'] ?? 'N/A'}';
+        finalPrice =
+            '${data['cruise_price']?['currency'] ?? 'AED'} ${data['cruise_price']?['total'] ?? 'N/A'}';
 
         searchId = response['data']['search_id'].toString();
         isLoading = false;
@@ -160,7 +191,7 @@ class _BookingSummaryPageState extends State<BookingSummaryPage> {
       } else {
         Fluttertoast.showToast(msg: voucherAPIResponse['message']);
       }
-    } catch(e){
+    } catch (e) {
       print(e);
       Fluttertoast.showToast(msg: e.toString());
     }
@@ -188,7 +219,7 @@ class _BookingSummaryPageState extends State<BookingSummaryPage> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
   String? selectedTitle;
-  PhoneNumber?number = PhoneNumber(isoCode: 'AE');
+  PhoneNumber? number = PhoneNumber(isoCode: 'AE');
 
   Widget _buildTopCurve() {
     return Padding(
@@ -211,8 +242,7 @@ class _BookingSummaryPageState extends State<BookingSummaryPage> {
             Positioned.fill(
               child: BackdropFilter(
                 filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-                child: Container(
-                    color: Colors.black.withOpacity(0.05)),
+                child: Container(color: Colors.black.withOpacity(0.05)),
               ),
             ),
             Center(
@@ -239,10 +269,10 @@ class _BookingSummaryPageState extends State<BookingSummaryPage> {
                         SizedBox(height: 10),
                         Text(
                           "1. You must agree to the terms before proceeding.\n"
-                              "2. Payments are final and non-refundable.\n"
-                              "3. Your data will be used as per our privacy policy.\n"
-                              "4. Other terms may apply...\n\n"
-                              "By proceeding, you confirm that you have read and accepted these terms.",
+                          "2. Payments are final and non-refundable.\n"
+                          "3. Your data will be used as per our privacy policy.\n"
+                          "4. Other terms may apply...\n\n"
+                          "By proceeding, you confirm that you have read and accepted these terms.",
                           style: TextStyle(fontSize: 14),
                         ),
                       ],
@@ -278,201 +308,230 @@ class _BookingSummaryPageState extends State<BookingSummaryPage> {
     final double fontSize = screenWidth * 0.035;
 
     return Scaffold(
-      // appBar: AppBar(
-      //   leading: IconButton(
-      //     icon: const Icon(Icons.arrow_back, color: Colors.black),
-      //     onPressed: () => Navigator.pop(context),
-      //   ),
-      //   backgroundColor: Colors.white,
-      //   elevation: 0,
-      //   title: const Text(
-      //     'Booking Summary',
-      //     style: TextStyle(color: Colors.black),
-      //   ),
-      //   centerTitle: true,
-      // ),
-      backgroundColor: Colors.white,
-      body: isLoading == true
-          ? _buildShimmerEffect()
-          : SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildTopCurve(),
-            const SizedBox(height: 10),
-            Row(
-              children: [
-                IconButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  icon: CircleAvatar(
-                    backgroundColor: Colors.grey.withOpacity(0.6),  // Transparent grey background
-                    child: Text(
-                      '<',  // Use "<" symbol
-                      style: TextStyle(
-                        color: Colors.white,  // White text color
-                        fontSize: 24,  // Adjust font size as needed
-                        fontWeight: FontWeight.bold,  // Make the "<" bold if needed
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Text('BOOKING SUMMARY',
-                    style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Colors.white)
-                )
-              ],
-            ),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.04),
-              child: Column(
-                children: [
-                  const SizedBox(height: 40),  // Add space before first section
-                  _buildSection('PACKAGE DETAILS', packageDetails, fontSize),
-                  const SizedBox(height: 20),  // Space between sections
-                  _buildPriceSection('PRICE DETAILS', priceDetails, fontSize),
-                  const SizedBox(height: 20),  // Space between sections
-                  _buildContactInfo(fontSize),
-                  // const SizedBox(height: 20),  // Space at the bottom
-                  SizedBox(height: 5,),
-                  Padding(padding: EdgeInsets.all(5),
-                  child: Row(
-                      children: [
-                        Expanded(
-                          child: TextField(
-                            controller: _voucherController,
-                            enabled: !isCodeApplied,
-                            decoration: InputDecoration(
-                              labelText: "Enter Voucher Code",
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                            ),
-                          ),
-                        ),
-                        SizedBox(width: 10),
-                        ElevatedButton(
-                          onPressed: isCodeApplied ? null : _applyVoucher,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.lightBlueAccent,
-                          ),
-                          child: Text(
-                            isCodeApplied ? "Applied" : "Apply",
-                            style: const TextStyle(color: Colors.white),
-                          ),
-                        ),
-                      ]
-                ),)
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-      bottomNavigationBar: isLoading
-          ? null
-          : Stack(
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 20.0),
+        // appBar: AppBar(
+        //   leading: IconButton(
+        //     icon: const Icon(Icons.arrow_back, color: Colors.black),
+        //     onPressed: () => Navigator.pop(context),
+        //   ),
+        //   backgroundColor: Colors.white,
+        //   elevation: 0,
+        //   title: const Text(
+        //     'Booking Summary',
+        //     style: TextStyle(color: Colors.black),
+        //   ),
+        //   centerTitle: true,
+        // ),
+        backgroundColor: Colors.white,
+        body: isLoading == true
+            ? _buildShimmerEffect()
+            : SingleChildScrollView(
                 child: Column(
-                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    _buildTopCurve(),
+                    const SizedBox(height: 10),
                     Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Checkbox(
-                          value: _isChecked,
-                          onChanged: (bool? value) {
-                            setState(() {
-                              _isChecked = value ?? false;
-                            });
+                        IconButton(
+                          onPressed: () {
+                            Navigator.pop(context);
                           },
-                        ),
-                        Flexible(
-                          child: GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                _isChecked = !_isChecked;
-                              });
-                            },
-                            child: RichText(
-                              text: TextSpan(
-                                style: TextStyle(fontSize: 14.0, color: Colors.black),
-                                children: [
-                                  TextSpan(text: "I have read and agree to the "),
-                                  TextSpan(
-                                    text: "Terms and Conditions",
-                                    style: TextStyle(
-                                      color: Colors.blue,
-                                      fontWeight: FontWeight.bold,
-                                      decoration: TextDecoration.underline,
-                                    ),
-                                    recognizer: TapGestureRecognizer()
-                                      ..onTap = () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) => TermsAndConditionsPage(),
-                                          ),
-                                        );
-                                      },
-                                  ),
-                                ],
+                          icon: CircleAvatar(
+                            backgroundColor: Colors.grey.withOpacity(
+                                0.6), // Transparent grey background
+                            child: Text(
+                              '<', // Use "<" symbol
+                              style: TextStyle(
+                                color: Colors.white, // White text color
+                                fontSize: 24, // Adjust font size as needed
+                                fontWeight: FontWeight
+                                    .bold, // Make the "<" bold if needed
                               ),
                             ),
                           ),
-                        )
+                        ),
+                        const SizedBox(width: 10),
+                        Text('BOOKING SUMMARY',
+                            style: TextStyle(
+                                fontSize: 26,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white))
                       ],
                     ),
-                    AbsorbPointer(
-                      absorbing: !_isChecked,
-                      child: GestureDetector(
-                        onTap: () {
-                          _loadLogedinDetails();
-                          if (_formKey.currentState!.validate()) {
-                            // print(contactDetails);
-                            // print(searchId);
-                            Map <String, dynamic> body = {
-                              "search_id": searchId.toString(),
-                              "voucher_code": _voucherController.text,
-                              "title": contactDetails['title'].toString(),
-                              "name": contactDetails['contactName'].toString(),
-                              "email": contactDetails['email'].toString(),
-                              "country_code": contactDetails['countryCode'].toString(),
-                              "phone": contactDetails['phoneNumber'].toString(),
-                              "payment_type": ""
-                            };
-                            // _saveBooking(body);
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>isLoggedIn? PaymentScreen(BSData: BSData, sbAPIBody: body, flow: 'cruise'):
-                                  LoginPage(canSkip: true, redirectTo: PaymentScreen(BSData: BSData, sbAPIBody: body, flow: 'cruise'),),
-                                ));
-                          }
+                    Padding(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: screenWidth * 0.04),
+                      child: Column(
+                        children: [
+                          const SizedBox(
+                              height: 40), // Add space before first section
+                          _buildSection(
+                              'PACKAGE DETAILS', packageDetails, fontSize),
+                          const SizedBox(height: 20), // Space between sections
+                          _buildPriceSection(
+                              'PRICE DETAILS', priceDetails, fontSize),
+                          const SizedBox(height: 20), // Space between sections
+                          _buildContactInfo(fontSize),
 
-                        },
-                        child: Opacity(
-                          opacity: _isChecked ? 1.0 : 0.5,
-                          child: responciveButton(
-                            // text: "Pay Now (${finalPrice ?? BSData['cruise_price']['total'].toString()})",
-                            // text: isCodeApplied ? finalPrice.toString() : BSData['cruise_price']['total'].toString(),
-                            text: 'Pay Now ($finalPrice)',
+                          // const SizedBox(height: 20),  // Space at the bottom
+                          SizedBox(
+                            height: 5,
                           ),
-                        ),
+                          Padding(
+                            padding: EdgeInsets.all(5),
+                            child: Row(children: [
+                              Expanded(
+                                child: TextField(
+                                  controller: _voucherController,
+                                  enabled: !isCodeApplied,
+                                  decoration: InputDecoration(
+                                    labelText: "Enter Voucher Code",
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              SizedBox(width: 10),
+                              ElevatedButton(
+                                onPressed: isCodeApplied ? null : _applyVoucher,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.lightBlueAccent,
+                                ),
+                                child: Text(
+                                  isCodeApplied ? "Applied" : "Apply",
+                                  style: const TextStyle(color: Colors.white),
+                                ),
+                              ),
+                            ]),
+                          )
+                        ],
                       ),
                     ),
                   ],
-                )
+                ),
               ),
-            ],
-          )
-    );
+        bottomNavigationBar: isLoading
+            ? null
+            : Stack(
+                children: [
+                  Padding(
+                      padding: const EdgeInsets.only(
+                          left: 16.0, right: 16.0, bottom: 20.0),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Checkbox(
+                                value: _isChecked,
+                                onChanged: (bool? value) {
+                                  setState(() {
+                                    _isChecked = value ?? false;
+                                  });
+                                },
+                              ),
+                              Flexible(
+                                child: GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      _isChecked = !_isChecked;
+                                    });
+                                  },
+                                  child: RichText(
+                                    text: TextSpan(
+                                      style: TextStyle(
+                                          fontSize: 14.0, color: Colors.black),
+                                      children: [
+                                        TextSpan(
+                                            text:
+                                                "I have read and agree to the "),
+                                        TextSpan(
+                                          text: "Terms and Conditions",
+                                          style: TextStyle(
+                                            color: Colors.blue,
+                                            fontWeight: FontWeight.bold,
+                                            decoration:
+                                                TextDecoration.underline,
+                                          ),
+                                          recognizer: TapGestureRecognizer()
+                                            ..onTap = () {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      TermsAndConditionsPage(),
+                                                ),
+                                              );
+                                            },
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
+                          AbsorbPointer(
+                            absorbing: !_isChecked,
+                            child: GestureDetector(
+                              onTap: () {
+                                _loadLogedinDetails();
+                                if (_formKey.currentState!.validate()) {
+                                  // print(contactDetails);
+                                  // print(searchId);
+                                  Map<String, dynamic> body = {
+                                    "search_id": searchId.toString(),
+                                    "voucher_code": _voucherController.text,
+                                    "title": contactDetails['title'].toString(),
+                                    "name": contactDetails['contactName']
+                                        .toString(),
+                                    "email": contactDetails['email'].toString(),
+                                    "country_code":
+                                        contactDetails['countryCode']
+                                            .toString(),
+                                    "phone": contactDetails['phoneNumber']
+                                        .toString(),
+                                    "payment_type": ""
+                                  };
+                                  // _saveBooking(body);
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => isLoggedIn
+                                            ? PaymentScreen(
+                                                BSData: BSData,
+                                                sbAPIBody: body,
+                                                flow: 'cruise')
+                                            : LoginPage(
+                                                canSkip: true,
+                                                redirectTo: PaymentScreen(
+                                                    BSData: BSData,
+                                                    sbAPIBody: body,
+                                                    flow: 'cruise'),
+                                              ),
+                                      ));
+                                }
+                              },
+                              child: Opacity(
+                                opacity: _isChecked ? 1.0 : 0.5,
+                                child: responciveButton(
+                                  // text: "Pay Now (${finalPrice ?? BSData['cruise_price']['total'].toString()})",
+                                  // text: isCodeApplied ? finalPrice.toString() : BSData['cruise_price']['total'].toString(),
+                                  text: 'Pay Now ($finalPrice)',
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      )),
+                ],
+              ));
   }
 
-  Widget _buildSection(String title, Map<String, dynamic> details, double fontSize) {
+  Widget _buildSection(
+      String title, Map<String, dynamic> details, double fontSize) {
     // Convert the map entries into a list of entries
     List<MapEntry<String, dynamic>> entryList = details.entries.toList();
 
@@ -499,29 +558,37 @@ class _BookingSummaryPageState extends State<BookingSummaryPage> {
             Column(
               children: List.generate(
                 (entryList.length / 2).ceil(), // Divide into rows
-                    (index) {
-                  bool isLastOdd =
-                      entryList.length % 2 != 0 && index == entryList.length ~/ 2;
+                (index) {
+                  bool isLastOdd = entryList.length % 2 != 0 &&
+                      index == entryList.length ~/ 2;
                   return Column(
                     children: [
-                      const Divider(color: Colors.grey), // Divider between each row
+                      const Divider(
+                          color: Colors.grey), // Divider between each row
                       const SizedBox(height: 15),
-                      IntrinsicHeight(  // Ensures both boxes in the row will have equal height
+                      IntrinsicHeight(
+                        // Ensures both boxes in the row will have equal height
                         child: Row(
                           children: [
                             Expanded(
                               child: _buildDetailBox(
                                 entryList[index * 2].key, // Key as the title
-                                entryList[index * 2].value.toString(), // Value as the value
+                                entryList[index * 2]
+                                    .value
+                                    .toString(), // Value as the value
                                 fontSize,
                               ),
                             ),
                             if (!isLastOdd) ...[
-                              const VerticalDivider(width: 10, color: Colors.grey),
+                              const VerticalDivider(
+                                  width: 10, color: Colors.grey),
                               Expanded(
                                 child: _buildDetailBox(
-                                  entryList[index * 2 + 1].key, // Key as the title
-                                  entryList[index * 2 + 1].value.toString(), // Value as the value
+                                  entryList[index * 2 + 1]
+                                      .key, // Key as the title
+                                  entryList[index * 2 + 1]
+                                      .value
+                                      .toString(), // Value as the value
                                   fontSize,
                                 ),
                               ),
@@ -543,7 +610,9 @@ class _BookingSummaryPageState extends State<BookingSummaryPage> {
 
   Widget _buildDetailBox(String title, String value, double fontSize) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: fontSize * 0.7, vertical: fontSize * 0.4), // Padding inside the detail box
+      padding: EdgeInsets.symmetric(
+          horizontal: fontSize * 0.7,
+          vertical: fontSize * 0.4), // Padding inside the detail box
       decoration: BoxDecoration(
         color: Colors.grey.shade50, // Background color of the box
         borderRadius: BorderRadius.circular(8), // Rounded corners
@@ -573,7 +642,8 @@ class _BookingSummaryPageState extends State<BookingSummaryPage> {
     );
   }
 
-  Widget _buildPriceSection(String title, Map<String, dynamic> details, double fontSize) {
+  Widget _buildPriceSection(
+      String title, Map<String, dynamic> details, double fontSize) {
     // Convert the map entries into a list of entries
     List<MapEntry<String, dynamic>> entryList = details.entries.toList();
 
@@ -600,29 +670,37 @@ class _BookingSummaryPageState extends State<BookingSummaryPage> {
             Column(
               children: List.generate(
                 (entryList.length / 2).ceil(), // Divide into rows
-                    (index) {
-                  bool isLastOdd =
-                      entryList.length % 2 != 0 && index == entryList.length ~/ 2;
+                (index) {
+                  bool isLastOdd = entryList.length % 2 != 0 &&
+                      index == entryList.length ~/ 2;
                   return Column(
                     children: [
-                      const Divider(color: Colors.grey), // Divider between each row
+                      const Divider(
+                          color: Colors.grey), // Divider between each row
                       const SizedBox(height: 15),
-                      IntrinsicHeight(  // Ensures both boxes in the row will have equal height
+                      IntrinsicHeight(
+                        // Ensures both boxes in the row will have equal height
                         child: Row(
                           children: [
                             Expanded(
                               child: _buildPriceDetailBox(
                                 entryList[index * 2].key, // Key as the title
-                                entryList[index * 2].value.toString(), // Value as the value
+                                entryList[index * 2]
+                                    .value
+                                    .toString(), // Value as the value
                                 fontSize,
                               ),
                             ),
                             if (!isLastOdd) ...[
-                              const VerticalDivider(width: 10, color: Colors.grey),
+                              const VerticalDivider(
+                                  width: 10, color: Colors.grey),
                               Expanded(
                                 child: _buildPriceDetailBox(
-                                  entryList[index * 2 + 1].key, // Key as the title
-                                  entryList[index * 2 + 1].value.toString(), // Value as the value
+                                  entryList[index * 2 + 1]
+                                      .key, // Key as the title
+                                  entryList[index * 2 + 1]
+                                      .value
+                                      .toString(), // Value as the value
                                   fontSize,
                                 ),
                               ),
@@ -637,11 +715,9 @@ class _BookingSummaryPageState extends State<BookingSummaryPage> {
                 },
               ),
             ),
-            if(isCodeApplied)
-              const Divider(),
-            if(isCodeApplied)
-              const SizedBox(height: 10),
-            if(isCodeApplied)
+            if (isCodeApplied) const Divider(),
+            if (isCodeApplied) const SizedBox(height: 10),
+            if (isCodeApplied)
               Container(
                 width: double.infinity,
                 decoration: BoxDecoration(
@@ -695,7 +771,9 @@ class _BookingSummaryPageState extends State<BookingSummaryPage> {
 
   Widget _buildPriceDetailBox(String title, String value, double fontSize) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: fontSize * 0.7, vertical: fontSize * 0.4), // Padding inside the detail box
+      padding: EdgeInsets.symmetric(
+          horizontal: fontSize * 0.7,
+          vertical: fontSize * 0.4), // Padding inside the detail box
       decoration: BoxDecoration(
         color: Colors.grey.shade50, // Background color of the box
         borderRadius: BorderRadius.circular(8), // Rounded corners
@@ -759,15 +837,17 @@ class _BookingSummaryPageState extends State<BookingSummaryPage> {
                         filled: true,
                         fillColor: Colors.white,
                         hintText: 'Title', // Placeholder text
-                        contentPadding: EdgeInsets.symmetric(vertical: 12.0), // Padding inside the input
+                        contentPadding: EdgeInsets.symmetric(
+                            vertical: 12.0), // Padding inside the input
                       ),
                       items: ['Mr', 'Ms', 'Miss', 'Mrs']
                           .map((title) => DropdownMenuItem(
-                        value: title,
-                        child: Text(title),
-                      ))
+                                value: title,
+                                child: Text(title),
+                              ))
                           .toList(),
-                      validator: (value) => value == null ? 'Select a title' : null,
+                      validator: (value) =>
+                          value == null ? 'Select a title' : null,
                     ),
                   ),
                   const SizedBox(width: 10),
@@ -778,7 +858,8 @@ class _BookingSummaryPageState extends State<BookingSummaryPage> {
                         filled: true,
                         fillColor: Colors.white,
                         hintText: 'Contact Name', // Placeholder text
-                        contentPadding: EdgeInsets.symmetric(vertical: 12.0), // Padding inside the input
+                        contentPadding: EdgeInsets.symmetric(
+                            vertical: 12.0), // Padding inside the input
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -806,7 +887,8 @@ class _BookingSummaryPageState extends State<BookingSummaryPage> {
                   filled: true,
                   fillColor: Colors.white,
                   hintText: 'E-mail', // Placeholder text
-                  contentPadding: EdgeInsets.symmetric(vertical: 12.0), // Padding inside the input
+                  contentPadding: EdgeInsets.symmetric(
+                      vertical: 12.0), // Padding inside the input
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -826,9 +908,10 @@ class _BookingSummaryPageState extends State<BookingSummaryPage> {
               IntlPhoneField(
                 decoration: InputDecoration(
                   hintText: 'Phone Number', // Placeholder text
-                  contentPadding: EdgeInsets.symmetric(vertical: 12.0), // Padding inside the input
+                  contentPadding: EdgeInsets.symmetric(
+                      vertical: 12.0), // Padding inside the input
                 ),
-                initialCountryCode: 'AE',
+                initialCountryCode: CountryCode.fromDialCode(contactDetails["countryCode"]??"+971").code,
                 autovalidateMode: AutovalidateMode.onUserInteraction,
                 onChanged: (phone) {
                   setState(() {

@@ -395,8 +395,7 @@ class _BookingSummaryFITState extends State<BookingSummaryFIT> {
     );
   }
 
-  Widget _buildFlightDetailsSection(
-      String title, List<Map<String, dynamic>> details, double fontSize) {
+  Widget _buildFlightDetailsSection(String title, List<Map<String, dynamic>> details, double fontSize) {
     return Card(
       color: Colors.white, // White background for the card
       shape: RoundedRectangleBorder(
@@ -505,96 +504,7 @@ class _BookingSummaryFITState extends State<BookingSummaryFIT> {
     );
   }
 
-  // Widget _buildSection(
-  //     String title, List<Map<String, dynamic>> details, double fontSize) {
-  //   return Column(
-  //     crossAxisAlignment: CrossAxisAlignment.start,
-  //     children: [
-  //       Text(
-  //         title,
-  //         style: TextStyle(
-  //           fontSize: fontSize * 1.3,
-  //           fontWeight: FontWeight.bold,
-  //           color: Colors.black,
-  //         ),
-  //       ),
-  //       const SizedBox(height: 10),
-  //       Column(
-  //         children: List.generate(
-  //           (details.length / 2).ceil(), // Divide into rows
-  //           (index) {
-  //             bool isLastOdd =
-  //                 details.length % 2 != 0 && index == details.length ~/ 2;
-  //             return Column(
-  //               children: [
-  //                 Row(
-  //                   children: [
-  //                     Expanded(
-  //                       child: _buildDetailBox(
-  //                         details[index * 2]['title']!,
-  //                         details[index * 2]['value']!,
-  //                         fontSize,
-  //                       ),
-  //                     ),
-  //                     if (!isLastOdd) ...[
-  //                       const SizedBox(width: 10),
-  //                       Expanded(
-  //                         child: _buildDetailBox(
-  //                           details[index * 2 + 1]['title']!,
-  //                           details[index * 2 + 1]['value']!,
-  //                           fontSize,
-  //                         ),
-  //                       ),
-  //                     ],
-  //                   ],
-  //                 ),
-  //                 const SizedBox(height: 10), // Space after each row
-  //               ],
-  //             );
-  //           },
-  //         ),
-  //       ),
-  //       const SizedBox(height: 10),
-  //     ],
-  //   );
-  // }
-
-  // Widget _buildDetailBox(String title, String value, double fontSize) {
-  //   return Container(
-  //     width: (MediaQuery.of(context).size.width / 2) - 25,
-  //     height: 95,
-  //     padding: EdgeInsets.all(fontSize * 0.7),
-  //     decoration: BoxDecoration(
-  //       color: Colors.grey.shade200,
-  //       borderRadius: BorderRadius.circular(8),
-  //     ),
-  //     child: Column(
-  //       crossAxisAlignment: CrossAxisAlignment.start,
-  //       children: [
-  //         Text(
-  //           title,
-  //           style: TextStyle(
-  //             fontSize: fontSize * 1.2,
-  //             fontWeight: FontWeight.bold,
-  //             color: Colors.black,
-  //           ),
-  //         ),
-  //         SizedBox(height: fontSize * 0.3),
-  //         Text(
-  //           value,
-  //           style: TextStyle(
-  //             fontSize: fontSize,
-  //             fontWeight: FontWeight.normal,
-  //             color: Colors.black,
-  //           ),
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
-
-  Widget _buildSection(
-      String title, List<Map<String, dynamic>> details, double fontSize) {
+  Widget _buildSection(String title, List<Map<String, dynamic>> details, double fontSize) {
     return Card(
       color: Colors.white, // White background for the card
       shape: RoundedRectangleBorder(
@@ -693,8 +603,7 @@ class _BookingSummaryFITState extends State<BookingSummaryFIT> {
     );
   }
 
-  Widget _buildPriceSection(
-      String title, List<Map<String, dynamic>> details, double fontSize) {
+  Widget _buildPriceSection(String title, List<Map<String, dynamic>> details, double fontSize) {
     return Card(
       color: Colors.white, // White background for the card
       shape: RoundedRectangleBorder(
@@ -715,42 +624,19 @@ class _BookingSummaryFITState extends State<BookingSummaryFIT> {
               ),
             ),
             // const SizedBox(height: 10),
+            const Divider(),
             Column(
               children: List.generate(
-                (details.length / 2).ceil(), // Divide into rows
-                (index) {
-                  bool isLastOdd =
-                      details.length % 2 != 0 && index == details.length ~/ 2;
+                details.length, // Directly use details.length, no need to divide by 2
+                    (index) {
                   return Column(
                     children: [
-                      const Divider(
-                          color: Colors.grey), // Divider before each row
-                      const SizedBox(height: 10),
-                      IntrinsicHeight(
-                        // This ensures both boxes in the row will have equal height
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: _buildPriceDetailBox(
-                                details[index * 2]['title']!,
-                                details[index * 2]['value']!,
-                                fontSize,
-                              ),
-                            ),
-                            if (!isLastOdd) ...[
-                              const SizedBox(width: 10),
-                              Expanded(
-                                child: _buildPriceDetailBox(
-                                  details[index * 2 + 1]['title']!,
-                                  details[index * 2 + 1]['value']!,
-                                  fontSize,
-                                ),
-                              ),
-                            ],
-                          ],
-                        ),
+                      SizedBox(height: 10), // Space between items
+                      _buildPriceDetailBox(
+                        details[index]['title']!,
+                        details[index]['value']!,
+                        fontSize,
                       ),
-                      const SizedBox(height: 10), // Space after each row
                     ],
                   );
                 },
@@ -764,6 +650,7 @@ class _BookingSummaryFITState extends State<BookingSummaryFIT> {
 
   Widget _buildPriceDetailBox(String title, String value, double fontSize) {
     return Container(
+      width: double.infinity, // Makes the container take the whole width
       padding: EdgeInsets.all(fontSize * 0.7),
       decoration: BoxDecoration(
         color: Colors.grey.shade50,
@@ -794,8 +681,7 @@ class _BookingSummaryFITState extends State<BookingSummaryFIT> {
     );
   }
 
-  Widget _buildtourDetailsSection(
-      String title, List<Map<String, dynamic>> tour, double fontSize) {
+  Widget _buildtourDetailsSection(String title, List<Map<String, dynamic>> tour, double fontSize) {
     return Card(
       color: Colors.white, // White background for the card
       shape: RoundedRectangleBorder(

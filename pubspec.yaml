@@ -40,6 +40,7 @@ dependencies:
   path_provider: ^2.1.5
   permission_handler: ^11.4.0
   open_file: ^3.5.10
+  country_code_picker: ^3.3.0
 
 
 

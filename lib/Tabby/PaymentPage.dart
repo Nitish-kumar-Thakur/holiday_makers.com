@@ -31,8 +31,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
   void initState() {
     super.initState();
     print(widget.flow);
-    print(widget.BSData);
-    print(widget.sbAPIBody);
+    print("BSData ${widget.BSData}");
+    print("sbAPIBody${widget.sbAPIBody}");
     print(widget.BSData['payment_options']);
     print(widget.sbAPIBody['payment_type']);
     print('==================================');

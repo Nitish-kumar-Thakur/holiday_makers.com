@@ -53,13 +53,39 @@ class _PaxDetailsState extends State<PaxDetails> {
     ],
   };
 
-  bool _validateRooms() {
-    for (var room in roomDetails) {
-      if (!room["paxAges"].any((age) => int.parse(age) >= 21)) {
-        return false; // If no pax is 21 or older, return false
+  Map<String, dynamic> _validateRooms() {
+    for (int i = 0; i < roomDetails.length; i++) {
+      var room = roomDetails[i];
+      List<String> paxAgesStr = List<String>.from(room["paxAges"]);
+      List<int> paxAges = paxAgesStr.map(int.parse).toList();
+
+      // Check for at least one 21+ pax
+      bool hasAdult = paxAges.any((age) => age >= 21);
+      if (!hasAdult) {
+        return {
+          "isValid": false,
+          "error":
+          "At least one person must be 21 years or older in Room ${i + 1}."
+        };
+      }
+
+      // Check infant rule
+      int infantCount = paxAges.where((age) => age < 2).length;
+      int nonInfantCount = paxAges.where((age) => age >= 2).length;
+
+      if (infantCount > nonInfantCount) {
+        return {
+          "isValid": false,
+          "error":
+          "Number of infants exceeds number of older passengers in Room ${i + 1}."
+        };
       }
     }
-    return true;
+
+    return {
+      "isValid": true,
+      "error": null,
+    };
   }
 
   void _updateTotalSummary() {
@@ -71,13 +97,12 @@ class _PaxDetailsState extends State<PaxDetails> {
       paxAges.addAll(List<String>.from(room["paxAges"]));
     }
 
-    // Validate room conditions
-    bool isValid = _validateRooms();
+    var validationResult = _validateRooms();
+    bool isValid = validationResult["isValid"];
+    String? error = validationResult["error"];
 
     setState(() {
-      errorMessage = isValid
-          ? null
-          : "Atleast one 21 year old pax should be there in each room";
+      errorMessage = isValid ? null : error;
       totalSummary = {
         "totalPaxCount": totalPaxCount,
         "totalRooms": roomDetails.length,
@@ -97,184 +122,188 @@ class _PaxDetailsState extends State<PaxDetails> {
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(50))),
       builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return SizedBox(
-              height: 600,
-              width: double.infinity,
-              child: Padding(
-                padding: const EdgeInsets.all(15),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Center(
-                        child:
+        return PopScope(
+            canPop: false, // Blocks the back button and swipe-to-go-back
+            child: StatefulBuilder(
+              builder: (context, setState) {
+                return SizedBox(
+                  height: 600,
+                  width: double.infinity,
+                  child: Padding(
+                    padding: const EdgeInsets.all(15),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Center(
+                            child:
                             AppLargeText(text: 'Select Occupancy', size: 24)),
-                    const SizedBox(height: 10),
+                        const SizedBox(height: 10),
 
-                    // Show error message if validation fails
-                    if (errorMessage != null)
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          errorMessage!,
-                          style: TextStyle(
-                              color: Colors.red,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      ),
+                        // Show error message if validation fails
+                        if (errorMessage != null)
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              errorMessage!,
+                              style: TextStyle(
+                                  color: Colors.red,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ),
 
-                    Expanded(
-                      child: ListView.builder(
-                        controller: _scrollController,
-                        itemCount: roomDetails.length,
-                        itemBuilder: (context, index) {
-                          return Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                        Expanded(
+                          child: ListView.builder(
+                            controller: _scrollController,
+                            itemCount: roomDetails.length,
+                            itemBuilder: (context, index) {
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  AppLargeText(
-                                      text: 'State Room ${index + 1}',
-                                      size: 20),
-                                  if (roomDetails.length > 1)
-                                    GestureDetector(
-                                      onTap: () {
-                                        setState(() {
-                                          roomDetails.removeAt(index);
-                                          _updateTotalSummary();
-                                        });
-                                      },
-                                      child: Container(
-                                        width: 20,
-                                        height: 20,
-                                        decoration: BoxDecoration(
-                                          color: Colors.red,
-                                          shape: BoxShape.circle,
-                                        ),
-                                        child: Icon(Icons.remove,
-                                            color: Colors.white, size: 18),
-                                      ),
-                                    ),
-                                ],
-                              ),
-                              const SizedBox(height: 5),
-
-                              // Pax Count Dropdown
-                              _buildDropdownRow(
-                                'No. of Pax',
-                                roomDetails[index]["paxCount"].toString(),
-                                List.generate(4, (i) => (i + 1).toString()),
-                                (value) {
-                                  setState(() {
-                                    roomDetails[index]["paxCount"] =
-                                        int.parse(value);
-                                    roomDetails[index]["paxAges"] =
-                                        List.generate(int.parse(value),
-                                            (i) => (21 + i).toString());
-                                    _updateTotalSummary();
-                                  });
-                                },
-                              ),
-
-                              // Pax Age Dropdowns
-                              Column(
-                                children: List.generate(
-                                  roomDetails[index]["paxCount"],
-                                  (childIndex) => Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                  Row(
+                                    mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                     children: [
-                                      const SizedBox(height: 5),
-                                      _buildDropdownRow(
-                                        'Pax ${childIndex + 1} Age',
-                                        roomDetails[index]["paxAges"]
-                                            [childIndex],
-                                        List.generate(
-                                            100, (i) => (i + 1).toString()),
-                                        (value) {
-                                          setState(() {
-                                            roomDetails[index]["paxAges"]
-                                                [childIndex] = value;
-                                            _updateTotalSummary();
-                                          });
-                                        },
-                                      ),
+                                      AppLargeText(
+                                          text: 'State Room ${index + 1}',
+                                          size: 20),
+                                      if (roomDetails.length > 1)
+                                        GestureDetector(
+                                          onTap: () {
+                                            setState(() {
+                                              roomDetails.removeAt(index);
+                                              _updateTotalSummary();
+                                            });
+                                          },
+                                          child: Container(
+                                            width: 20,
+                                            height: 20,
+                                            decoration: BoxDecoration(
+                                              color: Colors.red,
+                                              shape: BoxShape.circle,
+                                            ),
+                                            child: Icon(Icons.remove,
+                                                color: Colors.white, size: 18
+                                            ),
+                                          ),
+                                        ),
                                     ],
                                   ),
-                                ),
-                              ),
-                              const SizedBox(height: 10),
-                              Divider(
-                                  thickness: 1, color: Colors.grey.shade300),
-                              const SizedBox(height: 10),
-                            ],
-                          );
-                        },
-                      ),
-                    ),
+                                  const SizedBox(height: 5),
 
-                    if (roomDetails.length < 3)
-                      Center(
-                        child: ElevatedButton.icon(
-                          onPressed: () {
-                            setState(() {
-                              roomDetails.add({
-                                "paxCount": 2,
-                                "paxAges": ["21", "22"]
-                              });
-                              _updateTotalSummary();
-                              Future.delayed(Duration(milliseconds: 300), () {
-                                _scrollController.animateTo(
-                                  _scrollController.position.maxScrollExtent,
-                                  duration: Duration(milliseconds: 300),
-                                  curve: Curves.easeOut,
-                                );
-                              });
-                            });
-                          },
-                          icon: Icon(Icons.add),
-                          label: Text("Add Room"),
+                                  // Pax Count Dropdown
+                                  _buildDropdownRow(
+                                    'No. of Pax',
+                                    roomDetails[index]["paxCount"].toString(),
+                                    List.generate(4, (i) => (i + 1).toString()),
+                                        (value) {
+                                      setState(() {
+                                        roomDetails[index]["paxCount"] =
+                                            int.parse(value);
+                                        roomDetails[index]["paxAges"] =
+                                            List.generate(int.parse(value),
+                                                    (i) => (21 + i).toString());
+                                        _updateTotalSummary();
+                                      });
+                                    },
+                                  ),
+
+                                  // Pax Age Dropdowns
+                                  Column(
+                                    children: List.generate(
+                                      roomDetails[index]["paxCount"],
+                                          (childIndex) => Column(
+                                        crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                        children: [
+                                          const SizedBox(height: 5),
+                                          _buildDropdownRow(
+                                            'Pax ${childIndex + 1} Age',
+                                            roomDetails[index]["paxAges"]
+                                            [childIndex],
+                                            List.generate(
+                                                100, (i) => (i + 1).toString()),
+                                                (value) {
+                                              setState(() {
+                                                roomDetails[index]["paxAges"]
+                                                [childIndex] = value;
+                                                _updateTotalSummary();
+                                              });
+                                            },
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 10),
+                                  Divider(
+                                      thickness: 1, color: Colors.grey.shade300),
+                                  const SizedBox(height: 10),
+                                ],
+                              );
+                            },
+                          ),
                         ),
-                      ),
 
-                    const SizedBox(height: 10),
+                        if (roomDetails.length < 3)
+                          Center(
+                            child: ElevatedButton.icon(
+                              onPressed: () {
+                                setState(() {
+                                  roomDetails.add({
+                                    "paxCount": 2,
+                                    "paxAges": ["21", "22"]
+                                  });
+                                  _updateTotalSummary();
+                                  Future.delayed(Duration(milliseconds: 300), () {
+                                    _scrollController.animateTo(
+                                      _scrollController.position.maxScrollExtent,
+                                      duration: Duration(milliseconds: 300),
+                                      curve: Curves.easeOut,
+                                    );
+                                  });
+                                });
+                              },
+                              icon: Icon(Icons.add),
+                              label: Text("Add Room"),
+                            ),
+                          ),
 
-                    GestureDetector(
-                      onTap: () {
-                        if (_validateRooms()) {
-                          widget.onSelectionChanged(totalSummary);
-                          Navigator.pop(context);
-                          print('======================');
-                          print(totalSummary);
-                          print('======================');
-                        } else {
-                          setState(() {
-                            errorMessage =
-                                "At least one 21-year-old pax should be there in each room";
-                          });
-                        }
-                      },
-                      child: Align(
-                        alignment: Alignment.center,
-                        child: responciveButton(text: 'DONE'),
-                      ),
+                        const SizedBox(height: 10),
+
+                        GestureDetector(
+                          onTap: () {
+                            var validationResult = _validateRooms();
+                            bool isValid = validationResult["isValid"];
+                            String? error = validationResult["error"];
+
+                            if (isValid) {
+                              widget.onSelectionChanged(totalSummary);
+                              Navigator.pop(context);
+                              print(totalSummary);
+                            } else {
+                              setState(() {
+                                errorMessage = error;
+                              });
+                            }
+                          },
+                          child: Align(
+                            alignment: Alignment.center,
+                            child: responciveButton(text: 'DONE'),
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-              ),
-            );
-          },
+                  ),
+                );
+              },
+            )
         );
       },
     );
   }
 
-  Widget _buildDropdownRow(String label, String selectedValue,
-      List<String> options, ValueChanged<String> onChanged) {
+  Widget _buildDropdownRow(String label, String selectedValue, List<String> options, ValueChanged<String> onChanged) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
