@@ -324,7 +324,7 @@ class _CruiseDealsPageState extends State<CruiseDealsPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           // const SizedBox(height: 10),
-                          Text('Select Travelers',
+                          Text('Select Travellers',
                               style: const TextStyle(
                                   fontSize: 20,
                                   color: Colors.white,
@@ -537,15 +537,14 @@ class CruiseOption extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onSelect,
-      child: Container(
+    final screenWidth = MediaQuery.of(context).size.width;
+    return Container(
         padding: EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: Color(0XFFF6F6F6),
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(
-              color: isSelected ? Color(0XFF0071BC) : Colors.grey[300]!),
+          // border: Border.all(
+          //     color: isSelected ? Color(0XFF0071BC) : Colors.grey[300]!),
         ),
         child: Column(
           children: [
@@ -575,17 +574,17 @@ class CruiseOption extends StatelessWidget {
                         fontSize: 16,
                       ),
                     ),
-                    SizedBox(width: 8),
-                    Container(
-                      height: 10,
-                      width: 10,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color:
-                            isSelected ? Color(0xFF0071BC) : Colors.transparent,
-                        border: Border.all(color: Color(0xFF0071BC)),
-                      ),
-                    ),
+                    // SizedBox(width: 8),
+                    // Container(
+                    //   height: 10,
+                    //   width: 10,
+                    //   decoration: BoxDecoration(
+                    //     shape: BoxShape.circle,
+                    //     color:
+                    //         isSelected ? Color(0xFF0071BC) : Colors.transparent,
+                    //     border: Border.all(color: Color(0xFF0071BC)),
+                    //   ),
+                    // ),
                   ],
                 ),
               ],
@@ -607,7 +606,7 @@ class CruiseOption extends StatelessWidget {
                         fontSize: 14,
                       ),
                     ),
-                    SizedBox(height: 4),
+                    SizedBox(height: 22),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -630,7 +629,9 @@ class CruiseOption extends StatelessWidget {
                   ],
                 ),
                 // Right side: Duration
-                Container(
+                Column(
+                  children: [
+                    Container(
                   decoration: BoxDecoration(
                       color: Colors.grey.shade200,
                       borderRadius: BorderRadius.circular(50),
@@ -648,11 +649,38 @@ class CruiseOption extends StatelessWidget {
                     ),
                   ),
                 ),
+                SizedBox(height: 5,),
+                    SizedBox(
+                          width: screenWidth * 0.3,
+                          child: ElevatedButton(
+                            onPressed: onSelect,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: isSelected
+                                  ? Color(0xFF0071BC)
+                                  : Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              side: BorderSide(color: Color(0xFF0071BC)),
+                            ),
+                            child: Text(
+                              isSelected ? 'SELECTED' : 'SELECT',
+                              style: TextStyle(
+                                color: isSelected
+                                    ? Colors.white
+                                    : Color(0xFF0071BC),
+                                fontSize: screenWidth * 0.030,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                  ],
+                )
               ],
             ),
           ],
         ),
-      ),
-    );
+      );
   }
 }

@@ -136,7 +136,7 @@ class _PaxDetailsState extends State<PaxDetails> {
                       children: [
                         Center(
                             child:
-                            AppLargeText(text: 'Select Occupancy', size: 24)),
+                            AppLargeText(text: 'Select Travellers', size: 24)),
                         const SizedBox(height: 10),
 
                         // Show error message if validation fails

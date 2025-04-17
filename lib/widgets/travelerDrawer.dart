@@ -93,7 +93,7 @@ class _TravelerdrawerState extends State<Travelerdrawer> {
                   children: [
                     Center(
                         child:
-                            AppLargeText(text: 'Select Occupancy', size: 24)),
+                            AppLargeText(text: 'Select Travellers', size: 24)),
                     const SizedBox(height: 10),
                     Expanded(
                       child: ListView.builder(

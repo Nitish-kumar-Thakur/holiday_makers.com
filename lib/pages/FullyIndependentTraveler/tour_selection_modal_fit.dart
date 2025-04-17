@@ -160,7 +160,7 @@ class _TourSelectionModalFITState extends State<TourSelectionModalFIT> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            "AED ${tour['Per_totalAmount']} per person",
+                            "AED ${tour['Per_totalAmount']}/person",
                             style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.red),
                           ),
                           ElevatedButton(

@@ -40,15 +40,11 @@ class _TourBookingPageState extends State<TourBookingPage>
   String destination = "";
   List<Map<String, dynamic>> activityList = [];
   Map<int, int> totalMinutesPerDay = {};
-  Set<int> unselectableDays =
-      {}; // Tracks days that are blocked due to multi-day tours
+  Set<int> unselectableDays = {}; // Tracks days that are blocked due to multi-day tours
 
   @override
   void initState() {
     super.initState();
-    print('###############@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
-    print(widget.searchId);
-    print('###############@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
 
     // Fetch available tours
     _fetchFDTourList();
@@ -174,6 +170,51 @@ class _TourBookingPageState extends State<TourBookingPage>
     return totalMinutes;
   }
 
+  // void _openTourSelectionModal(int dayIndex) {
+  //   if (unselectableDays.contains(dayIndex + 1)) {
+  //     Fluttertoast.showToast(msg: "You cannot add tours on this day as it is part of a multi-day tour.");
+  //     return;
+  //   }
+  //
+  //   showModalBottomSheet(
+  //     context: context,
+  //     isScrollControlled: true,
+  //     shape: RoundedRectangleBorder(
+  //       borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+  //     ),
+  //     backgroundColor: Colors.transparent,
+  //     builder: (context) {
+  //       List<Map<String, dynamic>> availableTours = allTours.where((tour) {
+  //         return !selectedTours.any(
+  //             (selected) => selected['activity_id'] == tour['activity_id']);
+  //       }).toList();
+  //
+  //       return TourSelectionModal(
+  //         tours: availableTours,
+  //         onSelectionChanged: (selectedTour) {
+  //           int newTourDurationMinutes =
+  //               _extractDurationInMinutes(selectedTour['duration']);
+  //           int currentTotalMinutes = totalMinutesPerDay[dayIndex + 1] ?? 0;
+  //
+  //           if (currentTotalMinutes + newTourDurationMinutes > 480) {
+  //             Fluttertoast.showToast(msg: "Cannot add more than 8 hours of tours per day.");
+  //             return;
+  //           }
+  //
+  //           setState(() {
+  //             selectedTours.add({
+  //               'day': dayIndex + 1,
+  //               ...selectedTour,
+  //             });
+  //             totalMinutesPerDay[dayIndex + 1] =
+  //                 currentTotalMinutes + newTourDurationMinutes;
+  //           });
+  //         },
+  //       );
+  //     },
+  //   );
+  // }
+
   void _openTourSelectionModal(int dayIndex) {
     if (unselectableDays.contains(dayIndex + 1)) {
       Fluttertoast.showToast(msg: "You cannot add tours on this day as it is part of a multi-day tour.");
@@ -190,29 +231,75 @@ class _TourBookingPageState extends State<TourBookingPage>
       builder: (context) {
         List<Map<String, dynamic>> availableTours = allTours.where((tour) {
           return !selectedTours.any(
-              (selected) => selected['activity_id'] == tour['activity_id']);
+                  (selected) => selected['activity_id'] == tour['activity_id']);
         }).toList();
 
         return TourSelectionModal(
           tours: availableTours,
           onSelectionChanged: (selectedTour) {
             int newTourDurationMinutes =
-                _extractDurationInMinutes(selectedTour['duration']);
+            _extractDurationInMinutes(selectedTour['duration']);
+            int durationInDays = selectedTour['duration_in_days'] ?? 0;
+
             int currentTotalMinutes = totalMinutesPerDay[dayIndex + 1] ?? 0;
 
-            if (currentTotalMinutes + newTourDurationMinutes > 480) {
-              Fluttertoast.showToast(msg: "Cannot add more than 8 hours of tours per day.");
-              return;
-            }
+            // Check if it's a combo tour (spans multiple days)
+            if (durationInDays > 1) {
+              int selectedDay = dayIndex + 1;
+              List<int> targetDays = List.generate(durationInDays, (i) => selectedDay + i);
 
-            setState(() {
-              selectedTours.add({
-                'day': dayIndex + 1,
-                ...selectedTour,
+              // Check if combo tour goes beyond package duration
+              if (selectedDay + durationInDays - 1 > numberOfDays) {
+                Fluttertoast.showToast(
+                    msg: "Tour duration exceeds your package duration.");
+                return;
+              }
+
+              // Get list of all used days from selectedTours
+              Set<int> usedDays = selectedTours.map((t) => t['day'] as int).toSet();
+
+              // Check if combo tour overlaps any of the used days
+              bool overlapExists = targetDays.any((day) => usedDays.contains(day));
+
+              if (overlapExists) {
+                Fluttertoast.showToast(
+                    msg: "Cannot add this tour as it overlaps a tour on another day.");
+                return;
+              }
+
+              // No conflicts — proceed
+              for (int i = 1; i < durationInDays; i++) {
+                unselectableDays.add(selectedDay + i);
+              }
+
+              setState(() {
+                selectedTours.add({
+                  'day': selectedDay,
+                  ...selectedTour,
+                });
+
+                totalMinutesPerDay[selectedDay] =
+                    currentTotalMinutes + newTourDurationMinutes;
               });
-              totalMinutesPerDay[dayIndex + 1] =
-                  currentTotalMinutes + newTourDurationMinutes;
-            });
+            }
+            else {
+              // Standard tour — enforce 8-hour rule
+              if (currentTotalMinutes + newTourDurationMinutes > 480) {
+                Fluttertoast.showToast(
+                    msg: "Cannot add more than 8 hours of tours per day.");
+                return;
+              }
+
+              setState(() {
+                selectedTours.add({
+                  'day': dayIndex + 1,
+                  ...selectedTour,
+                });
+
+                totalMinutesPerDay[dayIndex + 1] =
+                    currentTotalMinutes + newTourDurationMinutes;
+              });
+            }
           },
         );
       },
@@ -225,27 +312,59 @@ class _TourBookingPageState extends State<TourBookingPage>
   //   });
   // }
 
+  // void _removeSelectedTour(int dayIndex, String activityId) {
+  //   setState(() {
+  //     var tourToRemove = selectedTours.firstWhere(
+  //       (tour) =>
+  //           tour['day'] == dayIndex + 1 && tour['activity_id'] == activityId,
+  //       orElse: () => {},
+  //     );
+  //
+  //     if (tourToRemove.isNotEmpty) {
+  //       int removedTourDurationMinutes =
+  //           _extractDurationInMinutes(tourToRemove['duration']);
+  //
+  //       // Subtract tour duration from total minutes
+  //       totalMinutesPerDay[dayIndex + 1] =
+  //           (totalMinutesPerDay[dayIndex + 1] ?? 0) -
+  //               removedTourDurationMinutes;
+  //
+  //       // Remove tour from list
+  //       selectedTours.removeWhere((tour) =>
+  //           tour['day'] == dayIndex + 1 && tour['activity_id'] == activityId);
+  //     }
+  //   });
+  // }
+
   void _removeSelectedTour(int dayIndex, String activityId) {
     setState(() {
       var tourToRemove = selectedTours.firstWhere(
-        (tour) =>
-            tour['day'] == dayIndex + 1 && tour['activity_id'] == activityId,
+            (tour) =>
+        tour['day'] == dayIndex + 1 && tour['activity_id'] == activityId,
         orElse: () => {},
       );
 
       if (tourToRemove.isNotEmpty) {
         int removedTourDurationMinutes =
-            _extractDurationInMinutes(tourToRemove['duration']);
+        _extractDurationInMinutes(tourToRemove['duration']);
+        int durationInDays = tourToRemove['duration_in_days'] ?? 0;
 
         // Subtract tour duration from total minutes
         totalMinutesPerDay[dayIndex + 1] =
-            (totalMinutesPerDay[dayIndex + 1] ?? 0) -
-                removedTourDurationMinutes;
+            (totalMinutesPerDay[dayIndex + 1] ?? 0) - removedTourDurationMinutes;
+
+        // If it's a combo tour, free up the next days
+        if (durationInDays > 1) {
+          for (int i = 1; i < durationInDays; i++) {
+            unselectableDays.remove(dayIndex + 1 + i);
+          }
+        }
 
         // Remove tour from list
         selectedTours.removeWhere((tour) =>
-            tour['day'] == dayIndex + 1 && tour['activity_id'] == activityId);
+        tour['day'] == dayIndex + 1 && tour['activity_id'] == activityId);
       }
+
     });
   }
 
@@ -328,7 +447,7 @@ class _TourBookingPageState extends State<TourBookingPage>
                             ? Colors.grey // Grey out the unselectable days
                             : (_tabController.index == index
                                 ? Colors.white
-                                : Colors.grey.shade300),
+                                : Colors.grey.shade400),
                         border: Border.all(color: Colors.blue),
                         borderRadius: BorderRadius.circular(20),
                       ),
@@ -463,7 +582,7 @@ class _TourBookingPageState extends State<TourBookingPage>
                                           MainAxisAlignment.spaceBetween,
                                       children: [
                                         Text(
-                                          "AED ${tourForDay['totalAmount'] ?? ''}",
+                                          "AED ${tourForDay['totalAmount'] ?? ''}/Person",
                                           style: const TextStyle(
                                             fontSize: 20,
                                             fontWeight: FontWeight.bold,

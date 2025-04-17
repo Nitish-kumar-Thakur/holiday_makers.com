@@ -390,9 +390,7 @@ class _FlightPackageCardState extends State<FlightPackageCard> {
     // print(onwardCheckinBaggage);
     // print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
 
-    return GestureDetector(
-      onTap: widget.onTap,
-      child: Card(
+    return Card(
         // color: Colors.white,
         color: Color(0xFFEEEEEE),
         margin: const EdgeInsets.only(bottom: 20),
@@ -403,20 +401,20 @@ class _FlightPackageCardState extends State<FlightPackageCard> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Align(
-                alignment: Alignment.bottomRight,
-                child: Container(
-                  height: 12,
-                  width: 12,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: widget.isSelected
-                        ? Color(0xFF0071BC)
-                        : Colors.transparent,
-                    border: Border.all(color: Color(0xFF0071BC)),
-                  ),
-                ),
-              ),
+              // Align(
+              //   alignment: Alignment.bottomRight,
+              //   child: Container(
+              //     height: 12,
+              //     width: 12,
+              //     decoration: BoxDecoration(
+              //       shape: BoxShape.circle,
+              //       color: widget.isSelected
+              //           ? Color(0xFF0071BC)
+              //           : Colors.transparent,
+              //       border: Border.all(color: Color(0xFF0071BC)),
+              //     ),
+              //   ),
+              // ),
               Text(
                 "Onward Flight",
                 style: TextStyle(
@@ -556,41 +554,40 @@ class _FlightPackageCardState extends State<FlightPackageCard> {
                   ),
                 ],
               ),
-              // const SizedBox(height: 15),
-              // Align(
-              //   alignment: Alignment.center,
-              //   child: SizedBox(
-              //     width: double.infinity,
-              //     child: ElevatedButton(
-              //       onPressed: widget.onTap,
-              //       style: ElevatedButton.styleFrom(
-              //         backgroundColor:
-              //             widget.isSelected ? Color(0xFF0071BC) : Colors.white,
-              //         shape: RoundedRectangleBorder(
-              //           borderRadius: BorderRadius.circular(10),
-              //         ),
-              //         side: BorderSide(
-              //             color:
-              //                 Color(0xFF0071BC)), // Add a border for visibility
-              //       ),
-              //       child: Text(
-              //         widget.isSelected ? 'SELECTED' : 'SELECT',
-              //         style: TextStyle(
-              //           color: widget.isSelected
-              //               ? Colors.white
-              //               : Color(0xFF0071BC), // Fix text color
-              //           fontSize: 16.0, // Set proper font size
-              //           fontWeight: FontWeight.bold,
-              //         ),
-              //       ),
-              //     ),
-              //   ),
-              // ),
+              const SizedBox(height: 15),
+              Align(
+                alignment: Alignment.center,
+                child: SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: widget.onTap,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor:
+                          widget.isSelected ? Color(0xFF0071BC) : Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      side: BorderSide(
+                          color:
+                              Color(0xFF0071BC)), // Add a border for visibility
+                    ),
+                    child: Text(
+                      widget.isSelected ? 'SELECTED' : 'SELECT',
+                      style: TextStyle(
+                        color: widget.isSelected
+                            ? Colors.white
+                            : Color(0xFF0071BC), // Fix text color
+                        fontSize: 16.0, // Set proper font size
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
             ],
           ),
         ),
-      ),
-    );
+      );
   }
 
   Widget _flightSection(String title, List<Map<String, dynamic>> flights) {

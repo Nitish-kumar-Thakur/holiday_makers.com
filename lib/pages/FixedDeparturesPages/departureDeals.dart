@@ -50,6 +50,8 @@ class _DepartureDealsState extends State<DepartureDeals> {
         activityList = response["activity_list"]??[];
         showTourPage = response['package_details']['tour_section_status'];
         showFlightPage = response["without_flight"];
+        isLoading =
+        false;
       });
     } catch (error) {
       print("Error fetching package details: $error");
@@ -433,17 +435,16 @@ class PackageCard extends StatefulWidget {
 class _PackageCardState extends State<PackageCard> {
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: widget.onSelect,
-      child: Container(
+    final screenWidth = MediaQuery.of(context).size.width;
+    return Container(
         padding: EdgeInsets.symmetric(horizontal: 16, vertical: 25),
         decoration: BoxDecoration(
           color: Colors.grey[200]!,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-              color: widget.isSelected ? Color(0xFF0071BC) : Colors.grey.shade200,
-            width: 2
-          ),
+          //  border: Border.all(
+          //   color: widget.isSelected ? Color(0xFF0071BC) : Colors.grey.shade200,
+          //   width: 2
+          // ),
         ),
         child: Stack(
           children: [
@@ -489,7 +490,7 @@ class _PackageCardState extends State<PackageCard> {
                             color: Colors.black,
                           ),
                         ),
-                        SizedBox(height: 4),
+                        SizedBox(height: 25),
                         Text(
                           '${widget.departureDate} - ${widget.arrivalDate}',
                           style: TextStyle(
@@ -499,7 +500,9 @@ class _PackageCardState extends State<PackageCard> {
                         ),
                       ],
                     ),
-                    Container(
+                    Column(
+                      children: [
+                        Container(
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(50),
@@ -518,28 +521,56 @@ class _PackageCardState extends State<PackageCard> {
                         ),
                       ),
                     ),
+                    SizedBox(height: 5,),
+                    SizedBox(
+                          width: screenWidth * 0.3,
+                          child: ElevatedButton(
+                            onPressed: widget.onSelect,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: widget.isSelected
+                                  ? Color(0xFF0071BC)
+                                  : Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              side: BorderSide(color: Color(0xFF0071BC)),
+                            ),
+                            child: Text(
+                              widget.isSelected ? 'SELECTED' : 'SELECT',
+                              style: TextStyle(
+                                color: widget.isSelected
+                                    ? Colors.white
+                                    : Color(0xFF0071BC),
+                                fontSize: screenWidth * 0.030,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+
+                      ],
+                    )
                   ],
                 )
               ],
             ),
             // 🔵 Circle in top-right
-            Positioned(
-              top: 0,
-              right: 0,
-              child: Container(
-                height: 10,
-                width: 10,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: widget.isSelected ? Colors.blue : Colors.transparent,
-                  border: Border.all(color: Colors.blue),
-                ),
-              ),
-            ),
+            // Positioned(
+            //   top: 0,
+            //   right: 0,
+            //   child: Container(
+            //     height: 10,
+            //     width: 10,
+            //     decoration: BoxDecoration(
+            //       shape: BoxShape.circle,
+            //       color: widget.isSelected ? Colors.blue : Colors.transparent,
+            //       border: Border.all(color: Colors.blue),
+            //     ),
+            //   ),
+            // ),
           ],
         )
 
-      ),
-    );
+      );
   }
 }

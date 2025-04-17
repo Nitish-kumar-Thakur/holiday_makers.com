@@ -18,13 +18,13 @@ class BookingSummaryFD extends StatefulWidget {
 
   const BookingSummaryFD(
       {super.key,
-      required this.packageDetails,
-      required this.selectedHotel,
-      required this.flightDetails,
-      required this.totalRoomsdata,
-      required this.searchId,
-      required this.activityList,
-      required this.destination});
+        required this.packageDetails,
+        required this.selectedHotel,
+        required this.flightDetails,
+        required this.totalRoomsdata,
+        required this.searchId,
+        required this.activityList,
+        required this.destination});
 
   @override
   State<BookingSummaryFD> createState() => _BookingSummaryFDState();
@@ -43,7 +43,7 @@ class _BookingSummaryFDState extends State<BookingSummaryFD> {
   bool isLoggedIn = false;
 
   TextEditingController _voucherController =
-      TextEditingController(); // Voucher input
+  TextEditingController(); // Voucher input
   Map<String, dynamic> voucherAPIResponse = {};
   String? finalPrice;
   String voucherMessage = "";
@@ -94,7 +94,7 @@ class _BookingSummaryFDState extends State<BookingSummaryFD> {
     };
     try {
       final response =
-          await APIHandler.getFDBSDetails(apiBody); //widget.searchId
+      await APIHandler.getFDBSDetails(apiBody); //widget.searchId
       // Ensure response contains expected keys and types
       if (response.containsKey('data') &&
           response['data'] is Map<String, dynamic>) {
@@ -162,7 +162,7 @@ class _BookingSummaryFDState extends State<BookingSummaryFD> {
         {
           'title': 'PACKAGE',
           'value':
-              BSData['package_details']['package_name']?.toString() ?? "N/A"
+          BSData['package_details']['package_name']?.toString() ?? "N/A"
         },
         {
           'title': 'DURATION',
@@ -177,55 +177,51 @@ class _BookingSummaryFDState extends State<BookingSummaryFD> {
       flightDetails = widget.flightDetails.isEmpty
           ? []
           : [
-              {
-                // 'flight': 'Emirates EK 567',
-                // 'type': 'Departure',
-                // 'icon': 'takeoff',
-                // 'airport': 'Bangalore (BLR), India',
-                // 'date': '11-Dec-2024',
-                // 'terminal': 'T1',
-                'flight':
-                    BSData['flight_details'][0]['airline_name']?.toString() ??
-                        "N/A",
-                'type':
-                    BSData['flight_details'][0]['flight_type']?.toString() ??
-                        "N/A",
-                'icon': 'takeoff',
-                'airport':
-                    BSData['flight_details'][0]['from_city']?.toString() ??
-                        "N/A",
-                'date':
-                    BSData['flight_details'][0]['travel_date']?.toString() ??
-                        "N/A",
-                'terminal': BSData['flight_details'][0]['depart_terminal']
-                        ?.toString() ??
-                    "N/A"
-              },
-              {
-                // 'flight': 'Emirates EK 567',
-                // 'type': 'Departure',
-                // 'icon': 'takeoff',
-                // 'airport': 'Bangalore (BLR), India',
-                // 'date': '11-Dec-2024',
-                // 'terminal': 'T1',
-                'flight':
-                    BSData['flight_details'][1]['airline_name']?.toString() ??
-                        "N/A",
-                'type':
-                    BSData['flight_details'][1]['flight_type']?.toString() ??
-                        "N/A",
-                'icon': 'landing',
-                'airport':
-                    BSData['flight_details'][1]['from_city']?.toString() ??
-                        "N/A",
-                'date':
-                    BSData['flight_details'][1]['travel_date']?.toString() ??
-                        "N/A",
-                'terminal': BSData['flight_details'][1]['depart_terminal']
-                        ?.toString() ??
-                    "N/A"
-              },
-            ];
+        {
+          // 'flight': 'Emirates EK 567',
+          // 'type': 'Departure',
+          // 'icon': 'takeoff',
+          // 'airport': 'Bangalore (BLR), India',
+          // 'date': '11-Dec-2024',
+          // 'terminal': 'T1',
+          'flight': BSData['flight_details'][0]['airline_name']?.toString() ?? "N/A",
+          'type': BSData['flight_details'][0]['flight_type']?.toString() ?? "N/A",
+          'icon': 'takeoff',
+          'from_city': BSData['flight_details'][0]['from_city']?.toString() ?? "N/A",
+          'to_city': BSData['flight_details'][0]['to_city']?.toString() ?? "N/A",
+          'date': BSData['flight_details'][0]['travel_date']?.toString() ?? "N/A",
+          'dep_terminal': BSData['flight_details'][0]['depart_terminal']?.toString() ?? "N/A",
+          'arr_terminal': BSData['flight_details'][0]['arrival_terminal']?.toString() ?? "N/A",
+          'dep_time': BSData['flight_details'][0]['dep_time']?.toString() ?? "N/A",
+          'arr_time': BSData['flight_details'][0]['arr_time']?.toString() ?? "N/A",
+          'cabin_baggage': BSData['flight_details'][0]['cabin_baggage']?.toString() ?? "N/A",
+          'checkin_baggage': BSData['flight_details'][0]['checkin_baggage']?.toString() ?? "N/A",
+          'duration': BSData['flight_details'][0]['flight_duration']?.toString() ?? "N/A",
+          'stops': BSData['flight_details'][0]['stops']?.toString() ?? "Non-stop",
+        },
+        {
+          // 'flight': 'Emirates EK 567',
+          // 'type': 'Departure',
+          // 'icon': 'takeoff',
+          // 'airport': 'Bangalore (BLR), India',
+          // 'date': '11-Dec-2024',
+          // 'terminal': 'T1',
+          'flight': BSData['flight_details'][1]['airline_name']?.toString() ?? "N/A",
+          'type': BSData['flight_details'][1]['flight_type']?.toString() ?? "N/A",
+          'icon': 'landing',
+          'from_city': BSData['flight_details'][1]['from_city']?.toString() ?? "N/A",
+          'to_city': BSData['flight_details'][1]['to_city']?.toString() ?? "N/A",
+          'date': BSData['flight_details'][1]['travel_date']?.toString() ?? "N/A",
+          'dep_terminal': BSData['flight_details'][1]['depart_terminal']?.toString() ?? "N/A",
+          'arr_terminal': BSData['flight_details'][1]['arrival_terminal']?.toString() ?? "N/A",
+          'dep_time': BSData['flight_details'][1]['dep_time']?.toString() ?? "N/A",
+          'arr_time': BSData['flight_details'][1]['arr_time']?.toString() ?? "N/A",
+          'cabin_baggage': BSData['flight_details'][1]['cabin_baggage']?.toString() ?? "N/A",
+          'checkin_baggage': BSData['flight_details'][1]['checkin_baggage']?.toString() ?? "N/A",
+          'duration': BSData['flight_details'][1]['flight_duration']?.toString() ?? "N/A",
+          'stops': BSData['flight_details'][1]['stops']?.toString() ?? "Non-stop",
+        },
+      ];
 
       hotelDetails = [
         {
@@ -235,7 +231,7 @@ class _BookingSummaryFDState extends State<BookingSummaryFD> {
         {
           'title': 'ROOM TYPE',
           'value':
-              BSData['hotel_details'][0]['room_category']?.toString() ?? "N/A"
+          BSData['hotel_details'][0]['room_category']?.toString() ?? "N/A"
         },
         // {'title': 'CHECK IN DATE', 'value': BSData['hotel_details'][0]['hotel']?.toString() ?? "N/A"},
         // {'title': 'CHECK OUT DATE', 'value': BSData['hotel_details'][0]['hotel']?.toString() ?? "N/A"},
@@ -268,7 +264,7 @@ class _BookingSummaryFDState extends State<BookingSummaryFD> {
         {
           'title': 'RETURN TRANSFER',
           'value':
-              BSData['transfer_details']['return_transfer']?.toString() ?? "N/A"
+          BSData['transfer_details']['return_transfer']?.toString() ?? "N/A"
         },
       ];
 
@@ -298,7 +294,7 @@ class _BookingSummaryFDState extends State<BookingSummaryFD> {
         {
           "title": "Total",
           "value":
-              "${BSData['package_price']['currency']} ${BSData['package_price']['total'].toString()}"
+          "${BSData['package_price']['currency']} ${BSData['package_price']['total'].toString()}"
         },
       ];
       tourList = (BSData["activities_list"] as List).map((activity) {
@@ -308,14 +304,14 @@ class _BookingSummaryFDState extends State<BookingSummaryFD> {
 
         // Default to 0 if no match is found
         int hours =
-            match != null ? int.tryParse(match.group(1) ?? "0") ?? 0 : 0;
+        match != null ? int.tryParse(match.group(1) ?? "0") ?? 0 : 0;
 
         // Return the mapped result
         return {
           "day": activity["day"] ?? "",
           "title": activity["service"] ?? "",
           "duration":
-              "$hours Hours", // You can adjust this if you want a different format
+          "$hours Hours", // You can adjust this if you want a different format
         };
       }).toList();
 
@@ -362,98 +358,98 @@ class _BookingSummaryFDState extends State<BookingSummaryFD> {
         child: isLoading
             ? _buildShimmerEffect()
             : Column(
+          children: [
+            _buildTopCurve(),
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                IconButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  icon: CircleAvatar(
+                    backgroundColor: Colors.grey
+                        .withOpacity(0.6), // Transparent grey background
+                    child: Text(
+                      '<', // Use "<" symbol
+                      style: TextStyle(
+                        color: Colors.white, // White text color
+                        fontSize: 24, // Adjust font size as needed
+                        fontWeight: FontWeight
+                            .bold, // Make the "<" bold if needed
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Text('BOOKING SUMMARY',
+                    style: TextStyle(
+                        fontSize: 26,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white))
+              ],
+            ),
+            Padding(
+              padding:
+              EdgeInsets.symmetric(horizontal: screenWidth * 0.04),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildTopCurve(),
-                  const SizedBox(height: 10),
-                  Row(
-                    children: [
-                      IconButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        icon: CircleAvatar(
-                          backgroundColor: Colors.grey
-                              .withOpacity(0.6), // Transparent grey background
-                          child: Text(
-                            '<', // Use "<" symbol
-                            style: TextStyle(
-                              color: Colors.white, // White text color
-                              fontSize: 24, // Adjust font size as needed
-                              fontWeight: FontWeight
-                                  .bold, // Make the "<" bold if needed
+                  const SizedBox(height: 40),
+                  _buildSection(
+                      'PACKAGE DETAILS', packageDetails, fontSize),
+                  const SizedBox(height: 20),
+                  if (flightDetails.isNotEmpty)
+                    _buildFlightDetailsSection(
+                        'FLIGHT DETAILS', flightDetails, fontSize),
+                  tourList.isEmpty
+                      ? SizedBox()
+                      : _buildtourDetailsSection(
+                      "TOUR DETAILS", tourList, fontSize),
+                  const SizedBox(height: 20),
+                  _buildSection('HOTEL DETAILS', hotelDetails, fontSize),
+                  const SizedBox(height: 20),
+                  _buildSection('TRANSFER DETAILS', transferDetails, fontSize),
+                  const SizedBox(height: 20),
+                  _buildSection('TRAVEL INSURANCE DETAILS', insuranceDetails, fontSize),
+                  const SizedBox(height: 20),
+                  _buildPriceSection('PRICE DETAILS', priceDetails, fontSize),
+                  const SizedBox(height: 20),
+                  Padding(
+                    padding: EdgeInsets.all(5),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            controller: _voucherController,
+                            enabled: !isCodeApplied,
+                            decoration: InputDecoration(
+                              labelText: "Enter Voucher Code",
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                      const SizedBox(width: 10),
-                      Text('BOOKING SUMMARY',
-                          style: TextStyle(
-                              fontSize: 26,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white))
-                    ],
-                  ),
-                  Padding(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: screenWidth * 0.04),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const SizedBox(height: 40),
-                        _buildSection(
-                            'PACKAGE DETAILS', packageDetails, fontSize),
-                        const SizedBox(height: 20),
-                        if (flightDetails.isNotEmpty)
-                          _buildFlightDetailsSection(
-                              'FLIGHT DETAILS', flightDetails, fontSize),
-                        tourList.isEmpty
-                            ? SizedBox()
-                            : _buildtourDetailsSection(
-                                "TOUR DETAILS", tourList, fontSize),
-                        const SizedBox(height: 20),
-                        _buildSection('HOTEL DETAILS', hotelDetails, fontSize),
-                        const SizedBox(height: 20),
-                        _buildSection('TRANSFER DETAILS', transferDetails, fontSize),
-                        const SizedBox(height: 20),
-                        _buildSection('TRAVEL INSURANCE DETAILS', insuranceDetails, fontSize),
-                        const SizedBox(height: 20),
-                        _buildPriceSection('PRICE DETAILS', priceDetails, fontSize),
-                        const SizedBox(height: 20),
-                        Padding(
-                          padding: EdgeInsets.all(5),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: TextField(
-                                  controller: _voucherController,
-                                  enabled: !isCodeApplied,
-                                  decoration: InputDecoration(
-                                    labelText: "Enter Voucher Code",
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              SizedBox(width: 10),
-                              ElevatedButton(
-                                onPressed: isCodeApplied ? null : _applyVoucher,
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.lightBlueAccent,
-                                ),
-                                child: Text(
-                                  isCodeApplied ? "Applied" : "Apply",
-                                  style: const TextStyle(color: Colors.white),
-                                ),
-                              ),
-                            ],
+                        SizedBox(width: 10),
+                        ElevatedButton(
+                          onPressed: isCodeApplied ? null : _applyVoucher,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.lightBlueAccent,
                           ),
-                        )
+                          child: Text(
+                            isCodeApplied ? "Applied" : "Apply",
+                            style: const TextStyle(color: Colors.white),
+                          ),
+                        ),
                       ],
                     ),
-                  ),
+                  )
                 ],
               ),
+            ),
+          ],
+        ),
       ),
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.only(
@@ -468,31 +464,31 @@ class _BookingSummaryFDState extends State<BookingSummaryFD> {
                   MaterialPageRoute(
                       builder: (context) => isLoggedIn
                           ? TravelersDetailsFD(
-                              flightDetails: widget.flightDetails,
-                              selectedHotel: widget.selectedHotel,
-                              packageDetails: widget.packageDetails,
-                              totalRoomsdata: widget.totalRoomsdata,
-                              searchId: widget.searchId,
-                              activityList: widget.activityList,
-                              destination: widget.destination,
-                              BSData: BSData,
-                              finalPrice: finalPrice.toString(),
-                              voucherCode: enteredCode)
+                          flightDetails: widget.flightDetails,
+                          selectedHotel: widget.selectedHotel,
+                          packageDetails: widget.packageDetails,
+                          totalRoomsdata: widget.totalRoomsdata,
+                          searchId: widget.searchId,
+                          activityList: widget.activityList,
+                          destination: widget.destination,
+                          BSData: BSData,
+                          finalPrice: finalPrice.toString(),
+                          voucherCode: enteredCode)
                           : LoginPage(
-                              canSkip: true,
-                              redirectTo: TravelersDetailsFD(
-                                  flightDetails: widget.flightDetails,
-                                  selectedHotel: widget.selectedHotel,
-                                  packageDetails: widget.packageDetails,
-                                  totalRoomsdata: widget.totalRoomsdata,
-                                  searchId: widget.searchId,
-                                  activityList: widget.activityList,
-                                  destination: widget.destination,
-                                  BSData: BSData,
-                                  finalPrice: finalPrice.toString(),
-                                  voucherCode: enteredCode,
-                              ),
-                            )));
+                        canSkip: true,
+                        redirectTo: TravelersDetailsFD(
+                          flightDetails: widget.flightDetails,
+                          selectedHotel: widget.selectedHotel,
+                          packageDetails: widget.packageDetails,
+                          totalRoomsdata: widget.totalRoomsdata,
+                          searchId: widget.searchId,
+                          activityList: widget.activityList,
+                          destination: widget.destination,
+                          BSData: BSData,
+                          finalPrice: finalPrice.toString(),
+                          voucherCode: enteredCode,
+                        ),
+                      )));
             },
             icon: responciveButton(text: 'SELECT'),
           ),
@@ -524,7 +520,7 @@ class _BookingSummaryFDState extends State<BookingSummaryFD> {
             Column(
               children: List.generate(
                 (details.length / 2).ceil(), // Divide into rows
-                (index) {
+                    (index) {
                   bool isLastOdd =
                       details.length % 2 != 0 && index == details.length ~/ 2;
                   return Column(
@@ -604,78 +600,259 @@ class _BookingSummaryFDState extends State<BookingSummaryFD> {
     );
   }
 
+  // Widget _buildFlightCard(Map<String, String> flight, double fontSize) {
+  //   return Container(
+  //     padding: EdgeInsets.all(fontSize * 0.7),
+  //     margin: const EdgeInsets.only(bottom: 10),
+  //     decoration: BoxDecoration(
+  //       color: Colors.grey.shade50,
+  //       borderRadius: BorderRadius.circular(10), // Rounded corners
+  //     ),
+  //     child: Column(
+  //       crossAxisAlignment: CrossAxisAlignment.start,
+  //       children: [
+  //         Row(
+  //           children: [
+  //             Icon(
+  //               flight['type'] == 'Onward'
+  //                   ? Icons.flight_takeoff
+  //                   : Icons.flight_land,
+  //               color: Colors.black54,
+  //             ),
+  //             const SizedBox(width: 5),
+  //             Text(
+  //               flight['type']!,
+  //               style: TextStyle(
+  //                   fontSize: fontSize * 1.2, fontWeight: FontWeight.bold),
+  //             ),
+  //           ],
+  //         ),
+  //         const SizedBox(height: 5),
+  //
+  //         // Flight Name
+  //         Text(
+  //           flight['flight']!,
+  //           style: TextStyle(
+  //               fontSize: fontSize * 1.1,
+  //               fontWeight: FontWeight.bold,
+  //               color: Colors.blue),
+  //         ),
+  //         const SizedBox(height: 5),
+  //
+  //         // Airport Name
+  //         Row(
+  //           children: [
+  //             const Icon(Icons.location_on, color: Colors.black54),
+  //             const SizedBox(width: 5),
+  //             Text(flight['airport']!, style: TextStyle(fontSize: fontSize)),
+  //           ],
+  //         ),
+  //         const SizedBox(height: 5),
+  //
+  //         // Date
+  //         Row(
+  //           children: [
+  //             const Icon(Icons.date_range, color: Colors.black54),
+  //             const SizedBox(width: 5),
+  //             Text("${flight['date']}", style: TextStyle(fontSize: fontSize)),
+  //           ],
+  //         ),
+  //         const SizedBox(height: 5),
+  //
+  //         // Terminal
+  //         Row(
+  //           children: [
+  //             const Icon(Icons.directions_transit, color: Colors.black54),
+  //             const SizedBox(width: 5),
+  //             Text("${flight['terminal']}",
+  //                 style: TextStyle(fontSize: fontSize)),
+  //           ],
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
+
   Widget _buildFlightCard(Map<String, String> flight, double fontSize) {
     return Container(
       padding: EdgeInsets.all(fontSize * 0.7),
       margin: const EdgeInsets.only(bottom: 10),
       decoration: BoxDecoration(
         color: Colors.grey.shade50,
-        borderRadius: BorderRadius.circular(10), // Rounded corners
+        borderRadius: BorderRadius.circular(10),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Type Row
           Row(
             children: [
-              Icon(
-                flight['type'] == 'Departure'
-                    ? Icons.flight_takeoff
-                    : Icons.flight_land,
-                color: Colors.black54,
+              Row(
+                children: [
+                  Icon(
+                    flight['type'] == 'Onward'
+                        ? Icons.flight_takeoff
+                        : Icons.flight_land,
+                    color: Colors.blue,
+                  ),
+                  const SizedBox(width: 5),
+                  Text(
+                    flight['type'] ?? "N/A",
+                    style: TextStyle(
+                      fontSize: fontSize * 1.2,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(width: 5),
+              const Spacer(),
               Text(
-                flight['type']!,
+                flight['flight'] ?? "N/A",
                 style: TextStyle(
-                    fontSize: fontSize * 1.2, fontWeight: FontWeight.bold),
+                  fontSize: fontSize * 1.1,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.blue,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+
+
+          // Airport Name Row (with space-between)
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  const Icon(Icons.location_on, color: Colors.black54),
+                  const SizedBox(width: 5),
+                  Text(
+                    flight['from_city'] ?? "N/A",
+                    style: TextStyle(fontSize: fontSize),
+                  ),
+                ],
+              ),
+              Text(
+                flight['to_city'] ?? "N/A",
+                style: TextStyle(fontSize: fontSize),
               ),
             ],
           ),
           const SizedBox(height: 5),
 
-          // Flight Name
-          Text(
-            flight['flight']!,
-            style: TextStyle(
-                fontSize: fontSize * 1.1,
-                fontWeight: FontWeight.bold,
-                color: Colors.blue),
-          ),
-          const SizedBox(height: 5),
-
-          // Airport Name
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Icon(Icons.location_on, color: Colors.black54),
-              const SizedBox(width: 5),
-              Text(flight['airport']!, style: TextStyle(fontSize: fontSize)),
+              // Left side (Date and Departure Time)
+              Row(
+                children: [
+                  const Icon(Icons.date_range, color: Colors.black54),
+                  const SizedBox(width: 5),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start, // Left alignment
+                    children: [
+                      Text(
+                        flight['date'] ?? "N/A", // Date on top
+                        style: TextStyle(fontSize: fontSize),
+                      ),
+                      Text(
+                        flight['dep_time'] ?? 'N/A', // Departure time below the date
+                        style: TextStyle(fontSize: fontSize),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+
+              // Right side (Date and Arrival Time)
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end, // Right alignment
+                children: [
+                  Text(
+                    flight['date'] ?? "N/A", // Date on top
+                    style: TextStyle(fontSize: fontSize),
+                  ),
+                  Text(
+                    flight['arr_time'] ?? 'N/A', // Arrival time below the date
+                    style: TextStyle(fontSize: fontSize),
+                    textAlign: TextAlign.end, // Aligns the text to the end (right)
+                  ),
+                ],
+              ),
             ],
           ),
           const SizedBox(height: 5),
 
-          // Date
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Icon(Icons.date_range, color: Colors.black54),
-              const SizedBox(width: 5),
-              Text("${flight['date']}", style: TextStyle(fontSize: fontSize)),
+              Row(
+                children: [
+                  const Icon(Icons.timer, color: Colors.black54),
+                  const SizedBox(width: 5),
+                  Text(
+                    "Duration: ${flight['duration'] ?? 'N/A'}",
+                    style: TextStyle(fontSize: fontSize),
+                  ),
+                ],
+              ),
+              Text("Stops: ${flight['stops']}",
+                style: TextStyle(fontSize: fontSize),
+              )
             ],
           ),
           const SizedBox(height: 5),
 
-          // Terminal
+          // Terminal Info Row
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Icon(Icons.directions_transit, color: Colors.black54),
-              const SizedBox(width: 5),
-              Text("${flight['terminal']}",
-                  style: TextStyle(fontSize: fontSize)),
+              Row(
+                children: [
+                  const Icon(Icons.directions_transit, color: Colors.black54),
+                  const SizedBox(width: 5),
+                  Text(
+                    flight['dep_terminal'] ?? "N/A",
+                    style: TextStyle(fontSize: fontSize),
+                  ),
+                ],
+              ),
+              Text(
+                flight['arr_terminal'] ?? "N/A",
+                style: TextStyle(fontSize: fontSize),
+              ),
             ],
           ),
+
+          const Divider(),
+          // Baggage Info Row
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  const Icon(Icons.luggage, color: Colors.black54),
+                  const SizedBox(width: 5),
+                  Text(
+                    "Check-in: ${flight['checkin_baggage'] ?? 'N/A'}kg",
+                    style: TextStyle(fontSize: fontSize),
+                  ),
+                ],
+              ),
+              Text(
+                "Cabin: ${flight['cabin_baggage'] ?? 'N/A'}kg",
+                style: TextStyle(fontSize: fontSize),
+              ),
+            ],
+          ),
+          const SizedBox(height: 5),
+
         ],
       ),
     );
   }
+
 
   Widget _buildPriceSection(String title, List<Map<String, dynamic>> details, double fontSize) {
     return SizedBox(
@@ -886,7 +1063,7 @@ class _BookingSummaryFDState extends State<BookingSummaryFD> {
         children: [
           SizedBox(
             width:
-                MediaQuery.of(context).size.width * 0.4, // 40% of screen width
+            MediaQuery.of(context).size.width * 0.4, // 40% of screen width
             child: Text(
               "Day ${tour['day'] ?? 'N/A'}: ${tour['title'] ?? 'N/A'}",
               style: TextStyle(

@@ -316,10 +316,6 @@ class _MyBookingsState extends State<MyBookings>
                 _buildLabelValueRow(
                     "Total Amount", 'AED ${booking["total_amount"] ?? "N/A"}'),
 
-                if ((booking["booking_voucher"] ?? "").isNotEmpty)
-                  _buildLabelValueRow(
-                      "Booking Voucher", booking["booking_voucher"]),
-
                 const SizedBox(height: 16),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -489,10 +485,6 @@ class _MyBookingsState extends State<MyBookings>
                     "No. of Pax", booking["no_of_pax"].toString()),
                 _buildLabelValueRow(
                     "Total Amount", 'AED ${booking["total_amount"] ?? "N/A"}'),
-
-                if ((booking["booking_voucher"] ?? "").isNotEmpty)
-                  _buildLabelValueRow(
-                      "Booking Voucher", booking["booking_voucher"]),
 
                 const SizedBox(height: 16),
 

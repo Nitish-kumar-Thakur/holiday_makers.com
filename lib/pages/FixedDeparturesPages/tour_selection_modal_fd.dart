@@ -156,7 +156,7 @@ class _TourSelectionModalState extends State<TourSelectionModal> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            "AED ${tour['totalAmount']}",
+                            "AED ${tour['totalAmount']}/person",
                             style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.red),
                           ),
                           ElevatedButton(
@@ -174,6 +174,7 @@ class _TourSelectionModalState extends State<TourSelectionModal> {
                     ],
                   ),
                 );
+              
               },
             ),
           ),
