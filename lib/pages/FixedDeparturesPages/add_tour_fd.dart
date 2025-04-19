@@ -16,6 +16,8 @@ class TourBookingPage extends StatefulWidget {
   final List<dynamic> totalRoomsdata;
   final List<dynamic> fixedActivities;
   final String searchId;
+  final bool isOnwardConnecting;
+  final bool isReturnConnecting;
 
   const TourBookingPage(
       {super.key,
@@ -24,7 +26,10 @@ class TourBookingPage extends StatefulWidget {
       required this.flightDetails,
       required this.totalRoomsdata,
       required this.searchId,
-      required this.fixedActivities});
+      required this.fixedActivities,
+      required this.isOnwardConnecting,
+      required this.isReturnConnecting
+      });
 
   @override
   _TourBookingPageState createState() => _TourBookingPageState();
@@ -447,7 +452,7 @@ class _TourBookingPageState extends State<TourBookingPage>
                             ? Colors.grey // Grey out the unselectable days
                             : (_tabController.index == index
                                 ? Colors.white
-                                : Colors.grey.shade400),
+                                : Colors.grey.shade200),
                         border: Border.all(color: Colors.blue),
                         borderRadius: BorderRadius.circular(20),
                       ),
@@ -662,7 +667,10 @@ class _TourBookingPageState extends State<TourBookingPage>
                         totalRoomsdata: widget.totalRoomsdata,
                         searchId: widget.searchId,
                         activityList: activityList,
-                        destination: destination)),
+                        destination: destination,
+                        isReturnConnecting: widget.isReturnConnecting,
+                        isOnwardConnecting: widget.isOnwardConnecting,
+                    )),
               );
             },
             child: responciveButton(

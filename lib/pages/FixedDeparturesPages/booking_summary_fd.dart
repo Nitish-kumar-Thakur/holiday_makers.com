@@ -15,6 +15,8 @@ class BookingSummaryFD extends StatefulWidget {
   final String searchId;
   final String destination;
   final List<Map<String, dynamic>> activityList;
+  final bool isOnwardConnecting;
+  final bool isReturnConnecting;
 
   const BookingSummaryFD(
       {super.key,
@@ -24,7 +26,10 @@ class BookingSummaryFD extends StatefulWidget {
         required this.totalRoomsdata,
         required this.searchId,
         required this.activityList,
-        required this.destination});
+        required this.destination,
+        required this.isOnwardConnecting,
+        required this.isReturnConnecting
+      });
 
   @override
   State<BookingSummaryFD> createState() => _BookingSummaryFDState();
@@ -42,8 +47,7 @@ class _BookingSummaryFDState extends State<BookingSummaryFD> {
   bool isLoading = true;
   bool isLoggedIn = false;
 
-  TextEditingController _voucherController =
-  TextEditingController(); // Voucher input
+  TextEditingController _voucherController = TextEditingController(); // Voucher input
   Map<String, dynamic> voucherAPIResponse = {};
   String? finalPrice;
   String voucherMessage = "";
@@ -65,17 +69,17 @@ class _BookingSummaryFDState extends State<BookingSummaryFD> {
     // });
     // print('&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&');
     // print(widget.packageDetails);
-    // print(widget.selectedHotel);
-    // print(widget.flightDetails);
+    // print(widget.isOnwardConnecting);
+    // print(widget.isReturnConnecting);
     // print(widget.totalRoomsdata);
     // print(widget.searchId);
-    // print(widget.activityList);
+    // print(widget.searchId);
     // print('&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&');
     _fetchFDBSDetails();
-    print('&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&');
-    print(widget.packageDetails);
-    print(widget.flightDetails);
-    print('&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&');
+    // print('&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&');
+    // print(widget.packageDetails);
+    // print(widget.flightDetails);
+    // print('&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&');
   }
 
   Future<void> _loadLogedinDetails() async {
@@ -117,7 +121,7 @@ class _BookingSummaryFDState extends State<BookingSummaryFD> {
     // print(BSData);
     try {
       enteredCode = _voucherController.text.trim();
-      print('debug__1');
+      // print('debug__1');
       // Map<String, dynamic> body = {
       //   "voucher_code": "SPIN50",
       //   "package_id": "75",
@@ -137,9 +141,9 @@ class _BookingSummaryFDState extends State<BookingSummaryFD> {
         voucherAPIResponse = response;
       });
 
-      print('###########################################################');
-      print(voucherAPIResponse);
-      print('###########################################################');
+      // print('###########################################################');
+      // print(voucherAPIResponse);
+      // print('###########################################################');
 
       if (voucherAPIResponse['status'] == true) {
         finalPrice = voucherAPIResponse['final_price'];
@@ -157,12 +161,12 @@ class _BookingSummaryFDState extends State<BookingSummaryFD> {
   }
 
   void _PackageData() {
+    // print(BSData['flight_details'][0]['connection_flight_details'].isEmpty ? "N/A" : BSData['flight_details'][0]['connection_flight_details'][0]['to_city']);
     setState(() {
       packageDetails = [
         {
           'title': 'PACKAGE',
-          'value':
-          BSData['package_details']['package_name']?.toString() ?? "N/A"
+          'value': BSData['package_details']['package_name']?.toString() ?? "N/A"
         },
         {
           'title': 'DURATION',
@@ -197,7 +201,8 @@ class _BookingSummaryFDState extends State<BookingSummaryFD> {
           'cabin_baggage': BSData['flight_details'][0]['cabin_baggage']?.toString() ?? "N/A",
           'checkin_baggage': BSData['flight_details'][0]['checkin_baggage']?.toString() ?? "N/A",
           'duration': BSData['flight_details'][0]['flight_duration']?.toString() ?? "N/A",
-          'stops': BSData['flight_details'][0]['stops']?.toString() ?? "Non-stop",
+          'stops': BSData['flight_details'][0]['connection_count']?.toString() ?? "N/A",
+          'stop_name': widget.isOnwardConnecting ? BSData['flight_details'][0]['connection_flight_details'][0]['to_city'] : "N/A",
         },
         {
           // 'flight': 'Emirates EK 567',
@@ -219,41 +224,42 @@ class _BookingSummaryFDState extends State<BookingSummaryFD> {
           'cabin_baggage': BSData['flight_details'][1]['cabin_baggage']?.toString() ?? "N/A",
           'checkin_baggage': BSData['flight_details'][1]['checkin_baggage']?.toString() ?? "N/A",
           'duration': BSData['flight_details'][1]['flight_duration']?.toString() ?? "N/A",
-          'stops': BSData['flight_details'][1]['stops']?.toString() ?? "Non-stop",
+          'stops': BSData['flight_details'][1]['connection_count']?.toString() ?? "N/A",
+          'stop_name': widget.isReturnConnecting ? BSData['flight_details'][0]['connection_flight_details'][0]['to_city'] : "N/A",
         },
       ];
 
-      hotelDetails = [
-        {
-          'title': 'HOTEL NAME',
-          'value': BSData['hotel_details'][0]['hotel']?.toString() ?? "N/A"
-        },
-        {
-          'title': 'ROOM TYPE',
-          'value':
-          BSData['hotel_details'][0]['room_category']?.toString() ?? "N/A"
-        },
-        // {'title': 'CHECK IN DATE', 'value': BSData['hotel_details'][0]['hotel']?.toString() ?? "N/A"},
-        // {'title': 'CHECK OUT DATE', 'value': BSData['hotel_details'][0]['hotel']?.toString() ?? "N/A"},
-        {
-          'title': 'DURATION',
-          'value': BSData['hotel_details'][0]['duration']?.toString() ?? "N/A"
-        },
-        // {'title': 'NO. OF NIGHTS', 'value': BSData['hotel_details'][0]['hotel']?.toString() ?? "N/A"},
-        // {'title': 'NO. OF ROOMS', 'value': BSData['hotel_details'][0]['hotel']?.toString() ?? "N/A"},
-        {
-          'title': 'MEAL PLAN',
-          'value': BSData['hotel_details'][0]['meal_plan']?.toString() ?? "N/A"
-        },
-        {
-          'title': 'CITY',
-          'value': BSData['hotel_details'][0]['city']?.toString() ?? "N/A"
-        },
-        {
-          'title': 'OCCUPANCY',
-          'value': BSData['hotel_details'][0]['occupacy']?.toString() ?? "N/A"
-        },
-      ];
+      // hotelDetails = [
+      //   {
+      //     'title': 'HOTEL NAME',
+      //     'value': BSData['hotel_details'][0]['hotel']?.toString() ?? "N/A"
+      //   },
+      //   {
+      //     'title': 'ROOM TYPE',
+      //     'value':
+      //     BSData['hotel_details'][0]['room_category']?.toString() ?? "N/A"
+      //   },
+      //   // {'title': 'CHECK IN DATE', 'value': BSData['hotel_details'][0]['hotel']?.toString() ?? "N/A"},
+      //   // {'title': 'CHECK OUT DATE', 'value': BSData['hotel_details'][0]['hotel']?.toString() ?? "N/A"},
+      //   {
+      //     'title': 'DURATION',
+      //     'value': BSData['hotel_details'][0]['duration']?.toString() ?? "N/A"
+      //   },
+      //   // {'title': 'NO. OF NIGHTS', 'value': BSData['hotel_details'][0]['hotel']?.toString() ?? "N/A"},
+      //   // {'title': 'NO. OF ROOMS', 'value': BSData['hotel_details'][0]['hotel']?.toString() ?? "N/A"},
+      //   {
+      //     'title': 'MEAL PLAN',
+      //     'value': BSData['hotel_details'][0]['meal_plan']?.toString() ?? "N/A"
+      //   },
+      //   {
+      //     'title': 'CITY',
+      //     'value': BSData['hotel_details'][0]['city']?.toString() ?? "N/A"
+      //   },
+      //   {
+      //     'title': 'OCCUPANCY',
+      //     'value': BSData['hotel_details'][0]['occupacy']?.toString() ?? "N/A"
+      //   },
+      // ];
 
       transferDetails = [
         {
@@ -323,6 +329,29 @@ class _BookingSummaryFDState extends State<BookingSummaryFD> {
       isLoading = false;
     });
   }
+
+  List<Widget> buildAllHotelDetails(List<dynamic> hotelData, double fontSize) {
+    return List<Widget>.generate(hotelData.length, (index) {
+      final hotel = hotelData[index];
+      final List<Map<String, String>> details = [
+        {'title': 'HOTEL NAME', 'value': hotel['hotel']?.toString() ?? "N/A"},
+        {'title': 'ROOM TYPE', 'value': hotel['room_category']?.toString() ?? "N/A"},
+        {'title': 'DURATION', 'value': hotel['duration']?.toString() ?? "N/A"},
+        {'title': 'MEAL PLAN', 'value': hotel['meal_plan']?.toString() ?? "N/A"},
+        {'title': 'CITY', 'value': hotel['city']?.toString() ?? "N/A"},
+        {'title': 'OCCUPANCY', 'value': hotel['occupacy']?.toString() ?? "N/A"},
+        // {'title': 'Rating', 'value': hotel['rating']?.toString() ?? "N/A"},
+      ];
+
+      return Column(
+        children: [
+          if (index != 0) const Divider(thickness: 1.5, color: Colors.grey),
+          _buildHotelDetailSection(details, fontSize),
+        ],
+      );
+    });
+  }
+
 
   Widget _buildTopCurve() {
     return Padding(
@@ -396,18 +425,20 @@ class _BookingSummaryFDState extends State<BookingSummaryFD> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 40),
-                  _buildSection(
-                      'PACKAGE DETAILS', packageDetails, fontSize),
+                  _buildSection('PACKAGE DETAILS', packageDetails, fontSize),
                   const SizedBox(height: 20),
                   if (flightDetails.isNotEmpty)
-                    _buildFlightDetailsSection(
-                        'FLIGHT DETAILS', flightDetails, fontSize),
+                    _buildFlightDetailsSection('FLIGHT DETAILS', flightDetails, fontSize),
                   tourList.isEmpty
                       ? SizedBox()
                       : _buildtourDetailsSection(
                       "TOUR DETAILS", tourList, fontSize),
                   const SizedBox(height: 20),
-                  _buildSection('HOTEL DETAILS', hotelDetails, fontSize),
+                  // hotelDetails.isNotEmpty ? _buildHotelSection('HOTEL DETAILS', hotelDetails, fontSize) : SizedBox(),
+                  BSData['hotel_details'] != null && BSData['hotel_details'].isNotEmpty
+                      ? _buildHotelSection('HOTEL DETAILS', BSData['hotel_details'], fontSize)
+                      : SizedBox(),
+
                   const SizedBox(height: 20),
                   _buildSection('TRANSFER DETAILS', transferDetails, fontSize),
                   const SizedBox(height: 20),
@@ -540,7 +571,7 @@ class _BookingSummaryFDState extends State<BookingSummaryFD> {
                             ),
                             if (!isLastOdd) ...[
                               const VerticalDivider(
-                                  width: 10, color: Colors.grey),
+                                  width: 10, color: Colors.white),
                               Expanded(
                                 child: _buildDetailBox(
                                   details[index * 2 + 1]['title']!,
@@ -562,6 +593,202 @@ class _BookingSummaryFDState extends State<BookingSummaryFD> {
       ),
     );
   }
+
+  Widget _buildDetailBox(String title, String value, double fontSize) {
+    return Container(
+      width: double.infinity, // Makes the box take full width
+      padding: EdgeInsets.all(fontSize * 0.7),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade50,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: fontSize * 1.2,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
+          ),
+          SizedBox(height: fontSize * 0.3),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: fontSize * 0.95,
+              fontWeight: FontWeight.normal,
+              color: Colors.black,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHotelDetailSection(List<Map<String, String>> details, double fontSize) {
+    return Column(
+      children: List.generate(
+        (details.length / 2).ceil(),
+            (index) {
+          bool isLastOdd = details.length % 2 != 0 && index == details.length ~/ 2;
+          return Column(
+            children: [
+              const SizedBox(height: 15),
+              IntrinsicHeight(
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: _buildHotelDetailBox(
+                        details[index * 2]['title']!,
+                        details[index * 2]['value']!,
+                        fontSize,
+                      ),
+                    ),
+                    if (!isLastOdd) ...[
+                      const VerticalDivider(width: 10, color: Colors.white),
+                      Expanded(
+                        child: _buildHotelDetailBox(
+                          details[index * 2 + 1]['title']!,
+                          details[index * 2 + 1]['value']!,
+                          fontSize,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildHotelDetailBox(String title, String value, double fontSize) {
+    return Container(
+      width: double.infinity, // Makes the box take full width
+      padding: EdgeInsets.all(fontSize * 0.7),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade50,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: fontSize * 1.2,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
+          ),
+          SizedBox(height: fontSize * 0.3),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: fontSize * 0.95,
+              fontWeight: FontWeight.normal,
+              color: Colors.black,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHotelSection(String title, List<dynamic> hotelData, double fontSize) {
+    return Card(
+      color: Colors.white,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      elevation: 4,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: fontSize * 1.3,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+            ),
+            ...buildAllHotelDetails(hotelData, fontSize),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Widget _buildHotelSection(String title, List<Map<String, String>> details, double fontSize) {
+  //   return Card(
+  //     color: Colors.white, // White background
+  //     shape: RoundedRectangleBorder(
+  //       borderRadius: BorderRadius.circular(8), // Rounded corners for the card
+  //     ),
+  //     elevation: 4, // Add some elevation for shadow effect
+  //     child: Padding(
+  //       padding: const EdgeInsets.all(16.0), // Padding around the content
+  //       child: Column(
+  //         crossAxisAlignment: CrossAxisAlignment.start,
+  //         children: [
+  //           Text(
+  //             title,
+  //             style: TextStyle(
+  //               fontSize: fontSize * 1.3,
+  //               fontWeight: FontWeight.bold,
+  //               color: Colors.black,
+  //             ),
+  //           ),
+  //           Column(
+  //             children: List.generate(
+  //               (details.length / 2).ceil(), // Divide into rows
+  //                   (index) {
+  //                 bool isLastOdd =
+  //                     details.length % 2 != 0 && index == details.length ~/ 2;
+  //                 return Column(
+  //                   children: [
+  //                     const Divider(color: Colors.grey),
+  //                     const SizedBox(height: 15),
+  //                     IntrinsicHeight(
+  //                       // This ensures both boxes in the row will have equal height
+  //                       child: Row(
+  //                         children: [
+  //                           Expanded(
+  //                             child: _buildHotelDetailBox(
+  //                               details[index * 2]['title']!,
+  //                               details[index * 2]['value']!,
+  //                               fontSize,
+  //                             ),
+  //                           ),
+  //                           if (!isLastOdd) ...[
+  //                             const VerticalDivider(
+  //                                 width: 10, color: Colors.grey),
+  //                             Expanded(
+  //                               child: _buildDetailBox(
+  //                                 details[index * 2 + 1]['title']!,
+  //                                 details[index * 2 + 1]['value']!,
+  //                                 fontSize,
+  //                               ),
+  //                             ),
+  //                           ],
+  //                         ],
+  //                       ),
+  //                     ),
+  //                   ],
+  //                 );
+  //               },
+  //             ),
+  //           ),
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
 
   Widget _buildFlightDetailsSection(String title, List<Map<String, String>> details, double fontSize) {
     return Card(
@@ -667,6 +894,39 @@ class _BookingSummaryFDState extends State<BookingSummaryFD> {
   //             Text("${flight['terminal']}",
   //                 style: TextStyle(fontSize: fontSize)),
   //           ],
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
+
+  // Widget _buildHotelDetailBox(String title, String value, double fontSize) {
+  //   return Container(
+  //     width: double.infinity, // Makes the box take full width
+  //     padding: EdgeInsets.all(fontSize * 0.7),
+  //     decoration: BoxDecoration(
+  //       color: Colors.grey.shade50,
+  //       borderRadius: BorderRadius.circular(8),
+  //     ),
+  //     child: Column(
+  //       crossAxisAlignment: CrossAxisAlignment.start,
+  //       children: [
+  //         Text(
+  //           title,
+  //           style: TextStyle(
+  //             fontSize: fontSize * 1.2,
+  //             fontWeight: FontWeight.bold,
+  //             color: Colors.black,
+  //           ),
+  //         ),
+  //         SizedBox(height: fontSize * 0.3),
+  //         Text(
+  //           value,
+  //           style: TextStyle(
+  //             fontSize: fontSize * 0.95,
+  //             fontWeight: FontWeight.normal,
+  //             color: Colors.black,
+  //           ),
   //         ),
   //       ],
   //     ),
@@ -797,7 +1057,10 @@ class _BookingSummaryFDState extends State<BookingSummaryFD> {
                   ),
                 ],
               ),
-              Text("Stops: ${flight['stops']}",
+              Text(
+                flight['stops'] == "0"
+                    ? "Stops: Non-Stop"
+                    : "Stops: ${flight['stops'] ?? 'N/A'} via ${flight['stop_name'] ?? 'N/A'}",    // ${flight['stop_name'] ?? 'N/A'}
                 style: TextStyle(fontSize: fontSize),
               )
             ],
@@ -852,7 +1115,6 @@ class _BookingSummaryFDState extends State<BookingSummaryFD> {
       ),
     );
   }
-
 
   Widget _buildPriceSection(String title, List<Map<String, dynamic>> details, double fontSize) {
     return SizedBox(
@@ -940,39 +1202,6 @@ class _BookingSummaryFDState extends State<BookingSummaryFD> {
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildDetailBox(String title, String value, double fontSize) {
-    return Container(
-      width: double.infinity, // Makes the box take full width
-      padding: EdgeInsets.all(fontSize * 0.7),
-      decoration: BoxDecoration(
-        color: Colors.grey.shade50,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: TextStyle(
-              fontSize: fontSize * 1.2,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
-            ),
-          ),
-          SizedBox(height: fontSize * 0.3),
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: fontSize * 0.95,
-              fontWeight: FontWeight.normal,
-              color: Colors.black,
-            ),
-          ),
-        ],
       ),
     );
   }

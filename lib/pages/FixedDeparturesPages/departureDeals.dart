@@ -32,6 +32,7 @@ class _DepartureDealsState extends State<DepartureDeals> {
   ];
   String showTourPage = "";
   int showFlightPage=0;
+  int isMulticity = 0;
 
   @override
   void initState() {
@@ -42,22 +43,20 @@ class _DepartureDealsState extends State<DepartureDeals> {
 
   Future<void> _fetchPackageDetails() async {
     try {
-      final response =
-          await APIHandler.getDepartureDeal(widget.packageId ?? "");
+      final response = await APIHandler.getDepartureDeal(widget.packageId ?? "");
       setState(() {
         packageData = response;
         inclusionList = response["inclusion_list"]??[];
         activityList = response["activity_list"]??[];
         showTourPage = response['package_details']['tour_section_status'];
         showFlightPage = response["without_flight"];
-        isLoading =
-        false;
+        isLoading = false;
+        isMulticity = response['package_multi_city'];
       });
     } catch (error) {
       print("Error fetching package details: $error");
       setState(() {
-        isLoading =
-            false; // Ensures loading state is updated even if an error occurs
+        isLoading = false; // Ensures loading state is updated even if an error occurs
       });
     }
   }
@@ -123,206 +122,207 @@ class _DepartureDealsState extends State<DepartureDeals> {
   @override
   Widget build(BuildContext context) {
     return Container(decoration: BoxDecoration(
-          image: DecorationImage(
-              image: AssetImage('img/departureDealsBG.png'), fit: BoxFit.fill)),
+        image: DecorationImage(
+            image: AssetImage('img/departureDealsBG.png'), fit: BoxFit.fill)),
       child: Scaffold(
-      backgroundColor: Colors.transparent,
-      // appBar: AppBar(
-      //   backgroundColor: Colors.white,
-      //   leading: IconButton(
-      //     icon: Icon(Icons.arrow_back, color: Colors.black),
-      //     onPressed: () {
-      //       Navigator.pop(context);
-      //     },
-      //   ),
-      //   title: Text(
-      //     'Fixed Departures',
-      //     style: TextStyle(
-      //       fontSize: 24,
-      //       fontWeight: FontWeight.bold,
-      //       color: Colors.black,
-      //     ),
-      //   ),
-      // ),
-      body: SingleChildScrollView(
+        backgroundColor: Colors.transparent,
+        // appBar: AppBar(
+        //   backgroundColor: Colors.white,
+        //   leading: IconButton(
+        //     icon: Icon(Icons.arrow_back, color: Colors.black),
+        //     onPressed: () {
+        //       Navigator.pop(context);
+        //     },
+        //   ),
+        //   title: Text(
+        //     'Fixed Departures',
+        //     style: TextStyle(
+        //       fontSize: 24,
+        //       fontWeight: FontWeight.bold,
+        //       color: Colors.black,
+        //     ),
+        //   ),
+        // ),
+        body: SingleChildScrollView(
           child: isLoading
               ? Padding(
-                padding: const EdgeInsets.all(16),
-                child: _buildShimmerEffect(),
-              )
+            padding: const EdgeInsets.all(16),
+            child: _buildShimmerEffect(),
+          )
               : Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 60),
-                    Row(
-                      children: [
-                        IconButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          icon: CircleAvatar(
-                            backgroundColor: Colors.grey.withOpacity(0.6), // Transparent grey background
-                            child: Text(
-                              '<', // Use "<" symbol
-                              style: TextStyle(
-                                color: Colors.white, // White text color
-                                fontSize: 24, // Adjust font size as needed
-                                fontWeight: FontWeight
-                                    .bold, // Make the "<" bold if needed
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        Text('Dep Date Details'.toUpperCase(),
-                            style: TextStyle(
-                                fontSize: 26,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white))
-                      ],
-                    ),
-                    SizedBox(height: 30),
-                    // Package Selection Section
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 60),
+              Row(
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    icon: CircleAvatar(
+                      backgroundColor: Colors.grey.withOpacity(0.6), // Transparent grey background
                       child: Text(
-                        'Select Departure',
+                        '<', // Use "<" symbol
                         style: TextStyle(
-                          fontSize: 24,
+                          color: Colors.white, // White text color
+                          fontSize: 24, // Adjust font size as needed
+                          fontWeight: FontWeight
+                              .bold, // Make the "<" bold if needed
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Text('Dep Date Details'.toUpperCase(),
+                      style: TextStyle(
+                          fontSize: 26,
                           fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 10),
-
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Column(
-                        children: packageList.asMap().entries.map((entry) {
-                          int index = entry.key;
-                          var package = entry.value;
-
-                          return Column(
-                            children: [
-                              PackageCard(
-                                title: package['package_name'] ?? '',
-                                departureDate: "${package['dep_date']}",
-                                arrivalDate: "${package['arrival_date']}",
-                                duration: '${package['duration']}',
-                                price:
-                                    '${package['currency']} ${package['price']}',
-                                isSelected: selectedOption == index,
-                                onSelect: () {
-                                  setState(() {
-                                    selectedOption = index;
-                                    selectedPackageData =
-                                        package; // Store selected package data
-                                  });
-                                },
-                              ),
-                              SizedBox(height: 10),
-                            ],
-                          );
-                        }).toList(),
-                      ),
-                    ),
-                    SizedBox(height: 24),
-
-                    // Inclusion Section
-                    // Container(
-                    //   width: double.infinity,
-                    //   decoration: BoxDecoration(color: Colors.grey.shade200),
-                    //   padding: const EdgeInsets.all(10),
-                    //   child: Column(
-                    //     crossAxisAlignment: CrossAxisAlignment.start,
-                    //     children: [
-                    //       AppLargeText(
-                    //         text: 'INCLUSION',
-                    //         size: 25,
-                    //       ),
-                    //       const SizedBox(height: 10),
-                    //       Center(
-                    //         child: Wrap(
-                    //           spacing: 10, // Horizontal space between items
-                    //           runSpacing: 10, // Vertical space between rows
-                    //           alignment: WrapAlignment.spaceEvenly,
-                    //           children: inclusionList.map<Widget>((inclusion) {
-                    //             return buildInclusionCard(
-                    //                 inclusion['class'], inclusion['name']);
-                    //           }).toList(),
-                    //         ),
-                    //       ),
-                    //       const SizedBox(height: 10),
-                    //     ],
-                    //   ),
-                    // ),
-                    // SizedBox(height: 24),
-
-                    // Traveler Selection
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Text(
-                        'SELECT TRAVELLERS',
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 10),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Travelerdrawer(
-                        onSelectionChanged: (Map<String, dynamic> selection) {
-                          setState(() {
-                            selectedRoom = selection['totalRooms'].toString();
-                            selectedAdult = selection['totalAdults'].toString();
-                            selectedChild = selection['totalChildren'].toString();
-                            childrenAge = selection['childrenAges'];
-                            totalRoomsdata = selection["totalData"];
-                            // print("@@@@@@@@@@@@@@@@@@@@@@@@");
-                            // print(selectedAdult);
-                            // print("@@@@@@@@@@@@@@@@@@@@@@@@@@");
-                          });
-                        },
-                      ),
-                    ),
-                    SizedBox(height: 30),
-                  ],
-                ),
-      ),
-
-      // Bottom Navigation Button
-      bottomNavigationBar: isLoading
-          ? null
-          : Padding(
-              padding: EdgeInsets.only(bottom: 15),
-              child: IconButton(
-                onPressed: () {
-                  if (selectedPackageData != null) {
-                    print("@@@@@@@@@@@@@@@@@@@@@@@@");
-                    print(totalRoomsdata);
-                    print("@@@@@@@@@@@@@@@@@@@@@@@@@@");
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => HotelsAccommodation(
-                            activityList: activityList,
-                            packageData: selectedPackageData!,
-                            totalRoomsdata: totalRoomsdata,
-                            showTourPage: showTourPage,
-                            showFlightPage: showFlightPage,
-                        ),
-                      ),
-                    );
-                  }
-                },
-                icon: responciveButton(text: 'SELECT'),
+                          color: Colors.white))
+                ],
               ),
-            ),
-    ),
+              SizedBox(height: 30),
+              // Package Selection Section
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Text(
+                  'Select Departure',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+              SizedBox(height: 10),
+
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Column(
+                  children: packageList.asMap().entries.map((entry) {
+                    int index = entry.key;
+                    var package = entry.value;
+
+                    return Column(
+                      children: [
+                        PackageCard(
+                          title: package['package_name'] ?? '',
+                          departureDate: "${package['dep_date']}",
+                          arrivalDate: "${package['arrival_date']}",
+                          duration: '${package['duration']}',
+                          price:
+                          '${package['currency']} ${package['price']}',
+                          isSelected: selectedOption == index,
+                          onSelect: () {
+                            setState(() {
+                              selectedOption = index;
+                              selectedPackageData =
+                                  package; // Store selected package data
+                            });
+                          },
+                        ),
+                        SizedBox(height: 10),
+                      ],
+                    );
+                  }).toList(),
+                ),
+              ),
+              SizedBox(height: 24),
+
+              // Inclusion Section
+              // Container(
+              //   width: double.infinity,
+              //   decoration: BoxDecoration(color: Colors.grey.shade200),
+              //   padding: const EdgeInsets.all(10),
+              //   child: Column(
+              //     crossAxisAlignment: CrossAxisAlignment.start,
+              //     children: [
+              //       AppLargeText(
+              //         text: 'INCLUSION',
+              //         size: 25,
+              //       ),
+              //       const SizedBox(height: 10),
+              //       Center(
+              //         child: Wrap(
+              //           spacing: 10, // Horizontal space between items
+              //           runSpacing: 10, // Vertical space between rows
+              //           alignment: WrapAlignment.spaceEvenly,
+              //           children: inclusionList.map<Widget>((inclusion) {
+              //             return buildInclusionCard(
+              //                 inclusion['class'], inclusion['name']);
+              //           }).toList(),
+              //         ),
+              //       ),
+              //       const SizedBox(height: 10),
+              //     ],
+              //   ),
+              // ),
+              // SizedBox(height: 24),
+
+              // Traveler Selection
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Text(
+                  'SELECT TRAVELLERS',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+              SizedBox(height: 10),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Travelerdrawer(
+                  onSelectionChanged: (Map<String, dynamic> selection) {
+                    setState(() {
+                      selectedRoom = selection['totalRooms'].toString();
+                      selectedAdult = selection['totalAdults'].toString();
+                      selectedChild = selection['totalChildren'].toString();
+                      childrenAge = selection['childrenAges'];
+                      totalRoomsdata = selection["totalData"];
+                      // print("@@@@@@@@@@@@@@@@@@@@@@@@");
+                      // print(selectedAdult);
+                      // print("@@@@@@@@@@@@@@@@@@@@@@@@@@");
+                    });
+                  },
+                ),
+              ),
+              SizedBox(height: 30),
+            ],
+          ),
+        ),
+
+        // Bottom Navigation Button
+        bottomNavigationBar: isLoading
+            ? null
+            : Padding(
+          padding: EdgeInsets.only(bottom: 15),
+          child: IconButton(
+            onPressed: () {
+              if (selectedPackageData != null) {
+                print("@@@@@@@@@@@@@@@@@@@@@@@@");
+                print(totalRoomsdata);
+                print("@@@@@@@@@@@@@@@@@@@@@@@@@@");
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => HotelsAccommodation(
+                      activityList: activityList,
+                      packageData: selectedPackageData!,
+                      totalRoomsdata: totalRoomsdata,
+                      showTourPage: showTourPage,
+                      showFlightPage: showFlightPage,
+                      isMulticity: isMulticity,
+                    ),
+                  ),
+                );
+              }
+            },
+            icon: responciveButton(text: 'SELECT'),
+          ),
+        ),
+      ),
     );
   }
 
@@ -503,26 +503,26 @@ class _PackageCardState extends State<PackageCard> {
                     Column(
                       children: [
                         Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(50),
-                        border: Border.all(width: 1, color: Colors.grey),
-                      ),
-                      child: Center(
-                        child: Padding(
-                          padding: EdgeInsets.all(5),
-                          child: Text(
-                            widget.duration,
-                            style: TextStyle(
-                              color: Colors.grey[600],
-                              fontSize: MediaQuery.of(context).size.width * 0.03,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(50),
+                            border: Border.all(width: 1, color: Colors.grey),
+                          ),
+                          child: Center(
+                            child: Padding(
+                              padding: EdgeInsets.all(5),
+                              child: Text(
+                                widget.duration,
+                                style: TextStyle(
+                                  color: Colors.grey[600],
+                                  fontSize: MediaQuery.of(context).size.width * 0.03,
+                                ),
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    ),
-                    SizedBox(height: 5,),
-                    SizedBox(
+                        SizedBox(height: 5,),
+                        SizedBox(
                           width: screenWidth * 0.3,
                           child: ElevatedButton(
                             onPressed: widget.onSelect,
@@ -571,6 +571,6 @@ class _PackageCardState extends State<PackageCard> {
           ],
         )
 
-      );
+    );
   }
 }

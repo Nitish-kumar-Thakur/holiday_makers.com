@@ -13,16 +13,20 @@ class FlightPageFD extends StatefulWidget {
   final String searchId;
   final List<dynamic> totalRoomsdata;
   final String showTourPage;
+  final String hotelIds;
+  final int isMulticity;
 
   const FlightPageFD(
       {super.key,
-      required this.searchId,
-      required this.packageData,
-      required this.selectedHotel,
-      // required this.flightList,
-      required this.totalRoomsdata,
-      required this.activityList,
-      required this.showTourPage
+        required this.searchId,
+        required this.packageData,
+        required this.selectedHotel,
+        // required this.flightList,
+        required this.totalRoomsdata,
+        required this.activityList,
+        required this.showTourPage,
+        required this.hotelIds,
+        required this.isMulticity
       });
 
   @override
@@ -32,148 +36,20 @@ class FlightPageFD extends StatefulWidget {
 class _FlightPageFDState extends State<FlightPageFD> {
   List<Map<String, dynamic>> flightList = [];
   List<Map<String, dynamic>> selectedFlightPackage = [];
+  bool isOnwardConnecting = false;
+  bool isReturnConnecting = false;
 
-  // List<Map<String, dynamic>> flightList = [
-  // {
-  // "option_type": "Option_2",
-  // "Onward": [
-  // {
-  // "flight_details_id": "559",
-  // "flight_option": "Option_2",
-  // "flight": "QR",
-  // "dep_from": "SHJ",
-  // "arr_to": "EVN",
-  // "travel_date": "2024-11-30",
-  // "dep_time": "09:00",
-  // "arr_time": "13:00",
-  // "flight_duration": "04:00",
-  // "package_id": "42",
-  // "depart_terminal": "Terminal 1",
-  // "arrival_terminal": "Terminal 1",
-  // "flight_no": "1035",
-  // "cabin_baggage": "10",
-  // "checkin_baggage": "20",
-  // "flight_type": "Onward",
-  // "airline_name": "QATAR AIRWAYS",
-  // "from_airport_name": "Sharjah",
-  // "to_airport_name": "Yerevan"
-  // },
-  // ],
-  // "Return": [
-  // {
-  // "flight_details_id": "562",
-  // "flight_option": "Option_2",
-  // "flight": "QR",
-  // "dep_from": "EVN",
-  // "arr_to": "SHJ",
-  // "travel_date": "2024-12-03",
-  // "dep_time": "13:00",
-  // "arr_time": "16:00",
-  // "flight_duration": "04:00",
-  // "package_id": "42",
-  // "depart_terminal": "Terminal 1",
-  // "arrival_terminal": "Terminal 1",
-  // "flight_no": "1036",
-  // "cabin_baggage": "10",
-  // "checkin_baggage": "20",
-  // "flight_type": "Return",
-  // "airline_name": "QATAR AIRWAYS",
-  // "from_airport_name": "Yerevan",
-  // "to_airport_name": "Sharjah"
-  // },
-  //   {
-  //     "flight_details_id": "559",
-  //     "flight_option": "Option_2",
-  //     "flight": "QR",
-  //     "dep_from": "SHJ",
-  //     "arr_to": "EVN",
-  //     "travel_date": "2024-11-30",
-  //     "dep_time": "09:00",
-  //     "arr_time": "13:00",
-  //     "flight_duration": "04:00",
-  //     "package_id": "42",
-  //     "depart_terminal": "Terminal 1",
-  //     "arrival_terminal": "Terminal 1",
-  //     "flight_no": "1035",
-  //     "cabin_baggage": "10",
-  //     "checkin_baggage": "20",
-  //     "flight_type": "Onward",
-  //     "airline_name": "QATAR AIRWAYS",
-  //     "from_airport_name": "Sharjah",
-  //     "to_airport_name": "Yerevan"
-  //   }
-  // ],
-  // "total": 3299
-  // },
-  // {
-  // "option_type": "Option_1",
-  // "Onward": [
-  // {
-  // "flight_details_id": "461",
-  // "flight_option": "Option_1",
-  // "flight": "G9",
-  // "dep_from": "SHJ",
-  // "arr_to": "EVN",
-  // "travel_date": "2024-11-30",
-  // "dep_time": "08:15",
-  // "arr_time": "11:30",
-  // "flight_duration": "03:15",
-  // "package_id": "42",
-  // "depart_terminal": "Terminal 1",
-  // "arrival_terminal": "Terminal 1",
-  // "flight_no": "244",
-  // "cabin_baggage": "10",
-  // "checkin_baggage": "20",
-  // "flight_type": "Onward",
-  // "airline_name": "Air Arabia",
-  // "from_airport_name": "Sharjah",
-  // "to_airport_name": "Yerevan"
-  // }
-  // ],
-  // "Return": [
-  // {
-  // "flight_details_id": "462",
-  // "flight_option": "Option_1",
-  // "flight": "G9",
-  // "dep_from": "EVN",
-  // "arr_to": "SHJ",
-  // "travel_date": "2024-12-03",
-  // "dep_time": "12:20",
-  // "arr_time": "15:15",
-  // "flight_duration": "03:05",
-  // "package_id": "42",
-  // "depart_terminal": "Terminal 1",
-  // "arrival_terminal": "Terminal 1",
-  // "flight_no": "245",
-  // "cabin_baggage": "10",
-  // "checkin_baggage": "20",
-  // "flight_type": "Return",
-  // "airline_name": "Air Arabia",
-  // "from_airport_name": "Yerevan",
-  // "to_airport_name": "Sharjah"
-  // }
-  // ],
-  // "total": 3299
-  // }
-  // ];
   bool isLoading = true;
   @override
   void initState() {
     super.initState();
-
-    // print(widget.searchId);
-    // print(widget.selectedHotel['git_adhoc_hotel_id']);
     _fetchFDFlightDetails();
-    print('#####################################');
-    print(widget.showTourPage);
-    print(widget.packageData['package_id']);
-    print('#####################################');
   }
 
   Future<void> _fetchFDFlightDetails() async {
     Map<dynamic, dynamic> body = {
       "search_id": widget.searchId,
-      "hotel_id": widget.selectedHotel['git_adhoc_hotel_id']
+      "hotel_id": widget.isMulticity==0 ? widget.selectedHotel['git_adhoc_hotel_id'] : widget.hotelIds
     };
     try {
       final response = await APIHandler.getFDFlightDetails(body);
@@ -254,7 +130,7 @@ class _FlightPageFDState extends State<FlightPageFD> {
                       color: Colors.white, // White text color
                       fontSize: 24, // Adjust font size as needed
                       fontWeight:
-                          FontWeight.bold, // Make the "<" bold if needed
+                      FontWeight.bold, // Make the "<" bold if needed
                     ),
                   ),
                 ),
@@ -270,70 +146,80 @@ class _FlightPageFDState extends State<FlightPageFD> {
           Expanded(
             child: isLoading == true
                 ? Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          FlightPackageShimmer(),
-                          FlightPackageShimmer()
-                        ],
+              padding: const EdgeInsets.all(16.0),
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    FlightPackageShimmer(),
+                    FlightPackageShimmer()
+                  ],
+                ),
+              ),
+            )
+                : flightList.isEmpty
+                ? const Center(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Oops!',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                  )
-                : flightList.isEmpty
-                    ? const Center(
-                          child: Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  'Oops!',
-                                  style: TextStyle(
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                SizedBox(height: 10),
-                                Text(
-                                  'No flights found matching your search.',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color: Colors.grey,
-                                  ),
-                                ),
-                                SizedBox(height: 30),
-                              ],
-                            ),
-                          ),
-                        )
-                    : Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: ListView.builder(
-                          itemCount: flightList.length,
-                          itemBuilder: (context, index) {
-                            final flightData = flightList[index];
-
-                            return FlightPackageCard(
-                              optionKey: flightData[
-                                  "option_type"], // "Option_1", "Option_2"
-                              amount: flightData["total"].toString(),
-                              onwardFlights: List<Map<String, dynamic>>.from(
-                                  flightData["Onward"] ?? []),
-                              returnFlights: List<Map<String, dynamic>>.from(
-                                  flightData["Return"] ?? []),
-
-                              isSelected: selectedFlightIndex == index,
-                              onTap: () {
-                                setState(() {
-                                  selectedFlightIndex = index;
-                                });
-                              },
-                            );
-                          },
-                        ),
+                    SizedBox(height: 10),
+                    Text(
+                      'No flights found matching your search.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.grey,
                       ),
+                    ),
+                    SizedBox(height: 30),
+                  ],
+                ),
+              ),
+            )
+                : Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: ListView.builder(
+                itemCount: flightList.length,
+                itemBuilder: (context, index) {
+                  final flightData = flightList[index];
+
+                  // return FlightPackageCard(
+                  //   optionKey: flightData["option_type"], // "Option_1", "Option_2"
+                  //   amount: flightData["total"].toString(),
+                  //   onwardFlights: flightData["Onward"][0]['connection_count']=="0" ? List<Map<String, dynamic>>.from(flightData["Onward"] ?? []) : List<Map<String, dynamic>>.from(flightData["Onward"][0]['connection_flight_details'] ?? []),
+                  //   returnFlights: flightData["Return"][0]['connection_count']=="0" ? List<Map<String, dynamic>>.from(flightData["Return"] ?? []) : List<Map<String, dynamic>>.from(flightData["Return"][0]['connection_flight_details'] ?? []),
+                  //
+                  //   isSelected: selectedFlightIndex == index,
+                  //   onTap: () {
+                  //     setState(() {
+                  //       selectedFlightIndex = index;
+                  //     });
+                  //   },
+                  // );
+                  return FlightPackageCard(
+                    optionKey: flightData["option_type"], // "Option_1", "Option_2"
+                    amount: flightData["total"].toString(),
+                    onwardFlights: List<Map<String, dynamic>>.from(flightData["Onward"] ?? []),
+                    returnFlights: List<Map<String, dynamic>>.from(flightData["Return"] ?? []),
+
+                    isSelected: selectedFlightIndex == index,
+                    onTap: () {
+                      setState(() {
+                        selectedFlightIndex = index;
+                      });
+                    },
+                  );
+                },
+              ),
+            ),
           ),
         ],
       ),
@@ -341,66 +227,70 @@ class _FlightPageFDState extends State<FlightPageFD> {
       bottomNavigationBar: isLoading
           ? null
           : flightList.isEmpty? SizedBox(): Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              child: GestureDetector(
-                onTap: () {
-                  if (flightList.isNotEmpty) {
-                    selectedFlightPackage = [
-                      ...flightList[selectedFlightIndex]
-                          ["Onward"], // Add all onward flights
-                      ...flightList[selectedFlightIndex]
-                          ["Return"] // Add all return flights
-                    ];
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        child: GestureDetector(
+          onTap: () {
+            if (flightList.isNotEmpty) {
+              selectedFlightPackage = [
+                ...flightList[selectedFlightIndex]
+                ["Onward"], // Add all onward flights
+                ...flightList[selectedFlightIndex]
+                ["Return"] // Add all return flights
+              ];
 
-                    String searchId = widget.searchId;
-                    String flightId =
-                        '${selectedFlightPackage[0]['flight_details_id']}_${selectedFlightPackage[1]['flight_details_id']}';
+              String searchId = widget.searchId;
+              String flightId = '${selectedFlightPackage[0]['flight_details_id']}_${selectedFlightPackage[1]['flight_details_id']}';
 
-                    // print('########################################################');
-                    // print(search_id);
-                    // print(search_id.runtimeType);
-                    // print(flight_id);
-                    // print(flight_id.runtimeType);
-                    // print('########################################################');
-                    _updateFlightDetails(searchId, flightId);
-                    if (widget.showTourPage == "0") {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => BookingSummaryFD(
-                            packageDetails: widget.packageData,
-                            selectedHotel: widget.selectedHotel,
-                            flightDetails: selectedFlightPackage,
-                            totalRoomsdata: widget.totalRoomsdata,
-                            searchId: widget.searchId,
-                            activityList: [],
-                            destination: "",
-                          ),
-                        ),
-                      );
-                    } else {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => TourBookingPage(
-                            flightDetails: selectedFlightPackage,
-                            selectedHotel: widget.selectedHotel,
-                            packageDetails: widget.packageData,
-                            totalRoomsdata: widget.totalRoomsdata,
-                            searchId: widget.searchId,
-                            fixedActivities: widget.activityList,
-                          ),
-                        ),
-                      );
-                    }
-                  }
-                },
-                child:  Padding(
-                  padding: const EdgeInsets.only(bottom: 20.0),
-                  child: responciveButton(text: "Book Now"),
-                ),
-              ),
-            ),
+              _updateFlightDetails(searchId, flightId);
+              isOnwardConnecting = selectedFlightPackage[0]['connection_count']=="0" ? false : true;
+              isReturnConnecting = selectedFlightPackage[1]['connection_count']=="0" ? false : true;
+
+              // print('########################################################');
+              // print(isOnwardConnecting);
+              // print(isReturnConnecting);
+              // print('########################################################');
+              if (widget.showTourPage == "0") {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => BookingSummaryFD(
+                      packageDetails: widget.packageData,
+                      selectedHotel: widget.selectedHotel,
+                      flightDetails: selectedFlightPackage,
+                      totalRoomsdata: widget.totalRoomsdata,
+                      searchId: widget.searchId,
+                      activityList: [],
+                      destination: "",
+                      isOnwardConnecting: isOnwardConnecting,
+                      isReturnConnecting: isReturnConnecting
+                    ),
+                  ),
+                );
+              } else {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => TourBookingPage(
+                      flightDetails: selectedFlightPackage,
+                      selectedHotel: widget.selectedHotel,
+                      packageDetails: widget.packageData,
+                      totalRoomsdata: widget.totalRoomsdata,
+                      searchId: widget.searchId,
+                      fixedActivities: widget.activityList,
+                      isOnwardConnecting: isOnwardConnecting,
+                      isReturnConnecting: isReturnConnecting
+                    ),
+                  ),
+                );
+              }
+            }
+          },
+          child:  Padding(
+            padding: const EdgeInsets.only(bottom: 20.0),
+            child: responciveButton(text: "Book Now"),
+          ),
+        ),
+      ),
     );
   }
 }
@@ -445,8 +335,8 @@ class _FlightPackageCardState extends State<FlightPackageCard> {
 
   @override
   Widget build(BuildContext context) {
-    String onwardStops = (widget.onwardFlights.length - 1 == 0 ? 'Non-stop' : widget.onwardFlights.length - 1).toString();
-    String returnStops = (widget.returnFlights.length - 1 == 0 ? 'Non-stop' : widget.returnFlights.length - 1).toString();
+    String onwardStops = widget.onwardFlights[0]['connection_count'] ?? "N/A";
+    String returnStops = widget.returnFlights[0]['connection_count'] ?? "N/A";
 
     String returnFlightKey = widget.returnFlights[0]['flight_details_id'].toString();
     String returnCabinBaggage = widget.returnFlights[0]['cabin_baggage'].toString();
@@ -459,11 +349,11 @@ class _FlightPackageCardState extends State<FlightPackageCard> {
     bool isOnwardExpanded = _expandedFlights.contains(onwardFlightKey);
     bool isReturnExpanded = _expandedFlights.contains(returnFlightKey);
 
-    print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
-    print(onwardFlightKey);
-    print(onwardCabinBaggage);
-    print(onwardCheckinBaggage);
-    print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
+    // print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
+    // print(onwardFlightKey);
+    // print(onwardCabinBaggage);
+    // print(onwardCheckinBaggage);
+    // print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
 
     return Card(
       // color: Colors.grey.shade300,
@@ -498,7 +388,10 @@ class _FlightPackageCardState extends State<FlightPackageCard> {
                 fontSize: 16,
               ),
             ),
-            _flightSection("Onward Flight", widget.onwardFlights),
+            widget.onwardFlights[0]['connection_count'] == "0"
+                ? _flightSection("Onward Flight", widget.onwardFlights)
+                : _flightSectionRebuild("Onward Flight", widget.onwardFlights[0]['connection_flight_details']),
+
             InkWell(
               onTap: () => _toggleExpand(onwardFlightKey),
               child: Row(
@@ -547,7 +440,10 @@ class _FlightPackageCardState extends State<FlightPackageCard> {
                 fontSize: 16,
               ),
             ),
-            _flightSection("Return Flight", widget.returnFlights),
+            // _flightSection("Return Flight", widget.returnFlights),
+            widget.returnFlights[0]['connection_count'] == "0"
+                ? _flightSection("Return Flight", widget.returnFlights)
+                : _flightSectionRebuild("Return Flight", widget.returnFlights[0]['connection_flight_details']),
             const SizedBox(height: 10),
             InkWell(
               onTap: () => _toggleExpand(returnFlightKey),
@@ -610,7 +506,7 @@ class _FlightPackageCardState extends State<FlightPackageCard> {
                       ),
                     ),
                     SizedBox(width: 8),
-                    
+
                   ],
                 ),
               ],
@@ -624,13 +520,13 @@ class _FlightPackageCardState extends State<FlightPackageCard> {
                   onPressed: widget.onTap,
                   style: ElevatedButton.styleFrom(
                     backgroundColor:
-                        widget.isSelected ? Color(0xFF0071BC) : Colors.white,
+                    widget.isSelected ? Color(0xFF0071BC) : Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
                     side: BorderSide(
                         color:
-                            Color(0xFF0071BC)), // Add a border for visibility
+                        Color(0xFF0071BC)), // Add a border for visibility
                   ),
                   child: Text(
                     widget.isSelected ? 'SELECTED' : 'SELECT',
@@ -661,7 +557,6 @@ class _FlightPackageCardState extends State<FlightPackageCard> {
         Column(
           children: flights.map((flight) {
             String flightKey = flight["flight_details_id"];
-
             return Column(
               children: [
                 _flightSegment(
@@ -678,7 +573,45 @@ class _FlightPackageCardState extends State<FlightPackageCard> {
                     flight["flight_no"] ?? "",
                     flight["cabin_baggage"] ?? "0",
                     flight["checkin_baggage"] ?? "0",
-                    show),
+                    show
+                )
+              ],
+            );
+          }).toList(),
+        ),
+        const SizedBox(height: 15),
+      ],
+    );
+  }
+
+  Widget _flightSectionRebuild(String title, List<dynamic> flights) {
+    if (flights.isEmpty) return const SizedBox();
+    bool show = title == 'Onward Flight' ? true : false;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // const SizedBox(height: 10),
+        Column(
+          children: flights.map((flight) {
+            String flightKey = flight["flight_details_id"];
+            return Column(
+              children: [
+                _flightSegment(
+                    title,
+                    flightKey,
+                    flight["airline_name"] ?? "Unknown Airline",
+                    flight["dep_time"] ?? "--:--",
+                    flight["from_airport_name"] ?? "Unknown",
+                    flight["depart_terminal"] ?? "N/A",
+                    flight["flight_duration"] ?? "--h --m",
+                    flight["arr_time"] ?? "--:--",
+                    flight["to_airport_name"] ?? "Unknown",
+                    flight["arrival_terminal"] ?? "N/A",
+                    flight["flight_no"] ?? "",
+                    flight["cabin_baggage"] ?? "0",
+                    flight["checkin_baggage"] ?? "0",
+                    show
+                )
               ],
             );
           }).toList(),

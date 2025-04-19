@@ -371,7 +371,7 @@ class _TourBookingPageFITState extends State<TourBookingPageFIT>
                               ? Colors.grey // Grey out the unselectable days
                               : (_tabController.index == index
                               ? Colors.white
-                              : Colors.grey.shade400),
+                              : Colors.grey.shade200),
                           border: Border.all(color: Colors.blue),
                           borderRadius: BorderRadius.circular(20),
                         ),
