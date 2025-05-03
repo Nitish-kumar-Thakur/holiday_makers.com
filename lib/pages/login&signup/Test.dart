@@ -23,7 +23,7 @@ class _LoginPageState extends State<LoginPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   String _errorMessage = '';
-  String _forgetPassword = '';
+  bool _isForgetLoading = false;
   bool _isLoading = false;
 
   void _completeLogin(Map<String, dynamic> responseData) async {
@@ -83,27 +83,30 @@ class _LoginPageState extends State<LoginPage> {
   Future _validateAndForgetPassword() async {
     final email = _emailController.text.trim();
     if (email.isEmpty) {
-      setState(() => _errorMessage = 'Please enter your email');
+      Fluttertoast.showToast(msg: "Please enter your email");
       return;
     }
+
+    setState(() {
+      _isForgetLoading = true;
+    });
 
     try {
       final response = await APIHandler.forgotPassword(email);
       if (response['status'] == true) {
-        // ScaffoldMessenger.of(context).showSnackBar(
-        //   SnackBar(content: Text('Password reset link sent to your email')),
-        // );
-        setState(() => _forgetPassword =
-            response['message'] ?? "Password reset link sent to your email");
-        return;
+        Fluttertoast.showToast(msg: response['message'] ?? "Password reset link sent to your email");
       } else {
-        setState(() =>
-            _errorMessage = response['message'] ?? 'Failed to send reset link');
+        Fluttertoast.showToast(msg: response['message'] ?? 'Failed to send reset link');
       }
     } catch (e) {
-      setState(() => _errorMessage = 'An error occurred. Please try again.');
+      Fluttertoast.showToast(msg: 'An error occurred. Please try again.');
+    } finally {
+      setState(() {
+        _isForgetLoading = false;
+      });
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -115,203 +118,230 @@ class _LoginPageState extends State<LoginPage> {
           fit: BoxFit.fill,
         ),
       ),
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        resizeToAvoidBottomInset: true,
-        body: Column(
-          children: [
-            const SizedBox(height: 50),
-            widget.backbutton
-                ? Container()
-                : Row(
+      child: Stack(
+        children: [
+          Scaffold(
+            backgroundColor: Colors.transparent,
+            resizeToAvoidBottomInset: true,
+            body: Column(
               children: [
-                IconButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  icon: CircleAvatar(
-                    backgroundColor: Colors.grey.withOpacity(0.6),
-                    child: Text(
-                      '<',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
+                const SizedBox(height: 50),
+                widget.backbutton
+                    ? Container()
+                    : Row(
+                  children: [
+                    IconButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      icon: CircleAvatar(
+                        backgroundColor: Colors.grey.withOpacity(0.6),
+                        child: Text(
+                          '<',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                  ],
+                ),
+                Expanded(
+                  child: Center(
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          Container(
+                            padding: EdgeInsets.all(20),
+                            width: screenWidth * 0.93,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            child: Form(
+                              key: _formKey,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  RichText(
+                                    text: TextSpan(
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 24,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                      children: [
+                                        TextSpan(
+                                            text: "Let's ",
+                                            style: TextStyle(color: Colors.red)),
+                                        TextSpan(
+                                            text: "Travel ",
+                                            style:
+                                            TextStyle(color: Color(0xFF007A8C))),
+                                        TextSpan(
+                                            text: "you ",
+                                            style: TextStyle(color: Colors.red)),
+                                        TextSpan(
+                                            text: "in.",
+                                            style:
+                                            TextStyle(color: Color(0xFF007A8C))),
+                                      ],
+                                    ),
+                                  ),
+                                  SizedBox(height: 5),
+                                  RichText(
+                                    text: TextSpan(
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                      children: [
+                                        TextSpan(
+                                            text: "Discover the World with Every ",
+                                            style: TextStyle(color: Colors.black54)),
+                                        TextSpan(
+                                            text: "Sign In",
+                                            style: TextStyle(color: Colors.blue)),
+                                      ],
+                                    ),
+                                  ),
+                                  SizedBox(height: 20),
+                                  _buildInputField(
+                                    controller: _emailController,
+                                    hintText: 'Mail',
+                                    icon: Icons.email,
+                                  ),
+                                  SizedBox(height: 10),
+                                  _buildInputField(
+                                    controller: _passwordController,
+                                    hintText: 'Password',
+                                    obscureText: _obscureText,
+                                    suffixIcon: IconButton(
+                                      icon: Icon(
+                                        _obscureText
+                                            ? Icons.visibility_off
+                                            : Icons.visibility,
+                                        color: _obscureText
+                                            ? Colors.black54
+                                            : const Color(0xFF3498DB),
+                                        size: 24,
+                                      ),
+                                      onPressed: () => setState(
+                                              () => _obscureText = !_obscureText),
+                                    ),
+                                    icon: Icons.lock,
+                                  ),
+                                  Align(
+                                    alignment: Alignment.centerRight,
+                                    child: TextButton(
+                                      onPressed: () {
+                                        _validateAndForgetPassword();
+                                      },
+                                      child: Text(
+                                        "Forgot your password?",
+                                        style: TextStyle(color: Colors.black54),
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(height: 10),
+                                  Align(
+                                    alignment: Alignment.center,
+                                    child: GestureDetector(
+                                      onTap: _isLoading ? null : _validateAndLogin,
+                                      child: _isLoading
+                                          ? const Center(
+                                          child: CircularProgressIndicator())
+                                          : responciveButton(text: 'Login'),
+                                    ),
+                                  ),
+                                  SizedBox(height: 20),
+                                  _buildSocialButtons(),
+                                  SizedBox(height: 20),
+                                  _buildSignUpOption(),
+                                ],
+                              ),
+                            ),
+                          ),
+                          if(widget.canSkip)
+                            Column(
+                              children: [
+                                SizedBox(height: 20),
+                                Text("OR", style: TextStyle(fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold)),
+                                SizedBox(height: 10),
+                                // "Skip For Now" button right after white container
+                                GestureDetector(
+                                  onTap: () {
+                                    Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(builder: (context) => widget.redirectTo),
+                                    );
+                                    // Handle skip logic
+                                    // print("Skipped for now");
+                                  },
+                                  child: Container(
+                                    padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                                    decoration: BoxDecoration(
+                                      color: Color(0xFF007BFF), // Blue background
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: Text(
+                                      "Continue as Guest",
+                                      style: GoogleFonts.poppins(
+                                        color: Colors.white,
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            )
+                        ],
                       ),
                     ),
                   ),
                 ),
-                const SizedBox(width: 10),
               ],
             ),
-            Expanded(
-              child: Center(
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      Container(
-                        padding: EdgeInsets.all(20),
-                        width: screenWidth * 0.93,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                        child: Form(
-                          key: _formKey,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              RichText(
-                                text: TextSpan(
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                  children: [
-                                    TextSpan(
-                                        text: "Let's ",
-                                        style: TextStyle(color: Colors.red)),
-                                    TextSpan(
-                                        text: "Travel ",
-                                        style:
-                                        TextStyle(color: Color(0xFF007A8C))),
-                                    TextSpan(
-                                        text: "you ",
-                                        style: TextStyle(color: Colors.red)),
-                                    TextSpan(
-                                        text: "in.",
-                                        style:
-                                        TextStyle(color: Color(0xFF007A8C))),
-                                  ],
-                                ),
-                              ),
-                              SizedBox(height: 5),
-                              RichText(
-                                text: TextSpan(
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                  children: [
-                                    TextSpan(
-                                        text: "Discover the World with Every ",
-                                        style: TextStyle(color: Colors.black54)),
-                                    TextSpan(
-                                        text: "Sign In",
-                                        style: TextStyle(color: Colors.blue)),
-                                  ],
-                                ),
-                              ),
-                              SizedBox(height: 20),
-                              _buildInputField(
-                                controller: _emailController,
-                                hintText: 'Mail',
-                                icon: Icons.email,
-                              ),
-                              SizedBox(height: 10),
-                              _buildInputField(
-                                controller: _passwordController,
-                                hintText: 'Password',
-                                obscureText: _obscureText,
-                                suffixIcon: IconButton(
-                                  icon: Icon(
-                                    _obscureText
-                                        ? Icons.visibility_off
-                                        : Icons.visibility,
-                                    color: _obscureText
-                                        ? Colors.black54
-                                        : const Color(0xFF3498DB),
-                                    size: 24,
-                                  ),
-                                  onPressed: () => setState(
-                                          () => _obscureText = !_obscureText),
-                                ),
-                                icon: Icons.lock,
-                              ),
-                              Align(
-                                alignment: Alignment.centerRight,
-                                child: TextButton(
-                                  onPressed: () {
-                                    _validateAndForgetPassword();
-                                  },
-                                  child: Text(
-                                    "Forgot your password?",
-                                    style: TextStyle(color: Colors.black54),
-                                  ),
-                                ),
-                              ),
-                              SizedBox(height: 10),
-                              Align(
-                                alignment: Alignment.center,
-                                child: GestureDetector(
-                                  onTap: _isLoading ? null : _validateAndLogin,
-                                  child: _isLoading
-                                      ? const Center(
-                                      child: CircularProgressIndicator())
-                                      : responciveButton(text: 'Login'),
-                                ),
-                              ),
-                              SizedBox(height: 20),
-                              _buildSocialButtons(),
-                              SizedBox(height: 20),
-                              _buildSignUpOption(),
-                            ],
-                          ),
-                        ),
+          ),
+          if (_isForgetLoading)
+            Positioned.fill(
+              child: Container(
+                color: Colors.black.withOpacity(0.3),
+                child: Center(
+                  child: Container(
+                    width: 80,
+                    height: 80,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.8),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: const Center(
+                      child: CircularProgressIndicator(
+                        color: Colors.blue,
                       ),
-                      if(widget.canSkip)
-                        Column(
-                          children: [
-                            SizedBox(height: 20),
-                            Text("OR", style: TextStyle(fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold)),
-                            SizedBox(height: 10),
-                            // "Skip For Now" button right after white container
-                            GestureDetector(
-                              onTap: () {
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(builder: (context) => widget.redirectTo),
-                                );
-                                // Handle skip logic
-                                // print("Skipped for now");
-                              },
-                              child: Container(
-                                padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                                decoration: BoxDecoration(
-                                  color: Color(0xFF007BFF), // Blue background
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: Text(
-                                  "Continue as Guest",
-                                  style: GoogleFonts.poppins(
-                                    color: Colors.white,
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        )
-                    ],
+                    ),
                   ),
                 ),
               ),
             ),
-          ],
-        ),
+        ],
       ),
     );
   }
 
 
+
+
   Widget _buildInputField(
       {required TextEditingController controller,
-      required String hintText,
-      bool obscureText = false,
-      Widget? suffixIcon,
-      required IconData icon}) {
+        required String hintText,
+        bool obscureText = false,
+        Widget? suffixIcon,
+        required IconData icon}) {
     return TextField(
       controller: controller,
       obscureText: obscureText,
@@ -379,8 +409,8 @@ class _LoginPageState extends State<LoginPage> {
                   context,
                   MaterialPageRoute(
                       builder: (context) => Signuppage(
-                            backbutton: widget.backbutton,
-                          )),
+                        backbutton: widget.backbutton,
+                      )),
                 );
               },
               child: Text("Register Now",

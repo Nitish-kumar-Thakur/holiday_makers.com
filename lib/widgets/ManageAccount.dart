@@ -1,4 +1,8 @@
-import 'package:flutter/material.dart'; 
+import 'package:HolidayMakers/pages/homePages/mainPage.dart';
+import 'package:HolidayMakers/utils/api_handler.dart';
+import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ManageAccount extends StatefulWidget {
   @override
@@ -6,8 +10,22 @@ class ManageAccount extends StatefulWidget {
 }
 
 class _ManageAccountState extends State<ManageAccount> {
-  List<String> values = ['Value 1', 'Value 2', 'Value 3'];
+  List<String> values = ['Delete', 'Deactivate'];
   String? selectedValue;
+  String? userId;
+  TextEditingController _reasonController = TextEditingController();
+  String reason = '';
+
+  void initState() {
+    super.initState();
+    // userId = prefs.getString('username');
+    getDataFromPrefs();
+  }
+
+  Future<void> getDataFromPrefs() async{
+    final prefs = await SharedPreferences.getInstance();
+    userId = prefs.getString('user_id') ?? null;
+  }
 
   Widget _buildTopCurve() {
     return Padding(
@@ -17,6 +35,71 @@ class _ManageAccountState extends State<ManageAccount> {
         painter: CirclePainter(radius: 200),
       ),
     );
+  }
+
+  Future<void> _hitAPI() async {
+    Map<String, dynamic> body = {
+      "user_id": userId,
+      "status": selectedValue == 'Delete' ? "-1" : null,
+      // "status": "2",
+      "reason": reason
+    };
+
+    if(selectedValue == null){
+      Fluttertoast.showToast(msg: 'Please select an option.');
+    } else if(selectedValue == 'Delete'){
+      try {
+        final response = await APIHandler.accountDeactivate(body); //widget.searchId
+        // Ensure response contains expected keys and types
+        if (response['status'] == true) {
+          Fluttertoast.showToast(msg: response['message']);
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          await prefs.clear();
+
+          // Navigate to HomePage (replace with your home screen)
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => Mainpage()),
+                (Route<dynamic> route) => false,
+          );
+        } else {
+          Fluttertoast.showToast(msg: response['message']);
+        }
+      } catch (e) {
+        print("Error deleting account: $e");
+      }
+    } else if(selectedValue == 'Deactivate'){
+      try {
+        // final response = await APIHandler.accountDeactivate(body); //widget.searchId
+        // Ensure response contains expected keys and types
+        // if (response['status'] == true) {
+        //   Fluttertoast.showToast(msg: response['message']);
+        //   SharedPreferences prefs = await SharedPreferences.getInstance();
+        //   await prefs.clear();
+        //
+        //   // Navigate to HomePage (replace with your home screen)
+        //   Navigator.pushAndRemoveUntil(
+        //     context,
+        //     MaterialPageRoute(builder: (context) => Mainpage()),
+        //         (Route<dynamic> route) => false,
+        //   );
+        // } else {
+        //   throw Exception("Invalid data structure: ${response.toString()}");
+        // }
+        Fluttertoast.showToast(msg: 'Account Deactivated Successfully');
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.clear();
+
+        // Navigate to HomePage (replace with your home screen)
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => Mainpage()),
+              (Route<dynamic> route) => false,
+        );
+      } catch (e) {
+        print("Error deactivating account: $e");
+      }
+    }
   }
 
   @override
@@ -140,28 +223,30 @@ class _ManageAccountState extends State<ManageAccount> {
                         "Reason",
                         style: TextStyle(fontSize: 25, color: Colors.white, fontWeight: FontWeight.bold),
                       ),
-                      Text(
-                        "*",
-                        style: TextStyle(color: Colors.red, fontSize: 25),
-                      ),
                     ],
                   ),
                   SizedBox(height: 10),
                   TextField(
+                    controller: _reasonController, // Attach controller
+                    onChanged: (value) {
+                      setState(() {
+                        reason = value; // Update the reason string on input change
+                      });
+                    },
                     decoration: InputDecoration(
-                      filled: true, // Enable background fill color
-                      fillColor: Colors.white, // Set background color to white
+                      filled: true,
+                      fillColor: Colors.white,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: Colors.white), // Default border color
+                        borderSide: BorderSide(color: Colors.white),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: Colors.blue), // Border color when focused
+                        borderSide: BorderSide(color: Colors.blue),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: Colors.white), // Border color when not focused
+                        borderSide: BorderSide(color: Colors.white),
                       ),
                     ),
                   ),
@@ -170,9 +255,7 @@ class _ManageAccountState extends State<ManageAccount> {
                   Container(
                     width: double.infinity,
                     child: ElevatedButton(
-                      onPressed: () {
-                        print("Save Changes button pressed");
-                      },
+                      onPressed: _hitAPI,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Color(0xFF0071BC), 
                         foregroundColor: Colors.white,

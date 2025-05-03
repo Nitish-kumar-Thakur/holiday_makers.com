@@ -27,7 +27,6 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     _loadProfileDetails();
     _fetchHomePageData();
-    _fetchPackageData();
   }
 
   Future<void> _loadProfileDetails() async {
@@ -44,13 +43,14 @@ class _HomePageState extends State<HomePage> {
       setState(() {
         bannerList = List<Map<String, dynamic>>.from(
           data['data']['banner_list'].map((item) => {
-                'img': item['img'],
-                'mobile_img': item['mobile_img'],
-                'link': item['link'],
-              }),
+            'img': item['img'],
+            'mobile_img': item['mobile_img'],
+            'link': item['link'],
+          }),
         );
-        isLoading = false;
+        // isLoading = false;
       });
+      _fetchPackageData();
     } catch (e) {
       print('Error fetching homepage data: $e');
     }
@@ -82,6 +82,7 @@ class _HomePageState extends State<HomePage> {
 
       setState(() {
         sections = fetchedSections;
+        isLoading = false;
       });
     } catch (e) {
       setState(() {
@@ -181,7 +182,7 @@ class _HomePageState extends State<HomePage> {
         _buildProfileSection(),
         Maincarousel(banner_list: bannerList),
         SizedBox(height: 10,),
-        Expanded(child: 
+        Expanded(child:
         SingleChildScrollView(
       child: _buildDynamicSections(),
     ))
@@ -192,7 +193,7 @@ class _HomePageState extends State<HomePage> {
   // Curved Curtain Shape at the Top (with 20% margin)
   Widget _buildTopCurve() {
     return Padding(
-      padding: const EdgeInsets.only(top: 50), // 20% of the screen height
+      padding: const EdgeInsets.only(top: 30), // 20% of the screen height
       child: CustomPaint(
         size: Size(double.infinity, 20), // Height of the curved area
         painter: CirclePainter(radius: 200),

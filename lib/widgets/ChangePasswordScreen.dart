@@ -157,12 +157,12 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   )
                 ],
               ),
-              const SizedBox(height: 50),
+              // const SizedBox(height: 50),
               // Old Password
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Container(
-                  height: 620, // Adjust the height as needed
+                  height: 560, // Adjust the height as needed
                   decoration: BoxDecoration(
                     image: DecorationImage(
                       image: AssetImage('img/fitFormBG.png'), // Background image
@@ -201,7 +201,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                             return null;
                           },
                         ),
-                        const SizedBox(height: 40),
+                        const SizedBox(height: 20),
 
                         // New Password Field
                         _buildPasswordField(
@@ -215,7 +215,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                           },
                           validator: _validatePassword,
                         ),
-                        const SizedBox(height: 40),
+                        const SizedBox(height: 20),
 
                         // Confirm Password Field
                         _buildPasswordField(
@@ -229,7 +229,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                           },
                           validator: _validateConfirmPassword,
                         ),
-                        const SizedBox(height: 40),
+                        const SizedBox(height: 20),
 
                         // Save Changes Button
                         SizedBox(
@@ -256,31 +256,31 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                         const SizedBox(height: 40),
 
                         // Cancel Button
-                        SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            onPressed: _isLoading
-                                ? null
-                                : () {
-                              _oldPasswordController.clear();
-                              _newPasswordController.clear();
-                              _confirmPasswordController.clear();
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.red,
-                              foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(vertical: 16.0),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(40),
-                              ),
-                            ),
-                            child: const Text(
-                              "Cancel",
-                              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 10),
+                        // SizedBox(
+                        //   width: double.infinity,
+                        //   child: ElevatedButton(
+                        //     onPressed: _isLoading
+                        //         ? null
+                        //         : () {
+                        //       _oldPasswordController.clear();
+                        //       _newPasswordController.clear();
+                        //       _confirmPasswordController.clear();
+                        //     },
+                        //     style: ElevatedButton.styleFrom(
+                        //       backgroundColor: Colors.red,
+                        //       foregroundColor: Colors.white,
+                        //       padding: const EdgeInsets.symmetric(vertical: 16.0),
+                        //       shape: RoundedRectangleBorder(
+                        //         borderRadius: BorderRadius.circular(40),
+                        //       ),
+                        //     ),
+                        //     child: const Text(
+                        //       "Cancel",
+                        //       style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        //     ),
+                        //   ),
+                        // ),
+                        // const SizedBox(height: 10),
 
                         // Message Display (e.g., success or error message)
                         Center(

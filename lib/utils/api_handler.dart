@@ -4,21 +4,21 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class APIHandler {
   static const String loginUrl =
-      'https://b2cuat.tikipopi.com/index.php/holiday_api';
+      'https://holidaymakers.com/holiday_api';
   static const String signupUrl =
-      "https://b2cuat.tikipopi.com/index.php/holiday_api/";
+      "https://holidaymakers.com/holiday_api/";
   static const String homeUrl =
-      'https://b2cuat.tikipopi.com/index.php/holiday_api';
+      'https://holidaymakers.com/holiday_api';
   static const String forgotPasswordUrl =
-      'https://b2cuat.tikipopi.com/index.php/holiday_api/forgot_password';
+      'https://holidaymakers.com/holiday_api/forgot_password';
   static const String baseUrl =
-      "https://b2cuat.tikipopi.com/index.php/holiday_api/get_category_wise_package_list";
+      "https://holidaymakers.com/holiday_api/get_category_wise_package_list";
   static const String sourceUrl =
-      "https://b2cuat.tikipopi.com/index.php/holiday_api/source_list";
+      "https://holidaymakers.com/holiday_api/source_list";
   static const String destUrl =
-      "https://b2cuat.tikipopi.com/index.php/holiday_api/destination_list";
+      "https://holidaymakers.com/holiday_api/destination_list";
   static const String fitSearchUrl =
-      "https://b2cuat.tikipopi.com/index.php/holiday_api/fit_package_search";
+      "https://holidaymakers.com/holiday_api/fit_package_search";
 
   static Future<Map<String, String>> _ProfileDetails() async {
     final prefs = await SharedPreferences.getInstance();
@@ -220,7 +220,7 @@ class APIHandler {
     try {
       final response = await http.post(
         Uri.parse(
-            "https://b2cuat.tikipopi.com/index.php/holiday_api/get_cruise_country_month_list"),
+            "https://holidaymakers.com/holiday_api/get_cruise_country_month_list"),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'source_id': sourceId}),
       );
@@ -266,7 +266,7 @@ class APIHandler {
     try {
       final response = await http.post(
         Uri.parse(
-            'https://b2cuat.tikipopi.com/index.php/holiday_api/get_package_country_month_list'),
+            'https://holidaymakers.com/holiday_api/get_package_country_month_list'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'source_id': sourceId}),
       );
@@ -312,7 +312,7 @@ class APIHandler {
       String package, String country, String month) async {
     try {
       final Uri url = Uri.parse(
-          'https://b2cuat.tikipopi.com/index.php/holiday_api/get_package_list');
+          'https://holidaymakers.com/holiday_api/get_package_list');
 
       final Map<String, dynamic> requestBody = {
         "type": package,
@@ -353,7 +353,7 @@ class APIHandler {
   static Future<Map<String, dynamic>> fitBookingSummary(
       Map<String, dynamic> bookingApiData) async {
     final url = Uri.parse(
-        "https://b2cuat.tikipopi.com/index.php/holiday_api/fit_booking_summary");
+        "https://holidaymakers.com/holiday_api/fit_booking_summary");
     final body = jsonEncode(bookingApiData);
 
     final response = await http.post(
@@ -375,7 +375,7 @@ class APIHandler {
   static Future<Map<String, dynamic>> fitUpdateHotel(
       Map<String, dynamic> fitUpdateHotelData) async {
     final url = Uri.parse(
-        "https://b2cuat.tikipopi.com/index.php/holiday_api/fit_update_hotel");
+        "https://holidaymakers.com/holiday_api/fit_update_hotel");
     final body = jsonEncode(fitUpdateHotelData);
 
     final response = await http.post(
@@ -397,7 +397,7 @@ class APIHandler {
   static Future<Map<String, dynamic>> fitUpdateFlight(
       Map<String, dynamic> fitUpdateFlightData) async {
     final url = Uri.parse(
-        "https://b2cuat.tikipopi.com/index.php/holiday_api/fit_update_flight");
+        "https://holidaymakers.com/holiday_api/fit_update_flight");
     final body = jsonEncode(fitUpdateFlightData);
 
     final response = await http.post(
@@ -418,7 +418,7 @@ class APIHandler {
 
   static Future<Map<String, dynamic>> getDepartureDeal(String packageId) async {
     final Uri url = Uri.parse(
-        'https://b2cuat.tikipopi.com/index.php/holiday_api/fd_package_details');
+        'https://holidaymakers.com/holiday_api/fd_package_details');
 
     final Map<String, dynamic> requestBody = {
       "package_id": packageId,
@@ -454,7 +454,7 @@ class APIHandler {
 
   static Future<Map<String, dynamic>> getCruiseDeal(String packageId) async {
     final Uri url = Uri.parse(
-        'https://b2cuat.tikipopi.com/index.php/holiday_api/cruise_details');
+        'https://holidaymakers.com/holiday_api/cruise_details');
 
     final Map<String, dynamic> requestBody = {
       "package_id": packageId,
@@ -490,7 +490,7 @@ class APIHandler {
 
   static Future<Map<String, dynamic>> getCruiseCards(String cruiseId) async {
     final Uri url = Uri.parse(
-        'https://b2cuat.tikipopi.com/index.php/holiday_api/get_departure_and_similar_cruise');
+        'https://holidaymakers.com/holiday_api/get_departure_and_similar_cruise');
     final Map<String, dynamic> requestBody = {"cruise_id": cruiseId};
     try {
       final response = await http.post(
@@ -528,7 +528,7 @@ class APIHandler {
     try {
       final response = await http.post(
         Uri.parse(
-            "https://b2cuat.tikipopi.com/index.php/holiday_api/cruise_cabin_type"),
+            "https://holidaymakers.com/holiday_api/cruise_cabin_type"),
         headers: {"Content-Type": "application/json"},
         body: json.encode({
           "dep_date": depDate,
@@ -549,7 +549,7 @@ class APIHandler {
 
   static Future<Map<String, dynamic>> getFDCards(String packageId) async {
     final Uri url = Uri.parse(
-        'https://b2cuat.tikipopi.com/index.php/holiday_api/get_departure_and_similar_package');
+        'https://holidaymakers.com/holiday_api/get_departure_and_similar_package');
     final Map<String, dynamic> requestBody = {"package_id": packageId};
     try {
       final response = await http.post(
@@ -583,7 +583,7 @@ class APIHandler {
   static Future<Map<String, dynamic>> getFDHotelFlightDetails(
       String packageId) async {
     final Uri url = Uri.parse(
-        'https://b2cuat.tikipopi.com/index.php/holiday_api/fd_package_flight_hotel_details');
+        'https://holidaymakers.com/holiday_api/fd_package_flight_hotel_details');
     final Map<String, dynamic> requestBody = {"package_id": packageId};
     try {
       final response = await http.post(
@@ -620,7 +620,7 @@ class APIHandler {
     try {
       final response = await http.post(
         Uri.parse(
-            "https://b2cuat.tikipopi.com/index.php/holiday_api/cruise_booking_summary"),
+            "https://holidaymakers.com/holiday_api/cruise_booking_summary"),
         headers: {"Content-Type": "application/json"},
         body: json.encode(requestBody),
       );
@@ -641,7 +641,7 @@ class APIHandler {
     required String newPassword,
   }) async {
     final String url =
-        "https://b2cuat.tikipopi.com/index.php/holiday_api/change_password";
+        "https://holidaymakers.com/holiday_api/change_password";
 
     // Await the _ProfileDetails() method to get the values
     Map<String, String> profileDetails = await _ProfileDetails();
@@ -691,7 +691,7 @@ class APIHandler {
   static Future<Map<String, dynamic>> getFDHotelDetails(
       Map<dynamic, dynamic> body) async {
     final Uri url = Uri.parse(
-        'https://b2cuat.tikipopi.com/index.php/holiday_api/fd_package_hotel_details');
+        'https://holidaymakers.com/holiday_api/fd_package_hotel_details');
     // final Map<String, dynamic> requestBody = {"package_id": body};
     try {
       final response = await http.post(
@@ -725,7 +725,7 @@ class APIHandler {
   static Future<Map<String, dynamic>> getFDFlightDetails(
       Map<dynamic, dynamic> body) async {
     final Uri url = Uri.parse(
-        'https://b2cuat.tikipopi.com/index.php/holiday_api/fd_update_hotel');
+        'https://holidaymakers.com/holiday_api/fd_update_hotel');
     // final Map<String, dynamic> requestBody = {"search_id": searchId, "hotel_id": hotelId};
     // final Map<String, dynamic> requestBody = {"search_id": "3649", "hotel_id": "380"};
     try {
@@ -760,7 +760,7 @@ class APIHandler {
   static Future<Map<String, dynamic>> updateFlightDetails(
       Map<dynamic, dynamic> body) async {
     final Uri url = Uri.parse(
-        'https://b2cuat.tikipopi.com/index.php/holiday_api/fd_update_flight');
+        'https://holidaymakers.com/holiday_api/fd_update_flight');
     try {
       final response = await http.post(
         url,
@@ -789,7 +789,7 @@ class APIHandler {
   static Future<Map<String, dynamic>> getFDBSDetails(
       Map<dynamic, dynamic> temp) async {
     final Uri url = Uri.parse(
-        'https://b2cuat.tikipopi.com/index.php/holiday_api/fd_booking_summary');
+        'https://holidaymakers.com/holiday_api/fd_booking_summary');
     // final Map<String, dynamic> requestBody = {temp};
     try {
       final response = await http.post(
@@ -823,7 +823,7 @@ class APIHandler {
   static Future<Map<String, dynamic>> getCountryList() async {
     try {
       final response = await http.get(Uri.parse(
-          'https://b2cuat.tikipopi.com/index.php/holiday_api/country_list'));
+          'https://holidaymakers.com/holiday_api/country_list'));
       if (response.statusCode == 200) {
         return json.decode(response.body);
       } else {
@@ -837,7 +837,7 @@ class APIHandler {
 
   static Future<Map<String, dynamic>> getCity(String country_id) async {
     final Uri url = Uri.parse(
-        'https://b2cuat.tikipopi.com/index.php/holiday_api/city_list_by_country');
+        'https://holidaymakers.com/holiday_api/city_list_by_country');
     final Map<String, dynamic> requestBody = {"country_id": country_id};
     // final Map<String, dynamic> requestBody = {"search_id": '3649'};
     try {
@@ -871,7 +871,7 @@ class APIHandler {
 
   static Future<Map<String, dynamic>> getFDTourList(String searchId) async {
     final Uri url = Uri.parse(
-        'https://b2cuat.tikipopi.com/index.php/holiday_api/fd_tour_list');
+        'https://holidaymakers.com/holiday_api/fd_tour_list');
     final Map<String, dynamic> requestBody = {"search_id": searchId};
     // final Map<String, dynamic> requestBody = {"search_id": '3649'};
     try {
@@ -905,7 +905,7 @@ class APIHandler {
 
   static Future<Map<String, dynamic>> getFITTourList(String searchId) async {
     final Uri url = Uri.parse(
-        'https://b2cuat.tikipopi.com/index.php/holiday_api/fit_tour_list');
+        'https://holidaymakers.com/holiday_api/fit_tour_list');
     final Map<String, dynamic> requestBody = {"search_id": searchId};
     // final Map<String, dynamic> requestBody = {"search_id": '3649'};
     try {
@@ -940,7 +940,7 @@ class APIHandler {
   static Future<List<DateTime>> fetchBlockedDates(
       String source, String destination) async {
     final Uri url = Uri.parse(
-        'https://b2cuat.tikipopi.com/index.php/holiday_api/fit_block_dates');
+        'https://holidaymakers.com/holiday_api/fit_block_dates');
     final Map<String, dynamic> requestBody = {
       "origin_id": source,
       "destination_id": destination
@@ -977,7 +977,7 @@ class APIHandler {
 
   static Future<Map<String, dynamic>> fitInclusionList() async {
     final Uri url = Uri.parse(
-        'https://b2cuat.tikipopi.com/index.php/holiday_api/fit_inclusion_list');
+        'https://holidaymakers.com/holiday_api/fit_inclusion_list');
     try {
       final response = await http.get(url);
 
@@ -993,7 +993,7 @@ class APIHandler {
 
   Future<List<dynamic>> fetchCountries() async {
     final response = await http.get(Uri.parse(
-        'https://b2cuat.tikipopi.com/index.php/holiday_api/country_list'));
+        'https://holidaymakers.com/holiday_api/country_list'));
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
@@ -1006,7 +1006,7 @@ class APIHandler {
   static Future<Map<String, dynamic>> fdSaveBooking(
       Map<String, dynamic> body) async {
     final Uri url = Uri.parse(
-        'https://b2cuat.tikipopi.com/index.php/holiday_api/save_fd_package');
+        'https://holidaymakers.com/holiday_api/save_fd_package');
     try {
       final response = await http.post(
         url,
@@ -1040,7 +1040,7 @@ class APIHandler {
   static Future<Map<String, dynamic>> fitSaveBooking(
       Map<String, dynamic> body) async {
     final Uri url = Uri.parse(
-        'https://b2cuat.tikipopi.com/index.php/holiday_api/save_fit_package');
+        'https://holidaymakers.com/holiday_api/save_fit_package');
     try {
       final response = await http.post(
         url,
@@ -1074,7 +1074,7 @@ class APIHandler {
   static Future<Map<String, dynamic>> cruiseSaveBooking(
       Map<String, dynamic> body) async {
     final Uri url = Uri.parse(
-        'https://b2cuat.tikipopi.com/index.php/holiday_api/save_cruise_package');
+        'https://holidaymakers.com/holiday_api/save_cruise_package');
     try {
       final response = await http.post(
         url,
@@ -1111,7 +1111,7 @@ class APIHandler {
   static Future<Map<String, dynamic>> validateVoucher(
       Map<String, dynamic> body) async {
     final Uri url = Uri.parse(
-        'https://b2cuat.tikipopi.com/index.php/holiday_api/get_voucher_code_details');
+        'https://holidaymakers.com/holiday_api/get_voucher_code_details');
     try {
       final response = await http.post(
         url,
@@ -1137,7 +1137,7 @@ class APIHandler {
   static Future<Map<String, dynamic>> bookingHistoryList(
       Map<String, dynamic> body) async {
     final Uri url = Uri.parse(
-        'https://b2cuat.tikipopi.com/index.php/holiday_api/user_booking_list');
+        'https://holidaymakers.com/holiday_api/user_booking_list');
     Map<String, String> profileDetails = await _ProfileDetails();
     String token = profileDetails['token'] ?? "";
     String testToken =
@@ -1164,6 +1164,36 @@ class APIHandler {
       return {
         "status": false,
         "message": "Error fetching BookingHistoryList $e",
+        "data": {}
+      };
+    }
+  }
+
+  static Future<Map<String, dynamic>> accountDeactivate(Map<String, dynamic> body) async {
+    Map<String, String> profileDetails = await _ProfileDetails();
+    String token = profileDetails['token'] ?? "";
+    // print("token $token");
+    final Uri url = Uri.parse('https://holidaymakers.com/holiday_api/user_status_update');
+    try {
+      final response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token'
+        },
+        body: jsonEncode(body),
+      );
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = jsonDecode(response.body);
+        return data;
+      } else {
+        print(response.statusCode);
+        throw Exception("Server error: ${response.statusCode}");
+      }
+    } catch (e) {
+      return {
+        "status": false,
+        "message": "Error fetching api response",
         "data": {}
       };
     }
