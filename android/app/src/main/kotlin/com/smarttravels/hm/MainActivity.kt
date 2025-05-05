@@ -1,4 +1,4 @@
-package com.example.HolidayMakers
+package com.smarttravels.hm
 
 import io.flutter.embedding.android.FlutterActivity
 
