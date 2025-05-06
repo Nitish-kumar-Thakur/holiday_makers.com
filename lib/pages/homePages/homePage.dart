@@ -227,51 +227,50 @@ class _HomePageState extends State<HomePage> {
 
   //  Profile Avatar and Brand Logo
   Widget _buildProfileSection() {
-  return Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 20),
-    child: Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        GestureDetector(
-          onTap: () => _scaffoldKey.currentState?.openDrawer(),
-          child: CircleAvatar(
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          GestureDetector(
+            onTap: () => _scaffoldKey.currentState?.openDrawer(),
+            child: CircleAvatar(
               backgroundImage: profileImg.isNotEmpty
                   ? NetworkImage(profileImg)
                   : const AssetImage('img/placeholder.png') as ImageProvider,
               minRadius: 22,
               maxRadius: 22,
             ),
-        ),
-        Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Container(
-              height: 40,
-              width: 200,
-              decoration: const BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage('img/brandLogo.png'),
-                  fit: BoxFit.contain,
+          ),
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                height: 40,
+                width: 200,
+                decoration: const BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage('img/brandLogo.png'),
+                    fit: BoxFit.contain,
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 0), // Optional: explicitly no space
-            const Text(
-              'Explore World with us!',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-                color: Colors.white
+              const SizedBox(height: 0), // Optional: explicitly no space
+              const Text(
+                'Explore World with us!',
+                style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white),
               ),
-            ),
-          ],
-        ),
-      ],
-    ),
-  );
-}
+            ],
+          ),
+        ],
+      ),
+    );
+  }
 
   Widget _builCategorySection() {
     return Container(
@@ -283,8 +282,8 @@ class _HomePageState extends State<HomePage> {
       ),
       padding: EdgeInsets.only(top: 10),
       child: Wrap(
-        spacing: 10,
-        runSpacing: 10,
+        spacing: 8,
+        runSpacing: 8,
         alignment: WrapAlignment.center,
         children: categoryList.map((category) {
           return ElevatedButton(
@@ -301,16 +300,15 @@ class _HomePageState extends State<HomePage> {
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.white,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-                side: const BorderSide(color: Colors.black, width: 0.5)
-              ),
+                  borderRadius: BorderRadius.circular(10),
+                  side: const BorderSide(color: Colors.black, width: 0.5)),
             ),
             child: Text(
               category['title'].toString(),
               style: TextStyle(
-                color: Colors.black,
-                fontSize: 12, fontWeight: FontWeight.bold
-              ),
+                  color: Colors.black,
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold),
             ),
           );
         }).toList(),
@@ -524,14 +522,14 @@ class CirclePainter extends CustomPainter {
     // Draw the smallest circle (light blue)
     // paint.color = Color(0xFFEDF2F4); // Light blue
     // canvas.drawCircle(Offset(centerX, radius - 150), radius + 100, paint);
-    
+
     // // Draw the medium circle (medium blue)
     // paint.color = Color(0xFF4AA9BC); // Medium blue
     // canvas.drawCircle(Offset(centerX, radius - 300), radius + 200, paint);
 
     // Draw the largest circle (dark blue)
     paint.color = Color(0xFF007A8C); // Dark blue
-    canvas.drawCircle(Offset(centerX, radius - 385), radius + 300, paint);
+    canvas.drawCircle(Offset(centerX, radius - 330), radius + 300, paint);
   }
 
   @override

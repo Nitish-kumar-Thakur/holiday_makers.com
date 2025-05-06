@@ -26,9 +26,9 @@ class _MaincarouselState extends State<Maincarousel> {
           itemCount: widget.banner_list.length,
           itemBuilder: (context, index, realIndex) {
             return Container(
-              margin: const EdgeInsets.only(bottom: 10, left: 18, right: 18),
+              margin: const EdgeInsets.only(bottom: 10, left: 15, right: 15),
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(40),
+                borderRadius: BorderRadius.circular(20),
                 image: DecorationImage(
                   image: CachedNetworkImageProvider(
                     widget.banner_list[index]['mobile_img'],
