@@ -13,41 +13,66 @@ class BottomNavigationBarPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width;
-    double iconSize = screenWidth * 0.06; // Icon size based on screen width
+    double iconSize = MediaQuery.of(context).size.width * 0.06;
+    double barWidth = MediaQuery.of(context).size.width * 0.6;
 
-    return BottomNavigationBar(
-      backgroundColor: Colors.white,
-      currentIndex: index,
-      onTap: onTapped,
-      type: BottomNavigationBarType.fixed,
-      showSelectedLabels: true, // ❌ Hide labels
-      showUnselectedLabels: true, // ❌ Hide labels
-      selectedItemColor: Color(0xFF0071BC), // Color for selected label & icon
-      unselectedItemColor: Colors.black54, // Color for unselected label & icon
-      selectedLabelStyle: const TextStyle(fontSize: 12, color: Color(0xFF0071BC)), // Fixed size & color
-      unselectedLabelStyle: const TextStyle(fontSize: 12, color: Colors.black54), // Fixed size & color// Fixed label size
-      iconSize: iconSize.clamp(20, 40), // Keep icons within a reasonable range
-      elevation: 5, // Slight elevation for better UI
-      items: [
-        _buildNavItem(FontAwesomeIcons.house, 0, iconSize, "Home"),
-        _buildNavItem(FontAwesomeIcons.personWalkingLuggage, 1, iconSize,"FIT"),
-        _buildNavItem(FontAwesomeIcons.sailboat, 2, iconSize, "Cruise"),
-        _buildNavItem(FontAwesomeIcons.personHiking, 3, iconSize,"FD"),
-        _buildNavItem(FontAwesomeIcons.user, 4, iconSize, "Account"),
-      ],
+    return Positioned(
+      left: MediaQuery.of(context).size.width * 0.2,
+      right: MediaQuery.of(context).size.width * 0.2,
+      bottom: 30, // Floating position
+      child: Container(
+        width: barWidth,
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(50),
+          border: Border.all(color: Colors.grey.shade400, width: 1),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black26,
+              blurRadius: 12,
+              offset: const Offset(0, 6),
+            ),
+          ],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            _buildNavItem(FontAwesomeIcons.house, "Home", 0, iconSize),
+            _buildNavItem(FontAwesomeIcons.user, "Account", 1, iconSize),
+          ],
+        ),
+      ),
     );
   }
 
-  BottomNavigationBarItem _buildNavItem(
-      IconData icon, int itemIndex, double iconSize, String label) {
-    return BottomNavigationBarItem(
-      icon: Icon(
-        icon,
-        size: iconSize,
-        color: index == itemIndex ? Color(0xFF0071BC) : Colors.black54,
+  Widget _buildNavItem(IconData icon, String label, int itemIndex, double iconSize) {
+    bool isSelected = index == itemIndex;
+
+    return GestureDetector(
+      onTap: () => onTapped(itemIndex),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            child: Icon(
+              icon,
+              size: iconSize,
+              color: isSelected ? const Color(0xFF0071BC) : Colors.black54,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 11,
+              color: isSelected ? const Color(0xFF0071BC) : Colors.black54,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
       ),
-      label:  label, backgroundColor: index == itemIndex ? Color(0xFF0071BC) : Colors.black54, // ✅ Empty label to avoid errors
     );
   }
 }

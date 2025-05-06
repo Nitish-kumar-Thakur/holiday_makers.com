@@ -8,28 +8,30 @@ import 'package:HolidayMakers/widgets/drawerPage.dart';
 import 'package:HolidayMakers/widgets/mainCarousel.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class Homepage2 extends StatefulWidget {
-  final List<Map<String, dynamic>> packageList;
-  final String title;
+class HomePageCategory extends StatefulWidget {
   final List<Map<String, dynamic>> banner_list;
+  final String categoryId;
 
-  const Homepage2({Key? key, required this.packageList, required this.title, required this.banner_list}) : super(key: key);
+  const HomePageCategory({Key? key, required this.categoryId, required this.banner_list})
+      : super(key: key);
 
   @override
-  State<Homepage2> createState() => _Homepage2State();
+  State<HomePageCategory> createState() => _HomePageCategoryState();
 }
 
-class _Homepage2State extends State<Homepage2> {
+class _HomePageCategoryState extends State<HomePageCategory> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   String profileImg = '';
-  bool isLoading = false;
-  // List<Map<String, dynamic>> banner_list = [];
-
+  bool isLoading = true;
+  // List<Map<String, dynamic>> banner_list = widget.banner_list;
+  List<dynamic> packageList = [];
+  String title = "";
   @override
   void initState() {
     super.initState();
     _loadProfileDetails();
     // _fetchHomePageData();
+    _fetchPackageDetails();
   }
 
   Future<void> _loadProfileDetails() async {
@@ -45,8 +47,8 @@ class _Homepage2State extends State<Homepage2> {
   //     setState(() {
   //       banner_list =
   //           List<Map<String, dynamic>>.from(data['data']['banner_list']);
-  //       isLoading = false;
   //     });
+  //     _fetchPackageDetails();
   //   } catch (e) {
   //     setState(() {
   //       isLoading = false;
@@ -54,6 +56,23 @@ class _Homepage2State extends State<Homepage2> {
   //     print('Error: $e');
   //   }
   // }
+
+  Future<void> _fetchPackageDetails() async {
+    Map<String, dynamic> body = {"category_id": widget.categoryId};
+    try {
+      final data = await APIHandler.categoryIdWisePackageList(body);
+      setState(() {
+        title = data['data'][0]['category_name'];
+        packageList = data['data'][0]['package_list'];
+        isLoading = false;
+      });
+    } catch (error) {
+      print("Error fetching category ID wise packages: $error");
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,26 +87,27 @@ class _Homepage2State extends State<Homepage2> {
                 children: [
                   _buildTopCurve(),
                   Row(
-              children: [
-                IconButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  icon: CircleAvatar(
-                    backgroundColor: Colors.grey.withOpacity(0.6),  // Transparent grey background
-                    child: Text(
-                      '<',  // Use "<" symbol
-                      style: TextStyle(
-                        color: Colors.white,  // White text color
-                        fontSize: 24,  // Adjust font size as needed
-                        fontWeight: FontWeight.bold,  // Make the "<" bold if needed
+                    children: [
+                      IconButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        icon: CircleAvatar(
+                          backgroundColor: Colors.grey
+                              .withOpacity(0.6), // Transparent grey background
+                          child: Text(
+                            '<', // Use "<" symbol
+                            style: TextStyle(
+                              color: Colors.white, // White text color
+                              fontSize: 24, // Adjust font size as needed
+                              fontWeight: FontWeight
+                                  .bold, // Make the "<" bold if needed
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
+                    ],
                   ),
-                ),
-                
-              ],
-            ),
                   Maincarousel(banner_list: widget.banner_list),
                   SizedBox(
                     height: 10,
@@ -151,7 +171,7 @@ class _Homepage2State extends State<Homepage2> {
         children: [
           // Title above the section
           Text(
-            (widget.title + ' Packages').toUpperCase(), // Title text
+            title.toUpperCase(), // Title text
             style: TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.bold,
@@ -169,39 +189,40 @@ class _Homepage2State extends State<Homepage2> {
           GridView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            itemCount: widget.packageList.length,
+            itemCount: packageList.length,
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
               crossAxisSpacing: 10,
               mainAxisSpacing: 10,
             ),
             itemBuilder: (context, index) {
-              final package = widget.packageList[index];
+              final package = packageList[index];
               return GestureDetector(
                 onTap: () {
-                  print(package["id"].toString());
-                  if (package["id"] == "cruise") {
+                  if (package["package_type"] == "cruise") {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => CruisePackageDetails(packageId: package["packageId"]),
+                        builder: (context) => CruisePackageDetails(
+                            packageId: package["package_id"]),
                       ),
                     );
                   } else {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) =>
-                            DeparturePackageDetails(packageId: package["packageId"])
-                      ),
+                          builder: (context) => DeparturePackageDetails(
+                              packageId: package["package_id"])),
                     );
                   }
                 },
                 child: ResponsiveCard(
-                  image: package['image'] ?? 'img/placeholder.png',
-                  title: package['name'] ?? 'Package Name',
-                  subtitle: package['country'] ?? 'Location',
-                  price: "${package['currency']} ${package['price'] ?? 'N/A'}",
+                  image: package['package_homepage_image'] ??
+                      'img/placeholder.png',
+                  title: package['package_name'] ?? 'Package Name',
+                  subtitle: package['country_name'] ?? 'Location',
+                  price:
+                      "${package['currency']} ${package['discounted_price'] ?? 'N/A'}",
                   screenWidth: screenWidth,
                 ),
               );

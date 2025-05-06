@@ -20,6 +20,7 @@ class _MainpageState extends State<Mainpage> {
   final List<int> _historyStack = [];
   String firstName = "";
   List<Widget> _pages = [];
+  bool isloading= false;
 
   @override
   void initState() {
@@ -33,9 +34,6 @@ class _MainpageState extends State<Mainpage> {
       firstName = prefs.getString("first_name") ?? "";
       _pages = [
         HomePage(),
-        IndependentTravelerPage(),
-        CurisesHome(),
-        DeparturesHome(),
         firstName.trim().isEmpty ? LoginPage(backbutton: true,) : ProfilePage(backbutton: true,),
       ];
     });
@@ -53,27 +51,32 @@ class _MainpageState extends State<Mainpage> {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: () async {
-        if (_historyStack.isNotEmpty) {
-          setState(() {
-            _selectedIndex = _historyStack.removeLast();
-          });
-          return false;
-        }
-        return true;
-      },
-      child: Scaffold(
-        bottomNavigationBar: BottomNavigationBarPage(
-          index: _selectedIndex,
-          onTapped: _onItemTapped,
-        ),
-        body: _pages.isEmpty
-            ? Center(child: CircularProgressIndicator())
-            : IndexedStack(
+  onWillPop: () async {
+    if (_historyStack.isNotEmpty) {
+      setState(() {
+        _selectedIndex = _historyStack.removeLast();
+      });
+      return false;
+    }
+    return true;
+  },
+  child: Scaffold(
+    body: Stack(
+      children: [
+        // isloading
+        //     ? const Center(child: CircularProgressIndicator())
+        //     : 
+            IndexedStack(
                 index: _selectedIndex,
                 children: _pages,
               ),
-      ),
-    );
+        BottomNavigationBarPage(
+          index: _selectedIndex,
+          onTapped: _onItemTapped,
+        ),
+      ],
+    ),
+  ),
+);
   }
 }

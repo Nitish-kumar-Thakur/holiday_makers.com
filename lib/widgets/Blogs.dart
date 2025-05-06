@@ -23,14 +23,11 @@ class _BlogsPageState extends State<BlogsPage> {
 
   Future<List<dynamic>> _fetchBlogs() async {
     try {
-      final response = await APIHandler.HomePageData();
-      if (response['data'] != null && response['data']['blogs'] != null) {
-        _allBlogs = response['data']['blogs'];
+      final response = await APIHandler.getBlogList();
+      _allBlogs = response['data']['blogs'];
         _filteredBlogs = List.from(_allBlogs); // Populate _filteredBlogs initially
         print('Blogs fetched: $_allBlogs'); // Debugging
         return _allBlogs;
-      }
-      throw Exception("No blogs found");
     } catch (e) {
       print("Error: $e");
       rethrow;

@@ -19,16 +19,18 @@ class _MaincarouselState extends State<Maincarousel> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        SizedBox(height: 15,),
+        SizedBox(
+          height: 15,
+        ),
         CarouselSlider.builder(
           itemCount: widget.banner_list.length,
           itemBuilder: (context, index, realIndex) {
             return Container(
-              margin: const EdgeInsets.only(bottom: 10),
+              margin: const EdgeInsets.only(bottom: 10, left: 18, right: 18),
               decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(40),
                 image: DecorationImage(
                   image: CachedNetworkImageProvider(
-                    
                     widget.banner_list[index]['mobile_img'],
                     // Optionally add a placeholder or handle error.
                   ),

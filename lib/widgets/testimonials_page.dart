@@ -20,11 +20,9 @@ class _TestimonialsPageState extends State<TestimonialsPage> {
 
   Future<List<dynamic>> _fetchTestimonials() async {
     try {
-      final response = await APIHandler.HomePageData();
-      if (response['data'] != null && response['data']['testimonials'] != null) {
-        return response['data']['testimonials'];
-      }
-      throw Exception("No testimonials found");
+      final response = await APIHandler.getTestimonialList();
+      return response['data']['testimonials'];
+      
     } catch (e) {
       print("Error: $e");
       rethrow;

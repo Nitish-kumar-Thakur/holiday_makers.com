@@ -1198,4 +1198,51 @@ class APIHandler {
       };
     }
   }
+  static Future<Map<String, dynamic>> getTestimonialList() async {
+    try {
+      final response = await http.get(Uri.parse(
+          'https://holidaymakers.com/holiday_api/get_testimonial_list'));
+      if (response.statusCode == 200) {
+        return json.decode(response.body);
+      } else {
+        throw Exception("Failed to load Testimonial list...");
+      }
+    } catch (e) {
+      print("API Error: $e");
+      throw Exception("Error fetching Testimonial list");
+    }
+  }
+  static Future<Map<String, dynamic>> getBlogList() async {
+    try {
+      final response = await http.get(Uri.parse(
+          'https://holidaymakers.com/holiday_api/get_blog_list'));
+      if (response.statusCode == 200) {
+        return json.decode(response.body);
+      } else {
+        throw Exception("Failed to load Blog list...");
+      }
+    } catch (e) {
+      print("API Error: $e");
+      throw Exception("Error fetching Blog list");
+    }
+  }
+  static Future<Map<String, dynamic>> categoryIdWisePackageList(Map<String, dynamic> body) async {
+  final String url = 'https://holidaymakers.com//holiday_api/get_category_id_wise_package_list';
+
+  try {
+    final response = await http.post(
+      Uri.parse(url),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(body),
+    );
+
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else {
+      throw Exception('Failed to load category ID wise packages');
+    }
+  } catch (e) {
+    throw Exception('Error fetching category ID wise packages: $e');
+  }
+}
 }

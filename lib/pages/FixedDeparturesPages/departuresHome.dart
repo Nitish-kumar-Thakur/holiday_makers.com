@@ -12,7 +12,8 @@ import 'package:shared_preferences/shared_preferences.dart'; // For date formatt
 import 'package:shimmer/shimmer.dart'; // For shimmer effect
 
 class DeparturesHome extends StatefulWidget {
-  const DeparturesHome({super.key});
+  final List<Map<String, dynamic>> banner_list;
+  const DeparturesHome({super.key, required this.banner_list});
 
   @override
   State<DeparturesHome> createState() => _DeparturesHomeState();
@@ -30,7 +31,7 @@ class _DeparturesHomeState extends State<DeparturesHome> {
   String profileImg = '';
   bool isLoading = true; // Loading flag
   List<Map<String, dynamic>> fdPackages = [];
-  List<Map<String, dynamic>> bannerList = [];
+  // List<Map<String, dynamic>> bannerList = [];
 
   @override
   void initState() {
@@ -38,7 +39,7 @@ class _DeparturesHomeState extends State<DeparturesHome> {
     _loadProfileDetails();
     _fetchCountryAndMonthLists(); // Fetch dropdown data.
     _fetchFDPackages('', ''); // Fetch cruise package data.
-    _fetchHomePageData();
+    // _fetchHomePageData();
   }
 
   Future<void> _loadProfileDetails() async {
@@ -52,24 +53,24 @@ class _DeparturesHomeState extends State<DeparturesHome> {
     }
   }
 
-  Future<void> _fetchHomePageData() async {
-    try {
-      final data = await APIHandler.HomePageData();
+  // Future<void> _fetchHomePageData() async {
+  //   try {
+  //     final data = await APIHandler.HomePageData();
 
-      setState(() {
-        bannerList = List<Map<String, dynamic>>.from(
-          data['data']['banner_list'].map((item) => {
-            'img': item['img'],
-            'mobile_img': item['mobile_img'],
-            'link': item['link'],
-          }),
-        );
-        isLoading = false;
-      });
-    } catch (e) {
-      print('Error fetching homepage data: $e');
-    }
-  }
+  //     setState(() {
+  //       bannerList = List<Map<String, dynamic>>.from(
+  //         data['data']['banner_list'].map((item) => {
+  //           'img': item['img'],
+  //           'mobile_img': item['mobile_img'],
+  //           'link': item['link'],
+  //         }),
+  //       );
+  //       isLoading = false;
+  //     });
+  //   } catch (e) {
+  //     print('Error fetching homepage data: $e');
+  //   }
+  // }
 
   Future<void> _fetchCountryAndMonthLists() async {
     try {
@@ -86,6 +87,7 @@ class _DeparturesHomeState extends State<DeparturesHome> {
           {'name': 'All', 'code': ''}, // "All" option for months
           ...response['monthList']!,
         ];
+        isLoading = false;
       });
     } catch (error) {
       debugPrint('Error fetching country and month lists: $error');
@@ -95,10 +97,10 @@ class _DeparturesHomeState extends State<DeparturesHome> {
   Future<void> _fetchFDPackages(String country, String month) async {
     print(country);
     print(month);
-    if(month == "All"){
+    if (month == "All") {
       month = '';
     }
-    if(country == "All"){
+    if (country == "All") {
       country = '';
     }
     try {
@@ -161,11 +163,30 @@ class _DeparturesHomeState extends State<DeparturesHome> {
                 children: [
                   // _buildHeader(),
                   // _buildProfileSection(),
-                  CustomPaint(
-                    size: Size(double.infinity, 80),
-                    painter: CirclePainter(radius: 200),
+                  _buildTopCurve(),
+                  Row(
+                    children: [
+                      IconButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        icon: CircleAvatar(
+                          backgroundColor: Colors.grey
+                              .withOpacity(0.6), // Transparent grey background
+                          child: Text(
+                            '<', // Use "<" symbol
+                            style: TextStyle(
+                              color: Colors.white, // White text color
+                              fontSize: 24, // Adjust font size as needed
+                              fontWeight: FontWeight
+                                  .bold, // Make the "<" bold if needed
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                  Maincarousel(banner_list: bannerList),
+                  Maincarousel(banner_list: widget.banner_list),
                   // _buildDropdownSection(),
                   // _buildFilterSection(),
                   const SizedBox(height: 20),
@@ -181,7 +202,8 @@ class _DeparturesHomeState extends State<DeparturesHome> {
                         ),
                         IconButton(
                           onPressed: _openFilterBottomSheet,
-                          icon: Icon(Icons.filter_list, color: Color(0xFF009EE2), size: 35),
+                          icon: Icon(Icons.filter_list,
+                              color: Color(0xFF009EE2), size: 35),
                         ),
                       ],
                     ),
@@ -247,7 +269,15 @@ class _DeparturesHomeState extends State<DeparturesHome> {
   //     ],
   //   );
   // }
-
+  Widget _buildTopCurve() {
+    return Padding(
+      padding: const EdgeInsets.only(top: 50), // 20% of the screen height
+      child: CustomPaint(
+        size: Size(double.infinity, 20), // Height of the curved area
+        painter: CirclePainter(radius: 200),
+      ),
+    );
+  }
   // Shimmer for Dropdown Section
   Widget _buildDropdownSectionShimmer() {
     return Padding(
@@ -452,9 +482,11 @@ class _DeparturesHomeState extends State<DeparturesHome> {
                             // Country Section
                             Row(
                               children: [
-                                Icon(Icons.location_on, color: Colors.black, size: 24),
+                                Icon(Icons.location_on,
+                                    color: Colors.black, size: 24),
                                 SizedBox(width: 8),
-                                Text("Select Country", style: TextStyle(fontSize: 20)),
+                                Text("Select Country",
+                                    style: TextStyle(fontSize: 20)),
                               ],
                             ),
                             SizedBox(height: 10),
@@ -477,9 +509,10 @@ class _DeparturesHomeState extends State<DeparturesHome> {
                                       });
                                     },
                                     style: ElevatedButton.styleFrom(
-                                      backgroundColor: selectedCountry == country['id']
-                                          ? Color(0xFF009EE2)
-                                          : Colors.white,
+                                      backgroundColor:
+                                          selectedCountry == country['id']
+                                              ? Color(0xFF009EE2)
+                                              : Colors.white,
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(10),
                                       ),
@@ -501,9 +534,11 @@ class _DeparturesHomeState extends State<DeparturesHome> {
                             // Month Section
                             Row(
                               children: [
-                                Icon(Icons.calendar_month, color: Colors.black, size: 24),
+                                Icon(Icons.calendar_month,
+                                    color: Colors.black, size: 24),
                                 SizedBox(width: 8),
-                                Text("Select Month", style: TextStyle(fontSize: 20)),
+                                Text("Select Month",
+                                    style: TextStyle(fontSize: 20)),
                               ],
                             ),
                             SizedBox(height: 10),
@@ -526,9 +561,10 @@ class _DeparturesHomeState extends State<DeparturesHome> {
                                       });
                                     },
                                     style: ElevatedButton.styleFrom(
-                                      backgroundColor: selectedMonth == month['name']
-                                          ? Color(0xFF009EE2)
-                                          : Colors.white,
+                                      backgroundColor:
+                                          selectedMonth == month['name']
+                                              ? Color(0xFF009EE2)
+                                              : Colors.white,
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(10),
                                       ),
@@ -554,13 +590,15 @@ class _DeparturesHomeState extends State<DeparturesHome> {
 
                   // Apply Filters Button
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 10),
                     child: SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
                         onPressed: () {
                           Navigator.pop(context);
-                          _fetchFDPackages(selectedCountry ?? '', selectedMonth ?? '');
+                          _fetchFDPackages(
+                              selectedCountry ?? '', selectedMonth ?? '');
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Color(0xFF009EE2),
@@ -568,7 +606,8 @@ class _DeparturesHomeState extends State<DeparturesHome> {
                             borderRadius: BorderRadius.circular(10),
                           ),
                         ),
-                        child: Text("Apply Filters", style: TextStyle(color: Colors.white)),
+                        child: Text("Apply Filters",
+                            style: TextStyle(color: Colors.white)),
                       ),
                     ),
                   ),
@@ -580,7 +619,6 @@ class _DeparturesHomeState extends State<DeparturesHome> {
       },
     );
   }
-
 
   // Normal Package Grid
   Widget _buildPackageGrid(double screenWidth) {
@@ -597,14 +635,14 @@ class _DeparturesHomeState extends State<DeparturesHome> {
               ),
             )
           : Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // AppLargeText(
-              //   text: 'FIXED DEPARTURE DEALS',
-              //   color: Color(0xFF009EE2),
-              //   size: 24,
-              // ),
-              GridView.builder(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // AppLargeText(
+                //   text: 'FIXED DEPARTURE DEALS',
+                //   color: Color(0xFF009EE2),
+                //   size: 24,
+                // ),
+                GridView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: fdPackages.length,
@@ -647,8 +685,8 @@ class _DeparturesHomeState extends State<DeparturesHome> {
                     );
                   },
                 ),
-            ],
-          ),
+              ],
+            ),
     );
   }
 }

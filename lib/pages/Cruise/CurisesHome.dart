@@ -10,7 +10,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
 
 class CurisesHome extends StatefulWidget {
-  const CurisesHome({Key? key}) : super(key: key);
+  final List<Map<String, dynamic>> banner_list;
+  const CurisesHome({Key? key, required this.banner_list}) : super(key: key);
 
   @override
   State<CurisesHome> createState() => _CurisesHomeState();
@@ -36,7 +37,7 @@ class _CurisesHomeState extends State<CurisesHome> {
     _loadProfileDetails();
     _fetchCountryAndMonthLists(); // Fetch dropdown data.
     _fetchCruisePackages('', ''); // Fetch cruise package data.
-    _fetchHomePageData();
+    // _fetchHomePageData();
   }
 
   Future<void> _loadProfileDetails() async {
@@ -71,24 +72,24 @@ class _CurisesHomeState extends State<CurisesHome> {
     }
   }
 
-  Future<void> _fetchHomePageData() async {
-    try {
-      final data = await APIHandler.HomePageData();
+  // Future<void> _fetchHomePageData() async {
+  //   try {
+  //     final data = await APIHandler.HomePageData();
 
-      setState(() {
-        bannerList = List<Map<String, dynamic>>.from(
-          data['data']['banner_list'].map((item) => {
-            'img': item['img'],
-            'mobile_img': item['mobile_img'],
-            'link': item['link'],
-          }),
-        );
-        isLoading = false;
-      });
-    } catch (e) {
-      print('Error fetching homepage data: $e');
-    }
-  }
+  //     setState(() {
+  //       bannerList = List<Map<String, dynamic>>.from(
+  //         data['data']['banner_list'].map((item) => {
+  //           'img': item['img'],
+  //           'mobile_img': item['mobile_img'],
+  //           'link': item['link'],
+  //         }),
+  //       );
+  //       isLoading = false;
+  //     });
+  //   } catch (e) {
+  //     print('Error fetching homepage data: $e');
+  //   }
+  // }
 
   Future<void> _fetchCruisePackages(String country, String month) async {
     print(country);
@@ -144,11 +145,31 @@ class _CurisesHomeState extends State<CurisesHome> {
                 children: [
                   // _buildHeader(),
                   // _buildProfileSection(),
-                  CustomPaint(
-                    size: Size(double.infinity, 80),
-                    painter: CirclePainter(radius: 200),
+                  _buildTopCurve(),
+                  Row(
+                    children: [
+                      IconButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        icon: CircleAvatar(
+                          backgroundColor: Colors.grey
+                              .withOpacity(0.6), // Transparent grey background
+                          child: Text(
+                            '<', // Use "<" symbol
+                            style: TextStyle(
+                              color: Colors.white, // White text color
+                              fontSize: 24, // Adjust font size as needed
+                              fontWeight: FontWeight
+                                  .bold, // Make the "<" bold if needed
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                  Maincarousel(banner_list: bannerList),
+                  
+                  Maincarousel(banner_list: widget.banner_list),
                   // _buildDropdownSection(),
                   // _buildFilterSection(),
                   const SizedBox(height: 20),
@@ -620,7 +641,15 @@ class _CurisesHomeState extends State<CurisesHome> {
   //     ),
   //   );
   // }
-
+  Widget _buildTopCurve() {
+    return Padding(
+      padding: const EdgeInsets.only(top: 50), // 20% of the screen height
+      child: CustomPaint(
+        size: Size(double.infinity, 20), // Height of the curved area
+        painter: CirclePainter(radius: 200),
+      ),
+    );
+  }
   // Normal Package Grid
   Widget _buildPackageGrid(double screenWidth) {
     return Padding(
@@ -630,7 +659,7 @@ class _CurisesHomeState extends State<CurisesHome> {
               child: Padding(
                 padding: const EdgeInsets.all(20.0),
                 child: Text(
-                  'No Compatible Packages Available',
+                  'Coming Soon...',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
               ),

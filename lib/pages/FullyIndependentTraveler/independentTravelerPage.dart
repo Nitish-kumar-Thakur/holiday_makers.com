@@ -217,7 +217,7 @@ class _IndependentTravelerPageState extends State<IndependentTravelerPage>
 
   Widget _buildTopCurve() {
     return Padding(
-      padding: const EdgeInsets.only(top: 50), // 20% of the screen height
+      padding: const EdgeInsets.only(top: 20), // 20% of the screen height
       child: CustomPaint(
         size: Size(double.infinity, 0), // Height of the curved area
         painter: CirclePainter(radius: 200),
@@ -235,43 +235,70 @@ class _IndependentTravelerPageState extends State<IndependentTravelerPage>
       // appBar: AppBar(
       //   backgroundColor: Colors.white,
       //   leading: IconButton(
-      //     icon: Icon(Icons.arrow_back, color: Colors.black),
-      //     onPressed: () {
-      //       Navigator.pop(context);
-      //     },
-      //   ),
+      //             onPressed: () {
+      //               Navigator.pop(context);
+      //             },
+      //             icon: CircleAvatar(
+      //               backgroundColor: Colors.grey.withOpacity(0.6),  // Transparent grey background
+      //               child: Text(
+      //                 '<',  // Use "<" symbol
+      //                 style: TextStyle(
+      //                   color: Colors.white,  // White text color
+      //                   fontSize: 24,  // Adjust font size as needed
+      //                   fontWeight: FontWeight.bold,  // Make the "<" bold if needed
+      //                 ),
+      //               ),
+      //             ),
+      //           ), 
       // ),
       key: _scaffoldKey,
       drawer: Drawerpage(),
       body: SafeArea(
         child: SingleChildScrollView(
-          child: Padding(
+          // child: Padding(
             // padding: const EdgeInsets.all(25),
-            padding: const EdgeInsets.symmetric(horizontal: 25),
+            // padding: const EdgeInsets.symmetric(horizontal: 25),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildTopCurve(),
-                  // AppLargeText(
-                  //   text: 'Fully Independent Traveler'.toUpperCase(),
-                  //   size: 24,
-                  //   color: Colors.white,
-                  // ),
-                  Text('Fully Independent Traveler'.toUpperCase(),
-                      style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
-                      textAlign: TextAlign.center,
+                  Row(
+                    children: [
+                      IconButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        icon: CircleAvatar(
+                          backgroundColor: Colors.grey
+                              .withOpacity(0.6), // Transparent grey background
+                          child: Text(
+                            '<', // Use "<" symbol
+                            style: TextStyle(
+                              color: Colors.white, // White text color
+                              fontSize: 24, // Adjust font size as needed
+                              fontWeight: FontWeight
+                                  .bold, // Make the "<" bold if needed
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
+                  
+                  
                   const SizedBox(height: 30),
                   // Wrap the contents in a container with background image and box shadow
                   Container(
+                    padding: const EdgeInsets.all(25),
+                    // padding: const EdgeInsets.symmetric(horizontal: 25),
                     height: screenHeight * 0.67, // Increased height of the container (adjust as needed)
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20), // Rounded corners for the container
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(1), // Shadow color
-                          offset: Offset(0, 4), // Shadow offset (vertical displacement)
-                          blurRadius: 20, // Softens the shadow
+                          color: Colors.black.withOpacity(0.5), // Shadow color
+                          offset: Offset(0, 3), // Shadow offset (vertical displacement)
+                          blurRadius: 50, // Softens the shadow
                           spreadRadius: 1, // Extends the shadow
                         ),
                       ],
@@ -465,7 +492,7 @@ class _IndependentTravelerPageState extends State<IndependentTravelerPage>
                   ),
                 ],
               ),
-          ),
+          // ),
         ),
       ),
     );
