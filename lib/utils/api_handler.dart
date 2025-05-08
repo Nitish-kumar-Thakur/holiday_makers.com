@@ -1245,4 +1245,18 @@ class APIHandler {
     throw Exception('Error fetching category ID wise packages: $e');
   }
 }
+static Future<Map<String, dynamic>> getSplashScreen() async {
+    try {
+      final response = await http.get(Uri.parse(
+          'https://holidaymakers.com/holiday_api/flashscreen_image_list'));
+      if (response.statusCode == 200) {
+        return json.decode(response.body);
+      } else {
+        throw Exception("Failed to load Blog list...");
+      }
+    } catch (e) {
+      print("API Error: $e");
+      throw Exception("Error fetching Blog list");
+    }
+  }
 }

@@ -303,7 +303,7 @@ class _CruisePackageDetailsState extends State<CruisePackageDetails> {
                                             .trim()
                                             .isNotEmpty) ...[
                                       Text(
-                                        "Package Overview",
+                                        "Overview",
                                         style: TextStyle(
                                           fontSize: 18,
                                           fontWeight: FontWeight.bold,
@@ -339,7 +339,7 @@ class _CruisePackageDetailsState extends State<CruisePackageDetails> {
                                             .trim()
                                             .isNotEmpty) ...[
                                       Text(
-                                        "Package Highlights",
+                                        "Highlights",
                                         style: TextStyle(
                                           fontSize: 18,
                                           fontWeight: FontWeight.bold,
@@ -375,7 +375,7 @@ class _CruisePackageDetailsState extends State<CruisePackageDetails> {
                                             .trim()
                                             .isNotEmpty) ...[
                                       Text(
-                                        "Package Inclusions",
+                                        "Inclusions",
                                         style: TextStyle(
                                           fontSize: 18,
                                           fontWeight: FontWeight.bold,
@@ -410,7 +410,7 @@ class _CruisePackageDetailsState extends State<CruisePackageDetails> {
                                             .trim()
                                             .isNotEmpty) ...[
                                       Text(
-                                        "Package Terms",
+                                        "Terms and Conditions",
                                         style: TextStyle(
                                           fontSize: 18,
                                           fontWeight: FontWeight.bold,

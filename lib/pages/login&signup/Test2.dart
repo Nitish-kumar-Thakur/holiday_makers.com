@@ -3,13 +3,14 @@ import 'package:HolidayMakers/utils/api_handler.dart';
 import 'package:HolidayMakers/widgets/terms_and_conditions_page.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 
 class Signuppage extends StatefulWidget {
-  final bool backbutton;
-  const Signuppage({super.key, required this.backbutton});
+  // final bool backbutton;
+  const Signuppage({super.key});
   @override
   State<Signuppage> createState() => _SignuppageState();
 }
@@ -90,11 +91,9 @@ class _SignuppageState extends State<Signuppage> {
 
       if (result['status'] == true) {
         // Fluttertoast.showToast(msg: result['message'] ?? "Registered successfully.");
-        showSuccessDialog(context, stripHtmlTags(result['message']) ?? "Registered successfully.");
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => LoginPage()),
-        );
+        _isLoading = false;
+        showSuccessDialog(context, result['message'] ?? "Registered successfully.");
+        
       } else {
         Fluttertoast.showToast(msg: result['message'] ?? 'Registration failed.');
         setState(() {
@@ -109,7 +108,7 @@ class _SignuppageState extends State<Signuppage> {
     }
   }
 
-  void showSuccessDialog(BuildContext context, String message) {
+  void showSuccessDialog(BuildContext context, String htmlMessage) {
   showDialog(
     context: context,
     barrierDismissible: false,
@@ -119,33 +118,59 @@ class _SignuppageState extends State<Signuppage> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
         child: Padding(
           padding: const EdgeInsets.all(20.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              AnimatedScale(
-                scale: 1.0,
-                duration: Duration(milliseconds: 500),
-                child: Icon(Icons.check_circle, color: Colors.green, size: 80),
-              ),
-              SizedBox(height: 20),
-              Text(
-                "Success",
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 10),
-              Text(message, textAlign: TextAlign.center),
-              SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).pop(); // Close dialog
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => LoginPage()),
-                  );
-                },
-                child: Text("Continue"),
-              ),
-            ],
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                AnimatedScale(
+                  scale: 1.0,
+                  duration: Duration(milliseconds: 500),
+                  child: Icon(Icons.check_circle, color: Colors.green, size: 80),
+                ),
+                SizedBox(height: 10),
+                Text(
+                  "Success",
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 10),
+                Html(
+                  data: htmlMessage,
+                  // style: {
+                  //   "h1": Style(
+                  //     // fontSize: FontSize.medium, // Smaller for dialog readability
+                  //     fontWeight: FontWeight.w900,
+                  //     textAlign: TextAlign.center,
+                  //     margin: Margins.only(bottom: 10),
+                  //   ),
+                  //   "h2": Style(
+                  //     fontSize: FontSize.medium,
+                  //     fontWeight: FontWeight.w700,
+                  //     textAlign: TextAlign.center,
+                  //     margin: Margins.only(bottom: 10),
+                  //   ),
+                  //   "span": Style(
+                  //     color: Color(0xFFFBC400),
+                  //     fontWeight: FontWeight.bold,
+                  //   ),
+                  //   "body": Style(
+                  //      padding: HtmlPaddings.zero,
+                  //     margin: Margins.zero,
+                  //   )
+                  // },
+                ),
+                SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Close dialog
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => LoginPage()),
+                    );
+                  },
+                  child: Text("Continue"),
+                ),
+              ],
+            ),
           ),
         ),
       );
@@ -153,9 +178,10 @@ class _SignuppageState extends State<Signuppage> {
   );
 }
 
+
 void newFunction() {
-  final plainMessage = stripHtmlTags("<h1>Registered successfully. Please check your email for verification</h1>");
-  showSuccessDialog(context, plainMessage);
+  final plainMessage = stripHtmlTags("<h1>Registered successfully. Please check your email for verification </h1> <br/> <h2>Please enter blow voucher code to avail 100 AED discount <br/> <span style='color:#fbc400;'>AHPFOUC</span></h2>");
+  showSuccessDialog(context, "<h1>Registered successfully. Please check your email for verification </h1> <br/> <h2>Please enter blow voucher code to avail 100 AED discount <br/> <span style='color:#fbc400;'>AHPFOUC</span></h2>");
 }
 String stripHtmlTags(String htmlText) {
   final regex = RegExp(r'<[^>]*>', multiLine: true, caseSensitive: true);
@@ -176,9 +202,7 @@ String stripHtmlTags(String htmlText) {
           body: Column(
             children: [
               const SizedBox(height: 50),
-              widget.backbutton
-                  ? Container()
-                  : Row(
+               Row(
                       children: [
                         IconButton(
                           onPressed: () {
