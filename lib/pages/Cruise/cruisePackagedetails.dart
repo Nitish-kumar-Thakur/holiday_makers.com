@@ -330,42 +330,6 @@ class _CruisePackageDetailsState extends State<CruisePackageDetails> {
                                       const SizedBox(height: 10),
                                     ],
 
-                                    // Package Terms Section
-                                    if (packageData['cruise_details']
-                                                ['cruise_terms'] !=
-                                            null &&
-                                        packageData['cruise_details']
-                                                ['cruise_terms']
-                                            .trim()
-                                            .isNotEmpty) ...[
-                                      Text(
-                                        "Package Terms",
-                                        style: TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.black87,
-                                        ),
-                                      ),
-                                      Html(
-                                        data: packageData['cruise_details']
-                                                ['cruise_terms'] ??
-                                            "",
-                                        style: {
-                                          "ul": Style(
-                                              padding: HtmlPaddings.symmetric(
-                                                  horizontal: 8, vertical: 0)),
-                                          "li": Style(
-                                              textAlign: TextAlign.justify,
-                                              fontSize: FontSize.medium,
-                                              margin: Margins.only(bottom: 4)),
-                                          "p": Style(
-                                              textAlign: TextAlign.justify,
-                                              fontSize: FontSize.medium),
-                                        },
-                                      ),
-                                      const SizedBox(height: 10),
-                                    ],
-
                                     // Package Highlights Section
                                     if (packageData['cruise_details']
                                                 ['cruise_highlight'] !=
@@ -421,6 +385,41 @@ class _CruisePackageDetailsState extends State<CruisePackageDetails> {
                                       Html(
                                         data: packageData['cruise_details']
                                                 ['cruise_inclusion_others'] ??
+                                            "",
+                                        style: {
+                                          "ul": Style(
+                                              padding: HtmlPaddings.symmetric(
+                                                  horizontal: 8, vertical: 0)),
+                                          "li": Style(
+                                              textAlign: TextAlign.justify,
+                                              fontSize: FontSize.medium,
+                                              margin: Margins.only(bottom: 4)),
+                                          "p": Style(
+                                              textAlign: TextAlign.justify,
+                                              fontSize: FontSize.medium),
+                                        },
+                                      ),
+                                      const SizedBox(height: 10),
+                                    ],
+                                    // Package Terms Section
+                                    if (packageData['cruise_details']
+                                                ['cruise_terms'] !=
+                                            null &&
+                                        packageData['cruise_details']
+                                                ['cruise_terms']
+                                            .trim()
+                                            .isNotEmpty) ...[
+                                      Text(
+                                        "Package Terms",
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.black87,
+                                        ),
+                                      ),
+                                      Html(
+                                        data: packageData['cruise_details']
+                                                ['cruise_terms'] ??
                                             "",
                                         style: {
                                           "ul": Style(

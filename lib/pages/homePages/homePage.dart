@@ -43,9 +43,9 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _fetchHomePageData() async {
-    try {
+    try { 
       final data = await APIHandler.HomePageData();
-
+  
       setState(() {
         bannerList = List<Map<String, dynamic>>.from(
           data['data']['banner_list'].map((item) => {
@@ -71,7 +71,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _fetchPackageData() async {
-    try {
+    try { 
       final data = await APIHandler.getPackagesData();
 
       List<Map<String, dynamic>> fetchedSections = (data['data'] as List)
@@ -207,8 +207,9 @@ class _HomePageState extends State<HomePage> {
             height: 10,
           ),
           _buildIconRowSection(),
-          _builCategorySection(),
+          _buildCategorySection(),
           _buildDynamicSections(),
+          // SizedBox(height: 100,)
         ],
       ),
     );
@@ -227,6 +228,7 @@ class _HomePageState extends State<HomePage> {
 
   //  Profile Avatar and Brand Logo
   Widget _buildProfileSection() {
+    final screenWidth = MediaQuery.of(context).size.width;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Row(
@@ -245,11 +247,11 @@ class _HomePageState extends State<HomePage> {
           ),
           Column(
             mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Container(
                 height: 40,
-                width: 200,
+                width: 180,
                 decoration: const BoxDecoration(
                   image: DecorationImage(
                     image: AssetImage('img/brandLogo.png'),
@@ -261,9 +263,9 @@ class _HomePageState extends State<HomePage> {
               const Text(
                 'Explore World with us!',
                 style: TextStyle(
-                    fontSize: 14,
+                    fontSize: 12,
                     fontWeight: FontWeight.bold,
-                    color: Colors.white),
+                    color: Colors.black),
               ),
             ],
           ),
@@ -272,7 +274,8 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _builCategorySection() {
+  Widget _buildCategorySection() {
+    final screenWidth = MediaQuery.of(context).size.width;
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
@@ -282,8 +285,8 @@ class _HomePageState extends State<HomePage> {
       ),
       padding: EdgeInsets.only(top: 10),
       child: Wrap(
-        spacing: 8,
-        runSpacing: 8,
+        spacing: 5,
+        runSpacing: 5,
         alignment: WrapAlignment.center,
         children: categoryList.map((category) {
           return ElevatedButton(
@@ -298,6 +301,7 @@ class _HomePageState extends State<HomePage> {
               );
             },
             style: ElevatedButton.styleFrom(
+              padding: EdgeInsets.all(12),
               backgroundColor: Colors.white,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
@@ -307,7 +311,7 @@ class _HomePageState extends State<HomePage> {
               category['title'].toString(),
               style: TextStyle(
                   color: Colors.black,
-                  fontSize: 12,
+                  fontSize: screenWidth * 0.03,
                   fontWeight: FontWeight.bold),
             ),
           );
@@ -319,6 +323,8 @@ class _HomePageState extends State<HomePage> {
   //  Dynamic Sections
   Widget _buildDynamicSections() {
     return ListView.builder(
+      padding: EdgeInsets.only(top: 10),
+
       physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
       itemCount: sections.length,
@@ -402,7 +408,7 @@ class _HomePageState extends State<HomePage> {
             decoration: BoxDecoration(
               color: Color(0xFF009EE2).withOpacity(0.2),
               borderRadius: BorderRadius.circular(30),
-              border: Border.all(color: Color(0xFF009EE2)),
+              border: Border.all(color: Color(0xFF009EE2), width: 1.5),
             ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -441,7 +447,7 @@ class _HomePageState extends State<HomePage> {
             decoration: BoxDecoration(
               color: Color(0xFF009EE2).withOpacity(0.2),
               borderRadius: BorderRadius.circular(30),
-              border: Border.all(color: Color(0xFF009EE2)),
+              border: Border.all(color: Color(0xFF009EE2), width: 1.5),
             ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -480,7 +486,7 @@ class _HomePageState extends State<HomePage> {
             decoration: BoxDecoration(
               color: Color(0xFF009EE2).withOpacity(0.2),
               borderRadius: BorderRadius.circular(30),
-              border: Border.all(color: Color(0xFF009EE2)),
+              border: Border.all(color: Color(0xFF009EE2), width: 1.5),
             ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -515,7 +521,7 @@ class CirclePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     Paint paint = Paint()..style = PaintingStyle.fill;
-
+ 
     // We can use FontAwesome icon positioning logic here.
     double centerX = size.width / 2;
 
@@ -528,7 +534,7 @@ class CirclePainter extends CustomPainter {
     // canvas.drawCircle(Offset(centerX, radius - 300), radius + 200, paint);
 
     // Draw the largest circle (dark blue)
-    paint.color = Color(0xFF007A8C); // Dark blue
+    paint.color = Color(0xFF009EE2).withOpacity(0.2); // Dark blue
     canvas.drawCircle(Offset(centerX, radius - 330), radius + 300, paint);
   }
 

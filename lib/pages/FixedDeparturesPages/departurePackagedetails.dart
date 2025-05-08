@@ -304,38 +304,6 @@ class _DeparturePackageDetailsState extends State<DeparturePackageDetails> {
                                     ),
                                     const SizedBox(height: 10),
                                   ],
-                                  if (packageData['package_terms'] != null &&
-                                      packageData['package_terms']!
-                                          .trim()
-                                          .isNotEmpty) ...[
-                                    Text(
-                                      "Package Terms",
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black87,
-                                      ),
-                                    ),
-                                    Html(
-                                      data: packageData['package_terms']!,
-                                      style: {
-                                        "ul": Style(
-                                          padding: HtmlPaddings.symmetric(
-                                              horizontal: 8, vertical: 0),
-                                        ),
-                                        "li": Style(
-                                          textAlign: TextAlign.justify,
-                                          fontSize: FontSize.medium,
-                                          margin: Margins.only(bottom: 4),
-                                        ),
-                                        "p": Style(
-                                          textAlign: TextAlign.justify,
-                                          fontSize: FontSize.medium,
-                                        ),
-                                      },
-                                    ),
-                                    const SizedBox(height: 10),
-                                  ],
                                   if (packageData['package_highlight'] !=
                                           null &&
                                       packageData['package_highlight']!
@@ -402,6 +370,38 @@ class _DeparturePackageDetailsState extends State<DeparturePackageDetails> {
                                       },
                                     ),
                                     const SizedBox(height: 10),
+                                    if (packageData['package_terms'] != null &&
+                                      packageData['package_terms']!
+                                          .trim()
+                                          .isNotEmpty) ...[
+                                    Text(
+                                      "Package Terms",
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black87,
+                                      ),
+                                    ),
+                                    Html(
+                                      data: packageData['package_terms']!,
+                                      style: {
+                                        "ul": Style(
+                                          padding: HtmlPaddings.symmetric(
+                                              horizontal: 8, vertical: 0),
+                                        ),
+                                        "li": Style(
+                                          textAlign: TextAlign.justify,
+                                          fontSize: FontSize.medium,
+                                          margin: Margins.only(bottom: 4),
+                                        ),
+                                        "p": Style(
+                                          textAlign: TextAlign.justify,
+                                          fontSize: FontSize.medium,
+                                        ),
+                                      },
+                                    ),
+                                    const SizedBox(height: 10),
+                                  ],
                                   ],
                                 ],
                               ),

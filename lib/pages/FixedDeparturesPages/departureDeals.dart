@@ -173,7 +173,7 @@ class _DepartureDealsState extends State<DepartureDeals> {
                     ),
                   ),
                   const SizedBox(width: 10),
-                  Text('Dep Date Details'.toUpperCase(),
+                  Text('Departure Details'.toUpperCase(),
                       style: TextStyle(
                           fontSize: 26,
                           fontWeight: FontWeight.bold,

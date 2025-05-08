@@ -89,7 +89,8 @@ class _SignuppageState extends State<Signuppage> {
       );
 
       if (result['status'] == true) {
-        Fluttertoast.showToast(msg: result['message'] ?? "Registered successfully.");
+        // Fluttertoast.showToast(msg: result['message'] ?? "Registered successfully.");
+        showSuccessDialog(context, stripHtmlTags(result['message']) ?? "Registered successfully.");
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => LoginPage()),
@@ -107,6 +108,60 @@ class _SignuppageState extends State<Signuppage> {
       });
     }
   }
+
+  void showSuccessDialog(BuildContext context, String message) {
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (BuildContext context) {
+      return Dialog(
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              AnimatedScale(
+                scale: 1.0,
+                duration: Duration(milliseconds: 500),
+                child: Icon(Icons.check_circle, color: Colors.green, size: 80),
+              ),
+              SizedBox(height: 20),
+              Text(
+                "Success",
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 10),
+              Text(message, textAlign: TextAlign.center),
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pop(); // Close dialog
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => LoginPage()),
+                  );
+                },
+                child: Text("Continue"),
+              ),
+            ],
+          ),
+        ),
+      );
+    },
+  );
+}
+
+void newFunction() {
+  final plainMessage = stripHtmlTags("<h1>Registered successfully. Please check your email for verification</h1>");
+  showSuccessDialog(context, plainMessage);
+}
+String stripHtmlTags(String htmlText) {
+  final regex = RegExp(r'<[^>]*>', multiLine: true, caseSensitive: true);
+  return htmlText.replaceAll(regex, '').trim();
+}
+
 
   @override
   Widget build(BuildContext context) {

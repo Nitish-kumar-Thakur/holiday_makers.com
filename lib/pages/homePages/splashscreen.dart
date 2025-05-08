@@ -100,25 +100,22 @@ class _SplashscreenState extends State<Splashscreen> {
   @override
   void initState() {
     super.initState();
-    // Perform the connectivity check before anything else
+    _startLoader();
+  }
+
+  Future<void> _startLoader() async {
+    await Future.delayed(const Duration(seconds: 9));
     _checkConnectivity();
   }
 
   Future<void> _checkConnectivity() async {
-    // Check internet connectivity
     var connectivityResult = await Connectivity().checkConnectivity();
-    print("Connectivity Result: $connectivityResult");
-    print("status ${connectivityResult.contains(ConnectivityResult.mobile)}");
 
     if (connectivityResult.contains(ConnectivityResult.none)) {
-      // No internet, navigate to NoInternetPage
-      print("No internet, navigating to NoInternetPage");
-      // Ensure we're not doing any further navigation if there is no internet
       Get.offAll(() => NoInternetPage());
-      return; // Stop further execution if no internet
+      return;
     }
 
-    // If internet is available, proceed with checking first launch
     _checkFirstLaunch();
   }
 
@@ -126,37 +123,31 @@ class _SplashscreenState extends State<Splashscreen> {
     final prefs = await SharedPreferences.getInstance();
     bool? isOnboardingComplete = prefs.getBool('isOnboardingComplete') ?? false;
 
-    // Check onboarding status and navigate accordingly
-    if (isOnboardingComplete) {
-      Get.offAll(() => const Mainpage());
-    } else {
-      Get.offAll(() => OnboardingScreen());
-    }
+    // if (isOnboardingComplete) {
+    //   Get.offAll(() => const Mainpage());
+    // } else {
+    //   Get.offAll(() => OnboardingScreen());
+    // }
+    Get.offAll(() => const Mainpage());
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage("img/splashbg.png"),
-            fit: BoxFit.fill,
-          ),
-        ),
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            Positioned(
-              bottom: 345,
-              child: Image.asset("img/splashLogo.png"),
-            ),
-          ],
+      backgroundColor: Color(0xFF343434), // or your brand color
+      body: Center(
+        child: Image.asset(
+          "img/hm_splash.gif", // Path to your loader GIF
+          // width: 150,
+          // height: 150,
+          // fit: BoxFit.contain,
         ),
       ),
     );
   }
 }
+
+
 
 
 
