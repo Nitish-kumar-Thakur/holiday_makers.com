@@ -21,6 +21,8 @@ class _MainpageState extends State<Mainpage> {
   String firstName = "";
   List<Widget> _pages = [];
   bool isloading= false;
+  bool isDrawerOpen = false;
+
 
   @override
   void initState() {
@@ -33,7 +35,11 @@ class _MainpageState extends State<Mainpage> {
     setState(() {
       firstName = prefs.getString("first_name") ?? "";
       _pages = [
-        HomePage(),
+        HomePage(onDrawerToggle: (bool isOpen) {
+          setState(() {
+            isDrawerOpen = isOpen;
+          });
+        }),
         firstName.trim().isEmpty ? LoginPage(backbutton: true,) : ProfilePage(backbutton: true,),
       ];
     });
@@ -51,32 +57,31 @@ class _MainpageState extends State<Mainpage> {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-  onWillPop: () async {
-    if (_historyStack.isNotEmpty) {
-      setState(() {
-        _selectedIndex = _historyStack.removeLast();
-      });
-      return false;
-    }
-    return true;
-  },
-  child: Scaffold(
-    body: Stack(
-      children: [
-        // isloading
-        //     ? const Center(child: CircularProgressIndicator())
-        //     : 
+      onWillPop: () async {
+        if (_historyStack.isNotEmpty) {
+          setState(() {
+            _selectedIndex = _historyStack.removeLast();
+          });
+          return false;
+        }
+        return true;
+      },
+      child: Scaffold(
+        body: Stack(
+          children: [
             IndexedStack(
+              index: _selectedIndex,
+              children: _pages,
+            ),
+            if (!isDrawerOpen)
+              BottomNavigationBarPage(
                 index: _selectedIndex,
-                children: _pages,
+                onTapped: _onItemTapped,
               ),
-        BottomNavigationBarPage(
-          index: _selectedIndex,
-          onTapped: _onItemTapped,
+          ],
         ),
-      ],
-    ),
-  ),
-);
+
+      ),
+    );
   }
 }

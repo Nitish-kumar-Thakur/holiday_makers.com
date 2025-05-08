@@ -14,7 +14,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  final Function(bool)? onDrawerToggle;
+  const HomePage({super.key, this.onDrawerToggle});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -43,23 +44,23 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _fetchHomePageData() async {
-    try { 
+    try {
       final data = await APIHandler.HomePageData();
-  
+
       setState(() {
         bannerList = List<Map<String, dynamic>>.from(
           data['data']['banner_list'].map((item) => {
-                'img': item['img'],
-                'mobile_img': item['mobile_img'],
-                'link': item['link'],
-              }),
+            'img': item['img'],
+            'mobile_img': item['mobile_img'],
+            'link': item['link'],
+          }),
         );
         categoryList = List<Map<String, dynamic>>.from(
           data['data']['category_list'].map((item) => {
-                'id': item['category_id'],
-                'title': item['category_name'],
-                'link': item['category_url'],
-              }),
+            'id': item['category_id'],
+            'title': item['category_name'],
+            'link': item['category_url'],
+          }),
         );
         // isLoading = false;
         // print("Category List: $categoryList");
@@ -71,27 +72,27 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _fetchPackageData() async {
-    try { 
+    try {
       final data = await APIHandler.getPackagesData();
 
       List<Map<String, dynamic>> fetchedSections = (data['data'] as List)
           .map((category) => {
-                'title': category['category_name'],
-                'list': List<Map<String, dynamic>>.from(
-                    category['package_list'].map((package) => {
-                          'image': package['package_homepage_image'],
-                          'name': package['package_name'],
-                          'price': package['discounted_price'] ??
-                              package['starting_price'],
-                          'tempPrice': package['starting_price'] ??
-                              package['discounted_price'],
-                          'currency': package['currency'],
-                          'country': package['country_name'],
-                          "id": package["package_type"],
-                          "packageId": package["package_id"],
-                          "dep_date": package["dep_date"]
-                        })),
-              })
+        'title': category['category_name'],
+        'list': List<Map<String, dynamic>>.from(
+            category['package_list'].map((package) => {
+              'image': package['package_homepage_image'],
+              'name': package['package_name'],
+              'price': package['discounted_price'] ??
+                  package['starting_price'],
+              'tempPrice': package['starting_price'] ??
+                  package['discounted_price'],
+              'currency': package['currency'],
+              'country': package['country_name'],
+              "id": package["package_type"],
+              "packageId": package["package_id"],
+              "dep_date": package["dep_date"]
+            })),
+      })
           .toList();
 
       setState(() {
@@ -111,10 +112,10 @@ class _HomePageState extends State<HomePage> {
       context,
       MaterialPageRoute(
           builder: (context) => Homepage2(
-                packageList: packageList,
-                title: title,
-                banner_list: bannerList,
-              )),
+            packageList: packageList,
+            title: title,
+            banner_list: bannerList,
+          )),
     );
   }
 
@@ -124,6 +125,7 @@ class _HomePageState extends State<HomePage> {
       key: _scaffoldKey,
       backgroundColor: Colors.white,
       drawer: Drawerpage(),
+      onDrawerChanged: widget.onDrawerToggle,
       body: isLoading ? _buildLoadingSkeleton() : _buildContent(),
     );
   }
@@ -161,8 +163,8 @@ class _HomePageState extends State<HomePage> {
   //  Shimmer Container (for placeholders)
   Widget _shimmerContainer(
       {double width = double.infinity,
-      double height = 20,
-      BoxShape shape = BoxShape.rectangle}) {
+        double height = 20,
+        BoxShape shape = BoxShape.rectangle}) {
     return Shimmer.fromColors(
       baseColor: Colors.grey[300]!,
       highlightColor: Colors.grey[100]!,
@@ -173,7 +175,7 @@ class _HomePageState extends State<HomePage> {
           color: Colors.white,
           shape: shape,
           borderRadius:
-              shape == BoxShape.circle ? null : BorderRadius.circular(8),
+          shape == BoxShape.circle ? null : BorderRadius.circular(8),
         ),
       ),
     );
@@ -295,9 +297,9 @@ class _HomePageState extends State<HomePage> {
                 context,
                 MaterialPageRoute(
                     builder: (_) => HomePageCategory(
-                          categoryId: category["id"],
-                          banner_list: bannerList,
-                        )),
+                      categoryId: category["id"],
+                      banner_list: bannerList,
+                    )),
               );
             },
             style: ElevatedButton.styleFrom(
@@ -436,8 +438,8 @@ class _HomePageState extends State<HomePage> {
               context,
               MaterialPageRoute(
                   builder: (_) => DeparturesHome(
-                        banner_list: bannerList,
-                      )),
+                    banner_list: bannerList,
+                  )),
             );
           },
           child: Container(
@@ -475,8 +477,8 @@ class _HomePageState extends State<HomePage> {
               context,
               MaterialPageRoute(
                   builder: (_) => CurisesHome(
-                        banner_list: bannerList,
-                      )),
+                    banner_list: bannerList,
+                  )),
             );
           },
           child: Container(
@@ -521,7 +523,7 @@ class CirclePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     Paint paint = Paint()..style = PaintingStyle.fill;
- 
+
     // We can use FontAwesome icon positioning logic here.
     double centerX = size.width / 2;
 

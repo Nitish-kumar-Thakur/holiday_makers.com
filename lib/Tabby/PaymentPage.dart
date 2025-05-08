@@ -26,6 +26,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
   String? transactionRef; // Store the Telr transaction reference
   List<dynamic> paymentMethods = [];
   Map<String, dynamic> sbAPIResponse = {};
+  Map<String, dynamic> paymentCreds = {};
   String? checkoutUrl;
 
   void initState() {
@@ -48,6 +49,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
         if (response["status"] == true) {
           setState(() {
             sbAPIResponse = response['data'];
+            paymentCreds = response['payment_credentials'];
           });
           print('===================================================');
           print('FD API Response: $sbAPIResponse');
@@ -99,9 +101,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
           description: sbAPIResponse["payment"]["description"],
           referenceId: sbAPIResponse["payment"]["order"]["reference_id"],
           buyerPhone:
-              "500000001", // sbAPIResponse["data"]["payment"]["buyer"]["phone"]
+          sbAPIResponse["payment"]["buyer"]["phone"], // sbAPIResponse["data"]["payment"]["buyer"]["phone"]
           buyerEmail:
-              "otp.success@tabby.ai", // sbAPIResponse["data"]["payment"]["buyer"]["email"]
+          sbAPIResponse["payment"]["buyer"]["email"], // sbAPIResponse["data"]["payment"]["buyer"]["email"]
 
           buyerName: sbAPIResponse["payment"]["buyer"]["name"],
           itemTitle:
@@ -134,6 +136,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
           billCountry: sbAPIResponse["bill_country"],
           billZip: sbAPIResponse["bill_zip"],
           billEmail: sbAPIResponse["bill_email"],
+          indicator: paymentCreds['indicator']
         );
       }
 

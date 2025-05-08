@@ -29,6 +29,7 @@ class TelrPaymentService {
   static String? billCountry;
   static String? billZip;
   static String? billEmail;
+  static String? indicator;
   static String? tranref;
   static String? authCode;
   static String? message;
@@ -60,6 +61,7 @@ class TelrPaymentService {
     required String billCountry,
     required String billZip,
     required String billEmail,
+    required String indicator,
   }) async {
     // Assign passed values to class-level variables
     // Assign to static class-level variables
@@ -77,6 +79,7 @@ class TelrPaymentService {
     TelrPaymentService.billCountry = billCountry;
     TelrPaymentService.billZip = billZip;
     TelrPaymentService.billEmail = billEmail;
+    TelrPaymentService.indicator = indicator;
     final url = Uri.parse(_authUrl);
 
     final requestXml = '''<?xml version="1.0" encoding="UTF-8"?>
@@ -94,7 +97,7 @@ class TelrPaymentService {
 <id>D1</id>
 </app>
 <tran>
-<test>1</test>
+<test>$indicator</test> 
 <type>paypage</type>
 <cartid>$ivpCart</cartid>
 <description>$ivpDesc</description>
@@ -220,8 +223,9 @@ class TelrPaymentService {
   }
 
   static Future updateBookingStatus(String statusCode) async {
+
     final url = Uri.parse(
-        "https://b2cuat.tikipopi.com/index.php/holiday_api/update_booking_status");
+        "https://holidaymakers.com/holiday_api/update_booking_status");
     final payload = {
       "enquiry_code": ivpCart,
       "status_code": statusCode, // 3 = accepted, -2 = cancelled, etc.

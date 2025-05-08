@@ -45,75 +45,75 @@ class _DrawerpageState extends State<Drawerpage> {
     });
   }
 
-  void _showSignOutDialog(BuildContext context) { 
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: Text(
-          "Sign Out",
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        content: Text("Are you sure you want to sign out?"),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop(); // Close the dialog
-            },
-            child: Text("Cancel"),
+  void _showSignOutDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(
+            "Sign Out",
+            style: TextStyle(fontWeight: FontWeight.bold),
           ),
-          TextButton(
-            onPressed: () async {
-              Navigator.of(context).pop(); // Close the dialog
+          content: Text("Are you sure you want to sign out?"),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: Text("Cancel"),
+            ),
+            TextButton(
+              onPressed: () async {
+                Navigator.of(context).pop(); // Close the dialog
 
-              await SharedPreferencesHandler.signOut(); // Clear stored user data
+                await SharedPreferencesHandler.signOut(); // Clear stored user data
 
-              // Navigate to Mainpage and clear all previous routes
-              Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(builder: (context) => Mainpage()), 
-                (Route<dynamic> route) => false, // Remove all previous screens
-              );
-            },
-            child: Text("Yes"),
+                // Navigate to Mainpage and clear all previous routes
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (context) => Mainpage()),
+                      (Route<dynamic> route) => false, // Remove all previous screens
+                );
+              },
+              child: Text("Yes"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showLoginDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(
+            "Login",
+            style: TextStyle(fontWeight: FontWeight.bold),
           ),
-        ],
-      );
-    },
-  );
-}
+          content: Text("You need to log in to access your account."),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: Text("Cancel"),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
 
-void _showLoginDialog(BuildContext context) {
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: Text(
-          "Login",
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        content: Text("You need to log in to access your account."),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop(); // Close the dialog
-            },
-            child: Text("Cancel"),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop(); // Close the dialog
-
-              // Navigate to the login screen
-              Navigator.of(context).pushReplacement(MaterialPageRoute(
-                  builder: (context) => LoginPage())); // Replace with Login page
-            },
-            child: Text("Login"),
-          ),
-        ],
-      );
-    },
-  );
-}
+                // Navigate to the login screen
+                Navigator.of(context).pushReplacement(MaterialPageRoute(
+                    builder: (context) => LoginPage())); // Replace with Login page
+              },
+              child: Text("Login"),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
 
   @override
@@ -121,47 +121,61 @@ void _showLoginDialog(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
 
     return Drawer(
+      width: screenWidth,
       child: Container(
         color: Colors.white, // Background color
         child: Padding(
-          padding: EdgeInsets.only(top: screenWidth * 0.1, left: 0, right: screenWidth * 0.04), // Dynamic top padding and right padding
+          padding: EdgeInsets.only(top: screenWidth * 0.1, left: screenWidth * 0.1, right: screenWidth * 0.1), // Dynamic top padding and right padding
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start, // Align items to the left
             children: [
               // Profile Header
               Container(
                 height: screenWidth * 0.2, // Height based on screen width
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade300, // Background of the whole list container
-                  borderRadius: BorderRadius.only(
-                    topRight: Radius.circular(screenWidth * 0.05),
-                    bottomRight: Radius.circular(screenWidth * 0.05),
-                  ),
-                ),
-                child: Padding(
-                  padding: EdgeInsets.only(left: screenWidth * 0.04),
-                  child: Row(
-                    children: [
-                      CircleAvatar(
+                // decoration: BoxDecoration(
+                //   color: Colors.grey.shade300, // Background of the whole list container
+                //   borderRadius: BorderRadius.only(
+                //     topRight: Radius.circular(screenWidth * 0.05),
+                //     bottomRight: Radius.circular(screenWidth * 0.05),
+                //   ),
+                // ),
+                child: Row(
+                  children: [
+                    // CircleAvatar(
+                    //   radius: screenWidth * 0.07, // Dynamic circle avatar size
+                    //   backgroundImage: profileImg.trim().isNotEmpty
+                    //       ? NetworkImage(profileImg)
+                    //       : AssetImage("img/placeholder.png"),
+                    // ),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).pop(); // Close the drawer
+                        // Optionally, perform more actions here
+                      },
+                      child: CircleAvatar(
                         radius: screenWidth * 0.07, // Dynamic circle avatar size
                         backgroundImage: profileImg.trim().isNotEmpty
                             ? NetworkImage(profileImg)
-                            : AssetImage("img/placeholder.png"),
+                            : AssetImage("img/placeholder.png") as ImageProvider,
                       ),
-                      SizedBox(width: screenWidth * 0.03),
-                      AppLargeText(
-                        text: firstName.trim().isEmpty ? "Hi, There" : firstName,
-                        color: Colors.black, // Text color changed to black
-                        size: screenWidth * 0.06, // Dynamic text size
-                      ),
-                    ],
-                  ),
+                    ),
+                    SizedBox(width: screenWidth * 0.05),
+                    AppLargeText(
+                      text: firstName.trim().isEmpty ? "Hi There!" : firstName,
+                      color: Colors.black, // Text color changed to black
+                      size: screenWidth * 0.06, // Dynamic text size
+                    ),
+                  ],
                 ),
               ),
               SizedBox(height: screenWidth * 0.02),
 
               // Quick Actions Section
               Container(
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade100, // Background of the whole list container
+                  borderRadius: BorderRadius.all(Radius.circular(screenWidth * 0.05)),
+                ),
                 padding: EdgeInsets.symmetric(vertical: screenWidth * 0.03),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -187,7 +201,7 @@ void _showLoginDialog(BuildContext context) {
                 ),
               ),
 
-              SizedBox(height: screenWidth * 0.01),
+              SizedBox(height: screenWidth * 0.03),
 
               // My Trip Section
               Padding(
@@ -198,17 +212,18 @@ void _showLoginDialog(BuildContext context) {
                   color: Colors.blue, // Text color changed to blue
                 ),
               ),
+              Divider(color: Colors.black),
               Center(
                 child: Container(
                   width: screenWidth * 0.8, // Responsive width
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade100, // Gray background
-                    borderRadius: BorderRadius.only(
-                      topRight: Radius.circular(screenWidth * 0.05),
-                      bottomRight: Radius.circular(screenWidth * 0.05),
-                    ),
-                  ),
-                  padding: EdgeInsets.symmetric(vertical: screenWidth * 0.02),
+                  // decoration: BoxDecoration(
+                  //   color: Colors.grey.shade100, // Gray background
+                  //   borderRadius: BorderRadius.only(
+                  //     topRight: Radius.circular(screenWidth * 0.05),
+                  //     bottomRight: Radius.circular(screenWidth * 0.05),
+                  //   ),
+                  // ),
+                  // padding: EdgeInsets.symmetric(vertical: screenWidth * 0.01),
                   child: Column(
                     children: [
                       _listItem(FontAwesomeIcons.newspaper, "My Booking",
@@ -232,16 +247,17 @@ void _showLoginDialog(BuildContext context) {
                   color: Colors.blue, // Text color changed to blue
                 ),
               ),
+              Divider(color: Colors.black),
               Center(
                 child: Container(
                   width: screenWidth * 0.85, // Responsive width
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade100, // Gray background
-                    borderRadius: BorderRadius.only(
-                      topRight: Radius.circular(screenWidth * 0.05),
-                      bottomRight: Radius.circular(screenWidth * 0.05),
-                    ),
-                  ),
+                  // decoration: BoxDecoration(
+                  //   color: Colors.grey.shade100, // Gray background
+                  //   borderRadius: BorderRadius.only(
+                  //     topRight: Radius.circular(screenWidth * 0.05),
+                  //     bottomRight: Radius.circular(screenWidth * 0.05),
+                  //   ),
+                  // ),
                   padding: EdgeInsets.symmetric(vertical: screenWidth * 0.03),
                   child: Column(
                     children: [

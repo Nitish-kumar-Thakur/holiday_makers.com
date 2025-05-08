@@ -132,19 +132,20 @@ class _SplashscreenState extends State<Splashscreen> {
       return;
     }
 
-    _checkFirstLaunch();
+    Get.offAll(() => const Mainpage());
   }
 
-  Future<void> _checkFirstLaunch() async {
-    final prefs = await SharedPreferences.getInstance();
-    bool isOnboardingComplete = prefs.getBool('isOnboardingComplete') ?? false;
-
-    if (isOnboardingComplete) {
-      Get.offAll(() => const Mainpage());
-    } else {
-      Get.offAll(() => OnboardingScreen());
-    }
-  }
+  // Future<void> _checkFirstLaunch() async {
+  //   final prefs = await SharedPreferences.getInstance();
+  //   bool isOnboardingComplete = prefs.getBool('isOnboardingComplete') ?? false;
+  //
+  //   // if (isOnboardingComplete) {
+  //   //   Get.offAll(() => const Mainpage());
+  //   // } else {
+  //   //   Get.offAll(() => OnboardingScreen());
+  //   // }
+  //   Get.offAll(() => const Mainpage());
+  // }
 
   @override
   Widget build(BuildContext context) {

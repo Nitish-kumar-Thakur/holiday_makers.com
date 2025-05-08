@@ -64,9 +64,9 @@ class TabbyService {
         "merchant_urls": {
           "success": "holidaymakers://payment?status=success",
           "cancel":
-              "https://b2cuat.tikipopi.com/index.php/payment_gateway/tabby_cancel/HMFD-509/FD_VHCID1433498322",
+              "https://holidaymakers.com/holiday_api/payment_gateway/tabby_cancel/HMFD-509/FD_VHCID1433498322",
           "failure":
-              "https://b2cuat.tikipopi.com/index.php/payment_gateway/tabby_failure/HMFD-509/FD_VHCID1433498322"
+              "https://holidaymakers.com/holiday_api/payment_gateway/tabby_failure/HMFD-509/FD_VHCID1433498322"
         }
       }),
     );

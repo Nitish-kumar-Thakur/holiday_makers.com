@@ -76,8 +76,8 @@ class TabbyPaymentService {
         "merchant_code": _merchantCode,
         "merchant_urls": {
           "success": "holidaymakers://payment?status=success",
-          "cancel": "https://b2cuat.tikipopi.com/index.php/payment_gateway/tabby_cancel/$orderId/$referenceId",
-          "failure": "https://b2cuat.tikipopi.com/index.php/payment_gateway/tabby_failure/$orderId/$referenceId"
+          "cancel": "hhttps://holidaymakers.com/holiday_api/payment_gateway/tabby_cancel/$orderId/$referenceId",
+          "failure": "https://holidaymakers.com/holiday_api/payment_gateway/tabby_failure/$orderId/$referenceId"
         }
       }),
     );
