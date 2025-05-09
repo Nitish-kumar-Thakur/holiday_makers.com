@@ -239,7 +239,7 @@ class TelrPaymentService {
             "ref":
                 code, // <- From your original mobile_complete request <complete>
             "cartid": ivpCart, // <- From your initial request <cartid>
-            "test": 1, // <- From your initial request <test>
+            "test": indicator, // <- From your initial request <test>
             "amount": double.tryParse(ivpAmount??"").toString(), // <- From your initial request <amount>
             "currency": ivpCurrency, // <- From your initial request <currency>
             "description":
