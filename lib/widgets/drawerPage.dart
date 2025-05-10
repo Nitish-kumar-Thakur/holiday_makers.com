@@ -1,5 +1,6 @@
 import 'package:HolidayMakers/pages/homePages/mainPage.dart';
 import 'package:HolidayMakers/pages/login&signup/Test.dart';
+import 'package:HolidayMakers/utils/api_handler.dart';
 import 'package:HolidayMakers/widgets/Blogs.dart';
 import 'package:HolidayMakers/widgets/MyBookings.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +14,7 @@ import 'package:HolidayMakers/widgets/ManageAccount.dart';
 import 'package:HolidayMakers/widgets/appLargetext.dart';
 import 'package:HolidayMakers/widgets/appText.dart';
 import 'package:HolidayMakers/widgets/profile_page.dart';
+import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Drawerpage extends StatefulWidget {
@@ -45,6 +47,13 @@ class _DrawerpageState extends State<Drawerpage> {
     });
   }
 
+  Future<Map<String, dynamic>> fetchWalletData() async {
+    await Future.delayed(Duration(seconds: 2)); // Simulate delay
+    return {
+      'balance': 100,
+    };
+  }
+
   void _showSignOutDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -66,17 +75,128 @@ class _DrawerpageState extends State<Drawerpage> {
               onPressed: () async {
                 Navigator.of(context).pop(); // Close the dialog
 
-                await SharedPreferencesHandler.signOut(); // Clear stored user data
+                await SharedPreferencesHandler
+                    .signOut(); // Clear stored user data
 
                 // Navigate to Mainpage and clear all previous routes
                 Navigator.of(context).pushAndRemoveUntil(
                   MaterialPageRoute(builder: (context) => Mainpage()),
-                      (Route<dynamic> route) => false, // Remove all previous screens
+                  (Route<dynamic> route) =>
+                      false, // Remove all previous screens
                 );
               },
               child: Text("Yes"),
             ),
           ],
+        );
+      },
+    );
+  }
+
+  void showWalletDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        final screenWidth = MediaQuery.of(context).size.width;
+
+        return Dialog(
+          backgroundColor: Colors.white,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
+          child: SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                maxWidth: screenWidth < 400 ? screenWidth * 0.9 : 350,
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: FutureBuilder<Map<String, dynamic>>(
+                  future: fetchWalletData(), // from ApiHandler
+                  builder: (context, snapshot) {
+                    Widget child;
+
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      child = Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          SizedBox(height: 20),
+                          CircularProgressIndicator(),
+                          SizedBox(height: 20),
+                          Text(
+                            "Loading Wallet...",
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.w500),
+                          ),
+                        ],
+                      );
+                    } else if (snapshot.hasError) {
+                      child = Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.error, color: Colors.red, size: 60),
+                          SizedBox(height: 10),
+                          Text("Failed to load wallet data"),
+                          SizedBox(height: 10),
+                          ElevatedButton(
+                            onPressed: () => Navigator.of(context).pop(),
+                            child: Text(
+                              "Close",
+                            ),
+                          ),
+                        ],
+                      );
+                    } else {
+                      final data = snapshot.data!;
+                      final balance = data['balance'] ?? "0.00";
+
+                      child = Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Image.asset(
+                            'img/coin.png',
+                            height: 80,
+                            width: 80,
+                          ),
+                          SizedBox(height: 15),
+                          Text(
+                            "AED $balance",
+                            style: TextStyle(
+                                fontSize: 28,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.green),
+                          ),
+                          SizedBox(height: 10),
+                          Text(
+                            "Available Balance",
+                            style: TextStyle(
+                                fontSize: 16, color: Colors.grey[700]),
+                          ),
+                          SizedBox(height: 20),
+                          ElevatedButton(
+                            onPressed: () => Navigator.of(context).pop(),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Color(0xFF0071BC),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              side: BorderSide(color: Color(0xFF0071BC)),
+                            ),
+                            child: Text(
+                              "Close",
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+                        ],
+                      );
+                    }
+
+                    return child;
+                  },
+                ),
+              ),
+            ),
+          ),
         );
       },
     );
@@ -105,7 +225,8 @@ class _DrawerpageState extends State<Drawerpage> {
 
                 // Navigate to the login screen
                 Navigator.of(context).pushReplacement(MaterialPageRoute(
-                    builder: (context) => LoginPage())); // Replace with Login page
+                    builder: (context) =>
+                        LoginPage())); // Replace with Login page
               },
               child: Text("Login"),
             ),
@@ -114,7 +235,6 @@ class _DrawerpageState extends State<Drawerpage> {
       },
     );
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -125,9 +245,14 @@ class _DrawerpageState extends State<Drawerpage> {
       child: Container(
         color: Colors.white, // Background color
         child: Padding(
-          padding: EdgeInsets.only(top: screenWidth * 0.1, left: screenWidth * 0.1, right: screenWidth * 0.1), // Dynamic top padding and right padding
+          padding: EdgeInsets.only(
+              top: screenWidth * 0.1,
+              left: screenWidth * 0.1,
+              right:
+                  screenWidth * 0.1), // Dynamic top padding and right padding
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start, // Align items to the left
+            crossAxisAlignment:
+                CrossAxisAlignment.start, // Align items to the left
             children: [
               // Profile Header
               Container(
@@ -153,10 +278,12 @@ class _DrawerpageState extends State<Drawerpage> {
                         // Optionally, perform more actions here
                       },
                       child: CircleAvatar(
-                        radius: screenWidth * 0.07, // Dynamic circle avatar size
+                        radius:
+                            screenWidth * 0.07, // Dynamic circle avatar size
                         backgroundImage: profileImg.trim().isNotEmpty
                             ? NetworkImage(profileImg)
-                            : AssetImage("img/placeholder.png") as ImageProvider,
+                            : AssetImage("img/placeholder.png")
+                                as ImageProvider,
                       ),
                     ),
                     SizedBox(width: screenWidth * 0.05),
@@ -173,29 +300,41 @@ class _DrawerpageState extends State<Drawerpage> {
               // Quick Actions Section
               Container(
                 decoration: BoxDecoration(
-                  color: Colors.grey.shade100, // Background of the whole list container
-                  borderRadius: BorderRadius.all(Radius.circular(screenWidth * 0.05)),
+                  color: Colors
+                      .grey.shade100, // Background of the whole list container
+                  borderRadius:
+                      BorderRadius.all(Radius.circular(screenWidth * 0.05)),
                 ),
                 padding: EdgeInsets.symmetric(vertical: screenWidth * 0.03),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    _iconButton(FontAwesomeIcons.user, "My Profile",
-                            () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => firstName.trim().isEmpty
-                                  ? LoginPage()
-                                  : ProfilePage()),
-                        ),
+                    _iconButton(
+                        FontAwesomeIcons.user,
+                        "My Profile",
+                        () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => firstName.trim().isEmpty
+                                      ? LoginPage()
+                                      : ProfilePage()),
+                            ),
                         textColor: Colors.blue),
-                    _iconButton(FontAwesomeIcons.userPen, "Manage Account",
-                            () => Navigator.push(context,
-                            MaterialPageRoute(builder: (context) => ManageAccount())),
+                    _iconButton(
+                        FontAwesomeIcons.userPen,
+                        "Manage Account",
+                        () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ManageAccount())),
                         textColor: Colors.blue),
-                    _iconButton(FontAwesomeIcons.unlock, "Change Password",
-                            () => Navigator.push(context,
-                            MaterialPageRoute(builder: (context) => ChangePasswordScreen())),
+                    _iconButton(
+                        FontAwesomeIcons.unlock,
+                        "Change Password",
+                        () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ChangePasswordScreen())),
                         textColor: Colors.blue),
                   ],
                 ),
@@ -226,11 +365,17 @@ class _DrawerpageState extends State<Drawerpage> {
                   // padding: EdgeInsets.symmetric(vertical: screenWidth * 0.01),
                   child: Column(
                     children: [
-                      _listItem(FontAwesomeIcons.newspaper, "My Booking",
-                              () => Navigator.push(context,
-                              MaterialPageRoute(builder: (context) => firstName.trim().isEmpty
-                                  ? LoginPage():MyBookings()))),
-                      _listItem(FontAwesomeIcons.wallet, "Wallet", () {}),
+                      _listItem(
+                          FontAwesomeIcons.newspaper,
+                          "My Booking",
+                          () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => firstName.trim().isEmpty
+                                      ? LoginPage()
+                                      : MyBookings()))),
+                      _listItem(FontAwesomeIcons.wallet, "Wallet",
+                          () => showWalletDialog(context))
                     ],
                   ),
                 ),
@@ -261,13 +406,43 @@ class _DrawerpageState extends State<Drawerpage> {
                   padding: EdgeInsets.symmetric(vertical: screenWidth * 0.03),
                   child: Column(
                     children: [
-                      _listItem(FontAwesomeIcons.filePen, "Blogs", () => Navigator.push(context, MaterialPageRoute(builder: (context) => BlogsPage()))),
-                      _listItem(FontAwesomeIcons.users, "Testimonials", () => Navigator.push(context, MaterialPageRoute(builder: (context) => TestimonialsPage()))),
-                      _listItem(FontAwesomeIcons.buildingUser, "Company Profile", () {}),
-                      _listItem(FontAwesomeIcons.fileLines, "Terms & Conditions", () => Navigator.push(context, MaterialPageRoute(builder: (context) => TermsAndConditionsPage()))),
-                      _listItem(FontAwesomeIcons.computer, "Help Center", () => Navigator.push(context, MaterialPageRoute(builder: (context) => HelpCenterPage()))),
-                      _listItem(FontAwesomeIcons.signOut, profileImg.trim().isEmpty ? "Log In" : "Sign Out",
-                              () => profileImg.trim().isEmpty ? _showLoginDialog(context) : _showSignOutDialog(context)),
+                      _listItem(
+                          FontAwesomeIcons.filePen,
+                          "Blogs",
+                          () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => BlogsPage()))),
+                      _listItem(
+                          FontAwesomeIcons.users,
+                          "Testimonials",
+                          () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => TestimonialsPage()))),
+                      _listItem(FontAwesomeIcons.buildingUser,
+                          "Company Profile", () {}),
+                      _listItem(
+                          FontAwesomeIcons.fileLines,
+                          "Terms & Conditions",
+                          () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      TermsAndConditionsPage()))),
+                      _listItem(
+                          FontAwesomeIcons.computer,
+                          "Help Center",
+                          () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => HelpCenterPage()))),
+                      _listItem(
+                          FontAwesomeIcons.signOut,
+                          profileImg.trim().isEmpty ? "Log In" : "Sign Out",
+                          () => profileImg.trim().isEmpty
+                              ? _showLoginDialog(context)
+                              : _showSignOutDialog(context)),
                     ],
                   ),
                 ),
@@ -291,7 +466,10 @@ class _DrawerpageState extends State<Drawerpage> {
           children: [
             Icon(icon, color: Colors.black, size: screenWidth * 0.05),
             SizedBox(width: 10),
-            AppLargeText(text: text, size: screenWidth * 0.04, color: Colors.black), // Text color changed to black
+            AppLargeText(
+                text: text,
+                size: screenWidth * 0.04,
+                color: Colors.black), // Text color changed to black
           ],
         ),
       ),
@@ -299,20 +477,24 @@ class _DrawerpageState extends State<Drawerpage> {
   }
 
 // Helper Widget for Icon Buttons (For Profile Section)
-  Widget _iconButton(IconData icon, String label, VoidCallback onTap, {Color textColor = Colors.black}) {
+  Widget _iconButton(IconData icon, String label, VoidCallback onTap,
+      {Color textColor = Colors.black}) {
     return IconButton(
       onPressed: onTap,
       icon: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, color: Colors.black, size: 27), // Icon color changed to black
+          Icon(icon,
+              color: Colors.black, size: 27), // Icon color changed to black
           SizedBox(height: 8),
-          AppLargeText(text: label, size: 10, color: textColor), // Text color is customizable
+          AppLargeText(
+              text: label,
+              size: 10,
+              color: textColor), // Text color is customizable
         ],
       ),
     );
   }
-
 }
 
 class ChildContainer extends StatelessWidget {

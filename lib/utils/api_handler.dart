@@ -1227,7 +1227,7 @@ class APIHandler {
     }
   }
   static Future<Map<String, dynamic>> categoryIdWisePackageList(Map<String, dynamic> body) async {
-  final String url = 'https://holidaymakers.com//holiday_api/get_category_id_wise_package_list';
+  final String url = 'https://holidaymakers.com/holiday_api/get_category_id_wise_package_list';
 
   try {
     final response = await http.post(
@@ -1259,4 +1259,38 @@ static Future<Map<String, dynamic>> getSplashScreen() async {
       throw Exception("Error fetching Blog list");
     }
   }
+  static Future<Map<String, dynamic>> fetchWalletData() async {
+    final String url = 'https://holidaymakers.com/holiday_api/wallet_balance';
+
+  Map<String, String> profileDetails = await _ProfileDetails();
+    String userId = profileDetails['userId'] ?? "";
+    String token = profileDetails['token'] ?? "";
+
+    final Map<String, String> headers = {
+      "Authorization": "Bearer $token",
+      "Content-Type": "application/json",
+    };
+
+    final Map<String, dynamic> body = {
+      "user_id": userId
+    };
+
+    try {
+      final response = await http.post(
+        Uri.parse(url),
+        headers: headers,
+        body: jsonEncode(body),
+      );
+      final jsonData = json.decode(response.body);
+    if (response.statusCode == 200) {
+      
+      return jsonData['data'];
+    } else {
+      throw Exception('API error: ${jsonData['message']}');
+    }
+  } catch (e) {
+    throw Exception('Error fetching Wallet data: $e');
+  }
+  }
+
 }

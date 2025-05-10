@@ -22,7 +22,7 @@ class _ProfilePageState extends State<ProfilePage> {
   String fullName = "";
   String phone = '';
   bool isProfileEmpty = false;
-
+ 
   bool _isEditing = false;
   File? _profileImage;
   final ImagePicker _picker = ImagePicker();
