@@ -557,7 +557,10 @@ class _TourBookingPageFITState extends State<TourBookingPageFIT>
                                             //     color: Colors.red,
                                             //   ),
                                             // ),
-                                            Text("AED ${tourForDay['Per_totalAmount'] ?? 0}/person",
+                                            Text(
+                                              tourForDay['Per_totalAmount'] == "FREE"
+                                              ? "INCLUDED"
+                                              : "AED ${tourForDay['Per_totalAmount'] ?? 0}/Person",
                                               style: const TextStyle(
                                                 fontSize: 18,
                                                 fontWeight: FontWeight.bold,

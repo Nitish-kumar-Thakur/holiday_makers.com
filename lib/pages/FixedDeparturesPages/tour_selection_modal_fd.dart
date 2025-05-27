@@ -156,7 +156,9 @@ class _TourSelectionModalState extends State<TourSelectionModal> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            "AED ${tour['totalAmount']}/person",
+                            tour['totalAmount'] == "FREE"
+                                ? "INCLUDED"
+                                : "AED ${tour['totalAmount'] ?? ''}/Person",
                             style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.red),
                           ),
                           ElevatedButton(

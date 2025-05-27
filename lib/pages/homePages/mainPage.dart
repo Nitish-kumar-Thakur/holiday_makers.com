@@ -1,9 +1,6 @@
 import 'package:HolidayMakers/pages/login&signup/Test.dart';
 import 'package:flutter/material.dart';
-import 'package:HolidayMakers/pages/Cruise/CurisesHome.dart';
-import 'package:HolidayMakers/pages/FixedDeparturesPages/departuresHome.dart';
 import 'package:HolidayMakers/pages/homePages/homePage.dart';
-import 'package:HolidayMakers/pages/FullyIndependentTraveler/independentTravelerPage.dart';
 import 'package:HolidayMakers/widgets/bottomNavigationBar.dart';
 import 'package:HolidayMakers/widgets/profile_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -22,7 +19,6 @@ class _MainpageState extends State<Mainpage> {
   List<Widget> _pages = [];
   bool isloading= false;
   bool isDrawerOpen = false;
-
 
   @override
   void initState() {

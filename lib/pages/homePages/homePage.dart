@@ -198,6 +198,7 @@ class _HomePageState extends State<HomePage> {
 
   //  Actual Content UI
   Widget _buildContent() {
+    
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -211,7 +212,7 @@ class _HomePageState extends State<HomePage> {
           _buildIconRowSection(),
           _buildCategorySection(),
           _buildDynamicSections(),
-          // SizedBox(height: 100,)
+          SizedBox(height: 100,)
         ],
       ),
     );

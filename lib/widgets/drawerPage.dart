@@ -1,6 +1,5 @@
 import 'package:HolidayMakers/pages/homePages/mainPage.dart';
 import 'package:HolidayMakers/pages/login&signup/Test.dart';
-import 'package:HolidayMakers/utils/api_handler.dart';
 import 'package:HolidayMakers/widgets/Blogs.dart';
 import 'package:HolidayMakers/widgets/MyBookings.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +13,6 @@ import 'package:HolidayMakers/widgets/ManageAccount.dart';
 import 'package:HolidayMakers/widgets/appLargetext.dart';
 import 'package:HolidayMakers/widgets/appText.dart';
 import 'package:HolidayMakers/widgets/profile_page.dart';
-import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Drawerpage extends StatefulWidget {
@@ -298,88 +296,103 @@ class _DrawerpageState extends State<Drawerpage> {
               SizedBox(height: screenWidth * 0.02),
 
               // Quick Actions Section
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors
-                      .grey.shade100, // Background of the whole list container
-                  borderRadius:
-                      BorderRadius.all(Radius.circular(screenWidth * 0.05)),
-                ),
-                padding: EdgeInsets.symmetric(vertical: screenWidth * 0.03),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    _iconButton(
-                        FontAwesomeIcons.user,
-                        "My Profile",
-                        () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => firstName.trim().isEmpty
-                                      ? LoginPage()
-                                      : ProfilePage()),
-                            ),
-                        textColor: Colors.blue),
-                    _iconButton(
-                        FontAwesomeIcons.userPen,
-                        "Manage Account",
-                        () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => ManageAccount())),
-                        textColor: Colors.blue),
-                    _iconButton(
-                        FontAwesomeIcons.unlock,
-                        "Change Password",
-                        () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => ChangePasswordScreen())),
-                        textColor: Colors.blue),
-                  ],
-                ),
-              ),
+              firstName.trim().isEmpty
+                  ? SizedBox()
+                  : Container(
+                      decoration: BoxDecoration(
+                        color: Colors.grey
+                            .shade100, // Background of the whole list container
+                        borderRadius: BorderRadius.all(
+                            Radius.circular(screenWidth * 0.05)),
+                      ),
+                      padding:
+                          EdgeInsets.symmetric(vertical: screenWidth * 0.03),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          _iconButton(
+                              FontAwesomeIcons.user,
+                              "My Profile",
+                              () => Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            firstName.trim().isEmpty
+                                                ? LoginPage()
+                                                : ProfilePage()),
+                                  ),
+                              textColor: Colors.blue),
+                          _iconButton(
+                              FontAwesomeIcons.userPen,
+                              "Manage Account",
+                              () => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          firstName.trim().isEmpty
+                                              ? LoginPage()
+                                              : ManageAccount())),
+                              textColor: Colors.blue),
+                          _iconButton(
+                              FontAwesomeIcons.unlock,
+                              "Change Password",
+                              () => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          firstName.trim().isEmpty
+                                              ? LoginPage()
+                                              : ChangePasswordScreen())),
+                              textColor: Colors.blue),
+                        ],
+                      ),
+                    ),
 
               SizedBox(height: screenWidth * 0.03),
-
               // My Trip Section
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: AppLargeText(
-                  text: 'My Trips',
-                  size: screenWidth * 0.06,
-                  color: Colors.blue, // Text color changed to blue
-                ),
-              ),
-              Divider(color: Colors.black),
-              Center(
-                child: Container(
-                  width: screenWidth * 0.8, // Responsive width
-                  // decoration: BoxDecoration(
-                  //   color: Colors.grey.shade100, // Gray background
-                  //   borderRadius: BorderRadius.only(
-                  //     topRight: Radius.circular(screenWidth * 0.05),
-                  //     bottomRight: Radius.circular(screenWidth * 0.05),
-                  //   ),
-                  // ),
-                  // padding: EdgeInsets.symmetric(vertical: screenWidth * 0.01),
-                  child: Column(
-                    children: [
-                      _listItem(
-                          FontAwesomeIcons.newspaper,
-                          "My Booking",
-                          () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => firstName.trim().isEmpty
-                                      ? LoginPage()
-                                      : MyBookings()))),
-                      _listItem(FontAwesomeIcons.wallet, "Wallet",
-                          () => showWalletDialog(context))
-                    ],
-                  ),
-                ),
-              ),
+              firstName.trim().isEmpty
+                  ? SizedBox()
+                  : Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: AppLargeText(
+                        text: 'My Trips',
+                        size: screenWidth * 0.06,
+                        color: Colors.blue, // Text color changed to blue
+                      ),
+                    ),
+              firstName.trim().isEmpty
+                  ? SizedBox():Divider(color: Colors.black),
+              firstName.trim().isEmpty
+                  ? SizedBox()
+                  : Center(
+                      child: Container(
+                        width: screenWidth * 0.8, // Responsive width
+                        // decoration: BoxDecoration(
+                        //   color: Colors.grey.shade100, // Gray background
+                        //   borderRadius: BorderRadius.only(
+                        //     topRight: Radius.circular(screenWidth * 0.05),
+                        //     bottomRight: Radius.circular(screenWidth * 0.05),
+                        //   ),
+                        // ),
+                        // padding: EdgeInsets.symmetric(vertical: screenWidth * 0.01),
+                        child: Column(
+                          children: [
+                            _listItem(
+                                FontAwesomeIcons.newspaper,
+                                "My Booking",
+                                () => Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            firstName.trim().isEmpty
+                                                ? LoginPage()
+                                                : MyBookings()))),
+                            _listItem(FontAwesomeIcons.wallet, "Wallet",
+                                () => showWalletDialog(context))
+                          ],
+                        ),
+                      ),
+                    ),
 
               SizedBox(height: screenWidth * 0.02),
 
@@ -420,8 +433,8 @@ class _DrawerpageState extends State<Drawerpage> {
                               context,
                               MaterialPageRoute(
                                   builder: (context) => TestimonialsPage()))),
-                      _listItem(FontAwesomeIcons.buildingUser,
-                          "Company Profile", () {}),
+                      // _listItem(FontAwesomeIcons.buildingUser,
+                      //     "Company Profile", () {}),
                       _listItem(
                           FontAwesomeIcons.fileLines,
                           "Terms & Conditions",

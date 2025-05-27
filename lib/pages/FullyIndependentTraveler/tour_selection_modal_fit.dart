@@ -160,7 +160,9 @@ class _TourSelectionModalFITState extends State<TourSelectionModalFIT> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            "AED ${tour['Per_totalAmount']}/person",
+                            tour['Per_totalAmount'] == "FREE"
+                            ? "INCLUDED"
+                            : "AED ${tour['Per_totalAmount']}/Person",
                             style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.red),
                           ),
                           ElevatedButton(
@@ -169,7 +171,6 @@ class _TourSelectionModalFITState extends State<TourSelectionModalFIT> {
                               widget.onSelectionChanged(tour);
                               Navigator.pop(context);
                               // print(tour.runtimeType);
-
                             },
                             child: const Text("SELECT", style: TextStyle(color: Colors.white)),
                           )

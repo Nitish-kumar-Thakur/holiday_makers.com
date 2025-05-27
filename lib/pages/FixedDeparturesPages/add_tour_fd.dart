@@ -587,7 +587,9 @@ class _TourBookingPageState extends State<TourBookingPage>
                                           MainAxisAlignment.spaceBetween,
                                       children: [
                                         Text(
-                                          "AED ${tourForDay['totalAmount'] ?? ''}/Person",
+                                          tourForDay['totalAmount'] == "FREE"
+                                          ? "INCLUDED"
+                                          : "AED ${tourForDay['totalAmount'] ?? ''}/Person",
                                           style: const TextStyle(
                                             fontSize: 20,
                                             fontWeight: FontWeight.bold,
